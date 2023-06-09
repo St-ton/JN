@@ -49,11 +49,11 @@ final class Installer
      * @param JTLCacheInterface|null $cache
      */
     public function __construct(
-        private DbInterface $db,
-        private Uninstaller $uninstaller,
-        private ValidatorInterface $legacyValidator,
-        private ValidatorInterface $pluginValidator,
-        private ?JTLCacheInterface $cache = null
+        private readonly DbInterface        $db,
+        private readonly Uninstaller        $uninstaller,
+        private readonly ValidatorInterface $legacyValidator,
+        private readonly ValidatorInterface $pluginValidator,
+        private ?JTLCacheInterface          $cache = null
     ) {
         $this->cache = $cache ?? Shop::Container()->getCache();
     }
@@ -517,7 +517,6 @@ final class Installer
         return \end($matches);
     }
 
-
     /**
      * Wenn ein Update erfolgreich mit neuer kPlugin in der Datenbank ist
      * wird der alte kPlugin auf die neue Version übertragen und
@@ -587,7 +586,7 @@ final class Installer
     {
         foreach ($cronJobs as $cronJob) {
             $match = $this->db->select('texportformat', ['kPlugin', 'cName'], [$pluginID, $cronJob->cName]);
-            if (isset($match->kExportformat)) {
+            if ($match !== null && isset($match->kExportformat)) {
                 $update               = new stdClass();
                 $update->foreignKeyID = $match->kExportformat;
                 $this->db->update('tcron', 'cronID', $cronJob->cronID, $update);
@@ -771,7 +770,10 @@ final class Installer
         $this->db->update('temailvorlage', 'kPlugin', $pluginID, (object)['kPlugin' => $oldPluginID]);
         $oldMailTpl = $this->db->select('temailvorlage', 'kPlugin', $oldPluginID);
         $newMailTpl = $this->db->select('temailvorlage', 'kPlugin', $pluginID);
-        if (isset($newMailTpl->kEmailvorlage, $oldMailTpl->kEmailvorlage)) {
+        if ($newMailTpl !== null
+            && $oldMailTpl !== null
+            && isset($newMailTpl->kEmailvorlage, $oldMailTpl->kEmailvorlage)
+        ) {
             $this->db->update(
                 'tpluginemailvorlageeinstellungen',
                 'kEmailvorlage',
@@ -791,7 +793,7 @@ final class Installer
                 false,
                 'kEmailvorlage'
             );
-            if (isset($newTpl->kEmailvorlage) && $newTpl->kEmailvorlage > 0) {
+            if ($newTpl !== null && $newTpl->kEmailvorlage > 0) {
                 $newTplID = (int)$newTpl->kEmailvorlage;
                 $oldTplID = (int)$oldTpl->kEmailvorlage;
                 $this->db->delete('temailvorlagesprache', 'kEmailvorlage', $newTplID);

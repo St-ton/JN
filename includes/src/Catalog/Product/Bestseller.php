@@ -148,8 +148,7 @@ class Bestseller
             return $products;
         }
         $productsql = $this->getProducts()->isNotEmpty()
-            ? ' AND tartikel.kArtikel IN (' .
-                \implode(',', $this->getProducts()->toArray()) . ') '
+            ? ' AND tartikel.kArtikel IN (' . \implode(',', $this->getProducts()->toArray()) . ') '
             : '';
         $storagesql = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
 
@@ -162,7 +161,7 @@ class Bestseller
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                     AND tartikelsichtbarkeit.kKundengruppe = :cgid
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                    AND ROUND(tbestseller.fAnzahl) >= :ms ' . $storagesql .  $productsql . '
+                    AND ROUND(tbestseller.fAnzahl) >= :ms ' . $storagesql . $productsql . '
                 GROUP BY tartikel.kArtikel
                 ORDER BY tbestseller.fAnzahl DESC
                 LIMIT :lmt',

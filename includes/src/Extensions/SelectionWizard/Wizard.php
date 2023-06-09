@@ -232,9 +232,9 @@ class Wizard
                 $question                    = $this->questionsAssoc[$option->getValue()];
                 $question->oWert_arr         = $option->getOptions();
                 $question->nTotalResultCount = 0;
-                foreach ($option->getOptions() as $oWert) {
-                    $question->nTotalResultCount                           += $oWert->getCount();
-                    $question->oWert_assoc[$oWert->getData('kMerkmalWert')] = $oWert;
+                foreach ($option->getOptions() as $value) {
+                    $question->nTotalResultCount                           += $value->getCount();
+                    $question->oWert_assoc[$value->getData('kMerkmalWert')] = $value;
                 }
             }
         }
@@ -413,11 +413,11 @@ class Wizard
      * @return self|null
      */
     public static function startIfRequired(
-        string $keyName,
-        int $id,
-        int $languageID = 0,
-        ?JTLSmarty $smarty = null,
-        array $selected = [],
+        string         $keyName,
+        int            $id,
+        int            $languageID = 0,
+        ?JTLSmarty     $smarty = null,
+        array          $selected = [],
         ?ProductFilter $pf = null
     ): ?self {
         // only start if enabled in the backend settings

@@ -12,7 +12,7 @@ class Migration_20211203143300 extends Migration implements IMigration
     protected $description = /** @lang text */ 'Create option for spam protection on reset password page';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -43,7 +43,7 @@ class Migration_20211203143300 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

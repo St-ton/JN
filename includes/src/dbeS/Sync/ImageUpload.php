@@ -29,7 +29,7 @@ final class ImageUpload extends AbstractSync
     }
 
     /**
-     * @param string            $tmpDir
+     * @param string           $tmpDir
      * @param SimpleXMLElement $xml
      */
     private function handleInserts(string $tmpDir, SimpleXMLElement $xml): void

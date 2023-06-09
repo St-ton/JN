@@ -12,7 +12,7 @@ class Migration_20220223145100 extends Migration implements IMigration
     protected $description = 'Template preview';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -22,7 +22,7 @@ class Migration_20220223145100 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

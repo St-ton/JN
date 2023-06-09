@@ -18,7 +18,7 @@ class Migration_20190704154900 extends Migration implements IMigration
     protected $description = 'Add password check lang';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -43,7 +43,7 @@ class Migration_20190704154900 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

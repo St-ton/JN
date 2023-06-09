@@ -12,7 +12,7 @@ class Migration_20201119102900 extends Migration implements IMigration
     protected $description = 'Fix warenkorbpers_nutzen setting';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -35,7 +35,7 @@ class Migration_20201119102900 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

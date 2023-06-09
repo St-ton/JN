@@ -18,7 +18,7 @@ class Migration_20190509121259 extends Migration implements IMigration
     protected $description = 'Add cWertName for all settings';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -126,7 +126,7 @@ class Migration_20190509121259 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

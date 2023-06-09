@@ -12,7 +12,7 @@ class Migration_20210323112600 extends Migration implements IMigration
     protected $description = 'Add line ending config for exports';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -36,7 +36,7 @@ class Migration_20210323112600 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

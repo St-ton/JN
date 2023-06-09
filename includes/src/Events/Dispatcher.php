@@ -129,7 +129,7 @@ final class Dispatcher
     /**
      * Get the wildcard listeners for the event.
      *
-     * @param  string  $eventName
+     * @param string $eventName
      * @return array
      */
     private function getWildcardListeners(string $eventName): array

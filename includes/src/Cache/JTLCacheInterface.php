@@ -66,10 +66,10 @@ interface JTLCacheInterface
     /**
      * store value to cache
      *
-     * @param string|int     $cacheID
-     * @param mixed      $content
+     * @param string|int        $cacheID
+     * @param mixed             $content
      * @param null|array|string $tags
-     * @param null|int   $expiration
+     * @param null|int          $expiration
      * @return bool
      */
     public function set($cacheID, $content, $tags = null, ?int $expiration = null): bool;

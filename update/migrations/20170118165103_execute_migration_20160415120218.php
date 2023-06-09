@@ -18,7 +18,7 @@ class Migration_20170118165103 extends Migration implements IMigration
     protected $description = 'Execute migration 20160415120218 a second time.';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -34,7 +34,7 @@ class Migration_20170118165103 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

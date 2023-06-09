@@ -98,8 +98,10 @@ class Import
      * @param DbInterface $db
      * @param array       $acceptedFields
      */
-    public function __construct(private DbInterface $db, private array $acceptedFields = self::DEFAULT_ACCEPTED_FIELDS)
-    {
+    public function __construct(
+        private readonly DbInterface $db,
+        private readonly array       $acceptedFields = self::DEFAULT_ACCEPTED_FIELDS
+    ) {
         $this->passwordService = Shop::Container()->getPasswordService();
         $this->mailer          = Shop::Container()->get(Mailer::class);
         $this->initDefaultCountry();
@@ -139,9 +141,9 @@ class Import
         $index = 1;
         while (($data = \fgetcsv($file, null, $delimiter)) !== false) {
             if ($this->processLine($index, $format, $data)) {
-                $this->importedRowsCount ++;
+                $this->importedRowsCount++;
             }
-            $index ++;
+            $index++;
         }
 
         \fclose($file);
@@ -169,7 +171,7 @@ class Import
     }
 
     /**
-     * @param int $index
+     * @param int   $index
      * @param array $format
      * @param array $values
      * @return bool
@@ -204,7 +206,7 @@ class Import
         }
 
         $oldMail = $this->db->select('tkunde', 'cMail', $customer->cMail);
-        if (isset($oldMail->kKunde) && $oldMail->kKunde > 0) {
+        if ($oldMail !== null && $oldMail->kKunde > 0) {
             $this->errors[] = \__('row') . ' ' . $index . ': ' . \sprintf(\__('errorEmailDuplicate'), $customer->cMail);
             return false;
         }

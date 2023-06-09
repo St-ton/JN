@@ -307,7 +307,7 @@ class Text
      */
     public static function htmlspecialchars(
         string $input,
-        int $flags = \ENT_COMPAT,
+        int    $flags = \ENT_COMPAT,
         string $enc = \JTL_CHARSET
     ): string {
         return \htmlspecialchars($input, $flags, $enc);

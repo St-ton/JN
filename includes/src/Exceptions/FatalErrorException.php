@@ -22,14 +22,14 @@ class FatalErrorException extends \ErrorException
      * @param \Throwable|null $previous
      */
     public function __construct(
-        string $message,
-        int $code,
-        int $severity,
-        string $filename,
-        int $lineno,
-        int $traceOffset = null,
-        bool $traceArgs = true,
-        array $trace = null,
+        string     $message,
+        int        $code,
+        int        $severity,
+        string     $filename,
+        int        $lineno,
+        int        $traceOffset = null,
+        bool       $traceArgs = true,
+        array      $trace = null,
         \Throwable $previous = null
     ) {
         parent::__construct($message, $code, $severity, $filename, $lineno, $previous);
@@ -85,7 +85,7 @@ class FatalErrorException extends \ErrorException
     /**
      * @param array $trace
      */
-    protected function setTrace($trace)
+    protected function setTrace($trace): void
     {
         $traceReflector = new \ReflectionProperty('Exception', 'trace');
         $traceReflector->setAccessible(true);

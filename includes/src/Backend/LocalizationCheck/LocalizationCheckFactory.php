@@ -15,7 +15,7 @@ class LocalizationCheckFactory
      * @param DbInterface $db
      * @param Collection  $activeLanguages
      */
-    public function __construct(private DbInterface $db, private Collection $activeLanguages)
+    public function __construct(private readonly DbInterface $db, private readonly Collection $activeLanguages)
     {
     }
 

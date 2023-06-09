@@ -38,8 +38,8 @@ class BaseSearchSpecial extends AbstractFilter
         parent::__construct($productFilter);
         $this->setRouteType(Router::TYPE_SEARCH_SPECIAL);
         $this->setIsCustom(false)
-             ->setUrlParam('q')
-             ->setUrlParamSEO(null);
+            ->setUrlParam('q')
+            ->setUrlParamSEO(null);
     }
 
     /**

@@ -43,7 +43,7 @@ abstract class AbstractSortingOption extends Option implements SortingOptionInte
 
     /**
      * AbstractSortingOption constructor.
-     * @param ProductFilter $productFilter
+     * @param ProductFilter        $productFilter
      * @param PluginInterface|null $plugin
      */
     public function __construct(ProductFilter $productFilter, ?PluginInterface $plugin = null)

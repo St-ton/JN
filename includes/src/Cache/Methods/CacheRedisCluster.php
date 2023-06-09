@@ -59,8 +59,8 @@ class CacheRedisCluster implements ICachingMethod
      */
     private function setRedisCluster(
         ?string $hosts = null,
-        bool $persist = false,
-        int $strategy = 0,
+        bool    $persist = false,
+        int     $strategy = 0,
         ?string $pass = null
     ): bool {
         try {

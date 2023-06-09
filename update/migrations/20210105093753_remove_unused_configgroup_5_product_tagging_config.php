@@ -18,7 +18,7 @@ class Migration_20210105093753 extends Migration implements IMigration
     protected $description = 'Remove unused configgroup_5_product_tagging config';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -30,7 +30,7 @@ class Migration_20210105093753 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

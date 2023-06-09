@@ -13,7 +13,7 @@ class Migration_20200512132300 extends Migration implements IMigration
     protected $description = 'Added isAdmin, parentCommentID columns to tnewskommentar table';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -27,7 +27,7 @@ class Migration_20200512132300 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

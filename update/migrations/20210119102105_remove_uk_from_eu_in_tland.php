@@ -18,7 +18,7 @@ class Migration_20210119102105 extends Migration implements IMigration
     protected $description = 'remove UK from EU in tland';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -26,7 +26,7 @@ class Migration_20210119102105 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

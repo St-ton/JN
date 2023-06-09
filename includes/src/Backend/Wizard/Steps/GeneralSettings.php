@@ -174,7 +174,6 @@ final class GeneralSettings extends AbstractStep
         });
         $this->addQuestion($question);
 
-
         $question = new Question($db);
         $question->setID(6);
         $question->setSubheading(\__('orderNumberSettings'));

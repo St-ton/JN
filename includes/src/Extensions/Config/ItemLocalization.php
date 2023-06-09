@@ -83,7 +83,7 @@ class ItemLocalization
                 false,
                 'cName'
             );
-            $item->cName = $localized->cName;
+            $item->cName = $localized->cName ?? '';
         }
         if ($item !== null && empty($item->cBeschreibung)) {
             $localized           = Shop::Container()->getDB()->select(
@@ -97,7 +97,7 @@ class ItemLocalization
                 false,
                 'cBeschreibung'
             );
-            $item->cBeschreibung = $localized->cBeschreibung;
+            $item->cBeschreibung = $localized->cBeschreibung ?? '';
         }
 
         if (isset($item->kKonfigitem, $item->kSprache) && $item->kKonfigitem > 0 && $item->kSprache > 0) {

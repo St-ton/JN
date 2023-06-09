@@ -6,7 +6,6 @@ use Illuminate\Support\Collection;
 use JTL\Contracts\RoutableInterface;
 use JTL\DB\SqlObject;
 use JTL\Helpers\Text;
-use JTL\Language\LanguageHelper;
 use JTL\MagicCompatibilityTrait;
 use JTL\Media\Image;
 use JTL\Media\MultiSizeImage;

@@ -23,12 +23,12 @@ class Manager implements ManagerInterface
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */
-    public function __construct(private DbInterface $db, private JTLCacheInterface $cache)
+    public function __construct(private readonly DbInterface $db, private readonly JTLCacheInterface $cache)
     {
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getConsents(): array
     {
@@ -36,7 +36,7 @@ class Manager implements ManagerInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function itemRevokeConsent(ItemInterface $item): void
     {
@@ -46,7 +46,7 @@ class Manager implements ManagerInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function itemGiveConsent(ItemInterface $item): void
     {
@@ -56,7 +56,7 @@ class Manager implements ManagerInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function itemHasConsent(ItemInterface $item): bool
     {
@@ -64,7 +64,7 @@ class Manager implements ManagerInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function hasConsent(string $itemID): bool
     {
@@ -72,7 +72,7 @@ class Manager implements ManagerInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function save($data): ?array
     {
@@ -92,7 +92,7 @@ class Manager implements ManagerInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function initActiveItems(int $languageID): Collection
     {
@@ -114,7 +114,7 @@ class Manager implements ManagerInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getActiveItems(int $languageID): Collection
     {

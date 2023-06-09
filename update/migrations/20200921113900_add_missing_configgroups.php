@@ -12,7 +12,7 @@ class Migration_20200921113900 extends Migration implements IMigration
     protected $description = 'Add missing configgroups';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -67,7 +67,7 @@ class Migration_20200921113900 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

@@ -2,9 +2,7 @@
 
 namespace JTL\Router\Controller;
 
-use JTL\Router\DefaultParser;
 use JTL\Router\State;
-use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use League\Route\RouteGroup;
 use Psr\Http\Message\ResponseInterface;

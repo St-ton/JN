@@ -144,9 +144,9 @@ class BannerController extends AbstractBackendController
             } elseif ($pageType === \PAGE_ARTIKELLISTE) {
                 $filters  = [
                     'kMerkmalWert' => 'attribute_key',
-                    'kKategorie' => 'categories_key',
-                    'kHersteller' => 'manufacturer_key',
-                    'cSuche' => 'keycSuche'
+                    'kKategorie'   => 'categories_key',
+                    'kHersteller'  => 'manufacturer_key',
+                    'cSuche'       => 'keycSuche'
                 ];
                 $keyValue = $filters[$key];
                 $value    = $postData[$keyValue] ?? null;

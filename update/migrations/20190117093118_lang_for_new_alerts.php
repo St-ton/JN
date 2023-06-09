@@ -18,7 +18,7 @@ class Migration_20190117093118 extends Migration implements IMigration
     protected $description = 'Language vars for new alerts';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -39,7 +39,7 @@ class Migration_20190117093118 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

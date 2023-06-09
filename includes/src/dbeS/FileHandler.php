@@ -23,7 +23,7 @@ class FileHandler
      * FileHandler constructor.
      * @param LoggerInterface $logger
      */
-    public function __construct(private LoggerInterface $logger)
+    public function __construct(private readonly LoggerInterface $logger)
     {
     }
 
@@ -127,7 +127,7 @@ class FileHandler
             \UPLOAD_ERR_FORM_SIZE  => 'Dateigröße > MAX_FILE_SIZE [2]',
             \UPLOAD_ERR_PARTIAL    => 'Datei wurde nur zum Teil hochgeladen [3]',
             \UPLOAD_ERR_NO_FILE    => 'Es wurde keine Datei hochgeladen [4]',
-            \UPLOAD_ERR_NO_TMP_DIR => 'Es fehlt ein TMP-Verzeichnis für HTTP Datei-Uploads! Bitte an Hoster wenden! [6]',
+            \UPLOAD_ERR_NO_TMP_DIR => 'Es fehlt ein TMP-Verzeichnis für Datei-Uploads! Bitte an Hoster wenden! [6]',
             \UPLOAD_ERR_CANT_WRITE => 'Datei konnte nicht auf Datenträger gespeichert werden! [7]',
             \UPLOAD_ERR_EXTENSION  => 'Dateiendung nicht akzeptiert, bitte an Hoster werden! [8]',
             default                => 'Fehler beim Datenaustausch - Datei kam nicht an oder Größe 0!',

@@ -21,10 +21,10 @@ class ExporterFactory
      * @param ExportWriterInterface|null $writer
      */
     public function __construct(
-        private DbInterface $db,
-        private LoggerInterface $logger,
-        private JTLCacheInterface $cache,
-        private ?ExportWriterInterface $writer = null
+        private readonly DbInterface            $db,
+        private readonly LoggerInterface        $logger,
+        private readonly JTLCacheInterface      $cache,
+        private readonly ?ExportWriterInterface $writer = null
     ) {
     }
 

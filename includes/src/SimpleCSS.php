@@ -188,7 +188,7 @@ class SimpleCSS
                     return $this->rgb2html((int)$matches[2], (int)$matches[3], (int)$matches[4]);
                 } // #fff or #ffffff
                 if (\preg_match('/#([\w\d]+)/', $value, $matches)) {
-                    return  \trim($matches[0]);
+                    return \trim($matches[0]);
                 }
                 break;
 
@@ -208,8 +208,8 @@ class SimpleCSS
 
     /**
      * @param array|int $r
-     * @param int $g
-     * @param int $b
+     * @param int       $g
+     * @param int       $b
      * @return string
      */
     public function rgb2html($r, $g, $b): string

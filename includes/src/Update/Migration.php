@@ -55,9 +55,9 @@ class Migration implements JsonSerializable
     }
 
     /**
-     * @return string|null
+     * @return string|int|null
      */
-    public function getId(): ?string
+    public function getId()
     {
         return MigrationHelper::mapClassNameToId($this->getName());
     }

@@ -19,9 +19,9 @@ class Migration_20230601101207 extends Migration implements IMigration
     protected $description = 'add mandatory consent item';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
-    public function up()
+    public function up(): void
     {
         $id = $this->getDB()->query(
             "INSERT INTO tconsent (itemID, active) VALUES ('necessary', 0)",
@@ -29,9 +29,9 @@ class Migration_20230601101207 extends Migration implements IMigration
         );
 
         $this->execute(
-            "INSERT INTO tconsentlocalization 
+            'INSERT INTO tconsentlocalization 
                 (consentID, languageID, privacyPolicy, description, purpose, name)
-             VALUES (" . $id . ", 1, '',
+             VALUES (' . $id . ", 1, '',
                  'Technisch notwendige Cookies ermöglichen grundlegende Funktionen und sind für den einwandfreien   
                   Betrieb der Website erforderlich.',
                  '',
@@ -39,9 +39,9 @@ class Migration_20230601101207 extends Migration implements IMigration
          ");
 
         $this->execute(
-            "INSERT INTO tconsentlocalization
+            'INSERT INTO tconsentlocalization
                 (consentID, languageID, privacyPolicy, description, purpose, name)
-             VALUES (" . $id . ", 2, '',
+             VALUES (' . $id . ", 2, '',
                  'Strictly necessary cookies are those that enable the basic functions of a website. Without them, the
                   website will not work properly.',
                  '',
@@ -50,9 +50,9 @@ class Migration_20230601101207 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
-    public function down()
+    public function down(): void
     {
         $this->execute("DELETE FROM tconsent WHERE itemID = 'necessary'");
     }

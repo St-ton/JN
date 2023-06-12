@@ -981,7 +981,7 @@ class AccountController
     private function rmaOrder(int $rmaID): string
     {
         $this->getDeliveryAddresses(['shippingAddresses', 'shippingCountries']);
-        $rmaService = new RMAService();
+        $rmaService            = new RMAService();
         $retournierbareArtikel = $rmaService->getReturnableProducts();
         $this->smarty->assign('rma', $rmaService->get($rmaID))
             ->assign('returnableProducts', $retournierbareArtikel)
@@ -1107,7 +1107,7 @@ class AccountController
     /**
      * @return \Illuminate\Support\Collection
      */
-    private function getDeliveryAddresses(array $smartyAssign=[]): \Illuminate\Support\Collection
+    private function getDeliveryAddresses(array $smartyAssign = []): \Illuminate\Support\Collection
     {
         if (count($smartyAssign) !== 2) {
             $smartyAssign = ['Lieferadressen', 'LieferLaender'];

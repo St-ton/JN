@@ -134,8 +134,7 @@ class RMAService extends AbstractService
        tbestellung.kLieferadresse AS shippingAddressID, tbestellung.cStatus AS status,
        tbestellung.cBestellNr AS orderID, tlieferscheinpos.kLieferscheinPos AS shippingNotePosID,
        tlieferscheinpos.kLieferschein AS shippingNoteID, tlieferscheinpos.fAnzahl AS quantity,
-       tartikel.cSeo AS seo, DATE_FORMAT(FROM_UNIXTIME(tversand.dErstellt), '%d-%m-%Y') AS createDate,
-       tartikelattribut.cWert AS notReturnable
+       tartikel.cSeo AS seo, DATE_FORMAT(FROM_UNIXTIME(tversand.dErstellt), '%d-%m-%Y') AS createDate
             FROM tbestellung
             JOIN twarenkorbpos
                 ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
@@ -147,12 +146,15 @@ class RMAService extends AbstractService
                 AND DATE(FROM_UNIXTIME(tversand.dErstellt)) >= DATE_SUB(NOW(), INTERVAL :cancellationTime DAY)
             LEFT JOIN tartikelattribut
                 ON tartikelattribut.kArtikel = twarenkorbpos.kArtikel
-                AND tartikelattribut.cName = 'nicht_retournierbar'
+                AND tartikelattribut.cName = '" . \PRODUCT_NOT_RETURNABLE . "'
+            LEFT JOIN tartikeldownload
+                ON tartikeldownload.kArtikel = twarenkorbpos.kArtikel
             JOIN tartikel
                 ON tartikel.kArtikel = twarenkorbpos.kArtikel
             WHERE tbestellung.kKunde = :customerID
                 AND tbestellung.cStatus IN (:status_versandt, :status_teilversandt)
-                AND tartikelattribut.cWert IS NULL",
+                AND tartikelattribut.cWert IS NULL
+                AND tartikeldownload.kArtikel IS NULL",
             [
                 'customerID' => $customerID,
                 'status_versandt' => \BESTELLUNG_STATUS_VERSANDT,
@@ -160,10 +162,10 @@ class RMAService extends AbstractService
                 'cancellationTime' => $cancellationTime
             ]
         )->map(static function ($product): \stdClass {
-            $product->unitPriceNet      = Preise::getLocalizedPriceString($product->unitPriceNet);
-            $product->Artikel           = new Artikel();
-            $product->Artikel->kArtikel = (int)$product->id;
-            $product->Artikel->holBilder();
+            $product->unitPriceNet = Preise::getLocalizedPriceString($product->unitPriceNet);
+            $product->Artikel      = new Artikel();
+            // Set ID and do "$product->Artikel->holBilder();" to get only images
+            $product->Artikel->fuelleArtikel((int)$product->id);
             
             return $product;
         })->all();

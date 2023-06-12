@@ -270,11 +270,12 @@
                         {/cardheader}
                         {cardbody}
                             {block name='account-my-account-comparelist-body'}
-                                {if $Retouren|count > 0}
+                                {assign var=rmas value=$RMAService->getRepository()->getList(['customerID' => $Kunde->kKunde])}
+                                {if $rmas|count > 0}
                                     <div class="table-responsive">
                                         <table class="table table-vertical-middle table-hover">
                                             <tbody>
-                                                {foreach $Retouren as $rma}
+                                                {foreach $rmas as $rma}
                                                     {$rma->fuelleRetoure()}
                                                     <tr>
                                                         <td>

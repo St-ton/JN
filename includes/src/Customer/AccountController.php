@@ -263,7 +263,7 @@ class AccountController
             $this->smarty->assign('oWunschliste_arr', Wishlist::getWishlists());
         }
         if ($step === 'mein Konto') {
-            $this->smarty->assign('rmas', (new RMAService)->getRepository()->getList(['customerID' => $customerID]));
+            $this->smarty->assign('RMAService', new RMAService());
             $deliveryAddresses = $this->getDeliveryAddresses();
             \executeHook(\HOOK_JTL_PAGE_MEINKKONTO, ['deliveryAddresses' => &$deliveryAddresses]);
             $this->smarty->assign('compareList', new ComparisonList());
@@ -981,11 +981,11 @@ class AccountController
     private function rmaOrder(int $rmaID): string
     {
         $this->getDeliveryAddresses(['shippingAddresses', 'shippingCountries']);
-        $rmaService            = new RMAService();
-        $retournierbareArtikel = $rmaService->getReturnableProducts();
+        $rmaService         = new RMAService();
+        $returnableProducts = $rmaService->getReturnableProducts();
         $this->smarty->assign('rma', $rmaService->get($rmaID))
-            ->assign('returnableProducts', $retournierbareArtikel)
-            ->assign('returnableOrders', $rmaService->getOrderIDs($retournierbareArtikel));
+            ->assign('returnableProducts', $returnableProducts)
+            ->assign('returnableOrders', $rmaService->getOrderIDs($returnableProducts));
         
         return 'rma';
     }
@@ -997,7 +997,7 @@ class AccountController
      */
     private function rmaOrders(int $customerID): string
     {
-        $this->smarty->assign('rmas', (new RMAService)->getRepository()->getList(['customerID' => $customerID]));
+        $this->smarty->assign('RMAService', (new RMAService)->getRepository()->getList(['customerID' => $customerID]));
         return 'rmas';
     }
 

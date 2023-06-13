@@ -100,7 +100,7 @@ class BaseCategory extends AbstractFilter
             }
         }
         if (\count($seoData) > 0) {
-            $this->setName($seoData[0]->getName($currentLanguageID));
+            $this->setName($seoData[0]->getShortName($currentLanguageID));
         }
 
         return $this;

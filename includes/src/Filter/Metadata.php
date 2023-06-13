@@ -306,7 +306,7 @@ class Metadata implements MetadataInterface
         $languageID = $this->productFilter->getFilterConfig()->getLanguageID();
         if ($category !== null && $this->productFilter->hasCategory()) {
             $this->category = $category;
-            $this->setName($this->category->getName() ?? '');
+            $this->setName($this->category->getShortName($languageID) ?? '');
             $this->setImageURL($category->getImage());
         } elseif ($this->productFilter->hasManufacturer()) {
             $this->manufacturer = new Hersteller(
@@ -314,7 +314,7 @@ class Metadata implements MetadataInterface
                 $languageID
             );
             if ($this->manufacturer->getID() > 0) {
-                $this->setName($this->manufacturer->getName() ?? '')
+                $this->setName($this->manufacturer->getName($languageID) ?? '')
                     ->setImageURL($this->manufacturer->getImage())
                     ->setMetaTitle($this->manufacturer->getMetaTitle($languageID))
                     ->setMetaDescription($this->manufacturer->getMetaDescription($languageID))

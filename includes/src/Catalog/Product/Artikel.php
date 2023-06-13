@@ -5745,7 +5745,7 @@ class Artikel implements RoutableInterface
             $categoryNames = [];
             foreach ($categoryList->elemente as $category) {
                 if ($category->getID() > 0) {
-                    $categoryNames[] = $category->getName($this->kSprache);
+                    $categoryNames[] = $category->getShortName($this->kSprache);
                 }
             }
             $description .= \implode(', ', $categoryNames);

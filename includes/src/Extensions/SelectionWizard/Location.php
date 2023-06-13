@@ -100,7 +100,7 @@ class Location
                 $langID   = $this->getLanguage($this->kAuswahlAssistentGruppe);
                 $category = new Kategorie($this->kKey, $langID, 0, false, $this->db);
 
-                $this->cOrt = $category->getName($langID) . ' (' . \__('category') . ')';
+                $this->cOrt = $category->getShortName($langID) . ' (' . \__('category') . ')';
                 break;
 
             case \AUSWAHLASSISTENT_ORT_LINK:

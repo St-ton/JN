@@ -7,3 +7,51 @@
 //Hover: #88cef8;
 
 @sidebar-width: 256px;
+
+/* Light mode */
+:root {
+  --body-bg: #f5f7fa;
+  --body-color: #212529;
+  --btn-color: #ffffff;
+  --card-bg: #ffffff;
+  --input-bg: #ffffff;
+  --input-border-focus-color: #7dcdfe;
+  --card-shadow-color: rgba(0, 0, 0, 0.04);
+  --topbar-bg: #ffffff;
+  --border-color: #e4e9f2;
+  --navbar-shadow-color: #eef0f3;
+  --table-accent-color: #1f2327;
+  --table-stripe-color: #f5f7fa;
+  --brand-logo-display: block;
+  --brand-logo-white-display: none;
+  --link-color: #435a6b;
+  --link-hover-color: #324350;
+  --daterangepicker-accent-color: #ebf4f8;
+  --input-group-bg: #e9ecef;
+  --input-group-border-color: #435a6b;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --body-bg: #212529;
+    --body-color: #dddddd;
+    --btn-color: #000000;
+    --card-bg: #2b3035;
+    --input-bg: #2b3035;
+    --input-border-focus-color: #7dcdfe;
+    --card-shadow-color: rgba(0, 0, 0, 0.25);
+    --topbar-bg: #2b3035;
+    --border-color: #495057;
+    --navbar-shadow-color: #1f232b;
+    --table-accent-color: #1f2327;
+    --table-stripe-color: #212529;
+    --brand-logo-display: none;
+    --brand-logo-white-display: block;
+    --link-color: #65869f;
+    --link-hover-color: #739ab6;
+    --daterangepicker-accent-color: #1f2327;
+    --input-group-bg: #1f2327;
+    --input-group-border-color: #495057;
+  }
+}

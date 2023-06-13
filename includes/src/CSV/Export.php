@@ -45,12 +45,15 @@ class Export
 
         if (\count($fields) === 0) {
             if ($arr instanceof Iterator) {
-                /** @var Iterator $arr * */
+                /** @var Iterator $arr */
                 $first = $arr->current();
             } elseif (!\is_array($arr) || \count($arr) === 0) {
                 return false;
             } else {
                 $first = $arr[0];
+            }
+            if ($first === null) {
+                return false;
             }
             $assoc  = \get_object_vars($first);
             $fields = \array_keys($assoc);

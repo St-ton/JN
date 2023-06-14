@@ -78,13 +78,14 @@
   --navbar-shadow-color: #eef0f3;
   --table-accent-color: #1f2327;
   --table-stripe-color: #f5f7fa;
-  --brand-logo-display: block;
+  --brand-logo-display: unset;
   --brand-logo-white-display: none;
   --link-color: #435a6b;
   --link-hover-color: #324350;
   --daterangepicker-accent-color: #ebf4f8;
   --input-group-bg: #e9ecef;
   --input-group-border-color: #435a6b;
+  --wizard-bg: #ffffff url("images/setup-assistant-bg.svg") no-repeat left top/auto 43.75rem;
 }
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
@@ -102,12 +103,13 @@
     --table-accent-color: #1f2327;
     --table-stripe-color: #212529;
     --brand-logo-display: none;
-    --brand-logo-white-display: block;
+    --brand-logo-white-display: unset;
     --link-color: #65869f;
     --link-hover-color: #739ab6;
     --daterangepicker-accent-color: #1f2327;
     --input-group-bg: #1f2327;
     --input-group-border-color: #495057;
+    --wizard-bg: #2b3035 url("images/setup-assistant-bg-black.svg") no-repeat left top/auto 43.75rem;
   }
 }
 .backend-wrapper {
@@ -2919,6 +2921,17 @@ hr,
 }
 .table-hover tbody tr:hover {
   background-color: var(--table-accent-color);
+  color: var(--body-color);
+}
+#modal-setup-assistant .modal-content {
+  background-color: var(--card-bg);
+}
+@media (min-width: 992px) {
+  #modal-setup-assistant .modal-content {
+    background: var(--wizard-bg);
+  }
+}
+#modal-setup-assistant .close > span {
   color: var(--body-color);
 }
 /*# sourceMappingURL=custom.css.map */

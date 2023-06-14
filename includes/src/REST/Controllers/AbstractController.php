@@ -53,9 +53,9 @@ abstract class AbstractController
      * @param JTLCacheInterface $cache
      */
     public function __construct(
-        string $modelClass,
-        Manager $fractal,
-        protected DbInterface $db,
+        string                      $modelClass,
+        Manager                     $fractal,
+        protected DbInterface       $db,
         protected JTLCacheInterface $cache
     ) {
         $this->modelClass = $modelClass;

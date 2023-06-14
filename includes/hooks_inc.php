@@ -2011,3 +2011,9 @@ const HOOK_PAYMENT_METHOD_ADDINCOMINGPAYMENT = 401;
  * @param int                              orderID
  */
 const HOOK_ORDER_DOWNLOAD_FILE = 402;
+
+/**
+ * @since 5.3.0
+ * @param array $classes - list of class names to be registered
+ */
+const HOOK_RESTAPI_REGISTER_CONTROLLER = 410;

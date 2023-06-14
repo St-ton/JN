@@ -4,6 +4,7 @@ namespace JTL\REST;
 
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
+use JTL\Events\Dispatcher;
 use JTL\REST\Controllers\AbstractController;
 use JTL\REST\Controllers\AttributeController;
 use JTL\REST\Controllers\CacheController;
@@ -111,8 +112,9 @@ final class Registrator
      */
     public function register(RouteGroup $routeGroup): void
     {
+        $classes = Dispatcher::getInstance()->getData(\HOOK_RESTAPI_REGISTER_CONTROLLER, self::$classes);
         /** @var AbstractController $class */
-        foreach (self::$classes as $class) {
+        foreach ($classes as $class) {
             (new $class($this->manager, $this->db, $this->cache))->registerRoutes($routeGroup);
         }
     }

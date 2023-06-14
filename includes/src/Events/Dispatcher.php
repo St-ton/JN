@@ -83,6 +83,15 @@ final class Dispatcher
         }
     }
 
+    public function getData(int $hookID, $result, ...$arguments)
+    {
+        foreach ($this->getListeners('shop.hook.' . $hookID) as $listener) {
+            $result = $listener($result, ...$arguments);
+        }
+
+        return $result;
+    }
+
     /**
      * Remove a set of listeners from the dispatcher.
      *

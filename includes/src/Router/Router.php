@@ -7,6 +7,7 @@ use FastRoute\BadRouteException;
 use JTL\Cache\JTLCacheInterface;
 use JTL\Catalog\Currency;
 use JTL\DB\DbInterface;
+use JTL\Events\Dispatcher;
 use JTL\Events\Dispatcher as CoreDispatcher;
 use JTL\Events\Event;
 use JTL\Language\LanguageHelper;
@@ -150,11 +151,11 @@ class Router
      * @param array                 $config
      */
     public function __construct(
-        protected DbInterface $db,
+        protected DbInterface       $db,
         protected JTLCacheInterface $cache,
-        protected State $state,
-        AlertServiceInterface $alert,
-        private readonly array $config
+        protected State             $state,
+        AlertServiceInterface       $alert,
+        private readonly array      $config
     ) {
         $this->router            = new BaseRouter();
         $this->defaultController = new DefaultController($db, $cache, $state, $this->config, $alert);
@@ -188,7 +189,6 @@ class Router
             PageController::class                => new PageController($db, $cache, $state, $this->config, $alert),
             MediaImageController::class          => new MediaImageController($db, $cache, $state, $this->config, $alert)
         ];
-        $this->registerAPI();
         foreach ($this->collectHosts() as $data) {
             $host         = $data['host'];
             $locale       = $data['locale'];
@@ -251,6 +251,7 @@ class Router
         $rapi->setName('restapi_grp');
         $rapi->middleware(new ApiKeyMiddleware($this->db));
         $this->routes[] = $rapi;
+        $rapi();
     }
 
     /**
@@ -272,16 +273,16 @@ class Router
      * @return Route[]
      */
     public function addRoute(
-        string $slug,
-        callable $cb,
-        ?string $name = null,
-        array $methods = ['GET'],
+        string               $slug,
+        callable             $cb,
+        ?string              $name = null,
+        array                $methods = ['GET'],
         ?MiddlewareInterface $middleware = null
     ): array {
         if (!\str_starts_with($slug, '/')) {
             $slug = '/' . $slug;
         }
-        $name                      = $name ?? \uniqid();
+        $name                      = $name ?? \uniqid('', true);
         $routes                    = [];
         $methods                   = \array_map('\mb_strtoupper', $methods);
         $this->customRoutes[$name] = [];
@@ -677,6 +678,8 @@ class Router
             $request = $request->withUri($uri->withPath($uriPath));
         }
         \executeHook(\HOOK_ROUTER_PRE_DISPATCH, ['router' => $this]);
+
+        $this->registerAPI();
 
         // this is added after HOOK_ROUTER_PRE_DISPATCH since plugins could register static routes
         // which would otherwise be shadowed by this

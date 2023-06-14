@@ -113,6 +113,9 @@ msgstr "The entered campaign name already exists."
 msgid "errorCampaignParameterDuplicate"
 msgstr "The entered campaign parameter is already in use."
 
+msgid "errorCampaignParameterReserved"
+msgstr "The entered campaign parameter is reserved."
+
 msgid "Hit"
 msgstr "Hits"
 

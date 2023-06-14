@@ -113,6 +113,9 @@ msgstr "Der angegebene Kampagnenname ist bereits vergeben."
 msgid "errorCampaignParameterDuplicate"
 msgstr "Der angegebene Kampagnenparameter ist bereits vergeben."
 
+msgid "errorCampaignParameterReserved"
+msgstr "Der angegebene Kampagnenparameter ist reserviert."
+
 msgid "Hit"
 msgstr "Hits"
 

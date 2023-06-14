@@ -90,7 +90,7 @@
                                                                 step="{if $product->Artikel->cTeilbar === 'Y' && $product->Artikel->fAbnahmeintervall == 0}any{elseif $product->Artikel->fAbnahmeintervall > 0}{$product->Artikel->fAbnahmeintervall}{else}1{/if}"
                                                                 min="1"
                                                                 max="{$product->quantity}"
-                                                                id="qty-{$product->shippingNotePosID}" class="quantity" name="quantity[]"
+                                                                id="qty-{$product->shippingNotePosID}" class="quantity" name="quantity"
                                                                 aria=["label"=>"{lang key='quantity'}"]
                                                                 value=$product->quantity
                                                                 data=[
@@ -111,7 +111,7 @@
 
                                                             <div class="mr-2 mb-2">
                                                                 {select aria=["label"=>""]
-                                                                name="reason[]"
+                                                                name="reason"
                                                                 data=[
                                                                 "snposid" => "{$product->shippingNotePosID}"
                                                                 ]
@@ -124,7 +124,7 @@
                                                             </div>
 
                                                             <div class="flex-grow-1 mr-2 mb-2">
-                                                                {textarea name="comment[]"
+                                                                {textarea name="comment"
                                                                 data=[
                                                                 "snposid" => "{$product->shippingNotePosID}"
                                                                 ]
@@ -146,6 +146,8 @@
                 {/block}
 
                 {form method="post" id='rma' action="#" class="jtl-validate mt-3" slide=true}
+
+                    {if false}
                     {block name='account-rma-form-include-customer-rmas'}
                         {block name='checkout-customer-shipping-address'}
                             <fieldset>
@@ -170,6 +172,8 @@
                             </fieldset>
                         {/block}
                     {/block}
+                    {/if}
+
                     {block name='account-rma-form-form-submit'}
                         {row class='btn-row'}
                             {col md=12 xl=12 class="checkout-button-row-submit mb-3"}
@@ -286,7 +290,7 @@
                 setListenerForQuantities();
 
                 $('#rma').on('submit', function (e) {
-                    e.preventDefault();
+                    let formData = $(this).serializeArray();
                     let inputs = [];
                     table.rows().every(function () {
                         if ($(this.node()).find('input[name="returnItem"]').prop('checked')) {
@@ -313,8 +317,22 @@
                         });
                         return;
                     }
-                    let formData = $(this).serializeArray().concat(inputs);
-                    console.log(formData);
+                    formData = formData.concat(inputs);
+
+                    $.evo.io().call(
+                        'createRMA',
+                        [formData],
+                        { },
+                        function (error, data) {
+                            if (error) {
+                                return;
+                            }
+                            if (!data['response']['result']) {
+                                console.log('An error has occurred');
+                            }
+                        }
+                    );
+                    e.preventDefault();
                 });
             });
         </script>{/inline_script}

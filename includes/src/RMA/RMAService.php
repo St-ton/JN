@@ -146,7 +146,7 @@ class RMAService extends AbstractService
                 AND DATE(FROM_UNIXTIME(tversand.dErstellt)) >= DATE_SUB(NOW(), INTERVAL :cancellationTime DAY)
             LEFT JOIN tartikelattribut
                 ON tartikelattribut.kArtikel = twarenkorbpos.kArtikel
-                AND tartikelattribut.cName = '" . \PRODUCT_NOT_RETURNABLE . "'
+                AND tartikelattribut.cName = :notReturnable
             LEFT JOIN tartikeldownload
                 ON tartikeldownload.kArtikel = twarenkorbpos.kArtikel
             JOIN tartikel
@@ -159,7 +159,8 @@ class RMAService extends AbstractService
                 'customerID' => $customerID,
                 'status_versandt' => \BESTELLUNG_STATUS_VERSANDT,
                 'status_teilversandt' => \BESTELLUNG_STATUS_TEILVERSANDT,
-                'cancellationTime' => $cancellationTime
+                'cancellationTime' => $cancellationTime,
+                'notReturnable' => \PRODUCT_NOT_RETURNABLE
             ]
         )->map(static function ($product): \stdClass {
             $product->unitPriceNet = Preise::getLocalizedPriceString($product->unitPriceNet);

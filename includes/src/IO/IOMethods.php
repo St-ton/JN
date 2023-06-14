@@ -29,6 +29,7 @@ use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Helpers\URL;
+use JTL\RMA\RMAService;
 use JTL\Router\Controller\ReviewController;
 use JTL\Router\Route;
 use JTL\Router\State;
@@ -85,7 +86,8 @@ class IOMethods
             ->register('setWishlistVisibility', $this->setWishlistVisibility(...))
             ->register('updateWishlistItem', $this->updateWishlistItem(...))
             ->register('updateReviewHelpful', $this->updateReviewHelpful(...))
-            ->register('setDeliveryaddressDefault', $this->setDeliveryaddressDefault(...));
+            ->register('setDeliveryaddressDefault', $this->setDeliveryaddressDefault(...))
+            ->register('createRMA', $this->createRMA(...));
     }
 
     /**
@@ -1430,6 +1432,35 @@ class IOMethods
         if (Form::validateToken($token)) {
             $la               = new DeliveryAddressTemplate($this->db);
             $response->result = $la->setAsDefault($laID, (int)$state);
+        }
+
+        $ioResponse->assignVar('response', $response);
+
+        return $ioResponse;
+    }
+
+    /**
+     * @param array $args
+     * @return IOResponse
+     * @since 5.3.0
+     */
+    public function createRMA(array $args = []): IOResponse
+    {
+        $param = [];
+        foreach ($args as $arg) {
+            if (!isset($param[$arg['name']])) {
+                $param[$arg['name']] = [$arg['value']];
+            } else {
+                $param[$arg['name']][] = $arg['value'];
+            }
+        }
+        $ioResponse = new IOResponse();
+        $response   = new stdClass();
+
+        if (Form::validateToken($param['jtl_token'][0])) {
+            $RMAService       = new RMAService();
+            $customerID       = Frontend::getCustomer()->getID();
+            $response->result = true;
         }
 
         $ioResponse->assignVar('response', $response);

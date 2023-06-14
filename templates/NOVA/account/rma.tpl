@@ -328,7 +328,9 @@
                                 return;
                             }
                             if (!data['response']['result']) {
-                                console.log('An error has occurred');
+                                console.log(data['response']['msg']);
+                            } else {
+                                console.log(data['response']['data']);
                             }
                         }
                     );

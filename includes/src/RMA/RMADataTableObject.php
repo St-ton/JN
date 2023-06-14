@@ -59,7 +59,7 @@ class RMADataTableObject extends AbstractDataObject implements DataTableObjectIn
         'id'                => 'id',
         'wawiID'            => 'wawiID',
         'customerID'        => 'customerID',
-        'pickupAddressID' => 'pickupAddressID',
+        'pickupAddressID'   => 'pickupAddressID',
         'status'            => 'status',
         'createDate'        => 'createDate',
         'lastModified'      => 'lastModified'

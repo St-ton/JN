@@ -29,6 +29,8 @@ use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Helpers\URL;
+use JTL\RMA\RMADataTableObject;
+use JTL\RMA\RMAPosDataTableObject;
 use JTL\RMA\RMAService;
 use JTL\Router\Controller\ReviewController;
 use JTL\Router\Route;
@@ -1458,11 +1460,54 @@ class IOMethods
         $response   = new stdClass();
 
         if (Form::validateToken($param['jtl_token'][0])) {
-            $RMAService       = new RMAService();
-            $customerID       = Frontend::getCustomer()->getID();
+            if (!isset($param['quantity']) || !isset($param['reason']) || !isset($param['comment'])) {
+                $response->result = false;
+                $response->msg    = Shop::Lang()->get('mandatoryFieldNotification', 'errorMessages');
+                $ioResponse->assignVar('response', $response);
+
+                return $ioResponse;
+            }
+
+            $RMAService = new RMAService();
+            $customerID = Frontend::getCustomer()->getID();
+            if ($customerID <= 0) {
+                $response->result = false;
+                $response->msg    = Shop::Lang()->get('rma_login', 'rma');
+                $ioResponse->assignVar('response', $response);
+
+                return $ioResponse;
+            }
+
+            $data                  = new stdClass();
+            $data->customerID      = $customerID;
+            $data->pickupAddressID = 0;
+            $data->createDate      = date('Y-m-d H:i:s');
+            $rmaTableObject        = (new RMADataTableObject)->hydrateWithObject($data);
+            $rmaID                 = $RMAService->getRepository()->insert($rmaTableObject);
+            if ($rmaID <= 0) {
+                $response->result = false;
+                $response->msg    = Shop::Lang()->get('unknownError', 'messages');
+                $ioResponse->assignVar('response', $response);
+
+                return $ioResponse;
+            }
+            // HIER WEITERMACHEN ...
+            foreach ($param['quantity'] as $key => $quantity) {
+                $data                    = new stdClass();
+                $data->rmaID             = $rmaID;
+                $data->shippingNoteID    = $param['shippingNotePosID'][$key];
+                $data->shippingNotePosID = $param['shippingNotePosID'][$key];
+                $data->productID         = $param['productID'][$key];
+                $data->quantity          = $quantity;
+                $data->reason            = $param['reason'][$key];
+                $data->comment           = $param['comment'][$key];
+                $rmaPosTableObject       = (new RMAPosDataTableObject)->hydrateWithObject($data);
+                $RMAService->getRepository('RMAPosRepository')->insert($rmaPosTableObject);
+            }
+
             $response->result = true;
         }
-
+        // Sektion rma key: rma_info_success
         $ioResponse->assignVar('response', $response);
 
         return $ioResponse;

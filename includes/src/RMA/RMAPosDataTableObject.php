@@ -30,11 +30,6 @@ class RMAPosDataTableObject extends AbstractDataObject implements DataTableObjec
     /**
      * @var int
      */
-    private int $shippingNoteID = 0;
-    
-    /**
-     * @var int
-     */
     private int $shippingNotePosID = 0;
     
     /**
@@ -108,7 +103,6 @@ class RMAPosDataTableObject extends AbstractDataObject implements DataTableObjec
     private array $columnMapping = [
         'id'                  => 'id',
         'rmaID'               => 'rmaID',
-        'shippingNoteID'      => 'shippingNoteID',
         'shippingNotePosID'   => 'shippingNotePosID',
         'orderPosID'          => 'orderPosID',
         'productID'           => 'productID',

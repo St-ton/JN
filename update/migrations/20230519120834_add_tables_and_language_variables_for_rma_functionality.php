@@ -146,8 +146,7 @@ class Migration_20230519120834 extends Migration implements IMigration
             "CREATE TABLE IF NOT EXISTS `rmapos` (
                 `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
                 `rmaID` INT(10) UNSIGNED NOT NULL,
-                `shippingNoteID` INT(10) UNSIGNED NOT NULL,
-                `shippingNotePosID` INT(10) NOT NULL,
+                `shippingNotePosID` INT(10) UNSIGNED NOT NULL,
                 `orderPosID` INT(10) UNSIGNED NOT NULL,
                 `productID` INT(10) UNSIGNED NOT NULL,
                 `historyID` INT(10) UNSIGNED,
@@ -164,7 +163,6 @@ class Migration_20230519120834 extends Migration implements IMigration
                 `createDate` DATETIME NOT NULL,
                 PRIMARY KEY (`id`),
                 INDEX (`rmaID`),
-                INDEX (`shippingNoteID`),
                 UNIQUE INDEX (`shippingNotePosID`),
                 INDEX (`orderPosID`),
                 INDEX (`productID`),
@@ -174,8 +172,8 @@ class Migration_20230519120834 extends Migration implements IMigration
                         REFERENCES `rma`(`id`)
                         ON DELETE CASCADE
                         ON UPDATE CASCADE,
-                CONSTRAINT `fk_rmapos_shippingNoteID`
-                    FOREIGN KEY (`shippingNoteID`)
+                CONSTRAINT `fk_rmapos_shippingNotePosID`
+                    FOREIGN KEY (`shippingNotePosID`)
                         REFERENCES `tlieferscheinpos`(`kLieferscheinPos`)
                         ON DELETE CASCADE
                         ON UPDATE CASCADE
@@ -308,9 +306,9 @@ class Migration_20230519120834 extends Migration implements IMigration
      */
     public function down(): void
     {
-        $this->execute('DROP TABLE IF EXISTS rmapos');
-        $this->execute('DROP TABLE IF EXISTS rmahistory');
         $this->execute('DROP TABLE IF EXISTS pickupaddress');
+        $this->execute('DROP TABLE IF EXISTS rmahistory');
+        $this->execute('DROP TABLE IF EXISTS rmapos');
         $this->execute('DROP TABLE IF EXISTS rmareasonslang');
         $this->execute('DROP TABLE IF EXISTS rmareasons');
         $this->execute('DROP TABLE IF EXISTS rma');

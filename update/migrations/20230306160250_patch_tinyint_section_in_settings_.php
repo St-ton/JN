@@ -18,7 +18,7 @@ class Migration_20230306160250 extends Migration implements IMigration
     protected $description = 'Patch tinyint section in settings.';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -66,7 +66,7 @@ class Migration_20230306160250 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

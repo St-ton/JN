@@ -21,7 +21,7 @@ class Releases
     private ?Release $available = null;
 
     /**
-     * Link constructor.
+     * Releases constructor.
      * @param stdClass|null $json
      */
     public function __construct(?stdClass $json = null)

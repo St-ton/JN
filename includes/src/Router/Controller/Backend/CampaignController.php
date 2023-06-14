@@ -146,6 +146,12 @@ class CampaignController extends AbstractBackendController
             ->getResponse('kampagne.tpl');
     }
 
+    /**
+     * @param string $step
+     * @param int    $campaignID
+     * @param int    $definitionID
+     * @return void
+     */
     private function handleStep(string $step, int $campaignID, int $definitionID): void
     {
         if ($step === 'kampagne_uebersicht') {
@@ -1214,14 +1220,14 @@ class CampaignController extends AbstractBackendController
                     $timeSpan['cDatum'][]     = \date('Y', $nTMPStamp);
                     $timeSpan['cDatumFull'][] = \date('Y', $nTMPStamp);
                     $nDiff                    = \mktime(
-                            0,
-                            0,
-                            0,
-                            (int)\date('m', $nTMPStamp),
-                            (int)\date('d', $nTMPStamp),
-                            (int)\date('Y', $nTMPStamp) + 1
-                        ) - $nTMPStamp;
-                    $nTMPStamp                += $nDiff;
+                        0,
+                        0,
+                        0,
+                        (int)\date('m', $nTMPStamp),
+                        (int)\date('d', $nTMPStamp),
+                        (int)\date('Y', $nTMPStamp) + 1
+                    ) - $nTMPStamp;
+                    $nTMPStamp               += $nDiff;
                 }
                 break;
             case 2:    // Monat
@@ -1367,14 +1373,14 @@ class CampaignController extends AbstractBackendController
         if (\mb_strlen($stamp) === 0 || !\in_array($direction, [1, -1], true) || !\in_array($view, [1, 2, 3], true)) {
             return $stamp;
         }
-
         $interval = match ($view) {
             1       => 'month',
             2       => 'week',
             default => 'day',
         };
-        $now      = \date_create();
-        $newDate  = \date_create($stamp)->modify(($direction === 1 ? '+' : '-') . '1 ' . $interval);
+
+        $now     = \date_create();
+        $newDate = \date_create($stamp)->modify(($direction === 1 ? '+' : '-') . '1 ' . $interval);
 
         return $newDate > $now
             ? $now->format('Y-m-d')
@@ -1546,7 +1552,6 @@ class CampaignController extends AbstractBackendController
                     . '-' . Request::postInt('cToDay');
             }
         }
-
         $this->checkGesamtStatZeitParam();
     }
 

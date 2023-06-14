@@ -10,12 +10,6 @@ use JTLShop\SemVer\Version;
  */
 abstract class ReferencedItem implements ReferencedItemInterface
 {
-    public const PHP_VERSION_OK = 0;
-
-    public const PHP_VERSION_LOW = -1;
-
-    public const PHP_VERSION_HIGH = 1;
-
     /**
      * @var string
      */
@@ -45,11 +39,6 @@ abstract class ReferencedItem implements ReferencedItemInterface
      * @var bool
      */
     private bool $canBeUpdated = true;
-
-    /**
-     * @var int - 0: OK, -1: too low, 1: too high
-     */
-    private int $phpVersionOK = self::PHP_VERSION_OK;
 
     /**
      * @var bool
@@ -171,7 +160,7 @@ abstract class ReferencedItem implements ReferencedItemInterface
      */
     public function canBeUpdated(): bool
     {
-        return $this->canBeUpdated && $this->getPhpVersionOK() === self::PHP_VERSION_OK;
+        return $this->canBeUpdated;
     }
 
     /**
@@ -263,22 +252,6 @@ abstract class ReferencedItem implements ReferencedItemInterface
     }
 
     /**
-     * @return int
-     */
-    public function getPhpVersionOK(): int
-    {
-        return $this->phpVersionOK;
-    }
-
-    /**
-     * @param int $phpVersionOK
-     */
-    public function setPhpVersionOK(int $phpVersionOK): void
-    {
-        $this->phpVersionOK = $phpVersionOK;
-    }
-
-    /**
      * @return bool
      */
     public function isShopVersionOK(): bool
@@ -292,19 +265,6 @@ abstract class ReferencedItem implements ReferencedItemInterface
     public function setShopVersionOK(bool $shopVersionOK): void
     {
         $this->shopVersionOK = $shopVersionOK;
-    }
-
-    /**
-     * @return Version
-     */
-    public function getCurrentPhpVersion(): Version
-    {
-        $php     = Version::parse(\PHP_VERSION);
-        $version = new Version();
-        $version->setMajor($php->getMajor());
-        $version->setMinor($php->getMinor());
-
-        return $version;
     }
 
     /**

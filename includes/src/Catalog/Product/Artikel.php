@@ -3118,7 +3118,7 @@ class Artikel implements RoutableInterface
     private function getLocalizationSQL(int $productID): SqlObject
     {
         $lang = new SqlObject();
-        if ($this->kSprache > 0 && !LanguageHelper::isDefaultLanguageActive()) {
+        if ($this->kSprache > 0 && !LanguageHelper::isDefaultLanguageActive(false, $this->kSprache)) {
             $lang->setSelect('tartikelsprache.cName AS cName_spr, tartikelsprache.cBeschreibung AS cBeschreibung_spr,
                               tartikelsprache.cKurzBeschreibung AS cKurzBeschreibung_spr, ');
             $lang->setJoin(' LEFT JOIN tartikelsprache

@@ -7,6 +7,8 @@ use JTL\Filter\FilterInterface;
 use JTL\Filter\Join;
 use JTL\Filter\ProductFilter;
 use JTL\MagicCompatibilityTrait;
+use JTL\Router\RoutableTrait;
+use JTL\Router\Router;
 use JTL\Session\Frontend;
 use JTL\Shop;
 
@@ -17,11 +19,12 @@ use JTL\Shop;
 class BaseSearchSpecial extends AbstractFilter
 {
     use MagicCompatibilityTrait;
+    use RoutableTrait;
 
     /**
      * @var array
      */
-    public static $mapping = [
+    public static array $mapping = [
         'kKey' => 'ValueCompat'
     ];
 
@@ -33,6 +36,7 @@ class BaseSearchSpecial extends AbstractFilter
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
+        $this->setRouteType(Router::TYPE_SEARCH_SPECIAL);
         $this->setIsCustom(false)
              ->setUrlParam('q')
              ->setUrlParamSEO(null);
@@ -62,13 +66,18 @@ class BaseSearchSpecial extends AbstractFilter
             'kSprache'
         );
         foreach ($languages as $language) {
-            $this->cSeo[$language->kSprache] = '';
+            $langID              = $language->kSprache;
+            $this->cSeo[$langID] = '';
             foreach ($seoData as $seo) {
                 $seo->kSprache = (int)$seo->kSprache;
-                if ($language->kSprache === $seo->kSprache) {
-                    $this->cSeo[$language->kSprache] = $seo->cSeo;
+                if ($langID === $seo->kSprache) {
+                    $this->slugs[$langID] = $seo->cSeo;
                 }
             }
+        }
+        $this->createBySlug();
+        foreach ($this->getURLPaths() as $langID => $slug) {
+            $this->cSeo[$langID] = \ltrim($slug, '/');
         }
         switch ($this->getValue()) {
             case \SEARCHSPECIALS_BESTSELLER:
@@ -91,12 +100,24 @@ class BaseSearchSpecial extends AbstractFilter
                 break;
             default:
                 // invalid search special ID
-                Shop::$is404        = true;
-                Shop::$kSuchspecial = 0;
+                Shop::$is404                      = true;
+                Shop::$kSuchspecial               = 0;
+                Shop::getState()->is404           = true;
+                Shop::getState()->searchSpecialID = 0;
                 break;
         }
 
         return $this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getRoute(array $additional): ?string
+    {
+        $this->createBySlug(null, $additional);
+
+        return \ltrim($this->getURLPath($this->getLanguageID()), '/');
     }
 
     /**
@@ -114,11 +135,7 @@ class BaseSearchSpecial extends AbstractFilter
     {
         switch ($this->value) {
             case \SEARCHSPECIALS_BESTSELLER:
-                $count = (($min = $this->getConfig('global')['global_bestseller_minanzahl']) > 0)
-                    ? (int)$min
-                    : 100;
-
-                return 'ROUND(tbestseller.fAnzahl) >= ' . $count;
+                return 'tbestseller.isBestseller = 1';
 
             case \SEARCHSPECIALS_SPECIALOFFERS:
                 $tasp = 'tartikelsonderpreis';
@@ -170,41 +187,31 @@ class BaseSearchSpecial extends AbstractFilter
      */
     public function getSQLJoin()
     {
-        switch ($this->value) {
-            case \SEARCHSPECIALS_BESTSELLER:
-                return (new Join())
+        return match ($this->value) {
+            \SEARCHSPECIALS_BESTSELLER => (new Join())
+                ->setType('JOIN')
+                ->setTable('tbestseller')
+                ->setOn('tbestseller.kArtikel = tartikel.kArtikel')
+                ->setComment('bestseller JOIN from ' . __METHOD__)
+                ->setOrigin(__CLASS__),
+            \SEARCHSPECIALS_SPECIALOFFERS => $this->productFilter->hasPriceRangeFilter()
+                ? []
+                : (new Join())
                     ->setType('JOIN')
-                    ->setTable('tbestseller')
-                    ->setOn('tbestseller.kArtikel = tartikel.kArtikel')
-                    ->setComment('bestseller JOIN from ' . __METHOD__)
-                    ->setOrigin(__CLASS__);
-
-            case \SEARCHSPECIALS_SPECIALOFFERS:
-                return $this->productFilter->hasPriceRangeFilter()
-                    ? []
-                    : (new Join())
-                        ->setType('JOIN')
-                        ->setTable('tartikelsonderpreis AS tasp')
-                        ->setOn('tasp.kArtikel = tartikel.kArtikel JOIN tsonderpreise AS tsp 
+                    ->setTable('tartikelsonderpreis AS tasp')
+                    ->setOn('tasp.kArtikel = tartikel.kArtikel JOIN tsonderpreise AS tsp 
                                     ON tsp.kArtikelSonderpreis = tasp.kArtikelSonderpreis')
-                        ->setComment('special offers JOIN from ' . __METHOD__)
-                        ->setOrigin(__CLASS__);
-
-            case \SEARCHSPECIALS_TOPREVIEWS:
-                return $this->productFilter->hasRatingFilter()
-                    ? []
-                    : (new Join())
-                        ->setType('JOIN')
-                        ->setTable('tartikelext AS taex ')
-                        ->setOn('taex.kArtikel = tartikel.kArtikel')
-                        ->setComment('top reviews JOIN from ' . __METHOD__)
-                        ->setOrigin(__CLASS__);
-
-            case \SEARCHSPECIALS_NEWPRODUCTS:
-            case \SEARCHSPECIALS_TOPOFFERS:
-            case \SEARCHSPECIALS_UPCOMINGPRODUCTS:
-            default:
-                return [];
-        }
+                    ->setComment('special offers JOIN from ' . __METHOD__)
+                    ->setOrigin(__CLASS__),
+            \SEARCHSPECIALS_TOPREVIEWS => $this->productFilter->hasRatingFilter()
+                ? []
+                : (new Join())
+                    ->setType('JOIN')
+                    ->setTable('tartikelext AS taex ')
+                    ->setOn('taex.kArtikel = tartikel.kArtikel')
+                    ->setComment('top reviews JOIN from ' . __METHOD__)
+                    ->setOrigin(__CLASS__),
+            default => [],
+        };
     }
 }

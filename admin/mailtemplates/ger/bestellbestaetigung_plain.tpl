@@ -10,7 +10,6 @@ vielen Dank für Ihre Bestellung bei {$Einstellungen.global.global_shopname}.
         {$cArtikelname}
 
     {/foreach}
-
 {/if}
 Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} umfasst folgende Positionen:
 
@@ -35,6 +34,16 @@ Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} umfasst folgende Pos
 {/if}
 
 Gesamtsumme: {$Bestellung->WarensummeLocalized[0]}
+
+{if isset($payments) && $payments|@count > 0}
+Zahlungen erhalten:
+{foreach $payments as $incommingPayment}
+    {foreach $incommingPayment as $payment}
+    {$payment->cZahlungsanbieter}: {$payment->paymentLocalization}
+    {/foreach}
+{/foreach}
+Offener Betrag: {if isset($totalLocalized)}{$totalLocalized}{else}$Bestellung->WarensummeLocalized[0]}{/if}
+{/if}
 
 Lieferzeit: {if isset($Bestellung->cEstimatedDeliveryEx)}{$Bestellung->cEstimatedDeliveryEx}{else}{$Bestellung->cEstimatedDelivery}{/if}
 
@@ -85,7 +94,7 @@ Sie haben folgende Zahlungsart gewählt: {$Bestellung->cZahlungsartName}
     BIC:{$Firma->cBIC}
 
     Verwendungszweck:{$Bestellung->cBestellNr}
-    Gesamtsumme:{$Bestellung->WarensummeLocalized[0]}
+    Überweisungsbetrag:{if isset($totalLocalized)}{$totalLocalized}{else}{$Bestellung->WarensummeLocalized[0]}{/if}
 
 {elseif $Bestellung->Zahlungsart->cModulId === 'za_nachnahme_jtl'}
 {elseif $Bestellung->Zahlungsart->cModulId === 'za_rechnung_jtl'}

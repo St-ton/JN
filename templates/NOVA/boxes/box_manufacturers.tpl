@@ -26,8 +26,8 @@
                         {block name='boxes-box-manufacturers-dropdown'}
                             {dropdown class="w-100-util" variant="secondary btn-block" text="{lang key='selectManufacturer'}<span class='caret'></span>"}
                                 {foreach $oBox->getManufacturers() as $manufacturer}
-                                    {dropdownitem href=$manufacturer->cURLFull}
-                                        {$manufacturer->cName|escape:'html'}
+                                    {dropdownitem href=$manufacturer->getURL()}
+                                        {$manufacturer->getName()|escape:'html'}
                                     {/dropdownitem}
                                 {/foreach}
                             {/dropdown}
@@ -36,8 +36,8 @@
                         {block name='boxes-box-manufacturers-link'}
                             {nav vertical=true}
                                 {foreach $oBox->getManufacturers() as $manufacturer}
-                                    {navitem href=$manufacturer->cURLFull title=$manufacturer->cName|escape:'html'}
-                                        {$manufacturer->cName|escape:'html'}
+                                    {navitem href=$manufacturer->getURL() title=$manufacturer->getName()|escape:'html'}
+                                        {$manufacturer->getName()|escape:'html'}
                                     {/navitem}
                                 {/foreach}
                             {/nav}

@@ -1,16 +1,15 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Crawler\Controller;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Shop;
 
-define('JTL_INCLUDE_ONLY_DB', 1);
+const JTL_INCLUDE_ONLY_DB = 1;
 require_once __DIR__ . '/globalinclude.php';
 
-$cDatei = getRequestFile(Request::getVar('datei', ''));
-
-if ($cDatei === null) {
+$fileName = getRequestFile(Request::getVar('datei', ''));
+if ($fileName === null) {
     http_response_code(503);
     header('Retry-After: 86400');
     exit;
@@ -27,7 +26,7 @@ $floodProtection = Shop::Container()->getDB()->getAffectedRows(
 if ($floodProtection === 0) {
     // Track request
     $sitemapTracker               = new stdClass();
-    $sitemapTracker->cSitemap     = basename($cDatei);
+    $sitemapTracker->cSitemap     = basename($fileName);
     $sitemapTracker->kBesucherBot = getRequestBot();
     $sitemapTracker->cIP          = $ip;
     $sitemapTracker->cUserAgent   = Text::filterXSS($_SERVER['HTTP_USER_AGENT'] ?? '');
@@ -36,7 +35,7 @@ if ($floodProtection === 0) {
     Shop::Container()->getDB()->insert('tsitemaptracker', $sitemapTracker);
 }
 
-sendRequestFile($cDatei);
+sendRequestFile($fileName);
 
 /**
  * @return int
@@ -53,7 +52,7 @@ function getRequestBot(): int
  * @param string $file
  * @return null|string
  */
-function getRequestFile($file)
+function getRequestFile(string $file): ?string
 {
     $pathInfo = pathinfo($file);
 
@@ -63,7 +62,6 @@ function getRequestFile($file)
     if ($file !== $pathInfo['basename']) {
         return null;
     }
-    $file = $pathInfo['basename'];
 
     return file_exists(PFAD_ROOT . PFAD_EXPORT . $file)
         ? $file
@@ -73,28 +71,21 @@ function getRequestFile($file)
 /**
  * @param string $file
  */
-function sendRequestFile($file)
+function sendRequestFile(string $file): void
 {
     $file         = basename($file);
     $absoluteFile = PFAD_ROOT . PFAD_EXPORT . basename($file);
     $extension    = pathinfo($absoluteFile, PATHINFO_EXTENSION);
-
-    switch (mb_convert_case($extension, MB_CASE_LOWER)) {
-        case 'xml':
-            $contentType = 'application/xml';
-            break;
-        case 'txt':
-            $contentType = 'text/plain';
-            break;
-        default:
-            $contentType = 'application/octet-stream';
-            break;
-    }
+    $contentType  = match (mb_convert_case($extension, MB_CASE_LOWER)) {
+        'xml'   => 'application/xml',
+        'txt'   => 'text/plain',
+        default => 'application/octet-stream',
+    };
 
     if (file_exists($absoluteFile)) {
         header('Content-Type: ' . $contentType);
         header('Content-Length: ' . filesize($absoluteFile));
-        header('Last-Modified: ' . gmdate('D, d M Y H:i:s', filemtime($absoluteFile)) . ' GMT');
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s', filemtime($absoluteFile) ?: null) . ' GMT');
 
         if ($contentType === 'application/octet-stream') {
             header('Content-Description: File Transfer');

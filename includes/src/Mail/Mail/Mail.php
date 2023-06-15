@@ -22,7 +22,7 @@ class Mail implements MailInterface
     /**
      * @var int
      */
-    private $customerGroupID = 0;
+    private int $customerGroupID = 0;
 
     /**
      * @var LanguageModel
@@ -32,12 +32,12 @@ class Mail implements MailInterface
     /**
      * @var string
      */
-    private $fromMail;
+    private string $fromMail;
 
     /**
      * @var string
      */
-    private $fromName;
+    private string $fromName;
 
     /**
      * @var string
@@ -67,32 +67,32 @@ class Mail implements MailInterface
     /**
      * @var string
      */
-    private $bodyHTML = '';
+    private string $bodyHTML = '';
 
     /**
      * @var string
      */
-    private $bodyText = '';
+    private string $bodyText = '';
 
     /**
      * @var Attachment[]
      */
-    private $attachments = [];
+    private array $attachments = [];
 
     /**
      * @var Attachment[]
      */
-    private $pdfAttachments = [];
+    private array $pdfAttachments = [];
 
     /**
      * @var string
      */
-    private $error = '';
+    private string $error = '';
 
     /**
      * @var array
      */
-    private $copyRecipients = [];
+    private array $copyRecipients = [];
 
     /**
      * @var TemplateInterface|null
@@ -134,7 +134,7 @@ class Mail implements MailInterface
         $this->setData($data);
         $this->setTemplate($template);
         $this->language        = $language ?? $this->detectLanguage();
-        $this->customerGroupID = Frontend::getCustomer()->kKundengruppe ?? Frontend::getCustomerGroup()->getID();
+        $this->customerGroupID = Frontend::getCustomer()->getGroupID();
         $template->load($this->language->getId(), $this->customerGroupID);
         $model = $template->getModel();
         if ($model === null) {

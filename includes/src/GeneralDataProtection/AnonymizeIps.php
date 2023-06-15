@@ -26,7 +26,7 @@ class AnonymizeIps extends Method implements MethodInterface
     /**
      * @var array
      */
-    private $tablesToUpdate = [
+    private array $tablesToUpdate = [
         'tbestellung'                      => [
             'ColKey'     => 'kBestellung',
             'ColIp'      => 'cIP',
@@ -90,11 +90,19 @@ class AnonymizeIps extends Method implements MethodInterface
     ];
 
     /**
+     * max repetitions of this task
+     *
+     * @var int
+     */
+    public $taskRepetitions = 0;
+
+    /**
      * run all anonymize processes
      */
     public function execute(): void
     {
         $this->anonymizeAllIPs();
+        $this->isFinished = ($this->workSum < $this->workLimit);
     }
 
     /**
@@ -133,8 +141,9 @@ class AnonymizeIps extends Method implements MethodInterface
             foreach ($this->db->getObjects($sql) as $row) {
                 try {
                     $row->cIP = $anonymizer->setIp($row->cIP)->anonymize();
+                    $this->workSum++;
                 } catch (\Exception $e) {
-                    ($this->logger === null) ?: $this->logger->log(\JTLLOG_LEVEL_WARNING, $e->getMessage());
+                    ($this->logger === null) ?: $this->logger->warning($e->getMessage());
                 }
                 $szKeyColName = $colData['ColKey'];
                 $this->db->update(

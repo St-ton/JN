@@ -3,7 +3,7 @@
 <div id="content">
     <div class="card">
         <div class="card-body">
-            {include file='tpl_inc/language_switcher.tpl' action=$adminURL|cat:'/suchspecials.php'}
+            {include file='tpl_inc/language_switcher.tpl' action=$adminURL|cat:$route}
         </div>
     </div>
     <div class="tabs">
@@ -23,7 +23,7 @@
         </nav>
         <div class="tab-content">
             <div id="suchspecials" class="tab-pane fade {if $cTab === '' || $cTab === 'suchspecials'} active show{/if}">
-                <form name="suchspecials" method="post" action="{$adminURL}/suchspecials.php">
+                <form name="suchspecials" method="post" action="{$adminURL}{$route}">
                     {$jtl_token}
                     <div id="settings" class="settings">
                         <div class="subheading1">{__('suchspecials')}</div>
@@ -84,7 +84,7 @@
                     file='tpl_inc/config_section.tpl'
                     name='einstellen'
                     a='saveSettings'
-                    action=$adminURL|cat:'/suchspecials.php'
+                    action=$adminURL|cat:$route
                     buttonCaption=__('saveWithIcon')
                     title=__('settings')
                     tab='einstellungen'

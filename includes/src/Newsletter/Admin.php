@@ -3,7 +3,6 @@
 namespace JTL\Newsletter;
 
 use DateTime;
-use JTL\Alert\Alert;
 use JTL\Backend\Revision;
 use JTL\Campaign;
 use JTL\DB\DbInterface;
@@ -25,25 +24,15 @@ use stdClass;
  */
 final class Admin
 {
-    /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var AlertServiceInterface
-     */
-    private AlertServiceInterface $alertService;
+    private int $currentId = 0;
 
     /**
      * Admin constructor.
      * @param DbInterface $db
      * @param AlertServiceInterface $alertService
      */
-    public function __construct(DbInterface $db, AlertServiceInterface $alertService)
+    public function __construct(private DbInterface $db, private AlertServiceInterface $alertService)
     {
-        $this->db           = $db;
-        $this->alertService = $alertService;
     }
 
     /**
@@ -98,16 +87,12 @@ final class Admin
      */
     public function mapFileType(string $type): string
     {
-        switch ($type) {
-            case 'image/gif':
-                return '.gif';
-            case 'image/png':
-                return '.png';
-            case 'image/bmp':
-                return '.bmp';
-            default:
-                return '.jpg';
-        }
+        return match ($type) {
+            'image/gif' => '.gif',
+            'image/png' => '.png',
+            'image/bmp' => '.bmp',
+            default     => '.jpg',
+        };
     }
 
     /**
@@ -482,6 +467,8 @@ final class Admin
             }
         }
 
+        $this->currentId = $templateID;
+
         return $checks;
     }
 
@@ -561,20 +548,19 @@ final class Admin
                 $upd->cInhaltText   = $tpl->cInhaltText;
                 $upd->dStartZeit    = $tpl->dStartZeit;
                 $this->db->update('tnewslettervorlage', 'kNewsletterVorlage', $templateID, $upd);
-                $alertHelper->addAlert(
-                    Alert::TYPE_SUCCESS,
+                $alertHelper->addSuccess(
                     \sprintf(\__('successNewsletterTemplateEdit'), $tpl->cName),
                     'successNewsletterTemplateEdit'
                 );
             } else {
                 $templateID = $this->db->insert('tnewslettervorlage', $tpl);
-                $alertHelper->addAlert(
-                    Alert::TYPE_SUCCESS,
+                $alertHelper->addSuccess(
                     \sprintf(\__('successNewsletterTemplateSave'), $tpl->cName),
                     'successNewsletterTemplateSave'
                 );
             }
             $tpl->kNewsletterVorlage = $templateID;
+            $this->currentId         = $templateID;
 
             return $tpl;
         }
@@ -774,7 +760,7 @@ final class Admin
         try {
             (new Optin(OptinNewsletter::class))
                 ->bulkDeleteOptins($recipients, 'cOptCode');
-        } catch (EmptyResultSetException $e) {
+        } catch (EmptyResultSetException) {
             // suppress exception, because an optin implementation class is not needed here
         }
 
@@ -806,31 +792,41 @@ final class Admin
     public function getSubscribers(string $limitSQL, SqlObject $searchSQL): array
     {
         return $this->db->getCollection(
-            "SELECT tnewsletterempfaenger.*,
-                DATE_FORMAT(tnewsletterempfaenger.dEingetragen, '%d.%m.%Y %H:%i') AS dEingetragen_de,
-                DATE_FORMAT(tnewsletterempfaenger.dLetzterNewsletter, '%d.%m.%Y %H:%i') AS dLetzterNewsletter_de,
-                tkunde.kKundengruppe, tkundengruppe.cName, tnewsletterempfaengerhistory.cOptIp,
-                IF (tnewsletterempfaengerhistory.dOptCode != '0000-00-00 00:00:00'
-                    AND tnewsletterempfaengerhistory.dOptCode IS NOT NULL,
-                    DATE_FORMAT(tnewsletterempfaengerhistory.dOptCode, '%d.%m.%Y %H:%i'),
-                    DATE_FORMAT(toptin.dActivated, '%d.%m.%Y %H:%i')) AS optInDate
-                FROM tnewsletterempfaenger
-                LEFT JOIN tkunde
-                    ON tkunde.kKunde = tnewsletterempfaenger.kKunde
-                LEFT JOIN tkundengruppe
-                    ON tkundengruppe.kKundengruppe = tkunde.kKundengruppe
-                LEFT JOIN tnewsletterempfaengerhistory
-                    ON tnewsletterempfaengerhistory.cEmail = tnewsletterempfaenger.cEmail
-                      AND tnewsletterempfaengerhistory.cAktion = 'Eingetragen'
-                LEFT JOIN toptin
-                    ON toptin.cMail = tnewsletterempfaenger.cEmail
-                WHERE tnewsletterempfaenger.kSprache = :lid " . $searchSQL->getWhere() . '
-                ORDER BY tnewsletterempfaenger.dEingetragen DESC' . $limitSQL,
+            "SELECT
+                nle.*,
+                DATE_FORMAT(nle.dEingetragen, '%d.%m.%Y %H:%i') AS dEingetragen_de,
+                DATE_FORMAT(nle.dLetzterNewsletter, '%d.%m.%Y %H:%i') AS dLetzterNewsletter_de,
+                k.kKundengruppe,
+                kg.cName,
+                nleh.cOptIp,
+                IF (nleh.dOptCode != '0000-00-00 00:00:00' AND nleh.dOptCode IS NOT NULL,
+                    DATE_FORMAT(nleh.dOptCode, '%d.%m.%Y %H:%i'),
+                    DATE_FORMAT(op.dActivated, '%d.%m.%Y %H:%i')
+                ) AS optInDate
+            FROM
+                tnewsletterempfaenger nle
+                LEFT JOIN tkunde k
+                    ON k.kKunde = nle.kKunde
+                LEFT JOIN tkundengruppe kg
+                    ON kg.kKundengruppe = k.kKundengruppe
+                LEFT JOIN toptin op
+                    ON op.cMail = nle.cEmail
+                        AND op.kOptinClass like '%Newsletter'
+                LEFT JOIN tnewsletterempfaengerhistory nleh
+                    ON nleh.cEmail = nle.cEmail
+                        AND nleh.cAktion = 'Eingetragen'
+                        AND nleh.dEingetragen = (
+                            SELECT MAX(dEingetragen) FROM tnewsletterempfaengerhistory WHERE cEmail = nle.cEmail
+                        )
+            WHERE
+                nle.kSprache = :lid " . $searchSQL->getWhere() . '
+            ORDER BY
+                 nle.dEingetragen DESC ' . $limitSQL,
             \array_merge(
                 ['lid' => (int)($_SESSION['editLanguageID'] ?? $_SESSION['kSprache'])],
                 $searchSQL->getParams()
             )
-        )->map(static function (stdClass $item) {
+        )->map(static function (stdClass $item): stdClass {
             $item->cVorname  = Text::filterXSS($item->cVorname);
             $item->cNachname = Text::filterXSS($item->cNachname);
             $item->cEmail    = Text::filterXSS($item->cEmail);
@@ -877,22 +873,14 @@ final class Admin
         $newsletter->kKunde       = 0;
 
         if (empty($newsletter->cEmail)) {
-            $this->alertService->addAlert(Alert::TYPE_ERROR, \__('errorFillEmail'), 'errorFillEmail');
+            $this->alertService->addError(\__('errorFillEmail'), 'errorFillEmail');
         } else {
             $exists = $this->db->select('tnewsletterempfaenger', 'cEmail', $newsletter->cEmail);
             if ($exists) {
-                $this->alertService->addAlert(
-                    Alert::TYPE_ERROR,
-                    \__('errorEmailExists'),
-                    'errorEmailExists'
-                );
+                $this->alertService->addError(\__('errorEmailExists'), 'errorEmailExists');
             } else {
                 $this->db->insert('tnewsletterempfaenger', $newsletter);
-                $this->alertService->addAlert(
-                    Alert::TYPE_SUCCESS,
-                    \__('successNewsletterAboAdd'),
-                    'successNewsletterAboAdd'
-                );
+                $this->alertService->addSuccess(\__('successNewsletterAboAdd'), 'successNewsletterAboAdd');
             }
         }
 
@@ -909,9 +897,9 @@ final class Admin
             $entry = $this->db->getSingleObject(
                 'SELECT c.foreignKeyID AS newsletterID, c.cronID AS cronID, l.cBetreff
                     FROM tcron c
-                    LEFT JOIN tjobqueue j 
+                    LEFT JOIN tjobqueue j
                         ON j.cronID = c.cronID
-                    LEFT JOIN tnewsletter l 
+                    LEFT JOIN tnewsletter l
                         ON c.foreignKeyID = l.kNewsletter
                     WHERE c.cronID = :cronID',
                 ['cronID' => $queueID]
@@ -930,8 +918,7 @@ final class Admin
             }
             $msg .= $entry->cBetreff . '", ';
         }
-        $this->alertService->addAlert(
-            Alert::TYPE_SUCCESS,
+        $this->alertService->addSuccess(
             \sprintf(\__('successNewsletterQueueDelete'), \mb_substr($msg, 0, -2)),
             'successDeleteQueue'
         );
@@ -947,8 +934,7 @@ final class Admin
             $this->db->delete('tnewsletterhistory', 'kNewsletterHistory', (int)$historyID);
             $noticeTMP .= $historyID . ', ';
         }
-        $this->alertService->addAlert(
-            Alert::TYPE_SUCCESS,
+        $this->alertService->addSuccess(
             \sprintf(\__('successNewsletterHistoryDelete'), \mb_substr($noticeTMP, 0, -2)),
             'successDeleteHistory'
         );
@@ -986,8 +972,7 @@ final class Admin
             $step = 'uebersicht';
             $smarty->assign('cTab', 'newslettervorlagen');
             if ($templateID > 0) {
-                $this->alertService->addAlert(
-                    Alert::TYPE_SUCCESS,
+                $this->alertService->addSuccess(
                     \sprintf(
                         \__('successNewsletterTemplateEdit'),
                         $filteredPost['cName']
@@ -995,8 +980,7 @@ final class Admin
                     'successNewsletterTemplateEdit'
                 );
             } else {
-                $this->alertService->addAlert(
-                    Alert::TYPE_SUCCESS,
+                $this->alertService->addSuccess(
                     \sprintf(
                         \__('successNewsletterTemplateSave'),
                         $filteredPost['cName']
@@ -1021,6 +1005,7 @@ final class Admin
         if ($tpl === null) {
             return $step;
         }
+        $tpl->oZeit   = $this->getDateData($tpl->dStartZeit);
         $productData  = $this->getProductData($tpl->cArtikel);
         $cgroup       = $this->getCustomerGroupData($tpl->cKundengruppe);
         $revisionData = [];
@@ -1055,7 +1040,7 @@ final class Admin
             return false;
         }
         if ($checks === false) {
-            $this->alertService->addAlert(Alert::TYPE_ERROR, \__('newsletterCronjobNotFound'), 'errorNewsletter');
+            $this->alertService->addError(\__('newsletterCronjobNotFound'), 'errorNewsletter');
 
             return false;
         }
@@ -1077,6 +1062,8 @@ final class Admin
         // create a crontab entry
         $dao = new NewsletterCronDAO();
         $dao->setForeignKeyID($newsletter->kNewsletter);
+        $dao->setStartDate($newsletter->dStartZeit);
+        $dao->setStartTime(\explode(' ', $newsletter->dStartZeit)[1]);
         $this->db->insert('tcron', $dao->getData());
         // Baue Arrays mit kKeys
         $productIDs      = $instance->getKeys($checks->cArtikel, true);
@@ -1163,8 +1150,7 @@ final class Admin
         $hist->dStart           = $checks->dStartZeit;
         $this->db->insert('tnewsletterhistory', $hist); // --TODO-- why already history here ?!?!
 
-        $this->alertService->addAlert(
-            Alert::TYPE_SUCCESS,
+        $this->alertService->addSuccess(
             \sprintf(\__('successNewsletterPrepared'), $newsletter->cName),
             'successNewsletterPrepared'
         );
@@ -1223,10 +1209,9 @@ final class Admin
             );
         }
         if ($result !== true) {
-            $this->alertService->addAlert(Alert::TYPE_ERROR, $result, 'errorNewsletter');
+            $this->alertService->addError($result, 'errorNewsletter');
         } else {
-            $this->alertService->addAlert(
-                Alert::TYPE_SUCCESS,
+            $this->alertService->addSuccess(
                 \sprintf(\__('successTestEmailTo'), $checks->cName, $mailRecipient->cEmail),
                 'successNewsletterPrepared'
             );
@@ -1242,11 +1227,7 @@ final class Admin
     public function deleteTemplates(array $templateIDs): bool
     {
         if (\count($templateIDs) === 0) {
-            $this->alertService->addAlert(
-                Alert::TYPE_ERROR,
-                \__('errorAtLeastOneNewsletter'),
-                'errorAtLeastOneNewsletter'
-            );
+            $this->alertService->addError(\__('errorAtLeastOneNewsletter'), 'errorAtLeastOneNewsletter');
 
             return false;
         }
@@ -1278,12 +1259,16 @@ final class Admin
                 );
             }
         }
-        $this->alertService->addAlert(
-            Alert::TYPE_SUCCESS,
-            \__('successNewsletterTemplateDelete'),
-            'successNewsletterTemplateDelete'
-        );
+        $this->alertService->addSuccess(\__('successNewsletterTemplateDelete'), 'successNewsletterTemplateDelete');
 
         return true;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCurrentId(): int
+    {
+        return $this->currentId;
     }
 }

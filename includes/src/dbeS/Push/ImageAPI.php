@@ -33,7 +33,7 @@ final class ImageAPI extends AbstractPush
     {
         try {
             $this->getImageType();
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             return;
         }
         $class = Media::getClass($this->imageType);
@@ -49,7 +49,7 @@ final class ImageAPI extends AbstractPush
             'id'         => $this->imageID,
             'size'       => $this->getSizeByID(Request::verifyGPCDataInt('s')),
             'number'     => $imageNo,
-            'ext'        => \pathinfo($path)['extension'],
+            'ext'        => \pathinfo($path, \PATHINFO_EXTENSION),
             'sourcePath' => $path
         ]);
         $names = $instance->getImageNames($req);
@@ -139,25 +139,12 @@ final class ImageAPI extends AbstractPush
      */
     private function getSizeByID(int $size): string
     {
-        switch ($size) {
-            case 1:
-                $res = Image::SIZE_LG;
-                break;
-            case 2:
-                $res = Image::SIZE_MD;
-                break;
-            case 3:
-                $res = Image::SIZE_SM;
-                break;
-            case 4:
-                $res = Image::SIZE_XS;
-                break;
-            case 5:
-            default:
-                $res = Image::SIZE_XL;
-                break;
-        }
-
-        return $res;
+        return match ($size) {
+            1       => Image::SIZE_LG,
+            2       => Image::SIZE_MD,
+            3       => Image::SIZE_SM,
+            4       => Image::SIZE_XS,
+            default => Image::SIZE_XL,
+        };
     }
 }

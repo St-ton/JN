@@ -10,6 +10,7 @@ use JTL\License\Struct\ExpiredExsLicense;
 use JTL\Model\DataModelInterface;
 use JTL\Plugin\InstallCode;
 use JTL\Shop;
+use JTL\Shopsetting;
 use JTL\Template\Admin\Installation\TemplateInstallerFactory;
 use SimpleXMLElement;
 
@@ -19,16 +20,6 @@ use SimpleXMLElement;
  */
 class TemplateService implements TemplateServiceInterface
 {
-    /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private JTLCacheInterface $cache;
-
     /**
      * @var Model|null
      */
@@ -42,21 +33,19 @@ class TemplateService implements TemplateServiceInterface
     /**
      * @var string
      */
-    private string $cacheID = 'active_tpl';
+    private string $cacheID = 'active_tpl_default';
 
     /**
      * TemplateService constructor.
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */
-    public function __construct(DbInterface $db, JTLCacheInterface $cache)
+    public function __construct(private DbInterface $db, private JTLCacheInterface $cache)
     {
-        $this->db    = $db;
-        $this->cache = $cache;
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function setActiveTemplate(string $dir, string $type = 'standard'): bool
     {
@@ -104,7 +93,7 @@ class TemplateService implements TemplateServiceInterface
                 return false;
             }
             while (($obj = \readdir($dh)) !== false) {
-                if (\mb_strpos($obj, '.') === 0) {
+                if (\str_starts_with($obj, '.')) {
                     continue;
                 }
                 if (!\is_dir(\PFAD_ROOT . \PFAD_COMPILEDIR . $obj)) {
@@ -137,15 +126,22 @@ class TemplateService implements TemplateServiceInterface
     public function getActiveTemplate(bool $withLicense = true): Model
     {
         if ($this->activeTemplate === null) {
-            if (($activeTemplate = $this->cache->get($this->cacheID)) === false) {
-                $this->activeTemplate = $this->loadFull(['type' => 'standard'], $withLicense);
-            } else {
-                $this->activeTemplate = $activeTemplate;
-                // cached instance will not have the db instance available
-                $this->activeTemplate->setDB($this->db);
-                $this->activeTemplate->getConfig()->setDB($this->db);
-                $this->loaded = true;
+            $attributes = ['type' => 'standard'];
+            if (isset($_GET['preview']) || Shop::isAdmin()) {
+                $check = $this->db->getSingleObject(
+                    'SELECT cTemplate FROM ttemplate WHERE eTyp = :type',
+                    ['type' => 'test']
+                );
+                if ($check !== null) {
+                    $attributes = ['type' => 'test'];
+                    Shopsetting::getInstance()->overrideSection(\CONF_TEMPLATE, $this->getPreviewTemplateConfig());
+                }
             }
+            \executeHook(\HOOK_TPL_LOAD_PRE, [
+                'attributes' => &$attributes,
+                'service'    => $this
+            ]);
+            $this->activeTemplate = $this->loadFull($attributes, $withLicense);
         }
         $_SESSION['cTemplate'] = $this->activeTemplate->getTemplate();
 
@@ -153,16 +149,48 @@ class TemplateService implements TemplateServiceInterface
     }
 
     /**
+     * @return array
+     */
+    private function getPreviewTemplateConfig(): array
+    {
+        $data     = $this->getDB()->getObjects(
+            "SELECT cSektion AS sec, cWert AS val, cName AS name 
+                FROM ttemplateeinstellungen 
+                WHERE cTemplate = (SELECT cTemplate FROM ttemplate WHERE eTyp = 'test')"
+        );
+        $settings = [];
+        foreach ($data as $setting) {
+            if (!isset($settings[$setting->sec])) {
+                $settings[$setting->sec] = [];
+            }
+            $settings[$setting->sec][$setting->name] = $setting->val;
+        }
+        if (($settings['general']['use_minify'] ?? 'N') === 'static') {
+            $settings['general']['use_minify'] = 'Y';
+        }
+
+        return $settings;
+    }
+
+    /**
      * @inheritDoc
      */
     public function loadFull(array $attributes, bool $withLicense = true): Model
     {
+        $type          = $attributes['type'] ?? 'default';
+        $this->cacheID = 'active_tpl_' . $type;
+        if (($model = $this->cache->get($this->cacheID)) !== false) {
+            $this->loaded = true;
+
+            return $model;
+        }
         try {
             $template = Model::loadByAttributes($attributes, $this->db);
-        } catch (Exception $e) {
+        } catch (Exception) {
             $template = new Model($this->db);
             $template->setTemplate('no-template');
         }
+        $template->setIsPreview(($type === 'test'));
         $reader    = new XMLReader();
         $tplXML    = $reader->getXML($template->getTemplate(), $template->getTemplateType() === 'admin');
         $parentXML = ($tplXML === null || empty($tplXML->Parent)) ? null : $reader->getXML((string)$tplXML->Parent);
@@ -174,10 +202,9 @@ class TemplateService implements TemplateServiceInterface
             return $model;
         }
         $template = $this->mergeWithXML($dir, $tplXML, $template, $parentXML);
-        if ($withLicense === true) {
-            $manager    = new Manager($this->db, $this->cache);
-            $exsLicense = $manager->getLicenseByItemID($template->getTemplate());
-            if ($exsLicense === null && $template->getExsID() !== null) {
+        if ($withLicense === true && $template->getExsID() !== null) {
+            $exsLicense = (new Manager($this->db, $this->cache))->getLicenseByExsID($template->getExsID());
+            if ($exsLicense === null) {
                 $exsLicense = new ExpiredExsLicense();
                 $exsLicense->initFromTemplateData($template);
             }
@@ -215,7 +242,6 @@ class TemplateService implements TemplateServiceInterface
         $template->setDir($dir);
         $template->setAuthor(\trim((string)$xml->Author));
         $template->setUrl(\trim((string)$xml->URL));
-        $template->setVersion(\trim((string)$xml->Version));
         $template->setFileVersion(\trim((string)$xml->Version));
         $template->setShopVersion(\trim((string)$xml->ShopVersion));
         $template->setPreview(\trim((string)$xml->Preview));
@@ -281,5 +307,69 @@ class TemplateService implements TemplateServiceInterface
     public function reset(): void
     {
         $this->activeTemplate = null;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getDB(): DbInterface
+    {
+        return $this->db;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setDB(DbInterface $db): void
+    {
+        $this->db = $db;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getCache(): JTLCacheInterface
+    {
+        return $this->cache;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setCache(JTLCacheInterface $cache): void
+    {
+        $this->cache = $cache;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function isLoaded(): bool
+    {
+        return $this->loaded;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setLoaded(bool $loaded): void
+    {
+        $this->loaded = $loaded;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getCacheID(): string
+    {
+        return $this->cacheID;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setCacheID(string $cacheID): void
+    {
+        $this->cacheID = $cacheID;
     }
 }

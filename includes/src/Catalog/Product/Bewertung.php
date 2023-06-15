@@ -87,20 +87,25 @@ class Bewertung
     {
         $this->oBewertung_arr = [];
         if ($productID > 0 && $languageID > 0) {
-            $langSQL = $allLanguages ? '' : ' AND kSprache = ' . $languageID . ' ';
+            $langSQL = $allLanguages ? '' : ' AND tbewertung.kSprache = ' . $languageID . ' ';
             $data    = Shop::Container()->getDB()->getSingleObject(
-                "SELECT tbewertung.*,
+                "SELECT DISTINCT tbewertung.*,
                         DATE_FORMAT(dDatum, '%d.%m.%Y') AS Datum,
                         DATE_FORMAT(dAntwortDatum, '%d.%m.%Y') AS AntwortDatum,
-                        tbewertunghilfreich.nBewertung AS rated
+                        tbewertunghilfreich.nBewertung AS rated,
+                        IF(tbestellung.kKunde IS NOT NULL, 1, 0) AS wasPurchased
                     FROM tbewertung
                     LEFT JOIN tbewertunghilfreich
                       ON tbewertung.kBewertung = tbewertunghilfreich.kBewertung
                       AND tbewertunghilfreich.kKunde = :customerID
-                    WHERE kArtikel = :pid" .
+                    LEFT JOIN (
+                        tbestellung
+                        INNER JOIN twarenkorbpos ON tbestellung.kWarenkorb = twarenkorbpos.kWarenkorb
+                    ) ON tbestellung.kKunde = tbewertung.kKunde AND twarenkorbpos.kArtikel = tbewertung.kArtikel
+                    WHERE tbewertung.kArtikel = :pid" .
                         $langSQL . '
-                        AND nAktiv = 1
-                    ORDER BY nHilfreich DESC
+                        AND tbewertung.nAktiv = 1
+                    ORDER BY tbewertung.nHilfreich DESC
                     LIMIT 1',
                 ['customerID' => Frontend::getCustomer()->getID(), 'pid' => $productID]
             );
@@ -137,21 +142,14 @@ class Bewertung
      */
     private function getOrderSQL(int $option): string
     {
-        switch ($option) {
-            case 3:
-                return ' dDatum ASC';
-            case 4:
-                return ' nSterne DESC';
-            case 5:
-                return ' nSterne ASC';
-            case 6:
-                return ' nHilfreich DESC';
-            case 7:
-                return ' nHilfreich ASC';
-            case 2:
-            default:
-                return ' dDatum DESC';
-        }
+        return match ($option) {
+            3       => ' tbewertung.dDatum ASC',
+            4       => ' tbewertung.nSterne DESC',
+            5       => ' tbewertung.nSterne ASC',
+            6       => ' tbewertung.nHilfreich DESC',
+            7       => ' tbewertung.nHilfreich ASC',
+            default => ' tbewertung.dDatum DESC',
+        };
     }
 
     /**
@@ -186,13 +184,13 @@ class Bewertung
         \executeHook(\HOOK_BEWERTUNG_CLASS_SWITCH_SORTIERUNG);
 
         $activateSQL = $activate === 'Y'
-            ? ' AND nAktiv = 1'
+            ? ' AND tbewertung.nAktiv = 1'
             : '';
-        $langSQL     = $allLanguages ? '' : ' AND kSprache = ' . $languageID;
+        $langSQL     = $allLanguages ? '' : ' AND tbewertung.kSprache = ' . $languageID;
         // Anzahl Bewertungen für jeden Stern unabhängig von Sprache SHOP-2313
         if ($stars !== -1) {
             if ($stars > 0) {
-                $condSQL = ' AND nSterne = ' . $stars;
+                $condSQL = ' AND tbewertung.nSterne = ' . $stars;
             }
             $ratingCounts = $db->getObjects(
                 'SELECT COUNT(*) AS nAnzahl, nSterne
@@ -211,15 +209,20 @@ class Bewertung
                     : ' LIMIT ' . $pageOffset;
             }
             $this->oBewertung_arr = $db->getObjects(
-                "SELECT tbewertung.*,
+                "SELECT DISTINCT tbewertung.*,
                         DATE_FORMAT(dDatum, '%d.%m.%Y') AS Datum,
                         DATE_FORMAT(dAntwortDatum, '%d.%m.%Y') AS AntwortDatum,
-                        tbewertunghilfreich.nBewertung AS rated
+                        tbewertunghilfreich.nBewertung AS rated,
+                        IF(tbestellung.kKunde IS NOT NULL, 1, 0) AS wasPurchased
                     FROM tbewertung
                     LEFT JOIN tbewertunghilfreich
                       ON tbewertung.kBewertung = tbewertunghilfreich.kBewertung
                       AND tbewertunghilfreich.kKunde = :customerID
-                    WHERE kArtikel = :pid" . $langSQL . $condSQL . $activateSQL . '
+                    LEFT JOIN (
+                            tbestellung
+                            INNER JOIN twarenkorbpos ON tbestellung.kWarenkorb = twarenkorbpos.kWarenkorb
+                        ) ON tbestellung.kKunde = tbewertung.kKunde AND twarenkorbpos.kArtikel = tbewertung.kArtikel
+                    WHERE tbewertung.kArtikel = :pid" . $langSQL . $condSQL . $activateSQL . '
                     ORDER BY' . $orderSQL . $limitSQL,
                 ['customerID' => Frontend::getCustomer()->getID(), 'pid' => $productID]
             );
@@ -242,16 +245,15 @@ class Bewertung
             ['pid' => $productID]
         );
         if ($total !== null && (int)$total->fDurchschnitt > 0) {
-            $total->fDurchschnitt   = \round($total->fDurchschnitt * 2) / 2;
-            $total->nAnzahl         = (int)$total->nAnzahl;
-            $this->oBewertungGesamt = $total;
+            $total->fDurchschnitt = \round($total->fDurchschnitt * 2) / 2;
+            $total->nAnzahl       = (int)$total->nAnzahl;
         } else {
-            $total                  = new stdClass();
-            $total->fDurchschnitt   = 0;
-            $total->nAnzahl         = 0;
-            $this->oBewertungGesamt = $total;
+            $total                = new stdClass();
+            $total->fDurchschnitt = 0;
+            $total->nAnzahl       = 0;
         }
-        $this->nAnzahlSprache = (int)($totalLocalized->nAnzahlSprache ?? 0);
+        $this->oBewertungGesamt = $total;
+        $this->nAnzahlSprache   = (int)($totalLocalized->nAnzahlSprache ?? 0);
         foreach ($this->oBewertung_arr as $i => $rating) {
             $this->oBewertung_arr[$i]->nAnzahlHilfreich = $rating->nHilfreich + $rating->nNichtHilfreich;
         }

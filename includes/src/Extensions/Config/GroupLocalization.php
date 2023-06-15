@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Extensions\Config;
 
@@ -13,24 +13,24 @@ use JTL\Shop;
 class GroupLocalization implements JsonSerializable
 {
     /**
-     * @var int
+     * @var int|null
      */
-    protected $kKonfiggruppe;
+    protected ?int $kKonfiggruppe = null;
 
     /**
-     * @var int
+     * @var int|null
      */
-    protected $kSprache;
+    protected ?int $kSprache = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    protected $cName;
+    protected ?string $cName = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    protected $cBeschreibung;
+    protected ?string $cBeschreibung = null;
 
     /**
      * GroupLocalization constructor.
@@ -47,9 +47,9 @@ class GroupLocalization implements JsonSerializable
     /**
      * Specify data which should be serialized to JSON
      *
-     * @return array|object|string
+     * @return array
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return Text::utf8_convert_recursive([
             'cName'         => $this->cName,
@@ -72,22 +72,21 @@ class GroupLocalization implements JsonSerializable
             'kSprache',
             $languageID
         );
-        if (isset($item->kKonfiggruppe, $item->kSprache) && $item->kKonfiggruppe > 0 && $item->kSprache > 0) {
-            foreach (\array_keys(\get_object_vars($item)) as $member) {
-                $this->$member = $item->$member;
-            }
-            $this->kSprache      = (int)$this->kSprache;
-            $this->kKonfiggruppe = (int)$this->kKonfiggruppe;
+        if ($item !== null && $item->kKonfiggruppe > 0 && $item->kSprache > 0) {
+            $this->kSprache      = (int)$item->kSprache;
+            $this->kKonfiggruppe = (int)$item->kKonfiggruppe;
+            $this->cName         = $item->cName;
+            $this->cBeschreibung = $item->cBeschreibung;
         }
     }
 
     /**
-     * @param int $kKonfiggruppe
+     * @param int $groupID
      * @return $this
      */
-    public function setKonfiggruppe(int $kKonfiggruppe): self
+    public function setKonfiggruppe(int $groupID): self
     {
-        $this->kKonfiggruppe = $kKonfiggruppe;
+        $this->kKonfiggruppe = $groupID;
 
         return $this;
     }
@@ -107,7 +106,7 @@ class GroupLocalization implements JsonSerializable
      * @param string $name
      * @return $this
      */
-    public function setName($name): self
+    public function setName(string $name): self
     {
         $this->cName = $name;
 
@@ -115,12 +114,12 @@ class GroupLocalization implements JsonSerializable
     }
 
     /**
-     * @param string $cBeschreibung
+     * @param string $description
      * @return $this
      */
-    public function setBeschreibung($cBeschreibung): self
+    public function setBeschreibung(string $description): self
     {
-        $this->cBeschreibung = $cBeschreibung;
+        $this->cBeschreibung = $description;
 
         return $this;
     }
@@ -130,7 +129,7 @@ class GroupLocalization implements JsonSerializable
      */
     public function getKonfiggruppe(): int
     {
-        return (int)$this->kKonfiggruppe;
+        return $this->kKonfiggruppe ?? 0;
     }
 
     /**
@@ -138,7 +137,7 @@ class GroupLocalization implements JsonSerializable
      */
     public function getSprache(): int
     {
-        return (int)$this->kSprache;
+        return $this->kSprache ?? 0;
     }
 
     /**
@@ -162,6 +161,6 @@ class GroupLocalization implements JsonSerializable
      */
     public function hatBeschreibung(): bool
     {
-        return \mb_strlen($this->cBeschreibung) > 0;
+        return \mb_strlen($this->cBeschreibung ?? '') > 0;
     }
 }

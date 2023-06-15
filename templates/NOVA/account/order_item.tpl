@@ -11,8 +11,11 @@
                                 {if !empty($oPosition->Artikel->cVorschaubildURL)}
                                     {block name='account-order-item-image'}
                                         {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans|escape:'html'}
-                                            {image webp=true fluid=true lazy=true
-                                                src=$oPosition->Artikel->cVorschaubildURL
+                                            {include file='snippets/image.tpl'
+                                                item=$oPosition->Artikel
+                                                sizes='(min-width: 992px) 10vw, (min-width: 768px) 17vw, 25vw'
+                                                lazy=!$oPosition@first
+                                                square=false
                                                 alt=$oPosition->cName|trans|escape:'html'
                                             }
                                         {/link}
@@ -46,7 +49,7 @@
                                                 {foreach $oPosition->WarenkorbPosEigenschaftArr as $Variation}
                                                     <li class="variation">
                                                         {$Variation->cEigenschaftName|trans}: {$Variation->cEigenschaftWertName|trans} {if !empty($Variation->cAufpreisLocalized[$NettoPreise])}&raquo;
-                                                            {if $Variation->cAufpreisLocalized[$NettoPreise]|substr:0:1 !== '-'}+{/if}{$Variation->cAufpreisLocalized[$NettoPreise]} {/if}
+                                                            {if substr($Variation->cAufpreisLocalized[$NettoPreise], 0, 1) !== '-'}+{/if}{$Variation->cAufpreisLocalized[$NettoPreise]} {/if}
                                                     </li>
                                                 {/foreach}
                                             {/block}
@@ -71,13 +74,13 @@
 
                                         {if $Einstellungen.kaufabwicklung.bestellvorgang_artikelmerkmale == 'Y' && !empty($oPosition->Artikel->oMerkmale_arr)}
                                             {block name='account-order-item-characteristics'}
-                                                {foreach $oPosition->Artikel->oMerkmale_arr as $oMerkmale_arr}
+                                                {foreach $oPosition->Artikel->oMerkmale_arr as $characteristic}
                                                     <li class="characteristic">
-                                                        {$oMerkmale_arr->cName}:
+                                                        {$characteristic->getName()}:
                                                         <span class="values">
-                                                            {foreach $oMerkmale_arr->oMerkmalWert_arr as $oWert}
-                                                                {if !$oWert@first}, {/if}
-                                                                {$oWert->cWert}
+                                                            {foreach $characteristic->getCharacteristicValues() as $characteristicValue}
+                                                                {if !$characteristicValue@first}, {/if}
+                                                                {$characteristicValue->getValue()}
                                                             {/foreach}
                                                         </span>
                                                     </li>
@@ -98,7 +101,9 @@
                                             {/block}
                                         {/if}
 
-                                        {if $Einstellungen.kaufabwicklung.bestellvorgang_artikelkurzbeschreibung == 'Y' && $oPosition->Artikel->cKurzBeschreibung|strlen > 0}
+                                        {if $Einstellungen.kaufabwicklung.bestellvorgang_artikelkurzbeschreibung == 'Y'
+                                            && $oPosition->Artikel->cKurzBeschreibung !== null
+                                            && $oPosition->Artikel->cKurzBeschreibung|strlen > 0}
                                             {block name='account-order-item-short-desc'}
                                                 <li class="shortdescription">{$oPosition->Artikel->cKurzBeschreibung}</li>
                                             {/block}
@@ -149,7 +154,7 @@
                                                     <span class="qty">{if !(is_string($oPosition->cUnique) && !empty($oPosition->cUnique) && (int)$oPosition->kKonfigitem === 0)}{$KonfigPos->nAnzahlEinzel}{else}1{/if}x</span>
                                                     {$KonfigPos->cName|trans} &raquo;<br/>
                                                     <span class="price_value">
-                                                        {if $KonfigPos->cEinzelpreisLocalized[$NettoPreise]|substr:0:1 !== '-'}+{/if}{$KonfigPos->cEinzelpreisLocalized[$NettoPreise]}
+                                                        {if substr($KonfigPos->cEinzelpreisLocalized[$NettoPreise], 0, 1) !== '-'}+{/if}{$KonfigPos->cEinzelpreisLocalized[$NettoPreise]}
                                                         {lang key='pricePerUnit' section='checkout'}
                                                     </span>
                                                 </li>

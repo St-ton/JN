@@ -4,10 +4,13 @@ namespace JTL\News;
 
 use DateTime;
 use Illuminate\Support\Collection;
+use JTL\Contracts\RoutableInterface;
 use JTL\DB\DbInterface;
 use JTL\MagicCompatibilityTrait;
 use JTL\Media\Image;
 use JTL\Media\MultiSizeImage;
+use JTL\Router\RoutableTrait;
+use JTL\Router\Router;
 use JTL\Shop;
 use stdClass;
 
@@ -15,10 +18,11 @@ use stdClass;
  * Class Category
  * @package JTL\News
  */
-class Category implements CategoryInterface
+class Category implements CategoryInterface, RoutableInterface
 {
-    use MagicCompatibilityTrait,
-        MultiSizeImage;
+    use MagicCompatibilityTrait;
+    use MultiSizeImage;
+    use RoutableTrait;
 
     /**
      * @var array
@@ -104,11 +108,6 @@ class Category implements CategoryInterface
     protected array $previewImages = [];
 
     /**
-     * @var string[]
-     */
-    protected array $urls = [];
-
-    /**
      * @var int
      */
     protected int $sort = 0;
@@ -129,25 +128,20 @@ class Category implements CategoryInterface
     protected Collection $children;
 
     /**
-     * @var Collection|ItemListInterface
+     * @var Collection
      */
-    protected $items;
-
-    /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
+    protected Collection $items;
 
     /**
      * Category constructor.
      * @param DbInterface $db
      */
-    public function __construct(DbInterface $db)
+    public function __construct(private DbInterface $db)
     {
-        $this->db               = $db;
         $this->items            = new Collection();
         $this->children         = new Collection();
         $this->dateLastModified = \date_create();
+        $this->setRouteType(Router::TYPE_NEWS);
         $this->setImageType(Image::TYPE_NEWSCATEGORY);
     }
 
@@ -184,7 +178,7 @@ class Category implements CategoryInterface
     /**
      * @param array $categoryLanguages
      * @param bool  $activeOnly
-     * @return $this|CategoryInterface
+     * @return CategoryInterface
      */
     public function map(array $categoryLanguages, bool $activeOnly = true): CategoryInterface
     {
@@ -204,10 +198,14 @@ class Category implements CategoryInterface
             $this->lft                       = (int)$groupLanguage->lft;
             $this->rght                      = (int)$groupLanguage->rght;
             $this->seo[$langID]              = $groupLanguage->cSeo;
+            $this->slugs[$langID]            = $groupLanguage->cSeo;
         }
         if (($preview = $this->getPreviewImage()) !== '') {
-            $this->generateAllImageSizes(true, 1, \str_replace(\PFAD_NEWSKATEGORIEBILDER, '', $preview));
+            $preview = \str_replace(\PFAD_NEWSKATEGORIEBILDER, '', $preview);
+            $this->generateAllImageSizes(true, 1, $preview);
+            $this->generateAllImageDimensions(1, $preview);
         }
+        $this->createBySlug($this->id);
         $this->items = (new ItemList($this->db))->createItems($this->db->getInts(
             'SELECT tnewskategorienews.kNews
                 FROM tnewskategorienews
@@ -345,12 +343,12 @@ class Category implements CategoryInterface
             return $e->$order();
         };
         if ($customerGroupID > 0) {
-            $this->items = $this->items->filter(static function (Item $i) use ($customerGroupID) {
+            $this->items = $this->items->filter(static function (Item $i) use ($customerGroupID): bool {
                 return $i->checkVisibility($customerGroupID);
             });
         }
         if ($languageID > 0) {
-            $this->items = $this->items->filter(static function (Item $i) use ($languageID) {
+            $this->items = $this->items->filter(static function (Item $i) use ($languageID): bool {
                 return $i->getTitle($languageID) !== '';
             });
         }
@@ -363,7 +361,7 @@ class Category implements CategoryInterface
     /**
      * @inheritdoc
      */
-    public function getItems()
+    public function getItems(): Collection
     {
         return $this->items;
     }
@@ -371,7 +369,7 @@ class Category implements CategoryInterface
     /**
      * @inheritdoc
      */
-    public function setItems($items): void
+    public function setItems(Collection $items): void
     {
         $this->items = $items;
     }
@@ -381,9 +379,7 @@ class Category implements CategoryInterface
      */
     public function getName(int $idx = null): string
     {
-        $idx = $idx ?? Shop::getLanguageID();
-
-        return $this->names[$idx] ?? '';
+        return $this->names[$idx ?? Shop::getLanguageID()] ?? '';
     }
 
     /**
@@ -423,9 +419,7 @@ class Category implements CategoryInterface
      */
     public function getMetaTitle(int $idx = null): string
     {
-        $idx = $idx ?? Shop::getLanguageID();
-
-        return $this->metaTitles[$idx] ?? '';
+        return $this->metaTitles[$idx ?? Shop::getLanguageID()] ?? '';
     }
 
     /**
@@ -449,9 +443,7 @@ class Category implements CategoryInterface
      */
     public function getMetaKeyword(int $idx = null): string
     {
-        $idx = $idx ?? Shop::getLanguageID();
-
-        return $this->metaKeywords[$idx] ?? '';
+        return $this->metaKeywords[$idx ?? Shop::getLanguageID()] ?? '';
     }
 
     /**
@@ -483,9 +475,7 @@ class Category implements CategoryInterface
      */
     public function getMetaDescription(int $idx = null): string
     {
-        $idx = $idx ?? Shop::getLanguageID();
-
-        return $this->metaDescriptions[$idx] ?? '';
+        return $this->metaDescriptions[$idx ?? Shop::getLanguageID()] ?? '';
     }
 
     /**
@@ -517,11 +507,9 @@ class Category implements CategoryInterface
      */
     public function getURL(int $idx = null): string
     {
-        $idx = $idx ?? Shop::getLanguageID();
-
         // @todo: category or month overview?
-//        return $this->urls[$idx] ?? '/?nm=' . $this->getID();
-        return $this->urls[$idx] ?? '/?nk=' . $this->getID();
+        // return $this->urls[$idx ?? Shop::getLanguageID()] ?? '/?nm=' . $this->getID();
+        return $this->urls[$idx ?? Shop::getLanguageID()] ?? '/?nk=' . $this->getID();
     }
 
     /**
@@ -537,9 +525,7 @@ class Category implements CategoryInterface
      */
     public function getSEO(int $idx = null): string
     {
-        $idx = $idx ?? Shop::getLanguageID();
-
-        return $this->seo[$idx] ?? '';
+        return $this->seo[$idx ?? Shop::getLanguageID()] ?? '';
     }
 
     /**
@@ -548,6 +534,22 @@ class Category implements CategoryInterface
     public function getSEOs(): array
     {
         return $this->seo;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setSEOs(array $seos): void
+    {
+        $this->seo = $seos;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setSEO(string $seo, int $idx = null): void
+    {
+        $this->seo[$idx ?? Shop::getLanguageID()] = $seo;
     }
 
     /**
@@ -587,9 +589,7 @@ class Category implements CategoryInterface
      */
     public function getLanguageID(int $idx = null): int
     {
-        $idx = $idx ?? Shop::getLanguageID();
-
-        return $this->languageIDs[$idx] ?? 0;
+        return $this->languageIDs[$idx ?? Shop::getLanguageID()] ?? 0;
     }
 
     /**
@@ -613,9 +613,7 @@ class Category implements CategoryInterface
      */
     public function getLanguageCode(int $idx = null): string
     {
-        $idx = $idx ?? Shop::getLanguageID();
-
-        return $this->languageCodes[$idx] ?? '';
+        return $this->languageCodes[$idx ?? Shop::getLanguageID()] ?? '';
     }
 
     /**
@@ -639,9 +637,7 @@ class Category implements CategoryInterface
      */
     public function getDescription(int $idx = null): string
     {
-        $idx = $idx ?? Shop::getLanguageID();
-
-        return $this->descriptions[$idx] ?? '';
+        return $this->descriptions[$idx ?? Shop::getLanguageID()] ?? '';
     }
 
     /**
@@ -650,6 +646,14 @@ class Category implements CategoryInterface
     public function getDescriptions(): array
     {
         return $this->descriptions;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setDescription(string $description, int $idx = null): void
+    {
+        $this->descriptions[$idx ?? Shop::getLanguageID()] = $description;
     }
 
     /**
@@ -665,9 +669,7 @@ class Category implements CategoryInterface
      */
     public function getPreviewImage(int $idx = null): string
     {
-        $idx = $idx ?? Shop::getLanguageID();
-
-        return $this->previewImages[$idx] ?? '';
+        return $this->previewImages[$idx ?? Shop::getLanguageID()] ?? '';
     }
 
     /**
@@ -676,6 +678,14 @@ class Category implements CategoryInterface
     public function getPreviewImages(): array
     {
         return $this->previewImages;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setPreviewImage(string $image, int $idx = null): void
+    {
+        $this->previewImages[$idx ?? Shop::getLanguageID()] = $image;
     }
 
     /**
@@ -780,6 +790,38 @@ class Category implements CategoryInterface
     public function setChildren(Collection $children): void
     {
         $this->children = $children;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getLft(): int
+    {
+        return $this->lft;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setLft(int $lft): void
+    {
+        $this->lft = $lft;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getRght(): int
+    {
+        return $this->rght;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setRght(int $rght): void
+    {
+        $this->rght = $rght;
     }
 
     /**

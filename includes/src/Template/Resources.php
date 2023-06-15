@@ -21,11 +21,6 @@ class Resources
     private array $groups = [];
 
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
      * @var bool
      */
     private bool $initialized = false;
@@ -46,15 +41,14 @@ class Resources
      * @param SimpleXMLElement      $xml
      * @param SimpleXMLElement|null $parentXML
      */
-    public function __construct(DbInterface $db, SimpleXMLElement $xml, ?SimpleXMLElement $parentXML = null)
+    public function __construct(private DbInterface $db, SimpleXMLElement $xml, ?SimpleXMLElement $parentXML = null)
     {
-        $this->db      = $db;
         $this->xmlList = [$parentXML, $xml];
     }
 
     public function __sleep(): array
     {
-        return select(\array_keys(\get_object_vars($this)), static function ($e) {
+        return select(\array_keys(\get_object_vars($this)), static function ($e): bool {
             return $e !== 'xmlList' && $e !== 'db';
         });
     }
@@ -275,22 +269,15 @@ class Resources
                 return false;
             }
             if (++$i === $iterations) {
-                switch ($comparator) {
-                    case '==':
-                        return $conf == $settingValue;
-                    case '===':
-                        return $conf === $settingValue;
-                    case '>=':
-                        return $conf >= $settingValue;
-                    case '<=':
-                        return $conf <= $settingValue;
-                    case '>':
-                        return $conf > $settingValue;
-                    case '<':
-                        return $conf < $settingValue;
-                    default:
-                        return false;
-                }
+                return match ($comparator) {
+                    '=='    => $conf == $settingValue,
+                    '==='   => $conf === $settingValue,
+                    '>='    => $conf >= $settingValue,
+                    '<='    => $conf <= $settingValue,
+                    '>'     => $conf > $settingValue,
+                    '<'     => $conf < $settingValue,
+                    default => false,
+                };
             }
         }
 
@@ -319,6 +306,9 @@ class Resources
         foreach ($this->getGroups() as $name => $_tplGroup) {
             $res[$name] = [];
             foreach ($_tplGroup as $_file) {
+                if (!\file_exists($_file['abs'])) {
+                    continue;
+                }
                 $res[$name][] = $absolute === true ? $_file['abs'] : $_file['rel'];
             }
         }

@@ -77,10 +77,16 @@
                                 <span class="subheadline">{$oBewertung->cTitel}</span>
                                 <p itemprop="reviewBody">{$oBewertung->cText|nl2br}</p>
                                 <div class="blockquote-footer">
-                                    <span itemprop="author" itemscope=true itemtype="https://schema.org/Person">
+                                    <span itemprop="author" itemscope itemtype="https://schema.org/Person">
                                         <span itemprop="name">{$oBewertung->cName}</span>
                                     </span>,
                                     <meta itemprop="datePublished" content="{$oBewertung->dDatum}" />{$oBewertung->Datum}
+                                    {block name='productdetails-review-item-details-verified-purchase'}
+                                        {if !empty($oBewertung->wasPurchased)}
+                                            <span class="blockquote-divider"></span>
+                                            <span class="verified-purchase">{lang key='verifiedPurchase' section='product rating'}</span>
+                                        {/if}
+                                    {/block}
                                 </div>
                             </blockquote>
                             <meta itemprop="thumbnailURL" content="{$Artikel->cVorschaubildURL}">

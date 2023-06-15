@@ -73,7 +73,7 @@ class Request
 
             return \is_numeric($val)
                 ? [(int)$val]
-                : \array_map(static function ($e) {
+                : \array_map(static function ($e): int {
                     return (int)$e;
                 }, $val);
         }
@@ -181,7 +181,6 @@ class Request
         return $codes[$status] ?? '';
     }
 
-
     /**
      * Prueft ob SSL aktiviert ist und auch durch Einstellung genutzt werden soll
      * -1 = SSL nicht aktiv und nicht erlaubt
@@ -220,7 +219,7 @@ class Request
      * @param int      $maxredirect
      * @return bool|mixed
      */
-    public static function curl_exec_follow($ch, int $maxredirect = 5)
+    public static function curl_exec_follow($ch, int $maxredirect = 5): bool|string
     {
         $mr = $maxredirect <= 0 ? 5 : $maxredirect;
         if (\ini_get('open_basedir') === '') {
@@ -243,8 +242,7 @@ class Request
                         $code = 0;
                     } else {
                         $code = \curl_getinfo($rch, \CURLINFO_HTTP_CODE);
-                        if ($code === 301 || $code === 302) {
-                            \preg_match('/Location:(.*?)\n/', $header, $matches);
+                        if (($code === 301 || $code === 302) && \preg_match('/Location:(.*?)\n/i', $header, $matches)) {
                             $newurl = \trim(\array_pop($matches));
                         } else {
                             $code = 0;

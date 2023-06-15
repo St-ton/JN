@@ -80,6 +80,8 @@ use JTL\Model\DataModel;
  * @method void setDocumentationURL(string $value)
  * @method void setIsChild(bool $value)
  * @method void setIsActive(bool $value)
+ * @method void setIsPreview(bool $value)
+ * @method bool getIsPreview()
  * @method void setHasError(bool $value)
  * @method void setHasConfig(bool $value)
  * @method void setIsResponsive(bool $value)
@@ -398,6 +400,14 @@ final class Model extends DataModel
                 ->setNullable(true)
                 ->setDynamic(true);
             $attributes['paths'] = $paths;
+
+            $isPreview = new DataAttribute();
+            $isPreview->setName('isPreview')
+                ->setDataType('bool')
+                ->setDefault(false)
+                ->setNullable(false)
+                ->setDynamic(true);
+            $attributes['isPreview'] = $isPreview;
         }
 
         return $attributes;

@@ -28,27 +28,23 @@
 </div>
 <script>
     $(document).ready(function() {
-        var disModal = $('#uninstall-{$context}-modal');
-        $('{$button}').on('click', function(event) {
+        let disModal = $('#uninstall-{$context}-modal');
+        $('{$button}').on('click', function() {
             disModal.modal('show');
             return false;
         });
-        $('#uninstall-{$context}-modal .delete-plugindata-yes').on('click', function (event) {
+        $('#uninstall-{$context}-modal .delete-plugindata-yes').on('click', function () {
             disModal.modal('hide');
-            uninstall(true);
+            uninstall();
         });
-        $('#uninstall-{$context}-modal .delete-plugindata-no').on('click', function (event) {
-            disModal.modal('hide');
-            uninstall(false);
-        });
-        function uninstall(deleteData) {
-            var data = $('{$selector}').serialize();
-            data += '&delete=1&delete-data=1&delete-files=1';
+        function uninstall() {
+            let data = $('{$selector}').serialize();
+            data += '&uninstall=1&delete-data=1&delete-files=1';
             $('{$selector} input[type=checkbox]:checked').each(function (i, ele) {
-                var name = $(ele).attr('value');
+                const name = $(ele).attr('value');
                 data += '&ext[' + name + ']=' + $('#plugin-ext-' + name).val();
             });
-            simpleAjaxCall('pluginverwaltung.php', data, function (res) {
+            simpleAjaxCall('{$adminURL}{$route}', data, function () {
                 location.reload();
             });
             return false;

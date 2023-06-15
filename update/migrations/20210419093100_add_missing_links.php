@@ -4,6 +4,7 @@ use JTL\Language\LanguageHelper;
 use JTL\Link\Admin\LinkAdmin;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
+use JTL\Shop;
 
 /**
  * Class Migration_20210419093100
@@ -35,7 +36,7 @@ class Migration_20210419093100 extends Migration implements IMigration
             'kPlugin'        => 0,
             'cName'          => 'Hersteller',
             'nLinkart'       => 3,
-            'nSpezialseite'  => \LINKTYP_HERSTELLER,
+            'nSpezialseite'  => LINKTYP_HERSTELLER,
             'cKundengruppen' => ['-1'],
             'bIsActive'      => 1,
             'bSSL'           => 0,
@@ -53,13 +54,13 @@ class Migration_20210419093100 extends Migration implements IMigration
             $link['cMetaDescription_' . $code] = '';
         }
 
-        if ($this->getDB()->select('tlink', 'nLinkart', \LINKTYP_HERSTELLER) === null) {
+        if ($this->getDB()->select('tlink', 'nLinkart', LINKTYP_HERSTELLER) === null) {
             $linkAdmin->createOrUpdateLink($link);
         }
 
-        if ($this->getDB()->select('tlink', 'nLinkart', \LINKTYP_WRB_FORMULAR) === null) {
+        if ($this->getDB()->select('tlink', 'nLinkart', LINKTYP_WRB_FORMULAR) === null) {
             $link['cName']         = 'WR-Formular';
-            $link['nSpezialseite'] = \LINKTYP_WRB_FORMULAR;
+            $link['nSpezialseite'] = LINKTYP_WRB_FORMULAR;
             $linkAdmin->createOrUpdateLink($link);
         }
     }

@@ -32,14 +32,14 @@ class Widgets extends AbstractItem
             : [];
         foreach ($this->getNode() as $i => $widgetData) {
             $i = (string)$i;
-            \preg_match('/[0-9]+/', $i, $hits);
+            \preg_match('/\d+/', $i, $hits);
             if (\mb_strlen($hits[0]) !== \mb_strlen($i)) {
                 continue;
             }
             $widget               = new stdClass();
             $widget->kPlugin      = $this->plugin->kPlugin;
             $widget->cTitle       = $widgetData['Title'];
-            $widget->cClass       = $this->plugin->bExtension === 1 // @todo
+            $widget->cClass       = $this->plugin->bExtension === 1
                 ? $widgetData['Class']
                 : $widgetData['Class'] . '_' . $this->plugin->cPluginID;
             $widget->cDescription = $widgetData['Description'];

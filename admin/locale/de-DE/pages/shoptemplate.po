@@ -9,7 +9,7 @@ msgid "shoptemplateURL"
 msgstr "https://jtl-url.de/dq1g2"
 
 msgid "shoptemplatesDesc"
-msgstr "Auf dieser Seite finden Sie alle Templates, die sich im Ordner „/templates/“ des Wurzelverzeichnisses von JTL-Shop befinden. Falls Sie ein neues Template haben und es nutzen möchten, übertragen Sie es zuerst per <abbr title=\"FTP (File Transfer Protokoll) ist ein Dateiübertragungsprotokoll\">FTP</abbr> in dieses Verzeichnis. Sie können immer nur ein normales und ein Mobile Template zur gleichen Zeit für JTL-Shop aktivieren. Über die Schaltfläche „Einstellungen“ konfigurieren Sie das aktivierte Template."
+msgstr "Auf dieser Seite finden Sie alle Templates, die sich im Ordner „/templates/“ des Wurzelverzeichnisses von JTL-Shop befinden. Falls Sie ein neues Template haben und es nutzen möchten, übertragen Sie es zuerst per Upload-Funktion weiter unten auf dieser Seite oder per <abbr title=\"FTP (File Transfer Protokoll) ist ein Dateiübertragungsprotokoll\">FTP</abbr> in dieses Verzeichnis. <br> Als eingeloggter Backend-Nutzer können Sie über die Schaltfläche „Vorschau aktivieren“ eine Vorschau des Templates ansehen. Kunden sehen währenddessen im Frontend weiterhin das reguläre Template. Wenn der Vorschaumodus aktiviert ist, ist er zudem über den URL-Parameter „preview“ erreichbar (Beispiel: <a href=\"%s\">%s</a>). Über die Schaltfläche „Einstellungen“ können Sie sowohl das regulär aktivierte als auch das Vorschau-Template konfigurieren."
 
 msgid "templateName"
 msgstr "Template-Name"
@@ -43,6 +43,15 @@ msgstr "Ja (optimiert für mobile Endgeräte)"
 
 msgid "activateTemplate"
 msgstr "Template aktivieren"
+
+msgid "Enable preview"
+msgstr "Vorschau aktivieren"
+
+msgid "Disable preview"
+msgstr "Vorschau deaktivieren"
+
+msgid "Might not work correctly in preview mode"
+msgstr "Funktioniert gegebenenfalls im Vorschaumodus nicht korrekt."
 
 msgid "inheritsFrom"
 msgstr "Erbt von %s"
@@ -86,6 +95,9 @@ msgstr "XML-Knoten „Name“ konnte nicht gefunden werden."
 msgid "errorInvalidVersion"
 msgstr "Keine gültige SemVer."
 
+msgid "errorInvalidNamespace"
+msgstr "Kein gültiger Namespace."
+
 msgid "errorUnknown"
 msgstr "Unbekannter Fehler."
 
@@ -94,3 +106,6 @@ msgstr "Bitte beachten Sie, dass dieses Template eine aktuellere Version von JTL
 
 msgid "dangerMaxShopVersion"
 msgstr "Bitte beachten Sie, dass dieses Template für eine ältere Version von JTL-Shop entwickelt wurde. Es können daher Probleme beim Betrieb entstehen."
+
+msgid "Preview activated"
+msgstr "Vorschau aktiviert"

@@ -2,14 +2,14 @@
 <div id="content">
     <div class="card">
         <div class="card-body">
-            <form method="post" action="{$adminURL}/links.php">
+            <form method="post" action="{$adminURL}{$route}">
                 {$jtl_token}
                 <input type="hidden" name="action" value="confirm-delete" />
                 <input type="hidden" name="kLinkgruppe" value="{$linkGroup->getID()}" />
 
                 <div class="alert alert-danger">
                     <p><strong>{__('danger')}</strong></p>
-                    {if $affectedLinkNames|count > 0}
+                    {if count($affectedLinkNames) > 0}
                         <p>{__('dangerDeleteLinksAlso')}:</p>
                         <ul class="list">
                             {foreach $affectedLinkNames as $link}
@@ -17,7 +17,7 @@
                             {/foreach}
                         </ul>
                     {/if}
-                    <p>{{__('sureDeleteLinkGroup')}|sprintf:{$linkGroup->getName()}}</p>
+                    <p>{sprintf(__('sureDeleteLinkGroup'), $linkGroup->getName())}</p>
                 </div>
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto mb-2">

@@ -6,6 +6,7 @@ use DateInterval;
 use DateTime;
 use Exception;
 use JTL\Catalog\Product\Preise;
+use JTL\DB\DbInterface;
 use JTL\GeneralDataProtection\Journal;
 use JTL\Helpers\Date;
 use JTL\Helpers\Form;
@@ -15,9 +16,11 @@ use JTL\Language\LanguageHelper;
 use JTL\MagicCompatibilityTrait;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
+use JTL\Services\JTL\PasswordServiceInterface;
 use JTL\Shop;
 use JTL\Shopsetting;
 use stdClass;
+use function Functional\select;
 
 /**
  * Class Customer
@@ -40,6 +43,12 @@ class Customer
     public const ERROR_INVALID_DATA = 0;
 
     public const CUSTOMER_ANONYM = 'Anonym';
+
+    public const CUSTOMER_DELETE_DONE = 0;
+
+    public const CUSTOMER_DELETE_DEACT = 1;
+
+    public const CUSTOMER_DELETE_NO = 2;
 
     /**
      * @var int
@@ -254,19 +263,51 @@ class Customer
     /**
      * @var array
      */
-    public static $mapping = [
+    public static array $mapping = [
         'cKundenattribut_arr' => 'CustomerAttributes'
     ];
 
     /**
+     * @var string|null
+     */
+    protected ?string $dLastLogin = null;
+
+    /**
      * Customer constructor.
      * @param int|null $id
+     * @param PasswordServiceInterface|null $passwordService
+     * @param DbInterface|null $db
      */
-    public function __construct(int $id = null)
-    {
+    public function __construct(
+        int $id = null,
+        private ?PasswordServiceInterface $passwordService = null,
+        private ?DbInterface $db = null
+    ) {
+        $this->passwordService = $passwordService ?? Shop::Container()->getPasswordService();
+        $this->db              = $db ?? Shop::Container()->getDB();
+
         if ($id > 0) {
             $this->loadFromDB($id);
         }
+    }
+
+    /**
+     * @return array
+     */
+    public function __sleep(): array
+    {
+        return select(\array_keys(\get_object_vars($this)), static function ($e): bool {
+            return $e !== 'db' && $e !== 'passwordService';
+        });
+    }
+
+    /**
+     * @return void
+     */
+    public function __wakeup(): void
+    {
+        $this->passwordService = Shop::Container()->getPasswordService();
+        $this->db              = Shop::Container()->getDB();
     }
 
     /**
@@ -278,7 +319,7 @@ class Customer
     public function holRegKundeViaEmail(string $mail): ?Customer
     {
         if ($mail !== '') {
-            $data = Shop::Container()->getDB()->select(
+            $data = $this->db->select(
                 'tkunde',
                 'cMail',
                 Text::filterXSS($mail),
@@ -307,7 +348,7 @@ class Customer
         $conf = Shop::getSettingValue(\CONF_KUNDEN, 'kundenlogin_max_loginversuche');
         $mail = $post['email'] ?? '';
         if ($mail !== '' && $conf > 1) {
-            $attempts = Shop::Container()->getDB()->getSingleInt(
+            $attempts = $this->db->getSingleInt(
                 'SELECT nLoginversuche
                     FROM tkunde
                     WHERE cMail = :ml AND nRegistriert = 1',
@@ -354,6 +395,7 @@ class Customer
             $this->entschluesselKundendaten();
             $this->cAnredeLocalized   = self::mapSalutation($this->cAnrede, $this->kSprache);
             $this->cGuthabenLocalized = $this->gibGuthabenLocalized();
+            $this->setLastLogin();
 
             return self::OK;
         }
@@ -386,16 +428,15 @@ class Customer
      */
     private function initCustomer(stdClass $user): void
     {
-        $passwordService = Shop::Container()->getPasswordService();
         foreach (\get_object_vars($user) as $k => $v) {
             $this->$k = $v;
         }
         $this->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($this->cLand);
         // check if password has to be updated because of PASSWORD_DEFAULT method changes or using old md5 hash
-        if (isset($user->cPasswort) && $passwordService->needsRehash($user->cPasswort)) {
+        if (isset($user->cPasswort) && $this->passwordService->needsRehash($user->cPasswort)) {
             $upd            = new stdClass();
-            $upd->cPasswort = $passwordService->hash($user->cPasswort);
-            Shop::Container()->getDB()->update('tkunde', 'kKunde', (int)$user->kKunde, $upd);
+            $upd->cPasswort = $this->passwordService->hash($user->cPasswort);
+            $this->db->update('tkunde', 'kKunde', (int)$user->kKunde, $upd);
         }
     }
 
@@ -407,11 +448,9 @@ class Customer
      */
     public function checkCredentials(string $user, string $pass)
     {
-        $user            = \mb_substr($user, 0, 255);
-        $pass            = \mb_substr($pass, 0, 255);
-        $passwordService = Shop::Container()->getPasswordService();
-        $db              = Shop::Container()->getDB();
-        $customer        = $db->select(
+        $user     = \mb_substr($user, 0, 255);
+        $pass     = \mb_substr($pass, 0, 255);
+        $customer = $this->db->select(
             'tkunde',
             'cMail',
             $user,
@@ -434,15 +473,15 @@ class Customer
             ? $customer->dGeburtstag_formatted
             : '';
 
-        if (!$passwordService->verify($pass, $customer->cPasswort)) {
+        if (!$this->passwordService->verify($pass, $customer->cPasswort)) {
             $tries = ++$customer->nLoginversuche;
-            Shop::Container()->getDB()->update('tkunde', 'cMail', $user, (object)['nLoginversuche' => $tries]);
+            $this->db->update('tkunde', 'cMail', $user, (object)['nLoginversuche' => $tries]);
 
             return false;
         }
         $update = false;
-        if ($passwordService->needsRehash($customer->cPasswort)) {
-            $customer->cPasswort = $passwordService->hash($pass);
+        if ($this->passwordService->needsRehash($customer->cPasswort)) {
+            $customer->cPasswort = $this->passwordService->hash($pass);
             $update              = true;
         }
 
@@ -451,12 +490,32 @@ class Customer
             $update                   = true;
         }
         if ($update) {
-            $update = (array)$customer;
-            unset($update['dGeburtstag_formatted']);
-            Shop::Container()->getDB()->update('tkunde', 'kKunde', $customer->kKunde, (object)$update);
+            $customerData = (array)$customer;
+            unset($customerData['dGeburtstag_formatted']);
+            $this->db->update('tkunde', 'kKunde', $customer->kKunde, (object)$customerData);
         }
 
         return $customer;
+    }
+
+    /**
+     * @return void
+     */
+    protected function setLastLogin(): void
+    {
+        $this->dLastLogin = $this->db->getSingleArray('select NOW() as today')['today'];
+        $this->db->queryPrepared(
+            'UPDATE tkunde SET dLastLogin = :today WHERE kKunde = :kKunde',
+            ['kKunde' => (int)$this->kKunde, 'today' => $this->dLastLogin]
+        );
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getLastLogin(): ?string
+    {
+        return $this->dLastLogin;
     }
 
     /**
@@ -476,7 +535,7 @@ class Customer
         if ($id <= 0) {
             return $this;
         }
-        $data = Shop::Container()->getDB()->select('tkunde', 'kKunde', $id);
+        $data = $this->db->select('tkunde', 'kKunde', $id);
         if ($data !== null && isset($data->kKunde) && $data->kKunde > 0) {
             $members = \array_keys(\get_object_vars($data));
             foreach ($members as $member) {
@@ -515,10 +574,10 @@ class Customer
     {
         $cryptoService = Shop::Container()->getCryptoService();
 
-        $this->cNachname = $cryptoService->encryptXTEA(\trim($this->cNachname));
-        $this->cFirma    = $cryptoService->encryptXTEA(\trim($this->cFirma));
-        $this->cZusatz   = $cryptoService->encryptXTEA(\trim($this->cZusatz));
-        $this->cStrasse  = $cryptoService->encryptXTEA(\trim($this->cStrasse));
+        $this->cNachname = $cryptoService->encryptXTEA(\trim($this->cNachname ?? ''));
+        $this->cFirma    = $cryptoService->encryptXTEA(\trim($this->cFirma ?? ''));
+        $this->cZusatz   = $cryptoService->encryptXTEA(\trim($this->cZusatz ?? ''));
+        $this->cStrasse  = $cryptoService->encryptXTEA(\trim($this->cStrasse ?? ''));
 
         return $this;
     }
@@ -532,10 +591,10 @@ class Customer
     {
         $cryptoService = Shop::Container()->getCryptoService();
 
-        $this->cNachname = \trim($cryptoService->decryptXTEA($this->cNachname));
-        $this->cFirma    = \trim($cryptoService->decryptXTEA($this->cFirma));
-        $this->cZusatz   = \trim($cryptoService->decryptXTEA($this->cZusatz));
-        $this->cStrasse  = \trim($cryptoService->decryptXTEA($this->cStrasse));
+        $this->cNachname = \trim($cryptoService->decryptXTEA($this->cNachname ?? ''));
+        $this->cFirma    = \trim($cryptoService->decryptXTEA($this->cFirma ?? ''));
+        $this->cZusatz   = \trim($cryptoService->decryptXTEA($this->cZusatz ?? ''));
+        $this->cStrasse  = \trim($cryptoService->decryptXTEA($this->cStrasse ?? ''));
 
         return $this;
     }
@@ -584,9 +643,8 @@ class Customer
         $obj->nRegistriert   = $this->nRegistriert;
         $obj->nLoginversuche = $this->nLoginversuche;
         $obj->dGeburtstag    = Date::convertDateToMysqlStandard($this->dGeburtstag);
-
-        $obj->cLand   = $this->pruefeLandISO($obj->cLand);
-        $this->kKunde = Shop::Container()->getDB()->insert('tkunde', $obj);
+        $obj->cLand          = $this->pruefeLandISO($obj->cLand);
+        $this->kKunde        = $this->db->insert('tkunde', $obj);
         $this->entschluesselKundendaten();
 
         $this->cAnredeLocalized   = self::mapSalutation($this->cAnrede, $this->kSprache);
@@ -624,7 +682,8 @@ class Customer
             $obj->cAnredeLocalized,
             $obj->cGuthabenLocalized,
             $obj->dErstellt_DE,
-            $obj->cPasswortKlartext
+            $obj->cPasswortKlartext,
+            $obj->dLastLogin
         );
         if ($obj->dGeburtstag === null || $obj->dGeburtstag === '') {
             $obj->dGeburtstag = '_DBNULL_';
@@ -634,7 +693,7 @@ class Customer
         }
         $obj->cLand       = $this->pruefeLandISO($obj->cLand);
         $obj->dVeraendert = 'NOW()';
-        $return           = Shop::Container()->getDB()->update('tkunde', 'kKunde', $obj->kKunde, $obj);
+        $return           = $this->db->update('tkunde', 'kKunde', $obj->kKunde, $obj);
 
         if ($obj->dGeburtstag === '_DBNULL_') {
             $obj->dGeburtstag = '';
@@ -689,7 +748,7 @@ class Customer
      */
     public function verschluesselAlleKunden(): self
     {
-        foreach (Shop::Container()->getDB()->getObjects('SELECT * FROM tkunde') as $customer) {
+        foreach ($this->db->getObjects('SELECT * FROM tkunde') as $customer) {
             if ($customer->kKunde > 0) {
                 unset($tmp);
                 $tmp = new self((int)$customer->kKunde);
@@ -740,15 +799,14 @@ class Customer
      */
     public function updatePassword($password = null): self
     {
-        $passwordService = Shop::Container()->getPasswordService();
         if ($password === null) {
-            $clearTextPassword = $passwordService->generate(12);
-            $this->cPasswort   = $passwordService->hash($clearTextPassword);
+            $clearTextPassword = $this->passwordService->generate(12);
+            $this->cPasswort   = $this->passwordService->hash($clearTextPassword);
 
             $upd                 = new stdClass();
             $upd->cPasswort      = $this->cPasswort;
             $upd->nLoginversuche = 0;
-            Shop::Container()->getDB()->update('tkunde', 'kKunde', (int)$this->kKunde, $upd);
+            $this->db->update('tkunde', 'kKunde', (int)$this->kKunde, $upd);
 
             $obj                 = new stdClass();
             $obj->tkunde         = $this;
@@ -758,12 +816,12 @@ class Customer
             $mail   = new Mail();
             $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_PASSWORT_VERGESSEN, $obj));
         } else {
-            $this->cPasswort = $passwordService->hash(\mb_substr($password, 0, 255));
+            $this->cPasswort = $this->passwordService->hash(\mb_substr($password, 0, 255));
 
             $upd                 = new stdClass();
             $upd->cPasswort      = $this->cPasswort;
             $upd->nLoginversuche = 0;
-            Shop::Container()->getDB()->update('tkunde', 'kKunde', (int)$this->kKunde, $upd);
+            $this->db->update('tkunde', 'kKunde', (int)$this->kKunde, $upd);
         }
 
         return $this;
@@ -786,7 +844,7 @@ class Customer
         $expires    = new DateTime();
         $interval   = new DateInterval('P1D');
         $expires->add($interval);
-        Shop::Container()->getDB()->queryPrepared(
+        $this->db->queryPrepared(
             'INSERT INTO tpasswordreset(kKunde, cKey, dExpires)
                 VALUES (:kKunde, :cKey, :dExpires)
                 ON DUPLICATE KEY UPDATE cKey = :cKey, dExpires = :dExpires',
@@ -823,7 +881,9 @@ class Customer
      */
     public function getGroupID(): int
     {
-        return (int)$this->kKundengruppe;
+        $customerGroupID = (int)$this->kKundengruppe > 0 ? (int)$this->kKundengruppe : CustomerGroup::getCurrent();
+
+        return $customerGroupID > 0 ? $customerGroupID : CustomerGroup::getDefaultGroupID();
     }
 
     /**
@@ -854,49 +914,56 @@ class Customer
      * @param string $salutation
      * @param int    $languageID
      * @param int    $customerID
-     * @return mixed
+     * @return string
      * @former mappeKundenanrede()
      */
-    public static function mapSalutation($salutation, int $languageID, int $customerID = 0)
+    public static function mapSalutation(string $salutation, int $languageID, int $customerID = 0): string
     {
-        if (($languageID > 0 || $customerID > 0) && $salutation !== '') {
-            if ($languageID === 0 && $customerID > 0) {
-                $customerLangID = Shop::Container()->getDB()->getSingleInt(
-                    'SELECT kSprache
-                        FROM tkunde
-                        WHERE kKunde = :cid',
-                    'kSprache',
-                    ['cid' => $customerID]
-                );
-                if ($customerLangID > 0) {
-                    $languageID = $customerLangID;
-                }
-            }
-            $lang     = null;
-            $langCode = '';
-            if ($languageID > 0) { // Kundensprache, falls gesetzt und gültig
-                try {
-                    $lang     = Shop::Lang()->getLanguageByID($languageID);
-                    $langCode = $lang->getCode();
-                } catch (Exception $e) {
-                    $lang = null;
-                }
-            }
-            if ($lang === null) { // Ansonsten Standardsprache
-                $langCode = Shop::Lang()->getDefaultLanguage()->getCode();
-            }
-            $value = Shop::Container()->getDB()->getSingleObject(
-                'SELECT tsprachwerte.cWert
-                    FROM tsprachwerte
-                    JOIN tsprachiso
-                        ON tsprachiso.cISO = :ciso
-                    WHERE tsprachwerte.kSprachISO = tsprachiso.kSprachISO
-                        AND tsprachwerte.cName = :cname',
-                ['ciso' => $langCode, 'cname' => $salutation === 'm' ? 'salutationM' : 'salutationW']
+        if (($languageID <= 0 && $customerID <= 0) || $salutation === '') {
+            return $salutation;
+        }
+        if ($languageID === 0 && $customerID > 0) {
+            $customerLangID = Shop::Container()->getDB()->getSingleInt(
+                'SELECT kSprache
+                    FROM tkunde
+                    WHERE kKunde = :cid',
+                'kSprache',
+                ['cid' => $customerID]
             );
-            if ($value !== null && $value->cWert !== '') {
-                $salutation = $value->cWert;
+            if ($customerLangID > 0) {
+                $languageID = $customerLangID;
             }
+        }
+        $lang     = null;
+        $langCode = '';
+        if ($languageID > 0) { // Kundensprache, falls gesetzt und gültig
+            try {
+                $lang       = Shop::Lang()->getLanguageByID($languageID);
+                $langCode   = $lang->getCode();
+                $languageID = $lang->getId();
+            } catch (Exception) {
+                $lang = null;
+            }
+        }
+        if ($lang === null) { // Ansonsten Standardsprache
+            $default    = Shop::Lang()->getDefaultLanguage();
+            $langCode   = $default->getCode();
+            $languageID = $default->getId();
+        }
+        if ($languageID === Shop::getLanguageID()) {
+            return Shop::Lang()->get($salutation === 'm' ? 'salutationM' : 'salutationW');
+        }
+        $value = Shop::Container()->getDB()->getSingleObject(
+            'SELECT tsprachwerte.cWert
+                FROM tsprachwerte
+                JOIN tsprachiso
+                    ON tsprachiso.cISO = :ciso
+                WHERE tsprachwerte.kSprachISO = tsprachiso.kSprachISO
+                    AND tsprachwerte.cName = :cname',
+            ['ciso' => $langCode, 'cname' => $salutation === 'm' ? 'salutationM' : 'salutationW']
+        );
+        if ($value !== null && $value->cWert !== '') {
+            $salutation = $value->cWert;
         }
 
         return $salutation;
@@ -907,34 +974,34 @@ class Customer
      * @param int    $issuerID
      * @param bool   $force
      * @param bool   $confirmationMail
+     * @return int
      */
     public function deleteAccount(
         string $issuerType,
         int $issuerID,
         bool $force = false,
         bool $confirmationMail = false
-    ): void {
+    ): int {
         $customerID = $this->getID();
-
         if (empty($customerID)) {
-            return;
+            return self::CUSTOMER_DELETE_NO;
         }
-
         if ($force) {
             $this->erasePersonalData($issuerType, $issuerID);
 
-            return;
+            return self::CUSTOMER_DELETE_DONE;
         }
-
         $openOrders = $this->getOpenOrders();
         if (!$openOrders) {
             $this->erasePersonalData($issuerType, $issuerID);
             $logMessage = \sprintf('Account with ID kKunde = %s deleted', $customerID);
+
+            $retVal = self::CUSTOMER_DELETE_DONE;
         } else {
             if ($this->nRegistriert === 0) {
-                return;
+                return self::CUSTOMER_DELETE_NO;
             }
-            Shop::Container()->getDB()->update('tkunde', 'kKunde', $customerID, (object)[
+            $this->db->update('tkunde', 'kKunde', $customerID, (object)[
                 'cPasswort'    => '',
                 'nRegistriert' => 0,
             ]);
@@ -953,6 +1020,8 @@ class Customer
                 $logMessage,
                 (object)['kKunde' => $customerID]
             );
+
+            $retVal = self::CUSTOMER_DELETE_DEACT;
         }
         Shop::Container()->getLogService()->notice($logMessage);
         if ($confirmationMail) {
@@ -963,6 +1032,8 @@ class Customer
                 (object)['tkunde' => $this]
             ));
         }
+
+        return $retVal;
     }
 
     /**
@@ -971,7 +1042,7 @@ class Customer
     public function getOpenOrders()
     {
         $cancellationTime = Shopsetting::getInstance()->getValue(\CONF_GLOBAL, 'global_cancellation_time');
-        $db               = Shop::Container()->getDB();
+        $db               = $this->db;
         $customerID       = $this->getID();
 
         $openOrders               = $db->getSingleObject(
@@ -1030,7 +1101,7 @@ class Customer
     private function erasePersonalData(string $issuerType, int $issuerID): void
     {
         $customerID = $this->getID();
-        $db         = Shop::Container()->getDB();
+        $db         = $this->db;
         if (empty($customerID)) {
             return;
         }

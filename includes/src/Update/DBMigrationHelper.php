@@ -1,10 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Update;
 
+use Exception;
+use JTL\Backend\DirManager;
 use JTL\DB\DbInterface;
 use JTL\Helpers\Text;
+use JTL\Session\Backend;
 use JTL\Shop;
+use JTLShop\SemVer\Parser;
 use stdClass;
 
 /**
@@ -53,23 +57,14 @@ class DBMigrationHelper
             $innodbSize = 0;
             $paths      = \explode(';', $innodbPath->path);
             foreach ($paths as $path) {
-                if (\preg_match('/:([\d]+)([MGTKmgtk]+)/', $path, $hits)) {
-                    switch (\mb_convert_case($hits[2], \MB_CASE_UPPER)) {
-                        case 'T':
-                            $innodbSize += $hits[1] * 1024 * 1024 * 1024 * 1024;
-                            break;
-                        case 'G':
-                            $innodbSize += $hits[1] * 1024 * 1024 * 1024;
-                            break;
-                        case 'M':
-                            $innodbSize += $hits[1] * 1024 * 1024;
-                            break;
-                        case 'K':
-                            $innodbSize += $hits[1] * 1024;
-                            break;
-                        default:
-                            $innodbSize += $hits[1];
-                    }
+                if (\preg_match('/:(\d+)([MGTKmgtk]+)/', $path, $hits)) {
+                    $innodbSize += match (\mb_convert_case($hits[2], \MB_CASE_UPPER)) {
+                        'T' => $hits[1] * 1024 * 1024 * 1024 * 1024,
+                        'G' => $hits[1] * 1024 * 1024 * 1024,
+                        'M' => $hits[1] * 1024 * 1024,
+                        'K' => $hits[1] * 1024,
+                        default => $hits[1],
+                    };
                 }
             }
         }
@@ -78,7 +73,14 @@ class DBMigrationHelper
         $versionInfo->innodb = new stdClass();
 
         $versionInfo->innodb->support = $innodbSupport && \in_array($innodbSupport->SUPPORT, ['YES', 'DEFAULT'], true);
-        $versionInfo->innodb->version = $db->getSingleObject("SHOW VARIABLES LIKE 'innodb_version'")->Value;
+        /*
+         * Since MariaDB 10.0, the default InnoDB implementation is based on InnoDB from MySQL 5.6.
+         * Since MariaDB 10.3.7 and later, the InnoDB implementation has diverged substantially from the
+         * InnoDB in MySQL and the InnoDB Version is no longer reported.
+         */
+        $versionInfo->innodb->version = $db->getSingleObject(
+            "SHOW VARIABLES LIKE 'innodb_version'"
+        )->Value ?? '';
         $versionInfo->innodb->size    = $innodbSize;
         $versionInfo->collation_utf8  = $utf8Support && \mb_convert_case(
             $utf8Support->IS_COMPILED,
@@ -252,7 +254,7 @@ class DBMigrationHelper
         if (\version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
             $tableInfo = self::getTable($table);
 
-            return $tableInfo !== null && \mb_strpos($tableInfo->TABLE_COMMENT, ':Migrating') !== false;
+            return $tableInfo !== null && \str_contains($tableInfo->TABLE_COMMENT, ':Migrating');
         }
 
         $tableStatus = $db->getSingleObject(
@@ -369,11 +371,9 @@ class DBMigrationHelper
     public static function sqlMoveToInnoDB($table): string
     {
         $mysqlVersion = self::getMySQLVersion();
-
         if (!isset($table->Migration)) {
             $table->Migration = self::isTableNeedMigration($table);
         }
-
         if (($table->Migration & self::MIGRATE_TABLE) === self::MIGRATE_TABLE) {
             $sql = "ALTER TABLE `{$table->TABLE_NAME}` CHARACTER SET='utf8' COLLATE='utf8_unicode_ci' ENGINE='InnoDB'";
         } elseif (($table->Migration & self::MIGRATE_INNODB) === self::MIGRATE_INNODB) {
@@ -394,48 +394,47 @@ class DBMigrationHelper
      * @param string   $lineBreak
      * @return string
      */
-    public static function sqlConvertUTF8($table, $lineBreak = ''): string
+    public static function sqlConvertUTF8(stdClass $table, string $lineBreak = ''): string
     {
         $mysqlVersion = self::getMySQLVersion();
         $columns      = self::getColumnsNeedMigration($table->TABLE_NAME);
         $sql          = '';
-        if ($columns !== false && \count($columns) > 0) {
-            $sql = "ALTER TABLE `{$table->TABLE_NAME}`$lineBreak";
+        if (\count($columns) === 0) {
+            return $sql;
+        }
+        $sql = "ALTER TABLE `{$table->TABLE_NAME}`$lineBreak";
 
-            $columnChange = [];
-            foreach ($columns as $key => $col) {
-                $characterSet = "CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci'";
+        $columnChange = [];
+        foreach ($columns as $key => $col) {
+            $characterSet = "CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci'";
 
-                /* Workaround for quoted values in MariaDB >= 10.2.7 Fix: SHOP-2593 */
-                if ($col->COLUMN_DEFAULT === 'NULL' || $col->COLUMN_DEFAULT === "'NULL'") {
-                    $col->COLUMN_DEFAULT = null;
-                }
-                if ($col->COLUMN_DEFAULT !== null) {
-                    $col->COLUMN_DEFAULT = \trim($col->COLUMN_DEFAULT, '\'');
-                }
-
-                if ($col->DATA_TYPE === 'text') {
-                    $col->COLUMN_TYPE = 'MEDIUMTEXT';
-                }
-
-                if ($col->DATA_TYPE === 'tinyint' && \strpos($col->COLUMN_NAME, 'k') === 0) {
-                    $col->COLUMN_TYPE = 'INT(10) UNSIGNED';
-                    $characterSet = '';
-                }
-
-                $columnChange[] = "    CHANGE COLUMN `{$col->COLUMN_NAME}` `{$col->COLUMN_NAME}` "
-                    . "{$col->COLUMN_TYPE} $characterSet"
-                    . ($col->IS_NULLABLE === 'YES' ? ' NULL' : ' NOT NULL')
-                    . ($col->IS_NULLABLE === 'NO' && $col->COLUMN_DEFAULT === null ? '' : ' DEFAULT '
-                        . ($col->COLUMN_DEFAULT === null ? 'NULL' : "'{$col->COLUMN_DEFAULT}'"))
-                    . (!empty($col->EXTRA) ? ' ' . $col->EXTRA : '');
+            /* Workaround for quoted values in MariaDB >= 10.2.7 Fix: SHOP-2593 */
+            if ($col->COLUMN_DEFAULT === 'NULL' || $col->COLUMN_DEFAULT === "'NULL'") {
+                $col->COLUMN_DEFAULT = null;
+            }
+            if ($col->COLUMN_DEFAULT !== null) {
+                $col->COLUMN_DEFAULT = \trim($col->COLUMN_DEFAULT, '\'');
+            }
+            if ($col->DATA_TYPE === 'text') {
+                $col->COLUMN_TYPE = 'MEDIUMTEXT';
+            }
+            if ($col->DATA_TYPE === 'tinyint' && \str_starts_with($col->COLUMN_NAME, 'k')) {
+                $col->COLUMN_TYPE = 'INT(10) UNSIGNED';
+                $characterSet = '';
             }
 
-            $sql .= \implode(", $lineBreak", $columnChange);
+            $columnChange[] = "    CHANGE COLUMN `{$col->COLUMN_NAME}` `{$col->COLUMN_NAME}` "
+                . "{$col->COLUMN_TYPE} $characterSet"
+                . ($col->IS_NULLABLE === 'YES' ? ' NULL' : ' NOT NULL')
+                . ($col->IS_NULLABLE === 'NO' && $col->COLUMN_DEFAULT === null ? '' : ' DEFAULT '
+                    . ($col->COLUMN_DEFAULT === null ? 'NULL' : "'{$col->COLUMN_DEFAULT}'"))
+                . (!empty($col->EXTRA) ? ' ' . $col->EXTRA : '');
+        }
 
-            if (\version_compare($mysqlVersion->innodb->version, '5.6', '>=')) {
-                $sql .= ', LOCK EXCLUSIVE';
-            }
+        $sql .= \implode(", $lineBreak", $columnChange);
+
+        if (\version_compare($mysqlVersion->innodb->version, '5.6', '>=')) {
+            $sql .= ', LOCK EXCLUSIVE';
         }
 
         return $sql;
@@ -482,5 +481,420 @@ class DBMigrationHelper
         }
 
         return self::SUCCESS;
+    }
+
+    /**
+     * @param string $msg
+     * @param bool   $engineError
+     * @return stdClass
+     * @since 5.2.0
+     */
+    public static function createDBStructError(string $msg, bool $engineError = false): stdClass
+    {
+        return (object)[
+            'errMsg'        => $msg,
+            'isEngineError' => $engineError,
+        ];
+    }
+
+    /**
+     * @param array $dbFileStruct
+     * @param array $dbStruct
+     * @return object[]
+     * @since 5.2.0
+     */
+    public static function compareDBStruct(array $dbFileStruct, array $dbStruct): array
+    {
+        $errors = [];
+        foreach ($dbFileStruct as $table => $columns) {
+            if (!\array_key_exists($table, $dbStruct)) {
+                $errors[$table] = self::createDBStructError(\__('errorNoTable'));
+                continue;
+            }
+            if (($dbStruct[$table]->Migration & self::MIGRATE_INNODB) === self::MIGRATE_INNODB) {
+                $errors[$table] = self::createDBStructError(\sprintf(\__('errorNoInnoTable'), $table), true);
+                continue;
+            }
+            if (($dbStruct[$table]->Migration & self::MIGRATE_UTF8) === self::MIGRATE_UTF8) {
+                $errors[$table] = self::createDBStructError(\sprintf(\__('errorWrongCollation'), $table), true);
+                continue;
+            }
+
+            foreach ($columns as $column) {
+                if (!\in_array($column, isset($dbStruct[$table]->Columns)
+                    ? \array_keys($dbStruct[$table]->Columns)
+                    : $dbStruct[$table], true)
+                ) {
+                    $errors[$table] = self::createDBStructError(\sprintf(\__('errorRowMissing'), $column, $table));
+                    break;
+                }
+
+                if (isset($dbStruct[$table]->Columns[$column])) {
+                    if (!empty($dbStruct[$table]->Columns[$column]->COLLATION_NAME)
+                        && !\in_array(
+                            $dbStruct[$table]->Columns[$column]->COLLATION_NAME,
+                            ['utf8_unicode_ci', 'utf8mb3_unicode_ci']
+                        )
+                    ) {
+                        $errors[$table] = self::createDBStructError(\sprintf(\__('errorWrongCollationRow'), $column));
+                        break;
+                    }
+                    if ($dbStruct[$table]->Columns[$column]->DATA_TYPE === 'text') {
+                        $errors[$table] = self::createDBStructError(
+                            \sprintf(\__('errorDataTypeTextInRow'), $column),
+                            true
+                        );
+                        break;
+                    }
+                    if ($dbStruct[$table]->Columns[$column]->DATA_TYPE === 'tinyint'
+                        && \str_starts_with($dbStruct[$table]->Columns[$column]->COLUMN_NAME, 'k')
+                    ) {
+                        $errors[$table] = self::createDBStructError(
+                            \sprintf(\__('errorDataTypeTinyInRow'), $column),
+                            true
+                        );
+                        break;
+                    }
+                }
+            }
+        }
+
+        return $errors;
+    }
+
+    /**
+     * @param string $status
+     * @param string $tableName
+     * @param int    $step
+     * @param array  $exclude
+     * @return stdClass
+     * @since 5.2.0
+     */
+    public static function doMigrateToInnoDB_utf8(
+        string $status = 'start',
+        string $tableName = '',
+        int $step = 1,
+        array $exclude = []
+    ): stdClass {
+        Shop::Container()->getGetText()->loadAdminLocale('pages/dbcheck');
+
+        $mysqlVersion = self::getMySQLVersion();
+        $tableName    = (string)Text::filterXSS($tableName);
+        $result       = new stdClass();
+        $db           = Shop::Container()->getDB();
+        $doSingle     = false;
+
+        switch (\mb_convert_case($status, \MB_CASE_LOWER)) {
+            case 'stop':
+                $result->nextTable = '';
+                $result->status    = 'all done';
+                break;
+            case 'start':
+                $shopTables = \array_keys(self::getDBFileStruct());
+                $table      = self::getNextTableNeedMigration($db, $exclude);
+                if ($table !== null) {
+                    if (!\in_array($table->TABLE_NAME, $shopTables, true)) {
+                        $exclude[] = $table->TABLE_NAME;
+                        $result    = self::doMigrateToInnoDB_utf8('start', '', 1, $exclude);
+                    } else {
+                        $result->nextTable = $table->TABLE_NAME;
+                        $result->nextStep  = 1;
+                        $result->status    = 'migrate';
+                    }
+                } else {
+                    $result = self::doMigrateToInnoDB_utf8('stop');
+                }
+                break;
+            case 'migrate_single':
+                $doSingle = true;
+            // no break
+            case 'migrate':
+                if (!empty($tableName) && $step === 1) {
+                    // Migration Step 1...
+                    $table     = self::getTable($tableName);
+                    $migration = self::isTableNeedMigration($table);
+                    if (\is_object($table)
+                        && $migration !== self::MIGRATE_NONE
+                        && !\in_array($table->TABLE_NAME, $exclude, true)
+                    ) {
+                        if (!self::isTableInUse($db, $tableName)) {
+                            if (\version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
+                                // If MySQL version is lower than 5.6 use alternative lock method
+                                // and delete all fulltext indexes because these are not supported
+                                $db->query(self::sqlAddLockInfo($table));
+                                $fulltextIndizes = self::getFulltextIndizes($table->TABLE_NAME);
+                                if ($fulltextIndizes) {
+                                    foreach ($fulltextIndizes as $fulltextIndex) {
+                                        $db->query(
+                                            'ALTER TABLE `' . $table->TABLE_NAME . '`
+                                            DROP KEY `' . $fulltextIndex->INDEX_NAME . '`'
+                                        );
+                                    }
+                                }
+                            }
+                            if (($migration & self::MIGRATE_TABLE) !== 0) {
+                                $fkSQLs = self::sqlRecreateFKs($table->TABLE_NAME);
+                                foreach ($fkSQLs->dropFK as $fkSQL) {
+                                    $db->query($fkSQL);
+                                }
+                                $migrate = $db->query(self::sqlMoveToInnoDB($table));
+                                foreach ($fkSQLs->createFK as $fkSQL) {
+                                    $db->query($fkSQL);
+                                }
+                            } else {
+                                $migrate = true;
+                            }
+                            if ($migrate) {
+                                $result->nextTable = $tableName;
+                                $result->nextStep  = 2;
+                                $result->status    = 'migrate';
+                            } else {
+                                $result->status = 'failure';
+                            }
+                            if (\version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
+                                $db->query(self::sqlClearLockInfo($table));
+                            }
+                        } else {
+                            $result->status = 'in_use';
+                        }
+                    } else {
+                        // Get next table for migration...
+                        $exclude[] = $tableName;
+                        $result    = $doSingle
+                            ? self::doMigrateToInnoDB_utf8('stop')
+                            : self::doMigrateToInnoDB_utf8('start', '', 1, $exclude);
+                    }
+                } elseif (!empty($tableName) && $step === 2) {
+                    // Migration Step 2...
+                    if (!self::isTableInUse($db, $tableName)) {
+                        $table = self::getTable($tableName);
+                        $sql   = self::sqlConvertUTF8($table);
+                        if (!empty($sql)) {
+                            if ($db->query($sql)) {
+                                // Get next table for migration...
+                                $result = $doSingle
+                                    ? self::doMigrateToInnoDB_utf8('stop')
+                                    : self::doMigrateToInnoDB_utf8('start', '', 1, $exclude);
+                            } else {
+                                $result->status = 'failure';
+                            }
+                        } else {
+                            // Get next table for migration...
+                            $result = $doSingle
+                                ? self::doMigrateToInnoDB_utf8('stop')
+                                : self::doMigrateToInnoDB_utf8('start', '', 1, $exclude);
+                        }
+                    } else {
+                        $result->status = 'in_use';
+                    }
+                }
+
+                break;
+            case 'clear cache':
+                // Objektcache leeren
+                try {
+                    $cache = Shop::Container()->getCache();
+                    $cache->setJtlCacheConfig($db->selectAll('teinstellungen', 'kEinstellungenSektion', \CONF_CACHING));
+                    $cache->flushAll();
+                } catch (Exception $e) {
+                    Shop::Container()->getLogService()->error(\sprintf(\__('errorEmptyCache'), $e->getMessage()));
+                }
+                $callback    = static function (array $pParameters) {
+                    if (\str_starts_with($pParameters['filename'], '.')) {
+                        return;
+                    }
+                    if (!$pParameters['isdir']) {
+                        @\unlink($pParameters['path'] . $pParameters['filename']);
+                    } else {
+                        @\rmdir($pParameters['path'] . $pParameters['filename']);
+                    }
+                };
+                $templateDir = Shop::Container()->getTemplateService()->getActiveTemplate()->getDir();
+                $dirMan      = new DirManager();
+                $dirMan->getData(\PFAD_ROOT . \PFAD_COMPILEDIR . $templateDir, $callback);
+                $dirMan->getData(\PFAD_ROOT . \PFAD_ADMIN . \PFAD_COMPILEDIR, $callback);
+                // Reset Fulltext search if version is lower than 5.6
+                if (\version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
+                    $db->query(
+                        "UPDATE `teinstellungen` 
+                            SET `cWert` = 'N' 
+                            WHERE `cName` = 'suche_fulltext'"
+                    );
+                }
+                $result->nextTable = '';
+                $result->status    = 'finished';
+                break;
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param bool $extended
+     * @param bool $clearCache
+     * @return array
+     * @since 5.2.0
+     */
+    public static function getDBStruct(bool $extended = false, bool $clearCache = false): array
+    {
+        static $dbStruct = [
+            'normal'   => null,
+            'extended' => null,
+        ];
+
+        $db           = Shop::Container()->getDB();
+        $cache        = Shop::Container()->getCache();
+        $dbLocked     = [];
+        $database     = $db->getConfig()['database'];
+        $mysqlVersion = self::getMySQLVersion();
+
+        if ($clearCache) {
+            if ($cache->isActive()) {
+                $cache->flushTags([\CACHING_GROUP_CORE . '_getDBStruct']);
+            } else {
+                Backend::set('getDBStruct_extended', false);
+                Backend::set('getDBStruct_normal', false);
+            }
+            $dbStruct['extended'] = null;
+            $dbStruct['normal']   = null;
+        }
+
+        if ($extended) {
+            $cacheID = 'getDBStruct_extended';
+            if ($dbStruct['extended'] === null) {
+                $dbStruct['extended'] = $cache->isActive()
+                    ? $cache->get($cacheID)
+                    : Backend::get($cacheID, false);
+            }
+            $dbStructure =& $dbStruct['extended'];
+
+            if (\version_compare($mysqlVersion->innodb->version, '5.6', '>=')) {
+                $dbStatus = $db->getObjects(
+                    'SHOW OPEN TABLES
+                    WHERE `Database` LIKE :schema',
+                    ['schema' => $database]
+                );
+                if ($dbStatus) {
+                    foreach ($dbStatus as $oStatus) {
+                        if ((int)$oStatus->In_use > 0) {
+                            $dbLocked[$oStatus->Table] = 1;
+                        }
+                    }
+                }
+            }
+        } else {
+            $cacheID = 'getDBStruct_normal';
+            if ($dbStruct['normal'] === null) {
+                $dbStruct['normal'] = $cache->isActive()
+                    ? $cache->get($cacheID)
+                    : Backend::get($cacheID);
+            }
+            $dbStructure =& $dbStruct['normal'];
+        }
+
+        if ($dbStructure === false) {
+            $dbStructure = [];
+            $dbData      = $db->getObjects(
+                "SELECT t.`TABLE_NAME`, t.`ENGINE`, `TABLE_COLLATION`, t.`TABLE_ROWS`, t.`TABLE_COMMENT`,
+                    t.`DATA_LENGTH` + t.`INDEX_LENGTH` AS DATA_SIZE,
+                    COUNT(IF(c.DATA_TYPE = 'text', c.COLUMN_NAME, NULL)) TEXT_FIELDS,
+                    COUNT(IF(c.DATA_TYPE = 'tinyint', c.COLUMN_NAME, NULL)) TINY_FIELDS,
+                    COUNT(IF(c.COLLATION_NAME RLIKE 'utf8(mb3)?_unicode_ci', NULL, c.COLLATION_NAME)) FIELD_COLLATIONS
+                FROM information_schema.TABLES t
+                LEFT JOIN information_schema.COLUMNS c ON c.TABLE_NAME = t.TABLE_NAME
+                    AND c.TABLE_SCHEMA = t.TABLE_SCHEMA
+                    AND (c.DATA_TYPE = 'text'
+                        OR (c.DATA_TYPE = 'tinyint' AND SUBSTRING(c.COLUMN_NAME, 1, 1) = 'k')
+                        OR c.COLLATION_NAME NOT RLIKE 'utf8(mb3)?_unicode_ci')
+                WHERE t.`TABLE_SCHEMA` = :schema
+                    AND t.`TABLE_NAME` NOT LIKE 'xplugin_%'
+                GROUP BY t.`TABLE_NAME`, t.`ENGINE`, `TABLE_COLLATION`, t.`TABLE_ROWS`, t.`TABLE_COMMENT`,
+                    t.`DATA_LENGTH` + t.`INDEX_LENGTH`
+                ORDER BY t.`TABLE_NAME`",
+                ['schema' => $database]
+            );
+
+            foreach ($dbData as $data) {
+                $table = $data->TABLE_NAME;
+                if ($extended) {
+                    $dbStructure[$table]            = $data;
+                    $dbStructure[$table]->Columns   = [];
+                    $dbStructure[$table]->Migration = self::MIGRATE_NONE;
+                    if (\version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
+                        $dbStructure[$table]->Locked = \str_contains($data->TABLE_COMMENT, ':Migrating') ? 1 : 0;
+                    } else {
+                        $dbStructure[$table]->Locked = $dbLocked[$table] ?? 0;
+                    }
+                } else {
+                    $dbStructure[$table] = [];
+                }
+
+                $columns = $db->getObjects(
+                    'SELECT `COLUMN_NAME`, `DATA_TYPE`, `COLUMN_TYPE`, `CHARACTER_SET_NAME`, `COLLATION_NAME`
+                        FROM information_schema.COLUMNS
+                        WHERE `TABLE_SCHEMA` = :schema
+                            AND `TABLE_NAME` = :table
+                        ORDER BY `ORDINAL_POSITION`',
+                    [
+                        'schema' => $database,
+                        'table'  => $table
+                    ]
+                );
+                foreach ($columns as $column) {
+                    if ($extended) {
+                        $dbStructure[$table]->Columns[$column->COLUMN_NAME] = $column;
+                    } else {
+                        $dbStructure[$table][] = $column->COLUMN_NAME;
+                    }
+                }
+                if ($extended) {
+                    $dbStructure[$table]->Migration = self::isTableNeedMigration($data);
+                }
+            }
+            if ($cache->isActive()) {
+                $cache->set(
+                    $cacheID,
+                    $dbStructure,
+                    [\CACHING_GROUP_CORE, \CACHING_GROUP_CORE . '_getDBStruct']
+                );
+            } else {
+                Backend::set($cacheID, $dbStructure);
+            }
+        } elseif ($extended) {
+            foreach (\array_keys($dbStructure) as $table) {
+                $dbStructure[$table]->Locked = $dbLocked[$table] ?? 0;
+            }
+        }
+
+        return $dbStructure;
+    }
+
+    /**
+     * @return array
+     * @since 5.2.0
+     */
+    public static function getDBFileStruct(): array
+    {
+        $version    = Parser::parse(\APPLICATION_VERSION);
+        $versionStr = $version->getMajor() . '-' . $version->getMinor() . '-' . $version->getPatch();
+        if ($version->hasPreRelease()) {
+            $preRelease  = $version->getPreRelease();
+            $versionStr .= '-' . $preRelease->getGreek();
+            if ($preRelease->getReleaseNumber() > 0) {
+                $versionStr .= '-' . $preRelease->getReleaseNumber();
+            }
+        }
+
+        $fileList = \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . \PFAD_SHOPMD5 . 'dbstruct_' . $versionStr . '.json';
+        if (!\file_exists($fileList)) {
+            return [];
+        }
+        try {
+            $struct = \json_decode(\file_get_contents($fileList), false, 512, \JSON_THROW_ON_ERROR);
+        } catch (\JsonException) {
+            $struct = null;
+        }
+
+        return \is_object($struct) ? \get_object_vars($struct) : [];
     }
 }

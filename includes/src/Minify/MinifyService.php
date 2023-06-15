@@ -15,7 +15,7 @@ class MinifyService
     /**
      * @var string
      */
-    protected $baseDir = \PFAD_ROOT . \PATH_STATIC_MINIFY;
+    protected string $baseDir = \PFAD_ROOT . \PATH_STATIC_MINIFY;
 
     public const TYPE_CSS = 'css';
 
@@ -46,7 +46,7 @@ class MinifyService
         $query     = \ltrim($query, '?');
         $ext       = '.' . $type;
         $cacheTime = $cacheTime ?? $this->getCacheTime();
-        if (\substr($query, -\strlen($ext)) !== $ext) {
+        if (!\str_ends_with($query, $ext)) {
             $query .= '&z=' . $ext;
         }
 
@@ -86,7 +86,7 @@ class MinifyService
     {
         $time = $this->getCacheTime(false);
 
-        return $time ? $this->removeTree($this->baseDir . $time) : false;
+        return $time && $this->removeTree($this->baseDir . $time);
     }
 
     /**
@@ -147,6 +147,9 @@ class MinifyService
                 } else {
                     $uri = 'asset/' . $group . '?v=' . $tplVersion;
                 }
+                if ($template->getIsPreview()) {
+                    $uri .= '&preview=1';
+                }
                 $res[$type][$group] = $uri;
             }
         }
@@ -163,7 +166,9 @@ class MinifyService
             }
             $combinedCSS .= '?v=' . $tplVersion;
         }
-
+        if ($template->getIsPreview()) {
+            $combinedCSS .= '&preview=1';
+        }
         $smarty->assign('cPluginCss_arr', $minify['plugin_css'])
             ->assign('cPluginJsHead_arr', $minify['plugin_js_head'])
             ->assign('cPluginJsBody_arr', $minify['plugin_js_body'])

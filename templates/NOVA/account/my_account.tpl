@@ -111,9 +111,19 @@
                                                 <small class="text-muted-util d-block">{$Kunde->cStrasse} {$Kunde->cHausnummer}, {$Kunde->cPLZ} {$Kunde->cOrt}, {$Kunde->cLand}</small>
                                             </td>
                                             <td class="text-right-util">
-                                                {link href="$cCanonicalURL?editRechnungsadresse=1"
-                                                    aria=["label"=>{lang key='editBillingAdress' section='account data'}]
-                                                }
+                                                {link href="$cCanonicalURL?editRechnungsadresse=1" aria=["label"=>{lang key='editBillingAdress' section='account data'}]}
+                                                    <span class="fas fa-pencil-alt"></span>
+                                                {/link}
+                                            </td>
+                                        </tr>
+                                    {/block}
+                                    {block name='account-my-account-shipping-address-shipping-address'}
+                                        <tr>
+                                            <td class="min-w-sm">
+                                                {lang key='shippingAdress' section='account data'}
+                                            </td>
+                                            <td class="text-right-util">
+                                                {link href="$cCanonicalURL?editLieferadresse=1" aria=["label"=>{lang key='editShippingAddress' section='account data'}]}
                                                     <span class="fas fa-pencil-alt"></span>
                                                 {/link}
                                             </td>
@@ -175,11 +185,12 @@
                             <div class="table-responsive">
                                 <table class="table table-vertical-middle table-hover">
                                     <tbody>
+                                    {get_static_route id='wunschliste.php' assign='wlSlug'}
                                     {foreach $oWunschliste_arr as $wishlist}
                                         <tr>
                                             {block name='account-my-account-wishlist-name'}
                                                 <td>
-                                                    {link href="{get_static_route id='wunschliste.php'}?wl={$wishlist->getID()}"}{$wishlist->getName()}{/link}<br />
+                                                    {link href="{$wlSlug}?wl={$wishlist->getID()}"}{$wishlist->getName()}{/link}<br />
                                                     <small>{$wishlist->getProductCount()} {lang key='products'}</small>
                                                 </td>
                                             {/block}

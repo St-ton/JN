@@ -22,7 +22,7 @@ class Rating extends AbstractFilter
     /**
      * @var array
      */
-    public static $mapping = [
+    public static array $mapping = [
         'nSterne' => 'Value'
     ];
 

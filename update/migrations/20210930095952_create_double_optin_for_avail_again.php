@@ -23,7 +23,7 @@ class Migration_20210930095952 extends Migration implements IMigration
     protected $description = 'Create double optin for avail again';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -40,12 +40,15 @@ class Migration_20210930095952 extends Migration implements IMigration
                     AND (vfb.dBenachrichtigtAm IS NULL)',
             ReturnType::ARRAY_OF_OBJECTS
         );
+        $options                             = Artikel::getDefaultOptions();
+        $options->nKeineSichtbarkeitBeachten = 1;
+        $this->db->commit();
         foreach ($subscriptions as $subscription) {
-            $options                             = Artikel::getDefaultOptions();
-            $options->nKeineSichtbarkeitBeachten = 1;
-
+            if (empty($subscription->cMail)) {
+                continue;
+            }
             $product = (new Artikel($this->db))->fuelleArtikel((int)$subscription->kArtikel, $options);
-            if ($product === null || empty($subscription->cMail)) {
+            if ($product === null || empty($product->kArtikel)) {
                 continue;
             }
             /** @var OptinAvailAgain $availAgainOptin */
@@ -68,7 +71,7 @@ class Migration_20210930095952 extends Migration implements IMigration
                 'kOptinCode'  => 'Migration_20210930095952_' . $subscription->kVerfuegbarkeitsbenachrichtigung,
                 'kOptinClass' => OptinAvailAgain::class,
                 'cMail'       => $subscription->cMail,
-                'cRefData'    => \serialize($refData),
+                'cRefData'    => serialize($refData),
                 'dCreated'   => 'now()',
                 'dActivated' => 'now()',
             ]);
@@ -76,7 +79,7 @@ class Migration_20210930095952 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

@@ -4,6 +4,7 @@ namespace JTL\Backend\Settings\Sections;
 
 use JTL\DB\SqlObject;
 use JTL\Helpers\Text;
+use JTL\Shop;
 use stdClass;
 
 /**
@@ -76,6 +77,7 @@ class Export extends Base
             $this->db->insert('texportformateinstellungen', $ins);
             $updated[] = ['id' => $id, 'value' => $data[$id]];
         }
+        Shop::Container()->getCache()->flushTags($tags);
 
         return $updated;
     }

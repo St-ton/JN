@@ -9,7 +9,7 @@ msgid "shoptemplateURL"
 msgstr "https://jtl-url.de/4t1so"
 
 msgid "shoptemplatesDesc"
-msgstr "This page contains all templates included in the folder \"/templates/\" of the JTL-Shop root directory. If you have a new template and want to use it, use <abbr title=\"FTP (File Transfer Protocol) is a data transfer protocol\">FTP</abbr> to move it to this directory first. You can only activate one normal and one mobile template for JTL-Shop at the same time. Use the button \"Settings\" to configure the activated template."
+msgstr "This page contains all templates included in the folder \"/templates/\" of the JTL-Shop root directory. If you have a new template and want to use it, please transfer it via the upload function further down on this page or transfer it to this directory via <abbr title=\"FTP (File Transfer Protocol) is a file transfer protocol \">FTP</abbr>. <br> If you are logged into the back end, you can also view a preview of the template by selecting \"Activate preview\". Your online shop customers will still see the regular template. When the preview mode is active, it can also be accessed using the URL parameter \"preview\" (example: <a href=\"%s\">%s</a>). You can configure both the active regular template as well as the preview template by clicking the \"Settings\" button."
 
 msgid "templateName"
 msgstr "Template name"
@@ -43,6 +43,15 @@ msgstr "Yes (optimised for mobile devices)"
 
 msgid "activateTemplate"
 msgstr "Activate template"
+
+msgid "Enable preview"
+msgstr "Activate preview"
+
+msgid "Disable preview"
+msgstr "Deactivate preview"
+
+msgid "Might not work correctly in preview mode"
+msgstr "Might not work correctly in preview mode"
 
 msgid "inheritsFrom"
 msgstr "Inherits from %s"
@@ -86,6 +95,9 @@ msgstr "XML node \"Name\" not found."
 msgid "errorInvalidVersion"
 msgstr "No valid SemVer."
 
+msgid "errorInvalidNamespace"
+msgstr "Invalid namespace."
+
 msgid "errorUnknown"
 msgstr "Unknown error."
 
@@ -94,3 +106,6 @@ msgstr "Please note: This template requires a newer version of JTL-Shop. This mi
 
 msgid "dangerMaxShopVersion"
 msgstr "Please note: This template was developed for an older version of JTL-Shop. This might lead to performance issues."
+
+msgid "Preview activated"
+msgstr "Preview activated"

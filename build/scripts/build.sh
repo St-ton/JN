@@ -5,7 +5,12 @@ build_create()
     # $1 repository dir
     export REPOSITORY_DIR=$1;
     # $2 target build version
-    export APPLICATION_VERSION=$2;
+    export APPLICATION_VERSION_BASE=$2;
+    if [[ $2 =~ (release)?\/?v?(.*) ]]; then
+      export APPLICATION_VERSION="v${BASH_REMATCH[2]}";
+    else
+      export APPLICATION_VERSION=$2;
+    fi
     # $3 last commit sha
     local APPLICATION_BUILD_SHA=$3;
     # $4 database host
@@ -30,7 +35,7 @@ build_create()
 
 	# extract version from defines_inc.php -> APPLICATION_VERSION
 	definesInc=`cat ${REPOSITORY_DIR}/includes/defines_inc.php`;
-	pattern=".*define\('APPLICATION_VERSION', '([0-9]\.[0-9].[0-9])(-(alpha|beta|rc)(\\.([0-9]{1,}))?)?'\);";
+	pattern="const[[:blank:]]APPLICATION_VERSION[[:blank:]]*=[[:blank:]]*'([0-9]\.[0-9].[0-9])(-(alpha|beta|rc)(\\.([0-9]{1,}))?)?';"
 
 	if [[ $definesInc =~ $pattern ]];then
 		if [[ ! -z "${BASH_REMATCH[2]}" ]]; then
@@ -55,7 +60,7 @@ build_create()
     fi
 
 	# insert git sha hash into defines_inc.php -> APPLICATION_BUILD_SHA
-    sed -i "s/'APPLICATION_BUILD_SHA', '#DEV#'/'APPLICATION_BUILD_SHA', '${APPLICATION_BUILD_SHA}'/g" ${REPOSITORY_DIR}/includes/defines_inc.php
+    sed -ri "s/const APPLICATION_BUILD_SHA( *)= '#DEV#'/const APPLICATION_BUILD_SHA\1= '${APPLICATION_BUILD_SHA}'/g" ${REPOSITORY_DIR}/includes/defines_inc.php
 
     echo "Executing composer";
     build_composer_execute;
@@ -128,7 +133,7 @@ build_create_deleted_files_csv()
     local BRANCH_REGEX="(master|release\\/([0-9]{1,})\\.([0-9]{1,}))";
     local REMOTE_STR="";
 
-    if [[ ${APPLICATION_VERSION} =~ ${BRANCH_REGEX} ]]; then
+    if [[ ${APPLICATION_VERSION_BASE} =~ ${BRANCH_REGEX} ]]; then
         REMOTE_STR="origin/";
     else
         REMOTE_STR="tags/";
@@ -136,7 +141,7 @@ build_create_deleted_files_csv()
 
     cd ${REPOSITORY_DIR};
     git pull >/dev/null 2>&1;
-    git diff --name-only --diff-filter D tags/v4.03.0 ${REMOTE_STR}${APPLICATION_VERSION} -- ${REPOSITORY_DIR} ':!admin/classes' ':!classes' ':!includes/ext' ':!includes/plugins' ':!templates/Evo' > ${DELETE_FILES_CSV_FILENAME};
+    git diff --name-only --diff-filter D tags/v4.03.0 ${REMOTE_STR}${APPLICATION_VERSION_BASE} -- ${REPOSITORY_DIR} ':!admin/classes' ':!classes' ':!includes/ext' ':!includes/plugins' ':!templates/Evo' > ${DELETE_FILES_CSV_FILENAME};
 
     echo "  Deleted files schema admin/includes/shopmd5files/deleted_files_${VERSION}.csv";
 }

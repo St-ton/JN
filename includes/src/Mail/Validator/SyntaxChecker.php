@@ -25,34 +25,16 @@ use stdClass;
 final class SyntaxChecker
 {
     /**
-     * @var RendererInterface
-     */
-    private $renderer;
-
-    /**
-     * @var HydratorInterface
-     */
-    private $hydrator;
-
-    /**
-     * @var TemplateFactory
-     */
-    private $factory;
-
-    /**
      * SyntaxChecker constructor.
      * @param TemplateFactory   $factory
      * @param RendererInterface $renderer
      * @param HydratorInterface $hydrator
      */
     public function __construct(
-        TemplateFactory $factory,
-        RendererInterface $renderer,
-        HydratorInterface $hydrator
+        private TemplateFactory $factory,
+        private RendererInterface $renderer,
+        private HydratorInterface $hydrator
     ) {
-        $this->factory  = $factory;
-        $this->hydrator = $hydrator;
-        $this->renderer = $renderer;
     }
 
     /**
@@ -71,7 +53,7 @@ final class SyntaxChecker
     {
         try {
             return Shop::Smarty()->assign('template', $model)->fetch('snippets/mailtemplate_state.tpl');
-        } catch (SmartyException | Exception $e) {
+        } catch (SmartyException | Exception) {
             return '';
         }
     }
@@ -130,7 +112,7 @@ final class SyntaxChecker
             $html = $this->renderer->renderHTML($id);
             $text = $this->renderer->renderText($id);
             if (!\in_array($moduleID, ['core_jtl_footer', 'core_jtl_header'], true)
-                && (\mb_strlen(\trim($html)) === 0 || \mb_strlen(\trim($text)) === 0)
+                && (\trim($html) === '' || \trim($text) === '')
             ) {
                 $model->setHasError(true);
                 $res->state   = 'fail';
@@ -206,7 +188,7 @@ final class SyntaxChecker
             $model->setSyntaxCheck($model::SYNTAX_NOT_CHECKED);
             $model->save();
 
-            foreach (LanguageHelper::getAllLanguages() as $lang) {
+            foreach (LanguageHelper::getAllLanguages(0, true, true) as $lang) {
                 $template->load($lang->getId(), 1);
                 $res->result[$lang->getCode()] = $sc->doCheck($lang, $model);
             }

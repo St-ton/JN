@@ -27,6 +27,9 @@
                     eModal.confirm(options).then(
                         function() {
                             window.location = "{get_static_route id='bestellvorgang.php'}?basket2Pers=1&token={$smarty.session.jtl_token}"
+                        },
+                        function() {
+                            window.location = "{get_static_route id='jtl.php'}?updatePersCart=1&token={$smarty.session.jtl_token}"
                         }
                     );
                 </script>{/inline_script}
@@ -48,6 +51,10 @@
                     {elseif $step === 'rechnungsdaten'}
                         {block name='account-index-include-address-form'}
                             {include file='account/address_form.tpl'}
+                        {/block}
+                    {elseif $step === 'lieferadressen'}
+                        {block name='account-index-include-shippingaddress-form'}
+                            {include file='account/shipping_address_form.tpl'}
                         {/block}
                     {elseif $step === 'passwort aendern'}
                         {block name='account-index-include-change-password'}

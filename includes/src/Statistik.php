@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL;
 
@@ -15,32 +15,32 @@ class Statistik
     /**
      * @var int
      */
-    private $nAnzeigeIntervall;
+    private int $interval = 0;
 
     /**
      * @var int
      */
-    private $nTage;
+    private int $days = 0;
 
     /**
      * @var int
      */
-    private $nStampVon;
+    private int $stampFrom = 0;
 
     /**
      * @var int
      */
-    private $nStampBis;
+    private int $stampUntil = 0;
 
     /**
      * @var array
      */
-    private $cDatumVon_arr;
+    private array $dateStartParts = [];
 
     /**
      * @var array
      */
-    private $cDatumBis_arr;
+    private array $dateUntilParts = [];
 
     /**
      * @param int    $stampFrom
@@ -48,21 +48,14 @@ class Statistik
      * @param string $dateFrom
      * @param string $dateUntil
      */
-    public function __construct($stampFrom = 0, $stampUntil = 0, $dateFrom = '', $dateUntil = '')
+    public function __construct(int $stampFrom = 0, int $stampUntil = 0, string $dateFrom = '', string $dateUntil = '')
     {
-        $this->nAnzeigeIntervall = 0;
-        $this->nTage             = 0;
-        $this->cDatumVon_arr     = [];
-        $this->cDatumBis_arr     = [];
-        $this->nStampVon         = 0;
-        $this->nStampBis         = 0;
-
         if (\mb_strlen($dateFrom) > 0 && \mb_strlen($dateUntil) > 0) {
-            $this->cDatumVon_arr = Date::getDateParts($dateFrom);
-            $this->cDatumBis_arr = Date::getDateParts($dateUntil);
-        } elseif ((int)$stampFrom > 0 && (int)$stampUntil > 0) {
-            $this->nStampVon = (int)$stampFrom;
-            $this->nStampBis = (int)$stampUntil;
+            $this->dateStartParts = Date::getDateParts($dateFrom);
+            $this->dateUntilParts = Date::getDateParts($dateUntil);
+        } elseif ($stampFrom > 0 && $stampUntil > 0) {
+            $this->stampFrom  = $stampFrom;
+            $this->stampUntil = $stampUntil;
         }
     }
 
@@ -72,13 +65,13 @@ class Statistik
      */
     public function holeBesucherStats(int $interval = 0): array
     {
-        if (($this->nStampVon > 0 && $this->nStampBis > 0)
-            || (\count($this->cDatumVon_arr) > 0 && \count($this->cDatumBis_arr) > 0)
+        if (($this->stampFrom > 0 && $this->stampUntil > 0)
+            || (\count($this->dateStartParts) > 0 && \count($this->dateUntilParts) > 0)
         ) {
-            $this->gibDifferenz();
-            $this->gibAnzeigeIntervall();
+            $this->calculateDaysDiff();
+            $this->calculateInterval();
             if ($interval > 0) {
-                $this->nAnzeigeIntervall = $interval;
+                $this->interval = $interval;
             }
             $dateSQL = $this->getDateSQL('dZeit');
             $stats   = Shop::Container()->getDB()->getObjects(
@@ -107,7 +100,7 @@ class Statistik
                 $dateSQL->getParams()
             );
 
-            return $this->mergeDaten($stats);
+            return $this->merge($stats);
         }
 
         return [];
@@ -118,11 +111,11 @@ class Statistik
      */
     public function holeKundenherkunftStats(): array
     {
-        if (($this->nStampVon > 0 && $this->nStampBis > 0)
-            || (\count($this->cDatumVon_arr) > 0 && \count($this->cDatumBis_arr) > 0)
+        if (($this->stampFrom > 0 && $this->stampUntil > 0)
+            || (\count($this->dateStartParts) > 0 && \count($this->dateUntilParts) > 0)
         ) {
-            $this->gibDifferenz();
-            $this->gibAnzeigeIntervall();
+            $this->calculateDaysDiff();
+            $this->calculateInterval();
 
             $dateSQL = $this->getDateSQL('dZeit');
 
@@ -158,11 +151,11 @@ class Statistik
      */
     public function holeBotStats(int $limit = -1): array
     {
-        if (($this->nStampVon > 0 && $this->nStampBis > 0) ||
-            (\count($this->cDatumVon_arr) > 0 && \count($this->cDatumBis_arr) > 0)
+        if (($this->stampFrom > 0 && $this->stampUntil > 0) ||
+            (\count($this->dateStartParts) > 0 && \count($this->dateUntilParts) > 0)
         ) {
-            $this->gibDifferenz();
-            $this->gibAnzeigeIntervall();
+            $this->calculateDaysDiff();
+            $this->calculateInterval();
 
             $dateSQL = $this->getDateSQL('dZeit');
 
@@ -193,15 +186,15 @@ class Statistik
      */
     public function holeUmsatzStats(): array
     {
-        if (($this->nStampVon > 0 && $this->nStampBis > 0)
-            || (\count($this->cDatumVon_arr) > 0 && \count($this->cDatumBis_arr) > 0)
+        if (($this->stampFrom > 0 && $this->stampUntil > 0)
+            || (\count($this->dateStartParts) > 0 && \count($this->dateUntilParts) > 0)
         ) {
-            $this->gibDifferenz();
-            $this->gibAnzeigeIntervall();
+            $this->calculateDaysDiff();
+            $this->calculateInterval();
 
             $dateSQL = $this->getDateSQL('tbestellung.dErstellt');
 
-            return $this->mergeDaten(Shop::Container()->getDB()->getObjects(
+            return $this->merge(Shop::Container()->getDB()->getObjects(
                 "SELECT tbestellung.dErstellt AS dZeit, SUM(tbestellung.fGesamtsumme) AS nCount,
                     DATE_FORMAT(tbestellung.dErstellt, '%m') AS nMonth,
                     DATE_FORMAT(tbestellung.dErstellt, '%H') AS nHour,
@@ -224,11 +217,11 @@ class Statistik
      */
     public function holeEinstiegsseiten(): array
     {
-        if (($this->nStampVon > 0 && $this->nStampBis > 0)
-            || (\count($this->cDatumVon_arr) > 0 && \count($this->cDatumBis_arr) > 0)
+        if (($this->stampFrom > 0 && $this->stampUntil > 0)
+            || (\count($this->dateStartParts) > 0 && \count($this->dateUntilParts) > 0)
         ) {
-            $this->gibDifferenz();
-            $this->gibAnzeigeIntervall();
+            $this->calculateDaysDiff();
+            $this->calculateInterval();
 
             $dateSQL = $this->getDateSQL('dZeit');
 
@@ -258,22 +251,20 @@ class Statistik
     /**
      * @return $this
      */
-    private function gibDifferenz(): self
+    private function calculateDaysDiff(): self
     {
-        if (\count($this->cDatumVon_arr) > 0 && \count($this->cDatumBis_arr) > 0) {
+        if (\count($this->dateStartParts) > 0 && \count($this->dateUntilParts) > 0) {
             $dateDiff = Shop::Container()->getDB()->getSingleObject(
                 'SELECT DATEDIFF(:to, :from) AS nTage',
-                ['from' => $this->cDatumVon_arr['cDatum'], 'to' => $this->cDatumBis_arr['cDatum']]
+                ['from' => $this->dateStartParts['cDatum'], 'to' => $this->dateUntilParts['cDatum']]
             );
             if ($dateDiff !== null) {
-                $this->nTage = (int)$dateDiff->nTage + 1;
+                $this->days = (int)$dateDiff->nTage + 1;
             }
-        } elseif ($this->nStampVon > 0 && $this->nStampBis > 0) {
-            $this->nTage = ($this->nStampBis - $this->nStampVon) / 3600 / 24;
-            if ($this->nTage <= 1) {
-                $this->nTage = 1;
-            } else {
-                $this->nTage = (int)\floor($this->nTage);
+        } elseif ($this->stampFrom > 0 && $this->stampUntil > 0) {
+            $this->days = (int)\floor(($this->stampUntil - $this->stampFrom) / 3600 / 24);
+            if ($this->days <= 1) {
+                $this->days = 1;
             }
         }
 
@@ -283,16 +274,16 @@ class Statistik
     /**
      * @return $this
      */
-    private function gibAnzeigeIntervall(): self
+    private function calculateInterval(): self
     {
-        if ($this->nTage === 1) {
-            $this->nAnzeigeIntervall = 1;
-        } elseif ($this->nTage <= 31) { // Tage
-            $this->nAnzeigeIntervall = 2;
-        } elseif ($this->nTage <= 365) { // Monate
-            $this->nAnzeigeIntervall = 3;
+        if ($this->days === 1) {
+            $this->interval = 1;
+        } elseif ($this->days <= 31) { // Tage
+            $this->interval = 2;
+        } elseif ($this->days <= 365) { // Monate
+            $this->interval = 3;
         } else { // Jahre
-            $this->nAnzeigeIntervall = 4;
+            $this->interval = 4;
         }
 
         return $this;
@@ -305,26 +296,26 @@ class Statistik
     private function getDateSQL(string $row): SqlObject
     {
         $date = new SqlObject();
-        if (\count($this->cDatumVon_arr) > 0 && \count($this->cDatumBis_arr) > 0) {
+        if (\count($this->dateStartParts) > 0 && \count($this->dateUntilParts) > 0) {
             $timeStart = '00:00:00';
-            if (isset($this->cDatumVon_arr['cZeit']) && \mb_strlen($this->cDatumVon_arr['cZeit']) > 0) {
-                $timeStart = $this->cDatumVon_arr['cZeit'];
+            if (isset($this->dateStartParts['cZeit']) && \mb_strlen($this->dateStartParts['cZeit']) > 0) {
+                $timeStart = $this->dateStartParts['cZeit'];
             }
             $timeEnd = '23:59:59';
-            if (isset($this->cDatumBis_arr['cZeit']) && \mb_strlen($this->cDatumBis_arr['cZeit']) > 0) {
-                $timeEnd = $this->cDatumBis_arr['cZeit'];
+            if (isset($this->dateUntilParts['cZeit']) && \mb_strlen($this->dateUntilParts['cZeit']) > 0) {
+                $timeEnd = $this->dateUntilParts['cZeit'];
             }
             $date->setWhere(' WHERE ' . $row . ' BETWEEN :strt AND :nd ');
-            $date->addParam(':strt', $this->cDatumVon_arr['cDatum'] . ' ' . $timeStart);
-            $date->addParam(':nd', $this->cDatumBis_arr['cDatum'] . ' ' . $timeEnd);
-        } elseif ($this->nStampVon > 0 && $this->nStampBis > 0) {
+            $date->addParam(':strt', $this->dateStartParts['cDatum'] . ' ' . $timeStart);
+            $date->addParam(':nd', $this->dateUntilParts['cDatum'] . ' ' . $timeEnd);
+        } elseif ($this->stampFrom > 0 && $this->stampUntil > 0) {
             $date->setWhere(' WHERE ' . $row . ' BETWEEN :strt AND :nd');
-            $date->addParam(':strt', \date('Y-m-d H:i:s', $this->nStampVon));
-            $date->addParam(':nd', \date('Y-m-d H:i:s', $this->nStampBis));
+            $date->addParam(':strt', \date('Y-m-d H:i:s', $this->stampFrom));
+            $date->addParam(':nd', \date('Y-m-d H:i:s', $this->stampUntil));
         }
 
-        if ($this->nAnzeigeIntervall > 0) {
-            switch ($this->nAnzeigeIntervall) {
+        if ($this->interval > 0) {
+            switch ($this->interval) {
                 case 1: // Stunden
                     $date->setGroupBy(' GROUP BY HOUR(' . $row . ')');
                     break;
@@ -351,15 +342,15 @@ class Statistik
      */
     private function vordefStats(): array
     {
-        if (!$this->nAnzeigeIntervall) {
+        if (!$this->interval) {
             return [];
         }
         $stats = [];
-        $day   = (int)\date('d', $this->nStampVon);
-        $month = (int)\date('m', $this->nStampVon);
-        $year  = (int)\date('Y', $this->nStampVon);
+        $day   = (int)\date('d', $this->stampFrom);
+        $month = (int)\date('m', $this->stampFrom);
+        $year  = (int)\date('Y', $this->stampFrom);
 
-        switch ($this->nAnzeigeIntervall) {
+        switch ($this->interval) {
             case 1: // Stunden
                 for ($i = 0; $i <= 23; $i++) {
                     $stat         = new stdClass();
@@ -398,12 +389,12 @@ class Statistik
                 break;
 
             case 4:    // Jahre
-                if (\count($this->cDatumVon_arr) > 0 && \count($this->cDatumBis_arr) > 0) {
-                    $yearStart = (int)\date('Y', \strtotime($this->cDatumVon_arr['cDatum']));
-                    $yearEnd   = (int)\date('Y', \strtotime($this->cDatumBis_arr['cDatum']));
-                } elseif ($this->nStampVon > 0 && $this->nStampBis > 0) {
-                    $yearStart = (int)\date('Y', $this->nStampVon);
-                    $yearEnd   = (int)\date('Y', $this->nStampBis);
+                if (\count($this->dateStartParts) > 0 && \count($this->dateUntilParts) > 0) {
+                    $yearStart = (int)\date('Y', \strtotime($this->dateStartParts['cDatum']));
+                    $yearEnd   = (int)\date('Y', \strtotime($this->dateUntilParts['cDatum']));
+                } elseif ($this->stampFrom > 0 && $this->stampUntil > 0) {
+                    $yearStart = (int)\date('Y', $this->stampFrom);
+                    $yearEnd   = (int)\date('Y', $this->stampUntil);
                 } else {
                     $yearStart = (int)\date('Y') - 1;
                     $yearEnd   = (int)\date('Y') + 10;
@@ -424,17 +415,17 @@ class Statistik
      * @param array $tmpData
      * @return array
      */
-    private function mergeDaten(array $tmpData): array
+    private function merge(array $tmpData): array
     {
         $stats     = $this->vordefStats();
-        $dayFrom   = (int)\date('d', $this->nStampVon);
-        $monthFrom = (int)\date('m', $this->nStampVon);
-        $yearFrom  = (int)\date('Y', $this->nStampVon);
-        $dayTo     = (int)\date('d', $this->nStampBis);
-        $monthTo   = (int)\date('m', $this->nStampBis);
-        $yearTo    = (int)\date('Y', $this->nStampBis);
-        if ($this->nStampVon !== null) {
-            switch ($this->nAnzeigeIntervall) {
+        $dayFrom   = (int)\date('d', $this->stampFrom);
+        $monthFrom = (int)\date('m', $this->stampFrom);
+        $yearFrom  = (int)\date('Y', $this->stampFrom);
+        $dayTo     = (int)\date('d', $this->stampUntil);
+        $monthTo   = (int)\date('m', $this->stampUntil);
+        $yearTo    = (int)\date('Y', $this->stampUntil);
+        if ($this->stampFrom > 0) {
+            switch ($this->interval) {
                 case 1: // Stunden
                     $start = \mktime(0, 0, 0, $monthFrom, $dayFrom, $yearFrom);
                     $end   = \mktime(23, 59, 59, $monthTo, $dayTo, $yearTo);
@@ -468,8 +459,8 @@ class Statistik
                     break;
             }
 
-            foreach ($stats as $i => $oStat) {
-                $time = (int)$oStat->dZeit;
+            foreach ($stats as $i => $item) {
+                $time = (int)$item->dZeit;
                 if ($time < $start || $time > $end) {
                     unset($stats[$i]);
                 }
@@ -479,63 +470,61 @@ class Statistik
         if (\count($tmpData) === 0) {
             return [];
         }
-        foreach ($stats as $i => $oStat) {
+        foreach ($stats as $item) {
             $found = false;
-            foreach ($tmpData as $oStatTMP) {
+            foreach ($tmpData as $tmpItem) {
                 $break = false;
-                switch ($this->nAnzeigeIntervall) {
+                switch ($this->interval) {
                     case 1: // Stunden
-                        if (\date('H', $oStat->dZeit) === $oStatTMP->nHour) {
-                            $stats[$i]->nCount = $oStatTMP->nCount;
-                            $stats[$i]->dZeit  = $oStatTMP->nHour;
-                            $break             = true;
+                        if (\date('H', $item->dZeit) === $tmpItem->nHour) {
+                            $item->nCount = (int)$tmpItem->nCount;
+                            $item->dZeit  = $tmpItem->nHour;
+                            $break        = true;
                         }
                         break;
 
                     case 2: // Tage
-                        if (\date('d.m.', $oStat->dZeit) === $oStatTMP->nDay . '.' . $oStatTMP->nMonth . '.') {
-                            $stats[$i]->nCount = $oStatTMP->nCount;
-                            $stats[$i]->dZeit  = $oStatTMP->nDay . '.' . $oStatTMP->nMonth . '.';
-                            $break             = true;
+                        if (\date('d.m.', $item->dZeit) === $tmpItem->nDay . '.' . $tmpItem->nMonth . '.') {
+                            $item->nCount = (int)$tmpItem->nCount;
+                            $item->dZeit  = $tmpItem->nDay . '.' . $tmpItem->nMonth . '.';
+                            $break        = true;
                         }
                         break;
 
                     case 3: // Monate
-                        if (\date('m.Y', $oStat->dZeit) === $oStatTMP->nMonth . '.' . $oStatTMP->nYear) {
-                            $stats[$i]->nCount = $oStatTMP->nCount;
-                            $stats[$i]->dZeit  = $oStatTMP->nMonth . '.' . $oStatTMP->nYear;
-                            $break             = true;
+                        if (\date('m.Y', $item->dZeit) === $tmpItem->nMonth . '.' . $tmpItem->nYear) {
+                            $item->nCount = (int)$tmpItem->nCount;
+                            $item->dZeit  = $tmpItem->nMonth . '.' . $tmpItem->nYear;
+                            $break        = true;
                         }
                         break;
 
                     case 4: // Jahre
-                        if (\date('Y', $oStat->dZeit) === $oStatTMP->nYear) {
-                            $stats[$i]->nCount = $oStatTMP->nCount;
-                            $stats[$i]->dZeit  = $oStatTMP->nYear;
-                            $break             = true;
+                        if (\date('Y', $item->dZeit) === $tmpItem->nYear) {
+                            $item->nCount = (int)$tmpItem->nCount;
+                            $item->dZeit  = $tmpItem->nYear;
+                            $break        = true;
                         }
                         break;
                 }
-
                 if ($break) {
                     $found = true;
                     break;
                 }
             }
-
             if (!$found) {
-                switch ($this->nAnzeigeIntervall) {
+                switch ($this->interval) {
                     case 1: // Stunden
-                        $stats[$i]->dZeit = \date('H', $stats[$i]->dZeit);
+                        $item->dZeit = \date('H', (int)$item->dZeit);
                         break;
                     case 2: // Tage
-                        $stats[$i]->dZeit = \date('d.m.', $stats[$i]->dZeit);
+                        $item->dZeit = \date('d.m.', (int)$item->dZeit);
                         break;
                     case 3: // Monate
-                        $stats[$i]->dZeit = \date('m.Y', $stats[$i]->dZeit);
+                        $item->dZeit = \date('m.Y', (int)$item->dZeit);
                         break;
                     case 4: // Jahre
-                        $stats[$i]->dZeit = \date('Y', $stats[$i]->dZeit);
+                        $item->dZeit = \date('Y', (int)$item->dZeit);
                         break;
                 }
             }
@@ -548,9 +537,9 @@ class Statistik
      * @param string $cDatumVon
      * @return $this
      */
-    public function setDatumVon($cDatumVon): self
+    public function setDatumVon(string $cDatumVon): self
     {
-        $this->cDatumVon_arr = Date::getDateParts($cDatumVon);
+        $this->dateStartParts = Date::getDateParts($cDatumVon);
 
         return $this;
     }
@@ -559,9 +548,9 @@ class Statistik
      * @param string $cDatumBis
      * @return $this
      */
-    public function setDatumBis($cDatumBis): self
+    public function setDatumBis(string $cDatumBis): self
     {
-        $this->cDatumBis_arr = Date::getDateParts($cDatumBis);
+        $this->dateUntilParts = Date::getDateParts($cDatumBis);
 
         return $this;
     }
@@ -572,7 +561,7 @@ class Statistik
      */
     public function setDatumStampVon(int $nDatumVon): self
     {
-        $this->nStampVon = $nDatumVon;
+        $this->stampFrom = $nDatumVon;
 
         return $this;
     }
@@ -583,7 +572,7 @@ class Statistik
      */
     public function setDatumStampBis(int $nDatumBis): self
     {
-        $this->nStampBis = $nDatumBis;
+        $this->stampUntil = $nDatumBis;
 
         return $this;
     }
@@ -593,15 +582,15 @@ class Statistik
      */
     public function getAnzeigeIntervall(): int
     {
-        if ($this->nAnzeigeIntervall === 0) {
-            if ($this->nTage === 0) {
-                $this->gibDifferenz();
+        if ($this->interval === 0) {
+            if ($this->days === 0) {
+                $this->calculateDaysDiff();
             }
 
-            $this->gibAnzeigeIntervall();
+            $this->calculateInterval();
         }
 
-        return $this->nAnzeigeIntervall;
+        return $this->interval;
     }
 
     /**
@@ -609,10 +598,10 @@ class Statistik
      */
     public function getAnzahlTage(): int
     {
-        if ($this->nTage === 0) {
-            $this->gibDifferenz();
+        if ($this->days === 0) {
+            $this->calculateDaysDiff();
         }
 
-        return $this->nTage;
+        return $this->days;
     }
 }

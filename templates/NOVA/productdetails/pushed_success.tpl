@@ -52,18 +52,20 @@
                                                         <dt class="col-6">{lang key='characteristics' section='comparelist'}:</dt>
                                                         <dd class="col-6 attr-characteristic">
                                                             {block name='productdetails-pushed-success-characteristics'}
-                                                                {foreach $pushedArtikel->oMerkmale_arr as $oMerkmal}
-                                                                    {$oMerkmal->cName}
-                                                                    {if $oMerkmal@index === 10 && !$oMerkmal@last}&hellip;{break}{/if}
-                                                                    {if !$oMerkmal@last}, {/if}
+                                                                {foreach $pushedArtikel->oMerkmale_arr as $characteristic}
+                                                                    {$characteristic->getName()}
+                                                                    {if $characteristic@index === 10 && !$characteristic@last}&hellip;{break}{/if}
+                                                                    {if !$characteristic@last}, {/if}
                                                                 {/foreach}
                                                             {/block}
                                                         </dd>
                                                     {/if}
-                                                    {if isset($pushedArtikel->dMHD) && isset($pushedArtikel->dMHD_de)}
-                                                        <dt class="col-6">{lang key='productMHDTool'}:</dt>
-                                                        <dd class="col-6">{$pushedArtikel->dMHD_de}</dd>
-                                                    {/if}
+                                                    {block name='productdetails-pushed-success-mhd'}
+                                                        {if isset($pushedArtikel->dMHD) && isset($pushedArtikel->dMHD_de)}
+                                                            <dt class="col-6">{lang key='productMHDTool'}:</dt>
+                                                            <dd class="col-6">{$pushedArtikel->dMHD_de}</dd>
+                                                        {/if}
+                                                    {/block}
                                                     {if $Einstellungen.artikeluebersicht.artikeluebersicht_gewicht_anzeigen === 'Y' && isset($pushedArtikel->cGewicht) && $pushedArtikel->fGewicht > 0}
                                                         <dt class="col-6">{lang key='shippingWeight'}:</dt>
                                                         <dd class="col-6">{$pushedArtikel->cGewicht} {lang key='weightUnit'}</dd>
@@ -91,11 +93,11 @@
                     {block name='productdetails-pushed-success-product-cell-links'}
                         {row class="pushed-success-buttons"}
                             {col cols=12 md=6}
-                                {link href=$pushedArtikel->cURLFull
+                                {link href="#" attribs=["onclick"=>"$.evo.article().navigateBackToList()"]
                                     class="btn btn-outline-primary btn-block continue-shopping"
-                                    data=["dismiss"=>"{if !$card}modal{else}alert{/if}"]
+                                    data=["dismiss"=>"{if !$card}modal{/if}"]
                                     aria=["label"=>"Close"]}
-                                    <i class="fa fa-arrow-circle-right"></i> {lang key='continueShopping' section='checkout'}
+                                    <i class="fa fa-arrow-circle-left"></i> {lang key='continueShopping' section='checkout'}
                                 {/link}
                             {/col}
                             {col cols=12 md=6}

@@ -28,7 +28,7 @@ final class Boxes extends AbstractItem
         }
         foreach ($node as $i => $box) {
             $i = (string)$i;
-            \preg_match('/[0-9]+/', $i, $hits3);
+            \preg_match('/\d+/', $i, $hits3);
             if (\mb_strlen($hits3[0]) !== \mb_strlen($i)) {
                 continue;
             }

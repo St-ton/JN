@@ -56,7 +56,7 @@ class FileCheck
                     $mtime    = \filemtime($prefix . $shopFile);
                     $result[] = (object)[
                         'name'         => $shopFile,
-                        'lastModified' => \date('d.m.Y H:i:s', $mtime)
+                        'lastModified' => \date('d.m.Y H:i:s', $mtime ?: null)
                     ];
                     $errors++;
                 }
@@ -71,7 +71,7 @@ class FileCheck
                     $mtime    = \file_exists($path) ? \filemtime($path) : 0;
                     $result[] = (object)[
                         'name'         => $file,
-                        'lastModified' => \date('d.m.Y H:i:s', $mtime)
+                        'lastModified' => \date('d.m.Y H:i:s', $mtime ?: null)
                     ];
                     $errors++;
                 }
@@ -108,46 +108,40 @@ class FileCheck
     {
         /** @var Filesystem $fs */
         $fs     = Shop::Container()->get(Filesystem::class);
+        $count  = 0;
+        $files  = [];
+        $dirs   = [];
         $finder = new Finder();
         $finder->append(map($orphanedFiles, static function (stdClass $e) {
             return \PFAD_ROOT . $e->name;
         }));
-        $count = 0;
-        $zip   = new ZipArchive();
-        if ($zip->open($backupFile, ZipArchive::CREATE) !== true) {
+        foreach ($finder as $file) {
+            if ($file->getType() === 'dir') {
+                $dirs[] = $file->getPathname();
+            } else {
+                $files[] = $file->getPathname();
+            }
+        }
+        $zipFinder = new Finder();
+        $zipFinder->in($dirs);
+        $zipFinder->append($files);
+        try {
+            $fs->zip($zipFinder, $backupFile);
+        } catch (Exception) {
             return -1;
         }
-        foreach ($finder->files() as $file) {
-            /** @var \SplFileInfo $file */
-            $path = $file->getPathname();
-            $pos  = \strpos($path, \PFAD_ROOT);
-            if ($pos === 0) {
-                $path = \substr_replace($path, '', $pos, \strlen(\PFAD_ROOT));
-            }
-            if ($file->getType() === 'file') {
-                $zip->addFile(PFAD_ROOT . $path, $path);
-            } elseif ($file->getType() === 'dir') {
-                $this->folderToZip(PFAD_ROOT . $path, $zip, \strlen(PFAD_ROOT));
-            }
-        }
-        $zip->close();
-        $i = 0;
-        foreach ($finder->files() as $file) {
-            /** @var \SplFileInfo $file */
-            $path = \substr($file->getPathname(), \strlen(\PFAD_ROOT));
+        foreach ($finder as $file) {
             try {
-                if ($file->getType() === 'file') {
-                    $fs->delete($path);
-                    unset($orphanedFiles[$i]);
-                    ++$count;
-                } elseif ($file->getType() === 'dir') {
-                    $fs->deleteDirectory($path);
-                    ++$count;
-                    unset($orphanedFiles[$i]);
+                $fsPath = \mb_substr($file->getPathname(), \mb_strlen(\PFAD_ROOT));
+                if ($file->getType() === 'dir') {
+                    $fs->deleteDirectory($fsPath);
+                } else {
+                    $fs->delete($fsPath);
                 }
-            } catch (Exception $e) {
+                unset($orphanedFiles[$count]);
+                ++$count;
+            } catch (Exception) {
             }
-            $i++;
         }
 
         return $count;

@@ -188,11 +188,20 @@ msgstr "Go to JTL-Extension Store"
 msgid "Your shop version is not compatible with this plugin version"
 msgstr "Your shop version is not compatible with this plugin version"
 
-msgid "Shop version not compatible or subscription expired"
-msgstr "Shop version not compatible or subscription expired"
+msgid "Shop version not compatible"
+msgstr "Shop version not compatible"
+
+msgid "PHP version too low"
+msgstr "PHP version too low"
+
+msgid "PHP version too high"
+msgstr "PHP version too high"
 
 msgid "Key"
 msgstr "Key"
 
 msgid "Invalid token."
 msgstr "Invalid token."
+
+msgid "Changelog"
+msgstr "Changelog"

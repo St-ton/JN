@@ -8,7 +8,7 @@
         <div class="dropdown-menu" aria-labelledby="versandart">
             {foreach $versandberechnungen as $versandberechnung}
                 <a class="dropdown-item">
-                    <form name="versandart_neu" method="post" action="{$adminURL}/versandarten.php">
+                    <form name="versandart_neu" method="post" action="{$adminURL}{$route}">
                         {$jtl_token}
                         <input type="hidden" name="neu" value="1" />
                         <input type="hidden" id="l{$versandberechnung@index}" name="kVersandberechnung" value="{$versandberechnung->kVersandberechnung}" {if $versandberechnung@index == 0}checked="checked"{/if} />
@@ -44,7 +44,7 @@
                                         {$collapse=1}
                                     {/if}
                                     {strip}
-                                        <a href="{$adminURL}/versandarten.php?zuschlag=1&kVersandart={$versandart->kVersandart}&cISO={$country->getISO()}&token={$smarty.session.jtl_token}"
+                                        <a href="{$adminURL}{$route}?zuschlag=1&kVersandart={$versandart->kVersandart}&cISO={$country->getISO()}&token={$smarty.session.jtl_token}"
                                             data-toggle="tooltip"
                                             title="{__('isleListsDesc')}">
                                             <span class="small">
@@ -67,7 +67,7 @@
                         </td>
                         <td>
                             <ul class="list-unstyled">
-                            {if $versandart->versandklassen|count == 1 && $versandart->versandklassen[0] === 'Alle'}
+                            {if count($versandart->versandklassen) == 1 && $versandart->versandklassen[0] === 'Alle'}
                                 <li><span class="badge badge-primary text-wrap">{__('all')}</span></li>
                             {else}
                                 {foreach $versandart->versandklassen as $versandklasse}
@@ -124,7 +124,7 @@
                             </ul>
                         </td>
                         <td>
-                            <form method="post" action="{$adminURL}/versandarten.php">
+                            <form method="post" action="{$adminURL}{$route}">
                                 {$jtl_token}
                                 <div class="btn-group">
                                     <button name="del"

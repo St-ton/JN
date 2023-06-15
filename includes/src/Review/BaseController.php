@@ -15,33 +15,34 @@ use stdClass;
 /**
  * Class BaseController
  * @package JTL\Review
+ * @deprecated since 5.2.0
  */
 abstract class BaseController
 {
     /**
      * @var DbInterface
      */
-    protected $db;
+    protected DbInterface $db;
 
     /**
      * @var array
      */
-    protected $config;
+    protected array $config;
 
     /**
      * @var JTLSmarty
      */
-    protected $smarty;
+    protected JTLSmarty $smarty;
 
     /**
      * @var JTLCacheInterface
      */
-    protected $cache;
+    protected JTLCacheInterface $cache;
 
     /**
      * @var AlertServiceInterface
      */
-    protected $alertService;
+    protected AlertServiceInterface $alertService;
 
     /**
      * @param int    $productID
@@ -50,36 +51,7 @@ abstract class BaseController
      */
     public function updateAverage(int $productID, string $activate): bool
     {
-        $sql = $activate === 'Y' ? ' AND nAktiv = 1' : '';
-        $cnt = (int)$this->db->getSingleObject(
-            'SELECT COUNT(*) AS nAnzahl
-                FROM tbewertung
-                WHERE kArtikel = :pid' . $sql,
-            ['pid' => $productID]
-        )->nAnzahl;
-        if ($cnt === 1) {
-            $sql = '';
-        } elseif ($cnt === 0) {
-            $this->db->delete('tartikelext', 'kArtikel', $productID);
-
-            return false;
-        }
-        $avg = $this->db->getSingleObject(
-            'SELECT (SUM(nSterne) / COUNT(*)) AS fDurchschnitt
-                FROM tbewertung
-                WHERE kArtikel = :pid' . $sql,
-            ['pid' => $productID]
-        );
-        if ($avg !== null && $avg->fDurchschnitt > 0) {
-            $this->db->delete('tartikelext', 'kArtikel', $productID);
-            $ext                          = new stdClass();
-            $ext->kArtikel                = $productID;
-            $ext->fDurchschnittsBewertung = (float)$avg->fDurchschnitt;
-
-            $this->db->insert('tartikelext', $ext);
-        }
-
-        return true;
+        return false;
     }
 
     /**
@@ -88,54 +60,7 @@ abstract class BaseController
      */
     public function addReward(ReviewModel $review): float
     {
-        $reward = 0.0;
-        if ($this->config['bewertung']['bewertung_guthaben_nutzen'] !== 'Y') {
-            return $reward;
-        }
-        $maxBalance    = (float)$this->config['bewertung']['bewertung_max_guthaben'];
-        $level2balance = (float)$this->config['bewertung']['bewertung_stufe2_guthaben'];
-        $level1balance = (float)$this->config['bewertung']['bewertung_stufe1_guthaben'];
-        $reviewBonus   = $this->db->getSingleObject(
-            'SELECT SUM(fGuthabenBonus) AS fGuthabenProMonat
-                FROM tbewertungguthabenbonus
-                WHERE kKunde = :cid
-                    AND kBewertung != :rid
-                    AND YEAR(dDatum) = :dyear
-                    AND MONTH(dDatum) = :dmonth',
-            [
-                'cid'    => $review->getCustomerID(),
-                'rid'    => $review->getId(),
-                'dyear'  => \date('Y'),
-                'dmonth' => \date('m')
-            ]
-        );
-        if ($reviewBonus !== null && (float)$reviewBonus->fGuthabenProMonat > $maxBalance) {
-            return $reward;
-        }
-        if ((int)$this->config['bewertung']['bewertung_stufe2_anzahlzeichen'] <= \mb_strlen($review->getContent())) {
-            $reward = ((float)$reviewBonus->fGuthabenProMonat + $level2balance) > $maxBalance
-                ? $maxBalance - (float)$reviewBonus->fGuthabenProMonat
-                : $level2balance;
-        } else {
-            $reward = ((float)$reviewBonus->fGuthabenProMonat + $level1balance) > $maxBalance
-                ? $maxBalance - (float)$reviewBonus->fGuthabenProMonat
-                : $level1balance;
-        }
-        $this->increaseCustomerBalance($review->getCustomerID(), $reward);
-
-        $reviewBonus = ReviewBonusModel::loadByAttributes(
-            ['customerID' => $review->getCustomerID(), 'reviewID' => $review->getId()],
-            $this->db,
-            ReviewBonusModel::ON_NOTEXISTS_NEW
-        );
-        $reviewBonus->setBonus($reward);
-        $reviewBonus->setReviewID($review->getId());
-        $reviewBonus->setCustomerID($review->getCustomerID());
-        $reviewBonus->setDate('NOW()');
-        $reviewBonus->save();
-        $this->sendRewardMail($reviewBonus);
-
-        return $reward;
+        return 0.0;
     }
 
     /**

@@ -34,12 +34,12 @@ class Plugins
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var JTLCacheInterface
      */
-    private $cache;
+    private JTLCacheInterface $cache;
 
     /**
      * Plugins constructor.
@@ -197,13 +197,10 @@ class Plugins
             $categories = new KategorieListe();
             $list       = $categories->getAllCategoriesOnLevel($id);
         }
-
         if (isset($params['categoryBoxNumber']) && (int)$params['categoryBoxNumber'] > 0) {
             $list2 = [];
             foreach ($list as $key => $item) {
-                if (isset($item->categoryFunctionAttributes[\KAT_ATTRIBUT_KATEGORIEBOX])
-                    && $item->categoryFunctionAttributes[\KAT_ATTRIBUT_KATEGORIEBOX] == $params['categoryBoxNumber']
-                ) {
+                if ($item->getCategoryFunctionAttribute(\KAT_ATTRIBUT_KATEGORIEBOX) == $params['categoryBoxNumber']) {
                     $list2[$key] = $item;
                 }
             }
@@ -259,7 +256,7 @@ class Plugins
         $alt   = isset($params['alt']) ? ' alt="' . $this->truncate($params['alt'], 75) . '"' : '';
         $title = isset($params['title']) ? ' title="' . $this->truncate($params['title'], 75) . '"' : '';
         $class = isset($params['class']) ? ' class="' . $this->truncate($params['class'], 75) . '"' : '';
-        if (\strpos($url, 'http') !== 0) {
+        if (!\str_starts_with($url, 'http')) {
             $url = Shop::getImageBaseURL() . \ltrim($url, '/');
         }
         if ($size !== null && $size->size->width > 0 && $size->size->height > 0) {
@@ -328,17 +325,17 @@ class Plugins
 
                 if ($fVPEWert > 0) {
                     $surcharge->cPreisVPEWertAufpreis     = Preise::getLocalizedPriceString(
-                            $netSurcharge / $fVPEWert,
-                            $currency,
-                            true,
-                            $precision
-                        ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
+                        $netSurcharge / $fVPEWert,
+                        $currency,
+                        true,
+                        $precision
+                    ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
                     $surcharge->cPreisVPEWertInklAufpreis = Preise::getLocalizedPriceString(
-                            ($netSurcharge + $fVKNetto) / $fVPEWert,
-                            $currency,
-                            true,
-                            $precision
-                        ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
+                        ($netSurcharge + $fVKNetto) / $fVPEWert,
+                        $currency,
+                        true,
+                        $precision
+                    ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
 
                     $surcharge->cAufpreisLocalized .= ', ' . $surcharge->cPreisVPEWertAufpreis;
                     $surcharge->cPreisInklAufpreis .= ', ' . $surcharge->cPreisVPEWertInklAufpreis;
@@ -358,20 +355,20 @@ class Plugins
 
                 if ($fVPEWert > 0) {
                     $surcharge->cPreisVPEWertAufpreis     = Preise::getLocalizedPriceString(
-                            Tax::getGross($netSurcharge / $fVPEWert, $_SESSION['Steuersatz'][$kSteuerklasse]),
-                            $currency,
-                            true,
-                            $precision
-                        ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
+                        Tax::getGross($netSurcharge / $fVPEWert, $_SESSION['Steuersatz'][$kSteuerklasse]),
+                        $currency,
+                        true,
+                        $precision
+                    ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
                     $surcharge->cPreisVPEWertInklAufpreis = Preise::getLocalizedPriceString(
-                            Tax::getGross(
-                                ($netSurcharge + $fVKNetto) / $fVPEWert,
-                                $_SESSION['Steuersatz'][$kSteuerklasse]
-                            ),
-                            $currency,
-                            true,
-                            $precision
-                        ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
+                        Tax::getGross(
+                            ($netSurcharge + $fVKNetto) / $fVPEWert,
+                            $_SESSION['Steuersatz'][$kSteuerklasse]
+                        ),
+                        $currency,
+                        true,
+                        $precision
+                    ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
 
                     $surcharge->cAufpreisLocalized .= ', ' . $surcharge->cPreisVPEWertAufpreis;
                     $surcharge->cPreisInklAufpreis .= ', ' . $surcharge->cPreisVPEWertInklAufpreis;
@@ -385,6 +382,22 @@ class Plugins
     }
 
     /**
+     * @param int $location
+     * @param int $languageID
+     * @return CheckBox[]
+     */
+    private function getCheckboxes(int $location, int $languageID): array
+    {
+        $cid        = 'cb_' . $location . '_' . $languageID;
+        $checkBoxes = Shop::has($cid)
+            ? Shop::get($cid)
+            : (new CheckBox(0, $this->db))->getCheckBoxFrontend($location, 0, true, true);
+        Shop::set($cid, $checkBoxes);
+
+        return $checkBoxes;
+    }
+
+    /**
      * @param array                $params
      * @param Smarty_Internal_Data $smarty
      */
@@ -392,7 +405,7 @@ class Plugins
     {
         $smarty->assign(
             $params['bReturn'],
-            \count((new CheckBox())->getCheckBoxFrontend((int)$params['nAnzeigeOrt'], 0, true, true)) > 0
+            \count($this->getCheckboxes((int)$params['nAnzeigeOrt'], Shop::getLanguageID())) > 0
         );
     }
 
@@ -403,31 +416,25 @@ class Plugins
     public function getCheckBoxForLocation($params, $smarty): void
     {
         $langID     = Shop::getLanguageID();
-        $cid        = 'cb_' . (int)$params['nAnzeigeOrt'] . '_' . $langID;
-        $checkBoxes = Shop::has($cid)
-            ? Shop::get($cid)
-            : (new CheckBox())->getCheckBoxFrontend((int)$params['nAnzeigeOrt'], 0, true, true);
-        if (\count($checkBoxes) > 0) {
-            foreach ($checkBoxes as $checkBox) {
-                $url                     = $checkBox->kLink > 0
-                    ? $checkBox->getLink()->getURL()
-                    : '';
-                $error                   = isset($params['cPlausi_arr'][$checkBox->cID]);
-                $checkBox->isActive      = isset($params['cPost_arr'][$checkBox->cID]);
-                $checkBox->cName         = $checkBox->oCheckBoxSprache_arr[$langID]->cText ?? '';
-                $checkBox->cLinkURL      = $url;
-                $checkBox->cLinkURLFull  = $url;
-                $checkBox->cBeschreibung = !empty($checkBox->oCheckBoxSprache_arr[$langID]->cBeschreibung)
-                    ? $checkBox->oCheckBoxSprache_arr[$langID]->cBeschreibung
-                    : '';
-                $checkBox->cErrormsg     = $error
-                    ? Shop::Lang()->get('pleasyAccept', 'account data')
-                    : '';
-            }
-            Shop::set($cid, $checkBoxes);
-            if (isset($params['assign'])) {
-                $smarty->assign($params['assign'], $checkBoxes);
-            }
+        $checkboxes = $this->getCheckboxes((int)$params['nAnzeigeOrt'], $langID);
+        foreach ($checkboxes as $checkbox) {
+            $url                     = $checkbox->kLink > 0
+                ? $checkbox->getLink()->getURL()
+                : '';
+            $error                   = isset($params['cPlausi_arr'][$checkbox->cID]);
+            $checkbox->isActive      = isset($params['cPost_arr'][$checkbox->cID]);
+            $checkbox->cName         = $checkbox->oCheckBoxSprache_arr[$langID]->cText ?? '';
+            $checkbox->cLinkURL      = $url;
+            $checkbox->cLinkURLFull  = $url;
+            $checkbox->cBeschreibung = !empty($checkbox->oCheckBoxSprache_arr[$langID]->cBeschreibung)
+                ? $checkbox->oCheckBoxSprache_arr[$langID]->cBeschreibung
+                : '';
+            $checkbox->cErrormsg     = $error
+                ? Shop::Lang()->get('pleasyAccept', 'account data')
+                : '';
+        }
+        if (isset($params['assign'])) {
+            $smarty->assign($params['assign'], $checkboxes);
         }
     }
 
@@ -463,7 +470,7 @@ class Plugins
             }
         }
 
-        $sep = (\strpos($url, '?') === false) ? '?' : '&';
+        $sep = (!\str_contains($url, '?')) ? '?' : '&';
 
         return $url . $sep . ($reset ? 'aaReset=' : 'aaParams=') . \base64_encode($paramString);
     }
@@ -538,7 +545,7 @@ class Plugins
         }
         $imageBaseURL = Shop::getImageBaseURL();
         foreach ($result as $size => $data) {
-            if (isset($data->src) && \strpos($data->src, 'http') !== 0) {
+            if (isset($data->src) && !\str_starts_with($data->src, 'http')) {
                 $data->src = $imageBaseURL . $data->src;
             }
         }
@@ -555,7 +562,10 @@ class Plugins
      */
     public function getImageSize($image)
     {
-        $path = \strpos($image, \PFAD_BILDER) === 0
+        if ($image === null) {
+            return null;
+        }
+        $path = \str_starts_with($image, \PFAD_BILDER)
             ? PFAD_ROOT . $image
             : $image;
         if (\file_exists($path)) {
@@ -606,7 +616,7 @@ class Plugins
         if (isset($params['kLink']) && (int)$params['kLink'] > 0) {
             $linkID  = (int)$params['kLink'];
             $link    = Shop::Container()->getLinkService()->getLinkByID($linkID);
-            $content = $link !== null ? $link->getContent() : null;
+            $content = $link?->getContent();
             if (isset($params['assign'])) {
                 $smarty->assign($params['assign'], $content);
             } else {
@@ -639,15 +649,15 @@ class Plugins
 
         $maxVariationCount = isset($params['maxVariationCount']) ? (int)$params['maxVariationCount'] : 1;
         $maxWerteCount     = isset($params['maxWerteCount']) ? (int)$params['maxWerteCount'] : 3;
-        $variationCheck    = function ($Variationen, $maxVariationCount, $maxWerteCount) {
+        $variationCheck    = static function ($variations, $maxVariationCount, $maxValueCount) {
             $result   = true;
-            $varCount = \is_array($Variationen) ? \count($Variationen) : 0;
+            $varCount = \is_array($variations) ? \count($variations) : 0;
 
             if ($varCount > 0 && $varCount <= $maxVariationCount) {
-                foreach ($Variationen as $oVariation) {
+                foreach ($variations as $oVariation) {
                     if ($oVariation->cTyp !== 'SELECTBOX'
                         && (!\in_array($oVariation->cTyp, ['TEXTSWATCHES', 'IMGSWATCHES', 'RADIO'], true)
-                            || \count($oVariation->Werte) > $maxWerteCount)) {
+                            || \count($oVariation->Werte) > $maxValueCount)) {
                         $result = false;
                         break;
                     }
@@ -705,7 +715,7 @@ class Plugins
     {
         $to = $to ?: Shop::getLanguageCode();
 
-        return \is_string($mixed) ?: isset($mixed[$to]);
+        return \is_string($mixed) || isset($mixed[$to]);
     }
 
     /**
@@ -804,7 +814,10 @@ class Plugins
     {
         $currSep = Frontend::getCurrency()->getDecimalSeparator();
         $currTho = Frontend::getCurrency()->getThousandsSeparator();
+        $price   = html_entity_decode($price,\ENT_COMPAT,\JTL_CHARSET);
 
-        return \sprintf("%.2f", \str_replace($currSep, '.', \str_replace($currTho, '', ($price))));
+        \preg_match('/\d+(?:['.$currTho.']\d{3})*(?:['.$currSep.']\d+)?/', $price, $extractedPrice);
+
+        return \sprintf('%.2f', \str_replace($currSep, '.', \str_replace($currTho, '', ($extractedPrice[0]))));
     }
 }

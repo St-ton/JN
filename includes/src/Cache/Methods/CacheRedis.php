@@ -19,23 +19,18 @@ class CacheRedis implements ICachingMethod
     use JTLCacheTrait;
 
     /**
-     * @var CacheRedis
+     * @var Redis|null
      */
-    public static $instance;
-
-    /**
-     * @var Redis
-     */
-    private $redis;
+    private ?Redis $redis = null;
 
     /**
      * @param array $options
      */
     public function __construct(array $options)
     {
-        $res             = false;
-        $this->journalID = 'redis_journal';
-        $this->options   = $options;
+        $res = false;
+        $this->setJournalID('redis_journal');
+        $this->setOptions($options);
         if ($this->isAvailable()) {
             $res = $this->setRedis(
                 $options['redis_host'],
@@ -46,10 +41,11 @@ class CacheRedis implements ICachingMethod
             );
         }
         if ($res !== false) {
-            $this->isInitialized = true;
+            $this->setIsInitialized(true);
+            self::$instance = $this;
         } else {
-            $this->redis         = null;
-            $this->isInitialized = false;
+            $this->redis = null;
+            $this->setIsInitialized(false);
         }
     }
 
@@ -246,7 +242,7 @@ class CacheRedis implements ICachingMethod
         $tagged = \array_unique($this->getKeysByTag($tags));
         $tags   = \is_string($tags)
             ? [self::_keyFromTagName($tags)]
-            : \array_map('self::_keyFromTagName', $tags);
+            : \array_map([self::class, '_keyFromTagName'], $tags);
 
         return $this->flush(\array_merge($tags, $tagged)) ? \count($tags) : 0;
     }
@@ -266,7 +262,7 @@ class CacheRedis implements ICachingMethod
     {
         $matchTags = \is_string($tags)
             ? [self::_keyFromTagName($tags)]
-            : \array_map('self::_keyFromTagName', $tags);
+            : \array_map([self::class, '_keyFromTagName'], $tags);
         $res       = \count($matchTags) === 1
             ? $this->redis->sMembers($matchTags[0])
             : $this->redis->sUnion($matchTags);
@@ -320,7 +316,7 @@ class CacheRedis implements ICachingMethod
         if (isset($stats[$idx])) {
             $dbStats = \explode(',', $stats[$idx]);
             foreach ($dbStats as $stat) {
-                if (\mb_strpos($stat, 'keys=') !== false) {
+                if (\str_contains($stat, 'keys=')) {
                     $numEntries = \str_replace('keys=', '', $stat);
                 }
             }
@@ -354,6 +350,7 @@ class CacheRedis implements ICachingMethod
                 ? ($stats['keyspace_misses'] / $stats['uptime_in_seconds'])
                 : null, // misses per second
             'mem'      => $stats['used_memory'], // used memory in bytes
+            'max'      => $stats['maxmemory'] ?? null,
             'slow'     => $slowLogData // redis slow log
         ];
     }

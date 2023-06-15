@@ -104,7 +104,7 @@ $fileExtraData                 |         | you also need to add the jtl_token: j
             initialPreviewCount: 1,
             {/if}
             theme: 'fas',
-            language: '{$language|mb_substr:0:2}',
+            language: '{mb_substr($language, 0, 2)}',
             browseOnZoneClick: true,
             {if !isset($fileMaxSize) || $fileMaxSize}
             maxFileSize: {$fileMaxSize|default:6000},
@@ -157,7 +157,7 @@ $fileExtraData                 |         | you also need to add the jtl_token: j
                     $fileSuccess.removeClass('d-none');
                 {/if}
             } else {
-                if (response.errorMessage !== null && response.errorMessage.length > 0) {
+                if (typeof response.errorMessage !== 'undefined' && response.errorMessage.length > 0) {
                     $fileError.html('<p style="margin-top:20px">' + response.errorMessage + '</p>')
                 }
                 $fileError.removeClass('d-none');

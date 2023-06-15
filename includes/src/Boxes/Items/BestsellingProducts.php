@@ -28,38 +28,37 @@ final class BestsellingProducts extends AbstractBox
             $stockFilterSQL = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $parentSQL      = ' AND tartikel.kVaterArtikel = 0';
             $cacheID        = 'bx_bsp_' . $customerGroupID . '_' . \md5($parentSQL . $stockFilterSQL);
-            if (($productIDs = Shop::Container()->getCache()->get($cacheID)) === false) {
-                $cached   = false;
-                $minCount = (int)$this->config['global']['global_bestseller_minanzahl'] > 0
-                    ? (int)$this->config['global']['global_bestseller_minanzahl']
-                    : 100;
-                $limit    = (int)$this->config['boxen']['box_bestseller_anzahl_basis'] > 0
+            $cache          = Shop::Container()->getCache();
+            $db             = Shop::Container()->getDB();
+            if (($productIDs = $cache->get($cacheID)) === false) {
+                $cached = false;
+                $limit  = (int)$this->config['boxen']['box_bestseller_anzahl_basis'] > 0
                     ? (int)$this->config['boxen']['box_bestseller_anzahl_basis']
                     : 10;
 
-                $productIDs = Shop::Container()->getDB()->getInts(
+                $productIDs = $db->getInts(
                     'SELECT tartikel.kArtikel
-                        FROM tbestseller, tartikel
+                        FROM tbestseller
+                            JOIN tartikel ON tbestseller.kArtikel = tartikel.kArtikel
                         LEFT JOIN tartikelsichtbarkeit 
                             ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                             AND tartikelsichtbarkeit.kKundengruppe = :cgid
                         WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                            AND tbestseller.kArtikel = tartikel.kArtikel
-                            AND ROUND(tbestseller.fAnzahl) >= :ms ' . $parentSQL . $stockFilterSQL . '
+                            AND tbestseller.isBestseller = 1 ' . $parentSQL . $stockFilterSQL . '
                         ORDER BY fAnzahl DESC LIMIT :lmt ',
                     'kArtikel',
-                    ['cgid' => $customerGroupID, 'ms' => $minCount, 'lmt' => $limit]
+                    ['cgid' => $customerGroupID, 'lmt' => $limit]
                 );
-                Shop::Container()->getCache()->set($cacheID, $productIDs, $cacheTags);
+                $cache->set($cacheID, $productIDs, $cacheTags);
             }
             \shuffle($productIDs);
             $res = \array_slice($productIDs, 0, $this->config['boxen']['box_bestseller_anzahl_anzeige']);
             if (\count($res) > 0) {
                 $this->setShow(true);
-                $products = new ArtikelListe();
+                $products = new ArtikelListe($db, $cache);
                 $products->getArtikelByKeys($res, 0, \count($res));
                 $this->setProducts($products);
-                $this->setURL(SearchSpecial::buildURL(\SEARCHSPECIALS_BESTSELLER));
+                $this->setURL((new SearchSpecial($db, $cache))->getURL(\SEARCHSPECIALS_BESTSELLER));
             }
 
             \executeHook(\HOOK_BOXEN_INC_BESTSELLER, [

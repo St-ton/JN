@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Plugin;
 
@@ -21,17 +21,17 @@ class Helper
     /**
      * @var array|null
      */
-    private static $hookList;
+    private static ?array $hookList = null;
 
     /**
-     * @var array
+     * @var array|null
      */
-    private static $templatePaths;
+    private static ?array $templatePaths = null;
 
     /**
      * @var BootstrapperInterface[]
      */
-    private static $bootstrapper = [];
+    private static array $bootstrapper = [];
 
     /**
      * Holt ein Array mit allen Hooks die von Plugins benutzt werden.
@@ -53,7 +53,7 @@ class Helper
         $hook     = null;
         $hooks    = [];
         $hookData = Shop::Container()->getDB()->getObjects(
-            'SELECT tpluginhook.nHook, tplugin.kPlugin, tplugin.cVerzeichnis, tplugin.nVersion, tpluginhook.cDateiname
+            'SELECT tpluginhook.nHook, tplugin.kPlugin, tplugin.nVersion, tpluginhook.cDateiname, tpluginhook.nPriority
                 FROM tplugin
                 JOIN tpluginhook
                     ON tpluginhook.kPlugin = tplugin.kPlugin
@@ -62,12 +62,12 @@ class Helper
             ['state' => State::ACTIVATED]
         );
         foreach ($hookData as $hook) {
-            $plugin             = new stdClass();
-            $plugin->kPlugin    = (int)$hook->kPlugin;
-            $plugin->nVersion   = (int)$hook->nVersion;
-            $plugin->cDateiname = $hook->cDateiname;
+            $hook->kPlugin   = (int)$hook->kPlugin;
+            $hook->nVersion  = (int)$hook->nVersion;
+            $hook->nPriority = (int)$hook->nPriority;
+            $hook->nHook     = (int)$hook->nHook;
 
-            $hooks[$hook->nHook][$hook->kPlugin] = $plugin;
+            $hooks[$hook->nHook][$hook->kPlugin] = $hook;
         }
         // Schauen, ob die Hookliste einen Hook als Frontende Link hat.
         // Falls ja, darf die Liste den Seiten Link Plugin Handler nur einmal ausführen bzw. nur einmal beinhalten
@@ -82,8 +82,9 @@ class Helper
             // Es war min. einmal der Seiten Link Plugin Handler enthalten um einen Frontend Link anzusteuern
             if ($exists) {
                 $plugin                                = new stdClass();
-                $plugin->kPlugin                       = (int)$hook->kPlugin;
+                $plugin->kPlugin                       = $hook->kPlugin;
                 $plugin->nVersion                      = $hook->nVersion;
+                $plugin->nPriority                     = $hook->nPriority;
                 $plugin->cDateiname                    = \PLUGIN_SEITENHANDLER;
                 $hooks[\HOOK_SEITE_PAGE_IF_LINKART][0] = $plugin;
             }
@@ -132,7 +133,7 @@ class Helper
 
             try {
                 return $loader->init((int)$plugin->kPlugin, false, $langID);
-            } catch (InvalidArgumentException $e) {
+            } catch (InvalidArgumentException) {
                 return null;
             }
         }
@@ -164,7 +165,7 @@ class Helper
                 'cPluginID, cVerzeichnis, nVersion, bExtension',
                 'nPrio'
             );
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             $plugins = Shop::Container()->getDB()->getObjects(
                 'SELECT cPluginID, cVerzeichnis, nVersion, 0 AS bExtension
                     FROM tplugin
@@ -297,9 +298,7 @@ class Helper
      */
     public static function getIDByPluginID(string $pluginID): int
     {
-        $plugin = Shop::Container()->getDB()->select('tplugin', 'cPluginID', $pluginID);
-
-        return (int)($plugin->kPlugin ?? 0);
+        return (int)(Shop::Container()->getDB()->select('tplugin', 'cPluginID', $pluginID)->kPlugin ?? 0);
     }
 
     /**
@@ -346,7 +345,7 @@ class Helper
                 WHERE t.kPlugin = :pid' . $sql,
             $prep
         );
-        if (!\is_array($langVars) || \count($langVars) < 1) {
+        if (\count($langVars) < 1) {
             $prep['iso'] = \mb_convert_case($iso, \MB_CASE_UPPER);
             $langVars    = Shop::Container()->getDB()->getArrays(
                 "SELECT tpluginsprachvariable.kPluginSprachvariable,
@@ -458,7 +457,7 @@ class Helper
         if (!isset(self::$bootstrapper[$id])) {
             try {
                 $plugin = $loader->init($id);
-            } catch (InvalidArgumentException $e) {
+            } catch (InvalidArgumentException) {
                 return null;
             }
             if ($plugin->isBootstrap() === false) {
@@ -574,13 +573,7 @@ class Helper
             ? new PluginLoader($db, $cache)
             : new LegacyPluginLoader($db, $cache);
         try {
-            $plugin = $loader->init($pluginID);
-            if ($plugin === null) {
-                $result->code    = InstallCode::NO_PLUGIN_FOUND;
-                $result->message = \__('errorPluginNotFound');
-
-                return $result;
-            }
+            $loader->init($pluginID);
             $boot = self::bootstrap($pluginID, $loader);
             if ($boot === null) {
                 $result->code = InstallCode::OK;
@@ -594,7 +587,7 @@ class Helper
                 return $result;
             }
         } catch (Exception $e) {
-            $result->code    = $e->getCode();
+            $result->code    = InstallCode::NO_PLUGIN_FOUND;
             $result->message = $e->getMessage();
         }
 

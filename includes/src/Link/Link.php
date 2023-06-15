@@ -4,9 +4,12 @@ namespace JTL\Link;
 
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
+use JTL\Contracts\RoutableInterface;
 use JTL\DB\DbInterface;
 use JTL\Language\LanguageHelper;
 use JTL\Plugin\State;
+use JTL\Router\RoutableTrait;
+use JTL\Router\Router;
 use JTL\Shop;
 use JTL\Shopsetting;
 use stdClass;
@@ -15,207 +18,194 @@ use stdClass;
  * Class Link
  * @package JTL\Link
  */
-final class Link extends AbstractLink
+final class Link extends AbstractLink implements RoutableInterface
 {
-    /**
-     * @var int
-     */
-    protected $id = 0;
+    use RoutableTrait;
 
     /**
      * @var int
      */
-    protected $level = 0;
+    protected int $id = 0;
 
     /**
      * @var int
      */
-    protected $parent = 0;
+    protected int $level = 0;
 
     /**
      * @var int
      */
-    protected $linkGroupID = -1;
+    protected int $parent = 0;
 
     /**
      * @var int
      */
-    protected $pluginID = -1;
+    protected int $linkGroupID = -1;
 
     /**
      * @var int
      */
-    protected $linkType = -1;
+    protected int $pluginID = -1;
+
+    /**
+     * @var int
+     */
+    protected int $linkType = -1;
 
     /**
      * @var int[]
      */
-    protected $linkGroups = [];
+    protected array $linkGroups = [];
 
     /**
      * @var string[]
      */
-    protected $names = [];
+    protected array $names = [];
 
     /**
      * @var string[]
      */
-    protected $urls = [];
+    protected array $titles = [];
 
     /**
      * @var string[]
      */
-    protected $seo = [];
+    protected array $contents = [];
 
     /**
      * @var string[]
      */
-    protected $titles = [];
+    protected array $metaTitles = [];
 
     /**
      * @var string[]
      */
-    protected $contents = [];
+    protected array $metaKeywords = [];
 
     /**
      * @var string[]
      */
-    protected $metaTitles = [];
-
-    /**
-     * @var string[]
-     */
-    protected $metaKeywords = [];
-
-    /**
-     * @var string[]
-     */
-    protected $metaDescriptions = [];
+    protected array $metaDescriptions = [];
 
     /**
      * @var int[]
      */
-    protected $customerGroups = [];
+    protected array $customerGroups = [];
 
     /**
      * @var int[]
      */
-    protected $languageIDs = [];
+    protected array $languageIDs = [];
 
     /**
      * @var int
      */
-    protected $reference = 0;
+    protected int $reference = 0;
 
     /**
      * @var int
      */
-    protected $sort = 0;
+    protected int $sort = 0;
 
     /**
      * @var bool
      */
-    protected $ssl = false;
+    protected bool $ssl = false;
 
     /**
      * @var bool
      */
-    protected $noFollow = false;
+    protected bool $noFollow = false;
 
     /**
      * @var bool
      */
-    protected $printButton = false;
+    protected bool $printButton = false;
 
     /**
      * @var bool
      */
-    protected $isActive = false;
+    protected bool $isActive = false;
 
     /**
      * @var bool
      */
-    protected $isEnabled = true;
+    protected bool $isEnabled = true;
 
     /**
      * @var bool
      */
-    protected $isFluid = false;
+    protected bool $isFluid = false;
 
     /**
      * @var bool
      */
-    protected $isVisible = true;
+    protected bool $isVisible = true;
 
     /**
      * @var bool
      */
-    protected $isSystem = false;
+    protected bool $isSystem = false;
 
     /**
      * @var bool
      */
-    protected $visibleLoggedInOnly = false;
+    protected bool $visibleLoggedInOnly = false;
 
     /**
      * @var array
      */
-    protected $languageCodes = [];
+    protected array $languageCodes = [];
 
     /**
      * @var int
      */
-    protected $redirectCode = 0;
+    protected int $redirectCode = 0;
 
     /**
      * @var string
      */
-    protected $identifier = '';
+    protected string $identifier = '';
 
     /**
      * @var bool
      */
-    protected $pluginEnabled = true;
+    protected bool $pluginEnabled = true;
 
     /**
      * @var string
      */
-    protected $fileName = '';
+    protected string $fileName = '';
 
     /**
      * @var string
      */
-    protected $handler = '';
+    protected string $handler = '';
 
     /**
      * @var string
      */
-    protected $template = '';
+    protected string $template = '';
 
     /**
      * @var string
      */
-    protected $displayName = '';
+    protected string $displayName = '';
 
     /**
      * @var Collection
      */
-    protected $childLinks;
+    protected Collection $childLinks;
 
     /**
-     * @var DbInterface
+     * @var DbInterface|null
      */
-    protected $db;
+    protected ?DbInterface $db = null;
 
     /**
-     * @var int
+     * @var string
      */
-    private $currentLanguageID;
-
-    /**
-     * @var int
-     */
-    private $fallbackLanguageID;
+    private string $target = '_self';
 
     /**
      * Link constructor.
@@ -225,6 +215,7 @@ final class Link extends AbstractLink
     {
         $this->db         = $db;
         $this->childLinks = new Collection();
+        $this->setRouteType(Router::TYPE_PAGE);
         $this->initLanguageID();
     }
 
@@ -234,18 +225,6 @@ final class Link extends AbstractLink
     public function __wakeup(): void
     {
         $this->initLanguageID();
-    }
-
-    /**
-     *
-     */
-    private function initLanguageID(): void
-    {
-        $this->currentLanguageID = Shop::getLanguageID();
-        if ($this->currentLanguageID === 0) {
-            $this->currentLanguageID = (int)($_SESSION['kSprache'] ?? 1);
-        }
-        $this->fallbackLanguageID = LanguageHelper::getDefaultLanguage(true)->getId();
     }
 
     /**
@@ -360,7 +339,7 @@ final class Link extends AbstractLink
             $this->setPluginID($link->kPlugin);
             $this->setPluginEnabled($link->enabled);
             $this->setLinkGroups(\array_unique(\array_map('\intval', \explode(',', $link->linkGroups))));
-            $this->setLinkGroupID((int)$this->linkGroups[0]);
+            $this->setLinkGroupID($this->linkGroups[0]);
             $this->setLinkType($link->nLinkart);
             $this->setNoFollow($link->cNoFollow === 'Y');
             $this->setCustomerGroups(self::parseSSKAdvanced($link->cKundengruppen));
@@ -382,25 +361,26 @@ final class Link extends AbstractLink
             $this->setName($link->localizedName ?? $link->cName, $link->languageID);
             $this->setTitle($link->localizedTitle ?? $link->cName, $link->languageID);
             $this->setLanguageID($link->languageID, $link->languageID);
+            $this->setTarget($link->target ?? '_self');
             if ($this->getLinkType() === \LINKTYP_EXTERNE_URL) {
                 $this->setSEO($link->linkURL, $link->languageID);
                 $this->setURL($link->linkURL, $link->languageID);
             } else {
                 $this->setSEO($link->localizedUrl ?? '', $link->languageID);
+                $this->setSlug($link->localizedUrl ?? '', $link->languageID);
                 if ($this->getLinkType() === \LINKTYP_STARTSEITE && \EXPERIMENTAL_MULTILANG_SHOP === true) {
+                    // @todo!!!
                     $this->setURL(Shop::getURL(true, $link->languageID) . '/', $link->languageID);
-                } else {
-                    $this->setURL(
-                        Shop::getURL(true, $link->languageID) . '/' . $link->localizedUrl,
-                        $link->languageID
-                    );
                 }
             }
             $this->setHandler($link->handler ?? '');
             $this->setTemplate($link->template ?? $link->fullscreenTemplate ?? '');
-            if (($this->id === null || $this->id === 0) && isset($link->kLink)) {
+            if ($this->id === 0 && isset($link->kLink)) {
                 $this->setID((int)$link->kLink);
             }
+        }
+        if ($this->getLinkType() !== \LINKTYP_EXTERNE_URL) {
+            $this->createBySlug();
         }
         $this->setChildLinks($this->buildChildLinks());
         \executeHook(\HOOK_LINK_MAPPED, ['link' => $this]);
@@ -414,6 +394,7 @@ final class Link extends AbstractLink
      */
     private function sanitizeLinkData(stdClass $link): stdClass
     {
+        $link->kLink       = (int)$link->kLink;
         $link->languageID  = (int)$link->languageID;
         $link->kVaterLink  = (int)$link->kVaterLink;
         $link->kPlugin     = (int)$link->kPlugin;
@@ -554,6 +535,22 @@ final class Link extends AbstractLink
     }
 
     /**
+     * @return string
+     */
+    public function getTarget(): string
+    {
+        return $this->target;
+    }
+
+    /**
+     * @param string $target
+     */
+    public function setTarget(string $target): void
+    {
+        $this->target = $target;
+    }
+
+    /**
      * @inheritdoc
      */
     public function getNames(): array
@@ -582,7 +579,7 @@ final class Link extends AbstractLink
      */
     public function getSEOs(): array
     {
-        return $this->seo;
+        return $this->slugs;
     }
 
     /**
@@ -590,8 +587,8 @@ final class Link extends AbstractLink
      */
     public function getSEO(int $idx = null): string
     {
-        return $this->seo[$idx ?? $this->currentLanguageID]
-            ?? $this->seo[$this->fallbackLanguageID]
+        return $this->slugs[$idx ?? $this->currentLanguageID]
+            ?? $this->slugs[$this->fallbackLanguageID]
             ?? '';
     }
 
@@ -600,7 +597,7 @@ final class Link extends AbstractLink
      */
     public function setSEOs(array $seo): void
     {
-        $this->seo = $seo;
+        $this->slugs = $seo;
     }
 
     /**
@@ -608,7 +605,7 @@ final class Link extends AbstractLink
      */
     public function setSEO(string $url, int $idx = null): void
     {
-        $this->seo[$idx ?? $this->currentLanguageID] = $url;
+        $this->slugs[$idx ?? $this->currentLanguageID] = $url;
     }
 
     /**
@@ -619,30 +616,6 @@ final class Link extends AbstractLink
         return $this->urls[$idx ?? $this->currentLanguageID]
             ?? '/?s=' . $this->getID()
             . '&lang=' . LanguageHelper::getIsoFromLangID($idx ?? $this->currentLanguageID)->cISO;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getURLs(): array
-    {
-        return $this->urls;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setURL(string $url, int $idx = null): void
-    {
-        $this->urls[$idx ?? $this->currentLanguageID] = $url;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setURLs(array $urls): void
-    {
-        $this->urls = $urls;
     }
 
     /**
@@ -1251,7 +1224,7 @@ final class Link extends AbstractLink
         if ($group === null) {
             return false;
         }
-        $duplicateLinks = $group->getLinks()->filter(function (LinkInterface $link) {
+        $duplicateLinks = $group->getLinks()->filter(function (LinkInterface $link): bool {
             return ($link->getPluginID() === 0
                 && $link->getLinkType() === $this->getLinkType()
                 && $this->getReference() === 0
@@ -1289,12 +1262,9 @@ final class Link extends AbstractLink
         }
         $conf = Shopsetting::getInstance()->getAll();
 
-        switch ($this->getLinkType()) {
-            case \LINKTYP_NEWSLETTER:
-            case \LINKTYP_NEWSLETTERARCHIV:
-                return $conf['newsletter']['newsletter_active'] === 'Y';
-            default:
-                return true;
-        }
+        return match ($this->getLinkType()) {
+            \LINKTYP_NEWSLETTER, \LINKTYP_NEWSLETTERARCHIV => $conf['newsletter']['newsletter_active'] === 'Y',
+            default => true,
+        };
     }
 }

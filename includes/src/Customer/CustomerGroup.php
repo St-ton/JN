@@ -1,8 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Customer;
 
+use InvalidArgumentException;
 use JTL\MagicCompatibilityTrait;
+use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
 
@@ -17,62 +19,62 @@ class CustomerGroup
     /**
      * @var int
      */
-    protected $id = 0;
+    protected int $id = 0;
 
     /**
      * @var string
      */
-    protected $name;
+    protected string $name;
 
     /**
      * @var float
      */
-    protected $discount = 0.0;
+    protected float $discount = 0.0;
 
     /**
      * @var string
      */
-    protected $default;
+    protected string $default;
 
     /**
      * @var string
      */
-    protected $cShopLogin;
+    protected string $cShopLogin;
 
     /**
      * @var int
      */
-    protected $isMerchant = 0;
+    protected int $isMerchant = 0;
 
     /**
      * @var int
      */
-    protected $mayViewPrices = 1;
+    protected int $mayViewPrices = 1;
 
     /**
      * @var int
      */
-    protected $mayViewCategories = 1;
+    protected int $mayViewCategories = 1;
 
     /**
      * @var int
      */
-    protected $languageID = 0;
+    protected int $languageID = 0;
+
+    /**
+     * @var array|null
+     */
+    protected ?array $Attribute = null;
+
+    /**
+     * @var string
+     */
+    private string $nameLocalized;
 
     /**
      * @var array
      */
-    protected $Attribute;
-
-    /**
-     * @var string
-     */
-    private $nameLocalized;
-
-    /**
-     * @var array
-     */
-    protected static $mapping = [
+    protected static array $mapping = [
         'kKundengruppe'              => 'ID',
         'kSprache'                   => 'LanguageID',
         'nNettoPreise'               => 'IsMerchant',
@@ -147,18 +149,20 @@ class CustomerGroup
     /**
      * @param int $id
      * @return $this
+     * @throws InvalidArgumentException
      */
     private function loadFromDB(int $id = 0): self
     {
         $item = Shop::Container()->getDB()->select('tkundengruppe', 'kKundengruppe', $id);
-        if (isset($item->kKundengruppe) && $item->kKundengruppe > 0) {
-            $this->setID((int)$item->kKundengruppe)
-                 ->setName($item->cName)
-                 ->setDiscount($item->fRabatt)
-                 ->setDefault($item->cStandard)
-                 ->setShopLogin($item->cShopLogin)
-                 ->setIsMerchant((int)$item->nNettoPreise);
+        if ($item === null) {
+            throw new InvalidArgumentException('Cannot load customer group with id ' . $id);
         }
+        $this->setID((int)$item->kKundengruppe)
+             ->setName($item->cName)
+             ->setDiscount($item->fRabatt)
+             ->setDefault($item->cStandard)
+             ->setShopLogin($item->cShopLogin)
+             ->setIsMerchant((int)$item->nNettoPreise);
 
         return $this;
     }
@@ -432,7 +436,7 @@ class CustomerGroup
             'SELECT kKundengruppe AS id
                 FROM tkundengruppe
                 WHERE kKundengruppe > 0'
-        )->map(static function ($e) {
+        )->map(static function ($e): self {
             return new self((int)$e->id);
         })->toArray();
     }
@@ -533,6 +537,20 @@ class CustomerGroup
     }
 
     /**
+     * @param int $id
+     * @return CustomerGroup
+     */
+    public static function getByID(int $id): self
+    {
+        $current = Frontend::getCustomerGroup();
+        if ($current->getID() === $id) {
+            return $current;
+        }
+
+        return new self($id);
+    }
+
+    /**
      * @return $this
      */
     public function initAttributes(): self
@@ -564,7 +582,7 @@ class CustomerGroup
      * @param string $attributeName
      * @return mixed|null
      */
-    public function getAttribute($attributeName)
+    public function getAttribute(string $attributeName)
     {
         return $this->Attribute[$attributeName] ?? null;
     }
@@ -575,9 +593,13 @@ class CustomerGroup
      */
     public static function getNameByID(int $id): ?string
     {
-        $cgroup = new self();
-        $cgroup->loadFromDB($id);
+        try {
+            $cgroup = new self();
+            $cgroup->loadFromDB($id);
 
-        return $cgroup->getName();
+            return $cgroup->getName();
+        } catch (\Exception) {
+            return null;
+        }
     }
 }

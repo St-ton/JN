@@ -50,7 +50,7 @@ class Downloader
     private function downloadItemArchive(string $url, string $targetName): string
     {
         $fileName = \PFAD_ROOT . \PFAD_DBES_TMP . \basename($targetName);
-        $resource = \fopen($fileName, 'w+');
+        $resource = \fopen($fileName, 'wb+');
         if ($resource === false) {
             throw new FilePermissionException('Cannot open file ' . $fileName);
         }
@@ -72,8 +72,7 @@ class Downloader
         if ($available->getDownloadURL() === null) {
             return false;
         }
-        $parsed = \parse_url($available->getDownloadURL());
-        if (!\is_array($parsed) || $parsed['scheme'] !== 'https') {
+        if (\parse_url($available->getDownloadURL(), \PHP_URL_SCHEME) !== 'https') {
             return false;
         }
         // @todo: signature validation

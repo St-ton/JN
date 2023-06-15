@@ -28,17 +28,11 @@ class TwoFAEmergency
     private int $codeCount = 10;
 
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
      * TwoFAEmergency constructor.
      * @param DbInterface $db
      */
-    public function __construct(DbInterface $db)
+    public function __construct(private DbInterface $db)
     {
-        $this->db = $db;
     }
 
     /**

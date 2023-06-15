@@ -1,4 +1,5 @@
 {block name='snippets-wishlist'}
+    {get_static_route id='wunschliste.php' assign='wishlistURL'}
     {block name='snippets-wishlist-header'}
         {include file='layout/header.tpl'}
     {/block}
@@ -20,7 +21,7 @@
                         <div class="subheadline">{$CWunschliste->getName()}</div>
                     {/block}
                     {block name='snippets-wishlist-form'}
-                        {form method="post" action="{get_static_route id='wunschliste.php'}" name="Wunschliste"}
+                        {form method="post" action=$wishlistURL name="Wunschliste"}
                         {block name='snippets-wishlist-form-inner'}
                             {block name='snippets-wishlist-form-inputs-hidden'}
                                 {input type="hidden" name="wlvm" value="1"}
@@ -76,7 +77,7 @@
                                 {block name='snippets-wishlist-actions-remove-products'}
                                     {form
                                         method="post"
-                                        action="{get_static_route id='wunschliste.php'}{if $CWunschliste->isDefault() !== true}?wl={$CWunschliste->getID()}{/if}"
+                                        action="{$wishlistURL}{if $CWunschliste->isDefault() !== true}?wl={$CWunschliste->getID()}{/if}"
                                         name="Wunschliste"
                                     }
                                         {input type="hidden" name="wla" value="1"}
@@ -92,7 +93,7 @@
                                 {block name='snippets-wishlist-actions-add-all-cart'}
                                     {form
                                         method="post"
-                                        action="{get_static_route id='wunschliste.php'}{if $CWunschliste->isDefault() !== true}?wl={$CWunschliste->getID()}{/if}"
+                                        action="{$wishlistURL}{if $CWunschliste->isDefault() !== true}?wl={$CWunschliste->getID()}{/if}"
                                         name="Wunschliste"
                                     }
                                         {input type="hidden" name="wla" value="1"}
@@ -106,7 +107,7 @@
                                 {/dropdownitem}
                                 {dropdownitem}
                                 {block name='snippets-wishlist-actions-delete-wl'}
-                                    {form method="post" action="{get_static_route id='wunschliste.php'}" slide=true}
+                                    {form method="post" action=$wishlistURL slide=true}
                                         {input type="hidden" name="kWunschliste" value=$CWunschliste->getID()}
                                         {input type="hidden" name="kWunschlisteTarget" value=$CWunschliste->getID()}
                                         {input type="hidden" name="action" value="delete"}
@@ -119,7 +120,7 @@
                                 {if $CWunschliste->isDefault() !== true}
                                     {dropdownitem}
                                     {block name='snippets-wishlist-actions-set-active'}
-                                        {form method="post" action="{get_static_route id='wunschliste.php'}" slide=true}
+                                        {form method="post" action=$wishlistURL slide=true}
                                             {input type="hidden" name="kWunschliste" value=$CWunschliste->getID()}
                                             {input type="hidden" name="kWunschlisteTarget" value=$CWunschliste->getID()}
                                             {input type="hidden" name="action" value="setAsDefault"}
@@ -157,7 +158,7 @@
                                 toggle-class='w-100-util'
                                 class="wishlist-dropdown-name"}
                             {foreach $oWunschliste_arr as $wishlist}
-                                {dropdownitem href="{get_static_route id='wunschliste.php'}{if $wishlist->isDefault() !== true}?wl={$wishlist->getID()}{/if}" rel="nofollow" }
+                                {dropdownitem href="{$wishlistURL}{if $wishlist->isDefault() !== true}?wl={$wishlist->getID()}{/if}" rel="nofollow" }
                                     {$wishlist->getName()}
                                 {/dropdownitem}
                             {/foreach}
@@ -169,9 +170,7 @@
                     {col cols=12 class="col-md wishlist-search-wrapper"}
                     {if $hasItems === true || !empty($wlsearch)}
                         <div id="wishlist-search">
-                            {form method="post"
-                                action="{get_static_route id='wunschliste.php'}"
-                                name="WunschlisteSuche"}
+                            {form method="post" action=$wishlistURL name="WunschlisteSuche"}
                             {block name='snippets-wishlist-search-form-inputs-hidden'}
                                 {if $CWunschliste->isPublic() && !empty($cURLID)}
                                     {input type="hidden" name="wlid" value=$cURLID}
@@ -251,7 +250,7 @@
                 {block name='snippets-wishlist-link'}
                     {row class="wishlist-url {if $CWunschliste->isPublic() !== true}d-none{/if}" id='wishlist-url-wrapper'}
                         {col cols=12}
-                            {form method="post" action="{get_static_route id='wunschliste.php'}"}
+                            {form method="post" action=$wishlistURL}
                                 {block name='snippets-wishlist-link-inputs-hidden'}
                                     {input type="hidden" name="kWunschliste" value=$CWunschliste->getID()}
                                 {/block}
@@ -263,8 +262,8 @@
                                             name="wishlist-url"
                                             readonly=true
                                             aria=["label"=>"{lang key='wishlist'}-URL"]
-                                            data=["static-route" => "{get_static_route id='wunschliste.php'}?wlid="]
-                                            value="{get_static_route id='wunschliste.php'}?wlid={$CWunschliste->getURL()}"}
+                                            data=["static-route" => "{$wishlistURL}?wlid="]
+                                            value="{$wishlistURL}?wlid={$CWunschliste->getURL()}"}
                                     {/block}
                                     {if $Einstellungen.global.global_wunschliste_freunde_aktiv === 'Y'}
                                         {block name='snippets-wishlist-link-envelop'}
@@ -299,7 +298,7 @@
                             {collapse id="edit-wishlist-name" visible=false class="wishlist-collapse"}
                                 {form
                                     method="post"
-                                    action="{get_static_route id='wunschliste.php'}{if $CWunschliste->isDefault() !== true}?wl={$CWunschliste->getID()}{/if}"
+                                    action="{$wishlistURL}{if $CWunschliste->isDefault() !== true}?wl={$CWunschliste->getID()}{/if}"
                                     name="Wunschliste"
                                 }
                                 {block name='snippets-wishlist-form-content-rename'}
@@ -331,7 +330,7 @@
                     {row}
                         {col cols=12}
                             {collapse id="create-new-wishlist" visible=($newWL === 1) class="wishlist-collapse"}
-                                {form method="post" action="{get_static_route id='wunschliste.php'}" slide=true}
+                                {form method="post" action=$wishlistURL slide=true}
                                     {block name='snippets-wishlist-form-content-new'}
                                         {block name='snippets-wishlist-form-content-new-inputs-hidden'}
                                             {input type="hidden" name="kWunschliste" value=$CWunschliste->getID()}
@@ -363,7 +362,7 @@
                     oPagination=$pagination
                     cParam_arr=['wl' => {$CWunschliste->getID()}, 'wlid' => $cURLID]}
                 {form method="post"
-                    action="{get_static_route id='wunschliste.php'}{if $CWunschliste->isDefault() !== true}?wl={$CWunschliste->getID()}{/if}"
+                    action="{$wishlistURL}{if $CWunschliste->isDefault() !== true}?wl={$CWunschliste->getID()}{/if}"
                     name="Wunschliste"
                     class="basket_wrapper{if $hasItems === true} has-items{/if}"
                     id="wl-items-form"}
@@ -411,7 +410,7 @@
                                                             {assign var=image value=$wlPosition->getProduct()->Bilder[0]}
                                                             {strip}
                                                                 <div>
-                                                                    {link href=$wlPosition->getProduct()->cURLFull}
+                                                                    {link href=$wlPosition->getProduct()->getURL()}
                                                                         {include file='snippets/image.tpl'
                                                                             fluid=false
                                                                             item=$wlPosition->getProduct()
@@ -424,9 +423,10 @@
                                                                             {$image = $wlPosition->getProduct()->Bilder[1]}
                                                                             {image alt=$wlPosition->getProduct()->cName fluid=true webp=true lazy=true
                                                                                 src="{$image->cURLKlein}"
-                                                                                srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                                                     {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                                                     {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                                                                srcset="
+                                                                {$image->cURLMini} {$image->imageSizes->xs->size->width}w,
+                                                                {$image->cURLKlein} {$image->imageSizes->sm->size->width}w,
+                                                                {$image->cURLNormal} {$image->imageSizes->md->size->width}w"
                                                                                 sizes="auto"
                                                                                 class='second'
                                                                             }
@@ -442,7 +442,7 @@
                                                 {/col}
                                                 {col cols=12}
                                                     {block name='snippets-wishlist-form-basket-name'}
-                                                        {link href=$wlPosition->getProduct()->cURL class="productbox-title text-clamp-2"}
+                                                        {link href=$wlPosition->getProduct()->getURL() class="productbox-title text-clamp-2"}
                                                             {$wlPosition->getProductName()}
                                                         {/link}
                                                     {/block}
@@ -546,7 +546,7 @@
                                                                         {col cols=12 class="wishlist-item-buttons"}
                                                                             {if $wlPosition->getProduct()->bHasKonfig}
                                                                                 {block name='snippets-wishlist-form-basket-has-config'}
-                                                                                    {link href=$wlPosition->getProduct()->cURLFull
+                                                                                    {link href=$wlPosition->getProduct()->getURL()
                                                                                         class="btn btn-primary btn-block"
                                                                                         title="{lang key='product' section='global'} {lang key='configure' section='global'}"}
                                                                                         <span class="fa fa-cogs"></span> {lang key='configure'}

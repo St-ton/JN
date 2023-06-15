@@ -34,7 +34,7 @@
                                         {$textLinks[] = $btn}
                                     {/if}
                                 {/foreach}
-                                {if $textLinks|count > 0}
+                                {if count($textLinks) > 0}
                                     <p class="links small mb-0">
                                         {foreach $textLinks as $link}
                                             <a class="text-link" rel="noopener" href="{$link.href}" title="{__($link.rel)}">

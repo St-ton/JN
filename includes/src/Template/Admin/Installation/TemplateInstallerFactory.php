@@ -18,41 +18,17 @@ use SimpleXMLElement;
 class TemplateInstallerFactory
 {
     /**
-     * @var DbInterface
-     */
-    protected DbInterface $db;
-
-    /**
-     * @var SimpleXMLElement
-     */
-    protected SimpleXMLElement $xml;
-
-    /**
-     * @var SimpleXMLElement|null
-     */
-    protected ?SimpleXMLElement $parentXml;
-
-    /**
-     * @var Model
-     */
-    protected DataModelInterface $model;
-
-    /**
      * @param DbInterface           $db
      * @param SimpleXMLElement      $xml
      * @param SimpleXMLElement|null $parentXml
      * @param Model                 $model
      */
     public function __construct(
-        DbInterface $db,
-        SimpleXMLElement $xml,
-        ?SimpleXMLElement $parentXml,
-        DataModelInterface $model
+        protected DbInterface $db,
+        protected SimpleXMLElement $xml,
+        protected ?SimpleXMLElement $parentXml,
+        protected DataModelInterface $model
     ) {
-        $this->db        = $db;
-        $this->xml       = $xml;
-        $this->parentXml = $parentXml;
-        $this->model     = $model;
     }
 
     /**

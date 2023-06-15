@@ -28,8 +28,9 @@
                     <div class="heading-right">
                         {if $hasAuth}
                             <button name="action" value="revoke" class="btn btn-default">
-                                <i class="fas fa-unlink"></i> {if $tokenOwner !== null} {{__('unlink from %s')}|sprintf:{$tokenOwner->given_name|cat:' '|cat:$tokenOwner->family_name}}
-                                {else} {__('unlink')}{/if}
+                                {$accountName = $tokenOwner->email|default:($tokenOwner->given_name|cat:' '|cat:$tokenOwner->family_name)}
+                                <i class="fas fa-unlink"></i> {if $tokenOwner !== null} {sprintf(__('unlink from %s'), $accountName)}
+                                    {else} {__('unlink')}{/if}
                             </button>
                         {/if}
                     </div>
@@ -52,7 +53,7 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="text-center">
-                                    <h2>{$lastUpdate|date_format:"%d.%m.%Y %H:%M:%S"}</h2>
+                                    <h2>{$lastUpdate|date_format:"d.m.Y H:i:s"}</h2>
                                     <p>{__('last update')}</p>
                                     <button class="btn btn-default btn-block" id="recheck" name="action" value="recheck">
                                         <i class="fas fa-refresh"></i> {__('Refresh')}

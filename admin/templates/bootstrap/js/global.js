@@ -1,5 +1,6 @@
 
-var JTL_TOKEN = null;
+var JTL_TOKEN = null,
+    BACKEND_URL = '';
 
 /**
  * Functions that communicate with the server like 'ioCall()' need the XSRF token to be set first.
@@ -12,6 +13,10 @@ var JTL_TOKEN = null;
 function setJtlToken(jtlToken)
 {
     JTL_TOKEN = jtlToken;
+}
+function setBackendURL(url)
+{
+    BACKEND_URL = url;
 }
 
 /**
@@ -299,13 +304,17 @@ $(document).ready(function () {
     $('.collapse').removeClass('in');
 
     $('.accordion-toggle').on('click', function () {
-        var self = this;
-        $(self).find('i').toggleClass('fa-minus fa-plus');
-        $('.accordion-toggle').each(function () {
-            if (this !== self) {
-                $(this).find('i').toggleClass('fa-minus', false).toggleClass('fa-plus', true);
-            }
-        });
+        $(this).find('i').toggleClass('fa-minus fa-plus');
+        let parent = $(this).data("parent");
+        if (parent.length > 0) {
+            let clicked = $(this);
+            $(".accordion-toggle[data-parent='" + parent + "']").each(function() {
+                // Remove minus and add a plus sign for all accordion-toggles with same destination except the clicked one
+                if ($(this).attr("href") !== clicked.attr("href")) {
+                    $(this).find('i').removeClass('fa-minus').addClass('fa-plus');
+                }
+            });
+        }
     });
 
     $('.help').each(function () {
@@ -490,7 +499,7 @@ function ioCall(name, args = [], success = ()=>{}, error = ()=>{}, context = {},
     }
 
     return $.ajax({
-        url: 'io.php',
+        url: BACKEND_URL + 'io',
         method: 'post',
         dataType: 'json',
         data: {
@@ -557,7 +566,7 @@ function ioDownload(name, args)
         throw 'Error: IO download not possible. JTL_TOKEN was not set on this page.';
     }
 
-    window.location.href = 'io.php?token=' + JTL_TOKEN + '&io=' + encodeURIComponent(JSON.stringify({
+    window.location.href = BACKEND_URL + 'io?token=' + JTL_TOKEN + '&io=' + encodeURIComponent(JSON.stringify({
         name: name,
         params: args
     }));
@@ -671,9 +680,8 @@ function selectAllItems(elm, enable)
 function openElFinder(callback, type)
 {
     window.elfinder = {getFileCallback: callback};
-
     window.open(
-        'elfinder.php?token=' + JTL_TOKEN + '&mediafilesType=' + type,
+        BACKEND_URL + 'elfinder?token=' + JTL_TOKEN + '&mediafilesType=' + type,
         'elfinderWindow',
         'status=0,toolbar=0,location=0,menubar=0,directories=0,resizable=1,scrollbars=0,width=800,height=600'
     );
@@ -800,3 +808,22 @@ function deleteConfirmation()
         $modal.modal('show');
     });
 }
+
+$.fn.isOnScreen = function(){
+
+    var win = $(window);
+
+    var viewport = {
+        top : win.scrollTop(),
+        left : win.scrollLeft()
+    };
+    viewport.right = viewport.left + win.width();
+    viewport.bottom = viewport.top + win.height();
+
+    var bounds = this.offset();
+    bounds.right = bounds.left + this.outerWidth();
+    bounds.bottom = bounds.top + this.outerHeight();
+
+    return (!(viewport.right < bounds.left || viewport.left > bounds.right || viewport.bottom < bounds.top || viewport.top > bounds.bottom));
+
+};

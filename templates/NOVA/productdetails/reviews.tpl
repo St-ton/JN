@@ -4,7 +4,14 @@
         {row id='reviews-overview'}
             {block name='productdetails-reviews-overview'}
                 {if $Artikel->Bewertungen->oBewertungGesamt->nAnzahl > 0}
-                    {col cols=12 md=6 lg=4 order=1 order-md=0}
+                    {if empty($smarty.get.quickView)}
+                        {$colsMD = 6}
+                        {$colsLG = 4}
+                    {else}
+                        {$colsMD = 12}
+                        {$colsLG = 12}
+                    {/if}
+                    {col cols=12 md=$colsMD lg=$colsLG order=1 order-md=0}
                         {card}
                             {block name='productdetails-reviews-heading'}
                                 <div class="card-title">
@@ -15,12 +22,21 @@
                             {/block}
                             {block name='productdetails-reviews-rating-dropdown'}
                             <div class="dropdown">
-                                <button class="btn btn-link dropdown-toggle" type="button" id="ratingDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                {if !empty($smarty.get.quickView)}
+                                    <span id="ratingDropdown">
+                                {else}
+                                    <button class="btn btn-link dropdown-toggle" type="button" id="ratingDropdown"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                {/if}
                                     {block name='productdetails-reviews-include-rating'}
                                         {include file='productdetails/rating.tpl' total=$Artikel->Bewertungen->oBewertungGesamt->nAnzahl}
                                         <span>({$Artikel->Bewertungen->oBewertungGesamt->nAnzahl} {lang key='Votes'})</span>
                                     {/block}
-                                </button>
+                                {if !empty($smarty.get.quickView)}
+                                    </span>
+                                {else}
+                                    </button>
+                                {/if}
                                 <div class="dropdown-menu min-w-lg" aria-labelledby="ratingDropdown" data-dropdown-stay>
                                     <div class="dropdown-body">
                                         {block name='productdetails-reviews-votes'}
@@ -28,7 +44,7 @@
                                                 {assign var=int1 value=5}
                                                 {math equation='x - y' x=$int1 y=$i assign='schluessel'}
                                                 {assign var=int2 value=100}
-                                                {math equation='a/b*c' a=$nSterne b=$Artikel->Bewertungen->oBewertungGesamt->nAnzahl c=$int2 assign='percent'}
+                                                {math equation='(a/b)*c' a=$nSterne b=$Artikel->Bewertungen->oBewertungGesamt->nAnzahl c=$int2 assign='percent'}
                                                 {row}
                                                     {col cols=4}
                                                     {if isset($bewertungSterneSelected) && $bewertungSterneSelected === $schluessel}
@@ -69,6 +85,7 @@
                 {/if}
             {/block}
             {block name='productdetails-reviews-votes'}
+                {if empty($smarty.get.quickView)}
                 {col cols=12 md=6 lg=8  order=0 order-md=1}
                     {form method="post" action="{get_static_route id='bewertung.php'}#tab-votes" id="article_rating" slide=true}
                         <div class="subheadline">
@@ -89,6 +106,7 @@
                         {/button}
                     {/form}
                 {/col}
+                {/if}
             {/block}
         {/row}
         {/block}
@@ -148,8 +166,15 @@
         {/if}
 
         {if $ratingPagination->getPageItemCount() > 0}
+            {block name='productdetails-reviews-verified-purchase-notice'}
+                {button type="link" variant="outline-secondary" block="true" class="verified-purchase-notice" data=["toggle"=>"popover","content"=>"{{lang key='verifiedPurchaseNotice' section='product rating'}|escape:"html"}"]}
+                    {lang key='reviewsHowTo' section='product rating'}
+                {/button}
+            {/block}
             {block name='productdetails-reviews-include-pagination-bottom'}
+                {if empty($smarty.get.quickView)}
                 {include file='snippets/pagination.tpl' oPagination=$ratingPagination cThisUrl=$Artikel->cURLFull cParam_arr=['btgsterne'=>$bewertungSterneSelected] cAnchor='tab-votes'}
+                {/if}
             {/block}
             {block name='productdetails-reviews-form'}
                 {form id="reviews-list" method="post" action="{get_static_route id='bewertung.php'}#tab-votes" class="reviews-list" slide=true}
@@ -167,7 +192,9 @@
                 {/form}
             {/block}
             {block name='productdetails-reviews-include-pagination-bottom'}
+                {if empty($smarty.get.quickView)}
                 {include file='snippets/pagination.tpl' oPagination=$ratingPagination cThisUrl=$Artikel->cURLFull cParam_arr=['btgsterne'=>$bewertungSterneSelected] cAnchor='tab-votes' showFilter=false}
+                {/if}
             {/block}
         {/if}
     </div>

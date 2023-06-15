@@ -23,7 +23,7 @@ final class Product extends AbstractItem
         if (($number = ProductImage::getPrimaryNumber((int)$this->data->kArtikel)) !== null) {
             $googleImage = ProductImage::getThumb(
                 Image::TYPE_PRODUCT,
-                $this->data->kArtikel,
+                (int)$this->data->kArtikel,
                 $this->data,
                 Image::SIZE_LG,
                 $number

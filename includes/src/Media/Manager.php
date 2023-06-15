@@ -5,7 +5,6 @@ namespace JTL\Media;
 use DirectoryIterator;
 use Exception;
 use FilesystemIterator;
-use JTL\Alert\Alert;
 use JTL\DB\DbInterface;
 use JTL\Helpers\URL;
 use JTL\IO\IOError;
@@ -32,18 +31,12 @@ use stdClass;
 class Manager
 {
     /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
      * Manager constructor.
      * @param DbInterface $db
      * @param GetText     $getText
      */
-    public function __construct(DbInterface $db, GetText $getText)
+    public function __construct(private DbInterface $db, GetText $getText)
     {
-        $this->db = $db;
         $getText->loadAdminLocale('pages/bilderverwaltung');
     }
 
@@ -159,7 +152,7 @@ class Manager
         foreach (new LimitIterator(new DirectoryIterator($directory), $index, \IMAGE_CLEANUP_LIMIT) as $i => $info) {
             /** @var DirectoryIterator $info */
             $fileName = $info->getFilename();
-            if ($info->isDot() || $info->isDir() || \strpos($fileName, '.git') === 0) {
+            if ($info->isDot() || $info->isDir() || \str_starts_with($fileName, '.git')) {
                 continue;
             }
             ++$checkedInThisRun;
@@ -256,14 +249,12 @@ class Manager
                 break;
             }
             $cachedImage = $instance->cacheImage($image);
-
-            foreach ($cachedImage as $size => $sizeImg) {
+            foreach ($cachedImage as $sizeImg) {
                 if ($sizeImg->success === false) {
                     $result->lastRenderError = $sizeImg->error;
                     break;
                 }
             }
-
             $result->images[] = $cachedImage;
             ++$index;
             ++$_SESSION['renderedImages'];
@@ -284,15 +275,17 @@ class Manager
      * @param int    $limit
      * @return array
      * @throws Exception
+     * @todo: make this work for all image types
      */
     public function getCorruptedImages(string $type, int $limit): array
     {
         $class    = Media::getClass($type);
-        $instance = new $class(Shop::Container()->getDB());
+        $instance = new $class($this->db);
         /** @var IMedia $instance */
         $corruptedImages = [];
         $totalImages     = $instance->getTotalImageCount();
         $offset          = 0;
+        $prefix          = Shop::getURL() . '/';
         do {
             foreach ($instance->getAllImages($offset, \MAX_IMAGES_PER_STEP) as $image) {
                 if (!\file_exists($image->getRaw())) {
@@ -305,7 +298,7 @@ class Manager
                         'kArtikel',
                         $image->getId()
                     );
-                    $data->cURLFull            = URL::buildURL($data, \URLART_ARTIKEL, true);
+                    $data->cURLFull            = URL::buildURL($data, \URLART_ARTIKEL, true, $prefix);
                     $item                      = (object)[
                         'articleNr'      => $data->cArtNr,
                         'articleURLFull' => $data->cURLFull
@@ -319,8 +312,7 @@ class Manager
                     }
                 }
                 if (\count($corruptedImages) >= $limit) {
-                    Shop::Container()->getAlertService()->addAlert(
-                        Alert::TYPE_ERROR,
+                    Shop::Container()->getAlertService()->addError(
                         \__('Too many corrupted images'),
                         'too-many-corrupted-images'
                     );

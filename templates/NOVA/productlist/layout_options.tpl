@@ -1,7 +1,7 @@
 {block name='productlist-layout-options'}
     {if isset($oErweiterteDarstellung->nDarstellung)
     && $Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung === 'Y'
-    && empty($AktuelleKategorie->categoryFunctionAttributes['darstellung'])
+    && empty($AktuelleKategorie->getCategoryFunctionAttribute('darstellung'))
     && $navid === 'header'}
         {buttongroup}
             {block name='productlist-layout-options-quare'}

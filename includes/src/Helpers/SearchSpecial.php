@@ -18,24 +18,12 @@ use function Functional\map;
 class SearchSpecial
 {
     /**
-     * @var JTLCacheInterface
-     */
-    private $cache;
-
-    /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
      * SearchSpecial constructor.
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */
-    public function __construct(DbInterface $db, JTLCacheInterface $cache)
+    public function __construct(private DbInterface $db, private JTLCacheInterface $cache)
     {
-        $this->db    = $db;
-        $this->cache = $cache;
     }
 
     /**
@@ -116,11 +104,11 @@ class SearchSpecial
 
     /**
      * @param int $key
-     * @return mixed|string
+     * @return string
      * @former baueSuchSpecialURL()
      * @since 5.0.0
      */
-    public static function buildURL(int $key)
+    public static function buildURL(int $key): string
     {
         return (new self(Shop::Container()->getDB(), Shop::Container()->getCache()))->getURL($key);
     }
@@ -151,7 +139,7 @@ class SearchSpecial
 
         $seo->kSuchspecial = $type;
         \executeHook(\HOOK_BOXEN_INC_SUCHSPECIALURL);
-        $url = URL::buildURL($seo, \URLART_SEARCHSPECIALS);
+        $url = URL::buildURL($seo, \URLART_SEARCHSPECIALS, true);
         $this->cache->set($cacheID, $url, [\CACHING_GROUP_CATEGORY]);
 
         return $url;
@@ -237,18 +225,18 @@ class SearchSpecial
         if ($bestsellers === false || !\is_countable($bestsellers)) {
             $bestsellers = $this->db->getInts(
                 'SELECT tartikel.kArtikel, tbestseller.fAnzahl
-                    FROM tbestseller, tartikel
+                    FROM tbestseller
+                    JOIN tartikel ON tbestseller.kArtikel = tartikel.kArtikel
                     LEFT JOIN tartikelsichtbarkeit 
                         ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                         AND tartikelsichtbarkeit.kKundengruppe = :cgid
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                        AND tbestseller.kArtikel = tartikel.kArtikel
-                        AND ROUND(tbestseller.fAnzahl) >= :mnt
+                        AND tbestseller.isBestseller = 1
                         ' . self::getParentSQL() . '
                         ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() . '
                     ORDER BY fAnzahl DESC',
                 'kArtikel',
-                ['cgid' => $customerGroupID, 'mnt' => $minAmount]
+                ['cgid' => $customerGroupID]
             );
             $this->cache->set($cacheID, $bestsellers, $this->getCacheTags($bestsellers));
         }

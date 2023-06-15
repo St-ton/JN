@@ -53,8 +53,8 @@
                                                     {$img = $subFilter->getImage(\JTL\Media\Image::SIZE_XS)}
                                                     {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'T'
                                                     && $img !== null
-                                                    && $img|strpos:$smarty.const.BILD_KEIN_MERKMALBILD_VORHANDEN === false
-                                                    && $img|strpos:$smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN === false}
+                                                    && strpos($img, $smarty.const.BILD_KEIN_MERKMALBILD_VORHANDEN) === false
+                                                    && strpos($img, $smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN) === false}
                                                         {include file='snippets/image.tpl'
                                                         item=$subFilter
                                                         square=false
@@ -177,7 +177,7 @@
                         block=true
                         variant="primary"
                         class="min-w-sm text-nowrap-util"
-                        href="{$NaviFilter->getURL()->getCategories()}"}
+                        href="{$NaviFilter->getFilterURL()->getURL()}"}
                         {lang key='filterShowItem' printf=$itemCount}
                     {/button}
                 {/col}

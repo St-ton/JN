@@ -11,8 +11,8 @@
                 {if $isReference === true}<i>{/if}
                 {$link->getDisplayName()}
                 {if $isReference === true} ({__('Referenz')})</i>{/if}
-                {if $missingLinkTranslations|count > 0}
-                    <i title="{__('missingTranslations')}: {$missingLinkTranslations|count}"
+                {if count($missingLinkTranslations) > 0}
+                    <i title="{__('missingTranslations')}: {count($missingLinkTranslations)}"
                        class="fal fa-exclamation-triangle text-warning"
                        data-toggle="tooltip"
                        data-placement="top"></i>
@@ -27,7 +27,7 @@
         </td>
         <td class="text-center floatforms min-w-sm" style="width: 60%">
             <div class="row">
-                <form class="navbar-form2 col-lg-4 col-md-12 left px-1" method="post" action="{$adminURL}/links.php"
+                <form class="navbar-form2 col-lg-4 col-md-12 left px-1" method="post" action="{$adminURL}{$route}"
                       name="aenderlinkgruppe_{$link->getID()}_{$id}">
                     {$jtl_token}
                     <input type="hidden" name="action" value="move-to-linkgroup" />
@@ -51,7 +51,7 @@
                         </select>
                     {/if}
                 </form>
-                <form class="navbar-form2 col-lg-4 col-md-12 left px-1" method="post" action="{$adminURL}/links.php" name="kopiereinlinkgruppe_{$link->getID()}_{$id}">
+                <form class="navbar-form2 col-lg-4 col-md-12 left px-1" method="post" action="{$adminURL}{$route}" name="kopiereinlinkgruppe_{$link->getID()}_{$id}">
                     {$jtl_token}
                     <input type="hidden" name="action" value="copy-to-linkgroup" />
                     <input type="hidden" name="kLink" value="{$link->getID()}" />
@@ -75,7 +75,7 @@
                         {/if}
                     {/if}
                 </form>
-                <form class="navbar-form2 col-lg-4 col-md-12 left px-1" method="post" action="{$adminURL}/links.php" name="aenderlinkvater_{$link->getID()}_{$id}">
+                <form class="navbar-form2 col-lg-4 col-md-12 left px-1" method="post" action="{$adminURL}{$route}" name="aenderlinkvater_{$link->getID()}_{$id}">
                     {$jtl_token}
                     <input type="hidden" name="action" value="change-parent" />
                     <input type="hidden" name="kLink" value="{$link->getID()}" />
@@ -89,7 +89,7 @@
                             <option value="0">-- Root --</option>
                             {foreach $list as $linkTMP}
                                 {if $linkTMP->getID() !== $link->getID() && $linkTMP->getID() !== $link->getParent()}
-                                    <option value="{$linkTMP->getID()}">{$linkTMP->getName()}</option>
+                                    <option value="{$linkTMP->getID()}">{$linkTMP->getDisplayName()}</option>
                                 {/if}
                             {/foreach}
                         </select>
@@ -98,7 +98,7 @@
             </div>
         </td>
         <td class="text-center" style="width: 10%;min-width: 160px;">
-            <form method="post" action="{$adminURL}/links.php">
+            <form method="post" action="{$adminURL}{$route}">
                 {$jtl_token}
                 {if $kPlugin > 0}
                     <input type="hidden" name="kPlugin" value="{$kPlugin}" />
@@ -112,7 +112,7 @@
                             value="delete-link"
                             class="btn btn-link px-2{if $link->getPluginID() > 0} disabled{else} delete-confirm{/if}"
                             {if $link->getPluginID() === 0} data-modal-body="{__('sureDeleteLink')}"{/if}
-                            title="{if $deleteCount > 1}{{__('dangerLinkWillGetDeleted')}|sprintf:{$deleteCount}}{else}{__('delete')}{/if}"
+                            title="{if $deleteCount > 1}{sprintf(__('dangerLinkWillGetDeleted'), $deleteCount)}{else}{__('delete')}{/if}"
                             {if $link->isSystem() && $link->getReference() === 0 && !$link->hasDuplicateSpecialLink()} disabled{/if}
                             data-toggle="tooltip">
                         <span class="icon-hover">

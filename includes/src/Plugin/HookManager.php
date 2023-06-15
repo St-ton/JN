@@ -7,7 +7,6 @@ use InvalidArgumentException;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Events\Dispatcher;
-use JTL\Profiler;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 
@@ -23,31 +22,6 @@ class HookManager
     private static ?HookManager $instance;
 
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private JTLCacheInterface $cache;
-
-    /**
-     * @var TimeDataCollector
-     */
-    private TimeDataCollector $timer;
-
-    /**
-     * @var array
-     */
-    private array $hookList;
-
-    /**
-     * @var Dispatcher
-     */
-    private Dispatcher $dispatcher;
-
-    /**
      * @var int
      */
     private int $lockedForPluginID = 0;
@@ -61,18 +35,14 @@ class HookManager
      * @param array             $hookList
      */
     public function __construct(
-        DbInterface $db,
-        JTLCacheInterface $cache,
-        TimeDataCollector $timer,
-        Dispatcher $dispatcher,
-        array $hookList
+        private DbInterface $db,
+        private JTLCacheInterface $cache,
+        private TimeDataCollector $timer,
+        private Dispatcher $dispatcher,
+        private array $hookList
     ) {
-        $this->db         = $db;
-        $this->cache      = $cache;
-        $this->timer      = $timer;
-        $this->dispatcher = $dispatcher;
-        $this->hookList   = $hookList;
-        self::$instance   = $this;
+        self::$instance = $this;
+        $this->createEvents();
     }
 
     /**
@@ -89,6 +59,42 @@ class HookManager
         );
     }
 
+    private function createEvents(): void
+    {
+        foreach ($this->hookList as $hookID => $listeners) {
+            foreach ($listeners as $pluginData) {
+                $this->dispatcher->listen(
+                    'shop.hook.' . $hookID,
+                    function (array $args) use ($pluginData, $hookID) {
+                        global $smarty, $args_arr, $oPlugin;
+                        $prevPlugin = $oPlugin;
+                        $plugin     = $this->getPluginInstance($pluginData->kPlugin);
+                        if ($plugin === null) {
+                            return;
+                        }
+                        $args_arr            = $args;
+                        $plugin->nCalledHook = $hookID;
+                        $oPlugin             = $plugin;
+                        $file                = $pluginData->cDateiname;
+                        if ($hookID === \HOOK_SEITE_PAGE_IF_LINKART && $file === \PLUGIN_SEITENHANDLER) {
+                            // removed in 5.2.0 - moved to router
+                            // include \PFAD_ROOT . \PFAD_INCLUDES . \PLUGIN_SEITENHANDLER;
+                        } elseif ($hookID === \HOOK_CHECKBOX_CLASS_TRIGGERSPECIALFUNCTION) {
+                            if ($plugin->getID() === (int)$args['oCheckBox']->oCheckBoxFunktion->kPlugin) {
+                                include $plugin->getPaths()->getFrontendPath() . $file;
+                            }
+                        } elseif (\is_file($plugin->getPaths()->getFrontendPath() . $file)) {
+                            include $plugin->getPaths()->getFrontendPath() . $file;
+                        }
+                        $smarty?->clearAssign('oPlugin_' . $plugin->getPluginID());
+                        $oPlugin = $prevPlugin;
+                    },
+                    $pluginData->nPriority ?? 5
+                );
+            }
+        }
+    }
+
     /**
      * @param int   $hookID
      * @param array $args
@@ -98,55 +104,8 @@ class HookManager
         if (\SAFE_MODE === true) {
             return;
         }
-        global $smarty, $args_arr, $oPlugin;
-        $previousPlugin = $oPlugin;
         $this->timer->startMeasure('shop.hook.' . $hookID);
         $this->dispatcher->fire('shop.hook.' . $hookID, \array_merge((array)$hookID, $args));
-        if (empty($this->hookList[$hookID])) {
-            $this->timer->stopMeasure('shop.hook.' . $hookID);
-
-            return;
-        }
-        foreach ($this->hookList[$hookID] as $item) {
-            if ($this->lockedForPluginID === $item->kPlugin) {
-                continue;
-            }
-            $plugin = $this->getPluginInstance($item->kPlugin);
-            if ($plugin === null) {
-                continue;
-            }
-            $args_arr            = $args;
-            $plugin->nCalledHook = $hookID;
-            $oPlugin             = $plugin;
-            $file                = $item->cDateiname;
-            if ($hookID === \HOOK_SEITE_PAGE_IF_LINKART && $file === \PLUGIN_SEITENHANDLER) {
-                include \PFAD_ROOT . \PFAD_INCLUDES . \PLUGIN_SEITENHANDLER;
-            } elseif ($hookID === \HOOK_CHECKBOX_CLASS_TRIGGERSPECIALFUNCTION) {
-                if ($plugin->getID() === (int)$args['oCheckBox']->oCheckBoxFunktion->kPlugin) {
-                    include $plugin->getPaths()->getFrontendPath() . $file;
-                }
-            } elseif (\is_file($plugin->getPaths()->getFrontendPath() . $file)) {
-                $start = \microtime(true);
-                include $plugin->getPaths()->getFrontendPath() . $file;
-                if (\PROFILE_PLUGINS === true) {
-                    $now = \microtime(true);
-                    Profiler::setPluginProfile([
-                        'runtime'   => $now - $start,
-                        'timestamp' => $now,
-                        'hookID'    => $hookID,
-                        'runcount'  => 1,
-                        'file'      => $plugin->getPaths()->getFrontendPath() . $file
-                    ]);
-                }
-            }
-            if ($smarty !== null) {
-                $smarty->clearAssign('oPlugin_' . $plugin->getPluginID());
-            }
-        }
-        // restore global variable to original value to avoid conflicts between admin/plugin.php and
-        // running hooks from other plugins
-        $oPlugin = $previousPlugin;
-
         $this->timer->stopMeasure('shop.hook.' . $hookID);
     }
 
@@ -157,12 +116,15 @@ class HookManager
      */
     private function getPluginInstance(int $id, JTLSmarty $smarty = null): ?PluginInterface
     {
+        if ($this->lockedForPluginID === $id) {
+            return null;
+        }
         $plugin = Shop::get('oplugin_' . $id);
         if ($plugin === null) {
             $loader = Helper::getLoaderByPluginID($id, $this->db, $this->cache);
             try {
                 $plugin = $loader->init($id);
-            } catch (InvalidArgumentException $e) {
+            } catch (InvalidArgumentException) {
                 return null;
             }
             if (!Helper::licenseCheck($plugin)) {
@@ -170,9 +132,7 @@ class HookManager
             }
             Shop::set('oplugin_' . $id, $plugin);
         }
-        if ($smarty !== null) {
-            $smarty->assign('oPlugin_' . $plugin->getPluginID(), $plugin);
-        }
+        $smarty?->assign('oPlugin_' . $plugin->getPluginID(), $plugin);
 
         return $plugin;
     }
@@ -188,5 +148,94 @@ class HookManager
     public function unlock(): void
     {
         $this->lockedForPluginID = 0;
+    }
+
+    /**
+     * @param int $pluginID
+     * @return bool
+     */
+    public function isLocked(int $pluginID): bool
+    {
+        return $this->lockedForPluginID === $pluginID;
+    }
+
+    /**
+     * @return DbInterface
+     */
+    public function getDB(): DbInterface
+    {
+        return $this->db;
+    }
+
+    /**
+     * @param DbInterface $db
+     */
+    public function setDB(DbInterface $db): void
+    {
+        $this->db = $db;
+    }
+
+    /**
+     * @return JTLCacheInterface
+     */
+    public function getCache(): JTLCacheInterface
+    {
+        return $this->cache;
+    }
+
+    /**
+     * @param JTLCacheInterface $cache
+     */
+    public function setCache(JTLCacheInterface $cache): void
+    {
+        $this->cache = $cache;
+    }
+
+    /**
+     * @return TimeDataCollector
+     */
+    public function getTimer(): TimeDataCollector
+    {
+        return $this->timer;
+    }
+
+    /**
+     * @param TimeDataCollector $timer
+     */
+    public function setTimer(TimeDataCollector $timer): void
+    {
+        $this->timer = $timer;
+    }
+
+    /**
+     * @return array
+     */
+    public function getHookList(): array
+    {
+        return $this->hookList;
+    }
+
+    /**
+     * @param array $hookList
+     */
+    public function setHookList(array $hookList): void
+    {
+        $this->hookList = $hookList;
+    }
+
+    /**
+     * @return Dispatcher
+     */
+    public function getDispatcher(): Dispatcher
+    {
+        return $this->dispatcher;
+    }
+
+    /**
+     * @param Dispatcher $dispatcher
+     */
+    public function setDispatcher(Dispatcher $dispatcher): void
+    {
+        $this->dispatcher = $dispatcher;
     }
 }

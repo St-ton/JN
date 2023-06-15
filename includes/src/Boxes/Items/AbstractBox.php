@@ -24,7 +24,7 @@ abstract class AbstractBox implements BoxInterface
     /**
      * @var array
      */
-    private static $mapping = [
+    private static array $mapping = [
         'compatName'     => 'Name',
         'cName'          => 'Name',
         'anzeigen'       => 'ShowCompat',
@@ -49,7 +49,7 @@ abstract class AbstractBox implements BoxInterface
     /**
      * @var array
      */
-    private static $validPageTypes = [
+    private static array $validPageTypes = [
         \PAGE_UNBEKANNT,
         \PAGE_ARTIKEL,
         \PAGE_ARTIKELLISTE,
@@ -90,122 +90,122 @@ abstract class AbstractBox implements BoxInterface
     /**
      * @var int
      */
-    protected $itemCount = 0;
+    protected int $itemCount = 0;
 
     /**
-     * @var bool
+     * @var bool|null
      */
-    protected $show;
-
-    /**
-     * @var string
-     */
-    protected $name = '';
+    protected ?bool $show = null;
 
     /**
      * @var string
      */
-    protected $url = '';
+    protected string $name = '';
 
     /**
      * @var string
      */
-    protected $type = '';
+    protected string $url = '';
 
     /**
      * @var string
      */
-    protected $templateFile = '';
+    protected string $type = '';
+
+    /**
+     * @var string
+     */
+    protected string $templateFile = '';
 
     /**
      * @var PluginInterface|null
      */
-    protected $plugin;
+    protected ?PluginInterface $plugin = null;
 
     /**
      * @var PluginInterface|null
      */
-    protected $extension;
+    protected ?PluginInterface $extension = null;
 
     /**
      * @var int
      */
-    protected $containerID = 0;
+    protected int $containerID = 0;
 
     /**
-     * @var string
+     * @var string|null
      */
-    protected $position;
+    protected ?string $position = null;
 
     /**
-     * @var string|array
+     * @var string|array|null
      */
     protected $title;
 
     /**
-     * @var string|array
+     * @var string|array|null
      */
     protected $content;
 
     /**
      * @var int
      */
-    protected $id = 0;
+    protected int $id = 0;
 
     /**
      * @var int
      */
-    protected $baseType = 0;
+    protected int $baseType = 0;
 
     /**
      * @var int
      */
-    protected $customID = 0;
+    protected int $customID = 0;
 
     /**
      * @var int
      */
-    protected $sort = 0;
+    protected int $sort = 0;
 
     /**
      * @var bool
      */
-    protected $isActive = true;
+    protected bool $isActive = true;
 
     /**
-     * @var ArtikelListe|Artikel[]
+     * @var ArtikelListe|Artikel[]|null
      */
     protected $products;
 
     /**
-     * @var array
+     * @var array|mixed
      */
     protected $items = [];
 
     /**
      * @var string|null
      */
-    protected $json;
+    protected ?string $json = null;
 
     /**
      * @var array
      */
-    protected $children = [];
+    protected array $children = [];
 
     /**
      * @var string
      */
-    protected $html = '';
+    protected string $html = '';
 
     /**
      * @var string
      */
-    protected $renderedContent = '';
+    protected string $renderedContent = '';
 
     /**
      * @var bool
      */
-    protected $supportsRevisions = false;
+    protected bool $supportsRevisions = false;
 
     /**
      * @var array
@@ -215,24 +215,18 @@ abstract class AbstractBox implements BoxInterface
     /**
      * @var array
      */
-    protected $config;
-
-    /**
-     * @var array
-     */
-    protected $sortByPageID = [];
+    protected array $sortByPageID = [];
 
     /**
      * @var int
      */
-    protected $availableForPage = 0;
+    protected int $availableForPage = 0;
 
     /**
      * @inheritdoc
      */
-    public function __construct(array $config)
+    public function __construct(protected array $config)
     {
-        $this->config = $config;
     }
 
     /**
@@ -285,7 +279,7 @@ abstract class AbstractBox implements BoxInterface
         $this->setPosition($data->ePosition);
         $this->setType($data->eTyp);
 
-        if ($this->getType() !== Type::PLUGIN && \strpos($data->cTemplate, 'boxes/') !== 0) {
+        if ($this->getType() !== Type::PLUGIN && !\str_starts_with($data->cTemplate, 'boxes/')) {
             $data->cTemplate = 'boxes/' . $data->cTemplate;
         }
         $this->setTemplateFile($data->cTemplate);
@@ -361,7 +355,7 @@ abstract class AbstractBox implements BoxInterface
      */
     public function show(): bool
     {
-        return $this->show;
+        return $this->show ?? false;
     }
 
     /**
@@ -369,7 +363,7 @@ abstract class AbstractBox implements BoxInterface
      */
     public function getShow(): bool
     {
-        return $this->show;
+        return $this->show ?? false;
     }
 
     /**

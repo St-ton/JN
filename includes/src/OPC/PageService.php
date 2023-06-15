@@ -4,6 +4,8 @@ namespace JTL\OPC;
 
 use Exception;
 use JTL\Backend\AdminIO;
+use JTL\Events\Dispatcher;
+use JTL\Events\Event;
 use JTL\Helpers\Request;
 use JTL\IO\IOResponse;
 use JTL\Shop;
@@ -17,27 +19,12 @@ class PageService
     /**
      * @var string
      */
-    protected $adminName = '';
-
-    /**
-     * @var null|Service
-     */
-    protected $opc;
-
-    /**
-     * @var null|PageDB
-     */
-    protected $pageDB;
-
-    /**
-     * @var null|Locker
-     */
-    protected $locker;
+    protected string $adminName = '';
 
     /**
      * @var null|Page
      */
-    protected $curPage;
+    protected ?Page $curPage = null;
 
     /**
      * PageService constructor.
@@ -46,12 +33,8 @@ class PageService
      * @param Locker  $locker
      * @throws \SmartyException
      */
-    public function __construct(Service $opc, PageDB $pageDB, Locker $locker)
+    public function __construct(protected Service $opc, protected PageDB $pageDB, protected Locker $locker)
     {
-        $this->opc    = $opc;
-        $this->pageDB = $pageDB;
-        $this->locker = $locker;
-
         Shop::Smarty()->registerPlugin('function', 'opcMountPoint', [$this, 'renderMountPoint']);
     }
 
@@ -103,6 +86,10 @@ class PageService
      */
     public function renderMountPoint(array $params): string
     {
+        if (Request::verifyGPCDataInt('quickView')) {
+            return '';
+        }
+
         $id          = $params['id'];
         $title       = $params['title'] ?? $id;
         $inContainer = $params['inContainer'] ?? true;
@@ -115,7 +102,7 @@ class PageService
             $output = $areaList->getArea($id)->getFinalHtml($inContainer);
         }
 
-        Shop::fire('shop.OPC.PageService.renderMountPoint', [
+        Dispatcher::getInstance()->fire(Event::OPC_PAGESERVICE_RENDERMOUNTPOINT, [
             'output' => &$output,
             'id'     => $id,
             'title'  => $title,
@@ -232,15 +219,12 @@ class PageService
                 }
             }
         }
-        $shopURLdata = \parse_url(Shop::getURL());
+        $shopPath    = \parse_url(Shop::getURL(), \PHP_URL_PATH) ?? '/';
         $baseURLdata = \parse_url($uri);
-        if (empty($shopURLdata['path'])) {
-            $shopURLdata['path'] = '/';
-        }
         if (!isset($baseURLdata['path'])) {
             return '/';
         }
-        $result = \mb_substr($baseURLdata['path'], \mb_strlen($shopURLdata['path']));
+        $result = \mb_substr($baseURLdata['path'], \mb_strlen($shopPath));
         if (isset($baseURLdata['query'])) {
             $result .= '?' . $baseURLdata['query'];
         }
@@ -285,12 +269,12 @@ class PageService
                 $pageIdObj->manufacturerFilter = $params['kHerstellerFilter'];
             }
         }
-        return \json_encode($pageIdObj, \JSON_INVALID_UTF8_SUBSTITUTE);
+        return \json_encode($pageIdObj, \JSON_THROW_ON_ERROR | \JSON_INVALID_UTF8_SUBSTITUTE);
     }
 
     /**
      * @param int $langID
-     * @return string
+     * @return string|null
      */
     public function createCurrentPageId(int $langID = 0): ?string
     {
@@ -300,6 +284,9 @@ class PageService
         }
         if ($params['kHersteller'] > 0) {
             return $this->createGenericPageId('manufacturer', $params['kHersteller'], $langID, $params);
+        }
+        if ($params['kVariKindArtikel'] > 0) {
+            return $this->createGenericPageId('product', $params['kVariKindArtikel'], $langID, $params);
         }
         if ($params['kArtikel'] > 0) {
             return $this->createGenericPageId('product', $params['kArtikel'], $langID, $params);
@@ -470,10 +457,11 @@ class PageService
 
     /**
      * @return array
+     * @throws \JsonException
      */
     public function getPreviewPageData()
     {
-        return \json_decode(Request::verifyGPDataString('pageData'), true);
+        return \json_decode(Request::verifyGPDataString('pageData'), true, 512, \JSON_THROW_ON_ERROR);
     }
 
     /**

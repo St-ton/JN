@@ -20,15 +20,6 @@ msgstr "Kunden diese Kundengruppe zuweisen"
 msgid "language"
 msgstr "Kunden diese Sprache zuweisen"
 
-msgid "generateNewPass"
-msgstr "Neues Passwort erstellen und Kunden per E-Mail informieren"
-
-msgid "passYes"
-msgstr "Ja, für jeden Kunden ein neues Passwort erstellen und per E-Mail informieren"
-
-msgid "passNo"
-msgstr "Nein, Passwort aus CSV-Datei übernehmen und Kunden nicht per E-Mail benachrichtigen"
-
 msgid "errorInvalidEmail"
 msgstr "Keine gültige E-Mail-Adresse: (%s)! Datensatz wurde übersprungen."
 
@@ -44,14 +35,21 @@ msgstr "Kunde mit dieser E-Mail-Adresse bereits vorhanden: %s. Datensatz wurde �
 msgid "errorImportRecord"
 msgstr "Zeile konnte nicht importiert werden. Bitte sehen Sie sich die Log-Datei (Root/logs/) an und beheben Sie die entsprechenden Fehler in der CSV-Datei."
 
-msgid "successImportRecord"
-msgstr "Datensatz OK. Importiere: "
-
-msgid "checkHead"
-msgstr "Überprüfe Kopfzeile… "
+msgid "successImportCustomerCsv"
+msgstr "Erfolgreich importierte Kundendatensätze: %s"
 
 msgid "errorFormatNotFound"
-msgstr " Format wurde nicht erkannt."
+msgstr "Format wurde nicht erkannt."
 
-msgid "importPending"
-msgstr "Importiere…"
+msgid "notifyCustomersInfo"
+msgstr "Einige zuletzt importierte Kundenkonten benötigen ein neues Passwort! "
+"Möchten Sie die Kunden jetzt per E-Mail auffordern, ein neues Passwort festzulegen?"
+
+msgid "notifyCustomersButton"
+msgstr "Ja, Kunden jetzt per E-Mail benachrichtigen"
+
+msgid "customersNotified"
+msgstr "Kunden benachrichtigt"
+
+msgid "customersNotifiedOK"
+msgstr "Benachrichtigungen wurden versandt"

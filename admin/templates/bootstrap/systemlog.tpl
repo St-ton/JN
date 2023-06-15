@@ -29,11 +29,11 @@
             {/if}
 
             <div>
-                <form method="post" action="{$adminURL}/systemlog.php">
+                <form method="post" action="{$adminURL}{$route}">
                     {$jtl_token}
                     {if $nTotalLogCount === 0}
                         <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
-                    {elseif $oLog_arr|count === 0}
+                    {elseif count($oLog_arr) === 0}
                         <div class="alert alert-info" role="alert">{__('noFilterResults')}</div>
                     {else}
                         <div class="listgroup">
@@ -108,7 +108,7 @@
                     </thead>
                     {foreach $settingLogs as $settingLog}
                         <tr class="text-vcenter">
-                            <td><a href="{$adminURL}/searchresults.php?cSuche={__($settingLog->getSettingName()|cat:'_name')}">{__($settingLog->getSettingName()|cat:'_name')} | {$settingLog->getSettingName()} | {$settingLog->getId()}</a></td>
+                            <td><a href="{$adminURL}/searchresults?cSuche={__($settingLog->getSettingName()|cat:'_name')}">{__($settingLog->getSettingName()|cat:'_name')} | {$settingLog->getSettingName()} | {$settingLog->getId()}</a></td>
                             <td>{$settingLog->getAdminName()}</td>
                             <td>{$settingLog->getChangerIp()}</td>
                             <td>
@@ -133,7 +133,7 @@
             {include file='tpl_inc/pagination.tpl' pagination=$settingLogsPagination cParam_arr=['tab' => 'configlog'] isBottom=true}
         </div>
         <div role="tabpanel" class="tab-pane fade{if $cTab === 'config'} active show{/if}" id="config">
-            <form class="sttings" action="{$adminURL}/systemlog.php" method="post">
+            <form class="sttings" action="{$adminURL}{$route}" method="post">
                 {$jtl_token}
                 <div class="subheading1">{__('systemlogLevel')}</div>
                 <hr class="mb-3">

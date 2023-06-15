@@ -25,24 +25,13 @@ class ImageMap implements IExtensionPoint
     public $kKundengruppe;
 
     /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
      * ImageMap constructor.
      * @param DbInterface $db
      */
-    public function __construct(DbInterface $db)
+    public function __construct(private DbInterface $db)
     {
-        $this->db            = $db;
         $this->kSprache      = Shop::getLanguageID();
-        $this->kKundengruppe = isset($_SESSION['Kundengruppe']->kKundengruppe)
-            ? Frontend::getCustomerGroup()->getID()
-            : null;
-        if (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0) {
-            $this->kKundengruppe = (int)$_SESSION['Kunde']->kKundengruppe;
-        }
+        $this->kKundengruppe = Frontend::getCustomer()->getGroupID();
     }
 
     /**
@@ -111,8 +100,8 @@ class ImageMap implements IExtensionPoint
         $imageMap->kImageMap = (int)$imageMap->kImageMap;
         $imageMap->kKampagne = (int)$imageMap->kKampagne;
         $imageMap->cBildPfad = Shop::getImageBaseURL() . \PFAD_IMAGEMAP . $imageMap->cBildPfad;
-        $parsed              = \parse_url($imageMap->cBildPfad);
-        $imageMap->cBild     = \mb_substr($parsed['path'], \mb_strrpos($parsed['path'], '/') + 1);
+        $path                = \parse_url($imageMap->cBildPfad, \PHP_URL_PATH) ?? '';
+        $imageMap->cBild     = \mb_substr($path, \mb_strrpos($path, '/') + 1);
         if (!\file_exists(\PFAD_ROOT . \PFAD_IMAGEMAP . $imageMap->cBild)) {
             return $imageMap;
         }

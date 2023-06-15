@@ -29,7 +29,7 @@ class Uploader extends NetSyncHandler
                     if (\count($uploads)) {
                         foreach ($uploads as $upload) {
                             $paths = \pathinfo($upload->cName);
-                            $ext   = $paths['extension'];
+                            $ext   = $paths['extension'] ?? '';
                             if (\strlen($ext) === 0) {
                                 $ext = 'unknown';
                             }

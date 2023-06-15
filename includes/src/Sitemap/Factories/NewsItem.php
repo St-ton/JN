@@ -20,12 +20,12 @@ final class NewsItem extends AbstractFactory
      */
     public function getCollection(array $languages, array $customerGroups): Generator
     {
-        $languageIDs = map($languages, static function (LanguageModel $e) {
+        $languageIDs = map($languages, static function (LanguageModel $e): int {
             return $e->getId();
         });
         $res         = $this->db->getPDOStatement(
             "SELECT tnews.dGueltigVon AS dlm, tnews.kNews, tnews.cPreviewImage AS image, tseo.cSeo, 
-            tseo.kSprache AS langID
+            tseo.kSprache AS langID, t.title
                 FROM tnews
                 JOIN tnewssprache t 
                     ON tnews.kNews = t.kNews

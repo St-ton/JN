@@ -3,7 +3,6 @@
 namespace JTL\Checkout;
 
 use DateTime;
-use JTL\Alert\Alert;
 use JTL\Cart\CartHelper;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Hersteller;
@@ -17,6 +16,7 @@ use JTL\Language\LanguageHelper;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
+use function Functional\select;
 
 /**
  * Class Kupon
@@ -271,6 +271,23 @@ class Kupon
         if ($name === 'cLocalizedValue') {
             $this->cLocalizedWert = $value;
         }
+    }
+    /**
+     * @inheritDoc
+     */
+    public function __sleep(): array
+    {
+        return select(\array_keys(\get_object_vars($this)), static function ($e): bool {
+            return $e !== 'db';
+        });
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function __wakeup(): void
+    {
+        $this->db = Shop::Container()->getDB();
     }
 
     /**
@@ -918,7 +935,7 @@ class Kupon
                 WHERE cCode = :code
                 LIMIT 1',
             ['code' => $code]
-        )->map(function ($e) {
+        )->map(function (stdClass $e): self {
             return new self((int)$e->id, $this->db);
         })->first() ?? false;
     }
@@ -964,11 +981,11 @@ class Kupon
             if ($this->fWert > $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true)) {
                 $couponPrice = $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true);
             }
-            if ($this->nGanzenWKRabattieren === 0 && $this->fWert > \gibGesamtsummeKuponartikelImWarenkorb(
+            if ($this->nGanzenWKRabattieren === 0 && $this->fWert > CartHelper::getCouponProductsTotal(
                 $this,
                 $cart->PositionenArr
             )) {
-                $couponPrice = \gibGesamtsummeKuponartikelImWarenkorb($this, $cart->PositionenArr);
+                $couponPrice = CartHelper::getCouponProductsTotal($this, $cart->PositionenArr);
             }
         } elseif ($this->cWertTyp === 'prozent') {
             // Alle Positionen prüfen ob der Kupon greift und falls ja, dann Position rabattieren
@@ -1153,14 +1170,16 @@ class Kupon
             'sum'  => $cart->gibGesamtsummeWaren(true, false),
             'cgid' => Frontend::getCustomerGroup()->getID()
         ];
-        foreach ($cart->PositionenArr as $item) {
+        foreach ($cart->PositionenArr as $key => $item) {
             if (isset($item->Artikel->cArtNr) && \mb_strlen($item->Artikel->cArtNr) > 0) {
-                $prep['cArtNr'] = \str_replace('%', '\%', $item->Artikel->cArtNr);
-                $productQry    .= " OR FIND_IN_SET(:cArtNr, REPLACE(cArtikel, ';', ',')) > 0";
+                $itemNmbrKey        = 'cArtNr' . $key;
+                $prep[$itemNmbrKey] = \str_replace('%', '\%', $item->Artikel->cArtNr);
+                $productQry        .= ' OR FIND_IN_SET(:'  . $itemNmbrKey . ", REPLACE(cArtikel, ';', ',')) > 0";
             }
             if (isset($item->Artikel->cHersteller) && \mb_strlen($item->Artikel->cHersteller) > 0) {
-                $prep['mnf'] = $item->Artikel->kHersteller;
-                $manufQry   .= " OR FIND_IN_SET(:mnf, REPLACE(cHersteller, ';', ',')) > 0";
+                $mnfKey        = 'mnf' . $key;
+                $prep[$mnfKey] = $item->Artikel->kHersteller;
+                $manufQry     .= ' OR FIND_IN_SET(:'  . $mnfKey . ", REPLACE(cHersteller, ';', ',')) > 0";
             }
             if ($item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL
                 && isset($item->Artikel->kArtikel)
@@ -1207,7 +1226,7 @@ class Kupon
                     AND (nVerwendungen = 0
                         OR nVerwendungen > nVerwendungenBisher)
                     AND (cArtikel = '' " . $productQry . ")
-                    AND (cHersteller IS NULL OR cHersteller = '' OR cHersteller = '-1' " . $manufQry . ")
+                    AND (cHersteller = '' OR cHersteller = '-1' " . $manufQry . ")
                     AND (cKategorien = ''
                         OR cKategorien = '-1' " . $catQry . ")
                     AND (cKunden = ''
@@ -1260,7 +1279,7 @@ class Kupon
         )
             || ($this->cWertTyp === 'festpreis'
                 && (int)$this->nGanzenWKRabattieren === 0
-                && $this->fMindestbestellwert > \gibGesamtsummeKuponartikelImWarenkorb(
+                && $this->fMindestbestellwert > CartHelper::getCouponProductsTotal(
                     $this,
                     Frontend::getCart()->PositionenArr
                 )
@@ -1276,16 +1295,16 @@ class Kupon
         } elseif ($this->nVerwendungen > 0 && $this->nVerwendungen <= $this->nVerwendungenBisher) {
             //maximum usage reached
             $ret['ungueltig'] = 6;
-        } elseif (!\warenkorbKuponFaehigArtikel($this, Frontend::getCart()->PositionenArr)) {
+        } elseif (!CartHelper::cartHasCouponValidProducts($this, Frontend::getCart()->PositionenArr)) {
             //cart needs at least one product for which this coupon is valid
             $ret['ungueltig'] = 7;
-        } elseif (!\warenkorbKuponFaehigKategorien($this, Frontend::getCart()->PositionenArr)) {
+        } elseif (!CartHelper::cartHasCouponValidCategories($this, Frontend::getCart()->PositionenArr)) {
             //cart needs at least one category for which this coupon is valid
             $ret['ungueltig'] = 8;
         } elseif ($this->cKuponTyp !== self::TYPE_NEWCUSTOMER
             && (int)$this->cKunden !== -1
             && (!empty($_SESSION['Kunde']->kKunde
-                    && \mb_strpos($this->cKunden, $_SESSION['Kunde']->kKunde . ';') === false)
+                    && !\str_contains($this->cKunden, $_SESSION['Kunde']->kKunde . ';'))
                 || !isset($_SESSION['Kunde']->kKunde)
             )
         ) {
@@ -1293,11 +1312,11 @@ class Kupon
             $ret['ungueltig'] = 9;
         } elseif ($this->cKuponTyp === self::TYPE_SHIPPING
             && isset($_SESSION['Lieferadresse'])
-            && \mb_strpos($this->cLieferlaender, $_SESSION['Lieferadresse']->cLand) === false
+            && !\str_contains($this->cLieferlaender, $_SESSION['Lieferadresse']->cLand)
         ) {
             //invalid for shipping country
             $ret['ungueltig'] = 10;
-        } elseif (!\warenkorbKuponFaehigHersteller($this, Frontend::getCart()->PositionenArr)) {
+        } elseif (!CartHelper::cartHasCouponValidManufacturers($this, Frontend::getCart()->PositionenArr)) {
             //invalid for manufacturer
             $ret['ungueltig'] = 12;
         } elseif (!empty($_SESSION['Kunde']->cMail)) {
@@ -1507,11 +1526,7 @@ class Kupon
     {
         switch ($errorCode) {
             case 0:
-                Shop::Container()->getAlertService()->addAlert(
-                    Alert::TYPE_SUCCESS,
-                    Shop::Lang()->get('couponSuccess'),
-                    'couponSuccess'
-                );
+                Shop::Container()->getAlertService()->addSuccess(Shop::Lang()->get('couponSuccess'), 'couponSuccess');
                 return null;
             case 1:
             case 2:
@@ -1534,8 +1549,7 @@ class Kupon
                 break;
         }
         if ($createAlert) {
-            Shop::Container()->getAlertService()->addAlert(
-                Alert::TYPE_DANGER,
+            Shop::Container()->getAlertService()->addDanger(
                 $errorMessage,
                 'couponError',
                 ['saveInSession' => true]

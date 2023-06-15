@@ -1,0 +1,153 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "Localization check"
+msgstr "Übersetzungsprüfung"
+
+msgid "localizationCheckDesc"
+msgstr "Hier finden Sie fehlende oder überflüssige Übersetzungen."
+
+msgid "localizationCheckURL"
+msgstr ""
+
+msgid "%d errors"
+msgstr "%d Fehler"
+
+msgid "Localization problems found."
+msgstr "Es wurden Lokalisierungsprobleme gefunden."
+
+msgid "No problems detected."
+msgstr "Keine Probleme festgestellt."
+
+msgid "Delete"
+msgstr "Löschen"
+
+msgid "Deleted %d item(s)."
+msgstr "%d Einträge gelöscht."
+
+msgid "ID"
+msgstr "ID"
+
+msgid "Language ID"
+msgstr "Sprach-ID"
+
+msgid "Name"
+msgstr "Name"
+
+msgid "Excess translations"
+msgstr "Übersetzungen in nicht existierende Sprachen"
+
+msgid "Missing translations"
+msgstr "Fehlende Übersetzungen"
+
+msgid "JTL\\Backend\\LocalizationCheck\\Attributes"
+msgstr "Attribute"
+
+msgid "JTL\\Backend\\LocalizationCheck\\Categories"
+msgstr "Kategorien"
+
+msgid "JTL\\Backend\\LocalizationCheck\\Characteristics"
+msgstr "Merkmale"
+
+msgid "JTL\\Backend\\LocalizationCheck\\CharacteristicValues"
+msgstr "Merkmalwerte"
+
+msgid "JTL\\Backend\\LocalizationCheck\\ConfigGroups"
+msgstr "Konfigurationsgruppen"
+
+msgid "JTL\\Backend\\LocalizationCheck\\ConfigItems"
+msgstr "Konfigurationskomponenten"
+
+msgid "JTL\\Backend\\LocalizationCheck\\CustomerGroups"
+msgstr "Kundengruppen"
+
+msgid "JTL\\Backend\\LocalizationCheck\\Manufacturers"
+msgstr "Hersteller"
+
+msgid "JTL\\Backend\\LocalizationCheck\\Packagings"
+msgstr "Zusatzverpackungen"
+
+msgid "JTL\\Backend\\LocalizationCheck\\PaymentMethods"
+msgstr "Zahlungsarten"
+
+msgid "JTL\\Backend\\LocalizationCheck\\Products"
+msgstr "Artikel"
+
+msgid "JTL\\Backend\\LocalizationCheck\\ShippingFees"
+msgstr "Zuschlagslisten"
+
+msgid "JTL\\Backend\\LocalizationCheck\\ShippingMethods"
+msgstr "Versandarten"
+
+msgid "JTL\\Backend\\LocalizationCheck\\UnitsOfMeasurement"
+msgstr "Maßeinheiten"
+
+msgid "JTL\\Backend\\LocalizationCheck\\Uploads"
+msgstr "Uploaddateibeschreibung"
+
+msgid "JTL\\Backend\\LocalizationCheck\\Varcombi"
+msgstr "Variationskombinationen"
+
+msgid "JTL\\Backend\\LocalizationCheck\\VarcombiValues"
+msgstr "Variationswerte"
+
+msgid "JTL\\Backend\\LocalizationCheck\\Warehouses"
+msgstr "Warenlager"
+
+msgid "locationAttributes"
+msgstr "JTL-Wawi > Menü: Artikel > Attribute"
+
+msgid "locationCategories"
+msgstr "JTL-Wawi > Artikelverwaltung > Kategorie > Tab: Beschreibung"
+
+msgid "locationCharacteristics"
+msgstr "JTL-Wawi > Menü: Artikel > Merkmale"
+
+msgid "locationCharacteristicValues"
+msgstr "JTL-Wawi > Menü: Artikel > Merkmale > Merkmal ausklappen > Wert"
+
+msgid "locationConfigGroups"
+msgstr "JTL-Wawi > Menü: Artikel > Konfigurationsgruppen > Bearbeiten"
+
+msgid "locationConfigItems"
+msgstr "JTL-Wawi > Menü: Artikel > Konfigurationsgruppen > Komponenten > Bearbeiten"
+
+msgid "locationCustomerGroups"
+msgstr "JTL-Wawi > Menü: Kunden > Kundengruppen"
+
+msgid "locationManufacturers"
+msgstr "JTL-Wawi > Menü: Artikel > Hersteller"
+
+msgid "locationPackagings"
+msgstr "Backend JTL-Shop > Administration > Versand > Zusatzverpackungen"
+
+msgid "locationPaymentMethods"
+msgstr "Backend JTL-Shop > Administration > Zahlungsarten"
+
+msgid "locationProducts"
+msgstr "JTL-Wawi > Artikelverwaltung > Tab: Beschreibung"
+
+msgid "locationShippingFees"
+msgstr "Backend JTL-Shop > Administration > Versand > Versandarten"
+
+msgid "locationShippingMethods"
+msgstr "Backend JTL-Shop > Administration > Versand > Versandarten"
+
+msgid "locationUnitsOfMeasurement"
+msgstr "JTL-Wawi > Menü: Artikel > Verkaufs-/Maßeinheiten"
+
+msgid "locationUploads"
+msgstr "JTL-Wawi > Artikelverwaltung > Artikel > Tab: Dateien"
+
+msgid "locationVarcombi"
+msgstr "JTL-Wawi > Artikelverwaltung > Artikel > Tab: Variationen"
+
+msgid "locationVarcombiValues"
+msgstr "JTL-Wawi > Artikelverwaltung > Artikel > Tab: Variationen"
+
+msgid "locationWarehouses"
+msgstr "Backend JTL-Shop > Darstellung > Standardelemente > Warenlager"
+
+msgid "Can be found: "
+msgstr "Zu finden unter: "

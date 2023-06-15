@@ -21,6 +21,7 @@ $danger:                            #b90000 !default;
 $bg-danger:                         #E8CCD2 !default;
 $bg-main:                           $gray-lighter !default;
 $bg-main-ligther:                   $bg-main !default;
+$bg-config-recommendation:          lighten($primary, 40%) !default;
 
 $white:                             #ffffff !default;
 $black:                             #000000 !default;
@@ -136,6 +137,10 @@ $transition-fade:                   opacity .35s linear !default;
 
 // styles
 
+$text-muted:                        $gray !default;
+$text-muted-header:                 $text-muted !default;
+$input-color-placeholder:           $gray !default;
+
 $highlight-border-size:             .375rem !default;
 
 $body-bg:                           $gray-100 !default;
@@ -147,13 +152,11 @@ $footer-bg-color:                  $bg-main !default;
 $footer-color:                     $body-color !default;
 $header-bg-color:                  $white !default;
 $header-color:                     $body-color !default;
+$header-bg-color-secondary:        $gray-lighter !default;
+$header-color-secondary:           $text-muted-header !default;
 
 $headings-color:                    $gray-700 !default;
 $navbar-light-hover-color:          $primary !default;
-
-$text-muted:                        $gray !default;
-$text-muted-header:                 $text-muted !default;
-$input-color-placeholder:           $gray !default;
 
 /* links */
 
@@ -346,6 +349,7 @@ $nav-tabs-link-active-border-color		: $primary !default;
 $navbar-nav-link-padding-x: map-get($spacers, 4) !default;
 $navbar-nav-link-padding-y: map-get($spacers, 4) !default;
 $nav-link-padding-x       : 1rem !default;
+$nav-link-padding-sm-x    : .7rem !default;
 $navbar-padding-y         : .4rem !default;
 $navbar-padding-y-lg      : .6rem !default;
 $navbar-image-height      : 2rem !default;

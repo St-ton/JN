@@ -20,24 +20,9 @@ use stdClass;
 class Mailer
 {
     /**
-     * @var RendererInterface
-     */
-    private $renderer;
-
-    /**
-     * @var HydratorInterface
-     */
-    private $hydrator;
-
-    /**
      * @var array
      */
-    private $config;
-
-    /**
-     * @var ValidatorInterface
-     */
-    private $validator;
+    private array $config;
 
     /**
      * Mailer constructor.
@@ -47,15 +32,12 @@ class Mailer
      * @param ValidatorInterface $validator
      */
     public function __construct(
-        HydratorInterface $hydrator,
-        RendererInterface $renderer,
+        private HydratorInterface $hydrator,
+        private RendererInterface $renderer,
         Shopsetting $settings,
-        ValidatorInterface $validator
+        private ValidatorInterface $validator
     ) {
-        $this->hydrator  = $hydrator;
-        $this->renderer  = $renderer;
-        $this->config    = $settings->getAll();
-        $this->validator = $validator;
+        $this->config = $settings->getAll();
     }
 
     /**
@@ -293,7 +275,7 @@ class Mailer
             'phpmailer' => $phpmailer
         ]);
         if (\mb_strlen($phpmailer->Body) === 0) {
-            Shop::Container()->getLogService()->warning('Empty body for mail ' . $phpmailer->Subject);
+            Shop::Container()->getLogService()->warning('Empty body for mail {sub}', ['sub' => $phpmailer->Subject]);
         }
         $sent = $phpmailer->send();
         $mail->setError($phpmailer->ErrorInfo);
@@ -339,7 +321,7 @@ class Mailer
         if ($sent) {
             $this->log($mail);
         } else {
-            Shop::Container()->getLogService()->error('Error sending mail: ' . $mail->getError());
+            Shop::Container()->getLogService()->error('Error sending mail: {err}', ['err' => $mail->getError()]);
         }
         \executeHook(\HOOK_MAILTOOLS_VERSCHICKEMAIL_GESENDET);
 

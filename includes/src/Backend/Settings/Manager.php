@@ -3,7 +3,6 @@
 namespace JTL\Backend\Settings;
 
 use Illuminate\Support\Collection;
-use JTL\Alert\Alert;
 use JTL\Backend\AdminAccount;
 use JTL\Backend\Settings\Sections\SectionInterface;
 use JTL\DB\DbInterface;
@@ -14,36 +13,11 @@ use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Smarty\JTLSmarty;
 
 /**
- * Class SettingSection
+ * Class Manager
  * @package JTL\Backend\Settings
  */
 class Manager
 {
-    /**
-     * @var DbInterface
-     */
-    protected DbInterface $db;
-
-    /**
-     * @var JTLSmarty
-     */
-    protected JTLSmarty $smarty;
-
-    /**
-     * @var AdminAccount
-     */
-    protected AdminAccount $adminAccount;
-
-    /**
-     * @var GetText
-     */
-    protected GetText $getText;
-
-    /**
-     * @var AlertServiceInterface
-     */
-    protected AlertServiceInterface $alertService;
-
     /**
      * @var string[]
      */
@@ -58,20 +32,14 @@ class Manager
      * @param AlertServiceInterface $alertService
      */
     public function __construct(
-        DbInterface $db,
-        JTLSmarty $smarty,
-        AdminAccount $adminAccount,
-        GetText $getText,
-        AlertServiceInterface $alertService
+        protected DbInterface $db,
+        protected JTLSmarty $smarty,
+        protected AdminAccount $adminAccount,
+        protected GetText $getText,
+        protected AlertServiceInterface $alertService
     ) {
         $getText->loadAdminLocale('configs/configs');
         $getText->loadConfigLocales(true, true);
-
-        $this->db           = $db;
-        $this->smarty       = $smarty;
-        $this->adminAccount = $adminAccount;
-        $this->getText      = $getText;
-        $this->alertService = $alertService;
     }
 
     /**
@@ -86,6 +54,12 @@ class Manager
             || $oldValue === $newValue
         ) {
             return;
+        }
+
+        //do not write any password to the log
+        if (str_ends_with($setting, '_pass')) {
+            $oldValue = '***';
+            $newValue = '***';
         }
 
         $this->db->queryPrepared(
@@ -172,8 +146,7 @@ class Manager
             ['settingName' => $settingName]
         );
         if ($defaultValue === null) {
-            $this->alertService->addAlert(
-                Alert::TYPE_DANGER,
+            $this->alertService->addDanger(
                 \sprintf(\__('resetSettingDefaultValueNotFound'), $settingName),
                 'resetSettingDefaultValueNotFound'
             );
@@ -224,7 +197,7 @@ class Manager
             [
                 'unknown' => \__('unknown'),
             ]
-        )->map(static function ($item) {
+        )->map(static function ($item): Log {
             return (new Log())->init($item);
         });
     }

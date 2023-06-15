@@ -13,27 +13,27 @@ class InputConfig
     /**
      * @var array
      */
-    public $allowedValues = [];
+    public array $allowedValues = [];
 
     /**
      * @var string
      */
-    public $inputType = InputType::TEXT;
+    public string $inputType = InputType::TEXT;
 
     /**
      * @var bool
      */
-    public $modifyable = true;
+    public bool $modifyable = true;
 
     /**
      * @var bool
      */
-    public $hidden = false;
+    public bool $hidden = false;
 
     /**
      * @var bool
      */
-    public $multiselect = false;
+    public bool $multiselect = false;
 
     /**
      * @return array

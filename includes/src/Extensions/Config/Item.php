@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Extensions\Config;
 
@@ -21,104 +21,104 @@ use function Functional\select;
 class Item implements JsonSerializable
 {
     /**
-     * @var int
+     * @var int|null
      */
-    protected $kKonfigitem;
+    protected ?int $kKonfigitem = null;
 
     /**
      * @var int
      */
-    protected $kArtikel;
+    protected int $kArtikel = 0;
 
     /**
      * @var int
      */
-    protected $nPosTyp;
+    protected int $nPosTyp = 0;
 
     /**
      * @var int
      */
-    protected $kKonfiggruppe;
+    protected int $kKonfiggruppe = 0;
 
     /**
      * @var int
      */
-    protected $bSelektiert;
+    protected int $bSelektiert = 0;
 
     /**
      * @var int
      */
-    protected $bEmpfohlen;
+    protected int $bEmpfohlen = 0;
 
     /**
      * @var int
      */
-    protected $bPreis;
+    protected int $bPreis = 0;
 
     /**
      * @var int
      */
-    protected $bName;
+    protected int $bName = 0;
 
     /**
      * @var int
      */
-    protected $bRabatt;
+    protected int $bRabatt = 0;
 
     /**
      * @var int
      */
-    protected $bZuschlag;
+    protected int $bZuschlag = 0;
 
     /**
      * @var int
      */
-    protected $bIgnoreMultiplier;
+    protected int $bIgnoreMultiplier = 0;
 
     /**
-     * @var float
+     * @var float|null
      */
-    protected $fMin;
+    protected $fMin = null;
 
     /**
-     * @var float
+     * @var float|null
      */
-    protected $fMax;
+    protected $fMax = null;
 
     /**
-     * @var float
+     * @var float|null
      */
-    protected $fInitial;
+    protected $fInitial = null;
 
     /**
      * @var ItemLocalization|null
      */
-    protected $oSprache;
+    protected ?ItemLocalization $oSprache = null;
 
     /**
      * @var ItemPrice|null
      */
-    protected $oPreis;
+    protected ?ItemPrice $oPreis = null;
 
     /**
      * @var Artikel|null
      */
-    protected $oArtikel;
+    protected ?Artikel $oArtikel = null;
 
     /**
      * @var int
      */
-    protected $kSprache;
+    protected int $kSprache = 0;
 
     /**
      * @var int
      */
-    protected $kKundengruppe;
+    protected int $kKundengruppe = 0;
 
     /**
      * @var int
      */
-    protected $nSort = 0;
+    protected int $nSort = 0;
 
     /**
      * @var int|float|null
@@ -131,14 +131,14 @@ class Item implements JsonSerializable
     public $fAnzahlWK;
 
     /**
-     * @var bool|null
+     * @var bool
      */
-    public $bAktiv;
+    public bool $bAktiv = false;
 
     /**
      * @var array|null
      */
-    public $oEigenschaftwerte_arr;
+    public ?array $oEigenschaftwerte_arr = null;
 
     /**
      * Item constructor.
@@ -158,7 +158,7 @@ class Item implements JsonSerializable
      */
     public function __sleep()
     {
-        return select(\array_keys(\get_object_vars($this)), static function ($e) {
+        return select(\array_keys(\get_object_vars($this)), static function ($e): bool {
             return $e !== 'oArtikel';
         });
     }
@@ -230,29 +230,44 @@ class Item implements JsonSerializable
             return $this;
         }
         $item = Shop::Container()->getDB()->select('tkonfigitem', 'kKonfigitem', $id);
-        if (isset($item->kKonfigitem) && $item->kKonfigitem > 0) {
-            foreach (\array_keys(\get_object_vars($item)) as $member) {
-                $this->$member = $item->$member;
-            }
-
+        if ($item !== null && $item->kKonfigitem > 0) {
             if (!$languageID) {
                 $languageID = Shop::getLanguageID() ?? LanguageHelper::getDefaultLanguage()->kSprache;
             }
             if (!$customerGroupID) {
                 $customerGroupID = Frontend::getCustomerGroup()->getID();
             }
-            $this->kKonfiggruppe     = (int)$this->kKonfiggruppe;
-            $this->kKonfigitem       = (int)$this->kKonfigitem;
-            $this->kArtikel          = (int)$this->kArtikel;
-            $this->nPosTyp           = (int)$this->nPosTyp;
-            $this->nSort             = (int)$this->nSort;
-            $this->bSelektiert       = (int)$this->bSelektiert;
-            $this->bEmpfohlen        = (int)$this->bEmpfohlen;
-            $this->bName             = (int)$this->bName;
-            $this->bPreis            = (int)$this->bPreis;
-            $this->bRabatt           = (int)$this->bRabatt;
-            $this->bZuschlag         = (int)$this->bZuschlag;
-            $this->bIgnoreMultiplier = (int)$this->bIgnoreMultiplier;
+
+            return $this->assignData($item, $languageID, $customerGroupID);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param object $item
+     * @param int    $languageID
+     * @param int    $customerGroupID
+     * @return $this
+     */
+    public function assignData(object $item, int $languageID, int $customerGroupID): self
+    {
+        if ($item->kKonfigitem > 0) {
+            $this->kKonfiggruppe     = (int)$item->kKonfiggruppe;
+            $this->kKonfigitem       = (int)$item->kKonfigitem;
+            $this->kArtikel          = (int)$item->kArtikel;
+            $this->nPosTyp           = (int)$item->nPosTyp;
+            $this->bSelektiert       = (int)$item->bSelektiert;
+            $this->bEmpfohlen        = (int)$item->bEmpfohlen;
+            $this->bName             = (int)$item->bName;
+            $this->bPreis            = (int)$item->bPreis;
+            $this->bRabatt           = (int)$item->bRabatt;
+            $this->bZuschlag         = (int)$item->bZuschlag;
+            $this->bIgnoreMultiplier = (int)$item->bIgnoreMultiplier;
+            $this->fMin              = $item->fMin;
+            $this->fMax              = $item->fMax;
+            $this->fInitial          = $item->fInitial;
+            $this->nSort             = (int)$item->nSort;
             $this->kSprache          = $languageID;
             $this->kKundengruppe     = $customerGroupID;
             $this->oSprache          = new ItemLocalization($this->kKonfigitem, $languageID);
@@ -297,16 +312,16 @@ class Item implements JsonSerializable
         $customerGroupID = Frontend::getCustomerGroup()->getID();
 
         return Shop::Container()->getDB()->getCollection(
-            'SELECT kKonfigitem 
+            'SELECT *
                 FROM tkonfigitem 
                 WHERE kKonfiggruppe = :groupID 
                 ORDER BY nSort ASC',
             ['groupID' => $groupID]
         )
-            ->map(static function (stdClass $item) use ($languageID, $customerGroupID) {
-                return new self((int)$item->kKonfigitem, $languageID, $customerGroupID);
+            ->map(static function (stdClass $item) use ($languageID, $customerGroupID): self {
+                return (new self())->assignData($item, $languageID, $customerGroupID);
             })
-            ->filter(static function (Item $item) {
+            ->filter(static function (Item $item): bool {
                 return $item->isValid();
             })
             ->toArray();
@@ -346,12 +361,12 @@ class Item implements JsonSerializable
     }
 
     /**
-     * @param int $nPosTyp
+     * @param int $type
      * @return $this
      */
-    public function setPosTyp(int $nPosTyp): self
+    public function setPosTyp(int $type): self
     {
-        $this->nPosTyp = $nPosTyp;
+        $this->nPosTyp = $type;
 
         return $this;
     }
@@ -369,7 +384,7 @@ class Item implements JsonSerializable
      */
     public function getKonfiggruppe(): int
     {
-        return (int)$this->kKonfiggruppe;
+        return $this->kKonfiggruppe;
     }
 
     /**
@@ -377,7 +392,7 @@ class Item implements JsonSerializable
      */
     public function getArtikelKey(): int
     {
-        return (int)$this->kArtikel;
+        return $this->kArtikel;
     }
 
     /**
@@ -550,7 +565,9 @@ class Item implements JsonSerializable
             $tmp = $this->oPreis->getPreis();
             if ($tmp < 0) {
                 $discount = $tmp * -1;
-                if ($this->oPreis->getTyp() === 0 && !Frontend::getCustomerGroup()->isMerchant()) {
+                if ($this->oPreis->getTyp() === ItemPrice::PRICE_TYPE_SUM
+                    && !Frontend::getCustomerGroup()->isMerchant()
+                ) {
                     $discount = Tax::getGross($discount, Tax::getSalesTax($this->getSteuerklasse()));
                 }
             }
@@ -577,7 +594,9 @@ class Item implements JsonSerializable
             $tmp = $this->oPreis->getPreis();
             if ($tmp > 0) {
                 $fee = $tmp;
-                if ($this->oPreis->getTyp() == 0 && !Frontend::getCustomerGroup()->isMerchant()) {
+                if ($this->oPreis->getTyp() === ItemPrice::PRICE_TYPE_SUM
+                    && !Frontend::getCustomerGroup()->isMerchant()
+                ) {
                     $fee = Tax::getGross($fee, Tax::getSalesTax($this->getSteuerklasse()));
                 }
             }
@@ -592,7 +611,7 @@ class Item implements JsonSerializable
      */
     public function getRabattLocalized(bool $html = true): string
     {
-        return $this->oPreis->getTyp() === 0
+        return $this->oPreis->getTyp() === ItemPrice::PRICE_TYPE_SUM
             ? Preise::getLocalizedPriceString($this->getRabatt(), null, $html)
             : $this->getRabatt() . '%';
     }
@@ -603,7 +622,7 @@ class Item implements JsonSerializable
      */
     public function getZuschlagLocalized(bool $html = true): string
     {
-        return $this->oPreis->getTyp() === 0
+        return $this->oPreis->getTyp() === ItemPrice::PRICE_TYPE_SUM
             ? Preise::getLocalizedPriceString($this->getZuschlag(), null, $html)
             : $this->getZuschlag() . '%';
     }
@@ -730,6 +749,9 @@ class Item implements JsonSerializable
     public function isInStock(): bool
     {
         $tmpPro = $this->getArtikel();
+        if ($tmpPro === null) {
+            return true;
+        }
 
         return empty($this->kArtikel)
             || (!($tmpPro->cLagerBeachten === 'Y'

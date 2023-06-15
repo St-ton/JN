@@ -12,9 +12,9 @@
                 <h3>AuthToken</h3>
                 <pre>{$authToken}</pre>
                 <h3>Bound licenses</h3>
-                <pre>{$licenses->getBound()|dump}</pre>
+                <pre>{dump($licenses->getBound())}</pre>
                 <h3>Raw data</h3>
-                <pre>{$rawData|var_dump}</pre>
+                <pre>{var_dump($rawData)}</pre>
             {/if}
         {/if}
     </div>

@@ -1,7 +1,7 @@
 {function containerSection} {* direction, directionName, oBox_arr, oContainer_arr *}
     <div class="col-md-12">
         <div class="card">
-            <form action="{$adminURL}/boxen.php" method="post">
+            <form action="{$adminURL}{$route}" method="post">
                 {$jtl_token}
                 <div class="card-header">
                     <div class="subheading1">{$directionName}</div>
@@ -13,7 +13,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                {if $oBox_arr|count > 0}
+                {if count($oBox_arr) > 0}
                     <div class="table-responsive">
                         <table class="table table-hover table-align-top">
                             <thead>
@@ -71,7 +71,7 @@
                 </div>
             </form>
             <div class="card-footer mb-5">
-                <form name="newBox_{$direction}" action="{$adminURL}/boxen.php" method="post" class="form-horizontal">
+                <form name="newBox_{$direction}" action="{$adminURL}{$route}" method="post" class="form-horizontal">
                     {$jtl_token}
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="newBox_{$direction}">{__('new')}:</label>

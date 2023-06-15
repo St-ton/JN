@@ -15,7 +15,14 @@
     {block name='productdetails-details-form'}
         {opcMountPoint id='opc_before_buy_form' inContainer=false}
         {container class="{if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
-            {form id="buy_form" action=$Artikel->cURLFull class="jtl-validate"}
+            {form id="buy_form{if !empty($smarty.get.quickView)}-quickview{/if}" action=$Artikel->cURLFull class="jtl-validate"}
+                {button aria=["label"=>"{lang key='addToCart'}"]
+                    name="inWarenkorb"
+                    variant="hidden"
+                    type="submit"
+                    value="{lang key='addToCart'}"
+                    disabled=$Artikel->bHasKonfig && !$isConfigCorrect|default:false
+                    class="js-cfg-validate btn-hidden-default"}{/button}
                 {row id="product-offer" class="product-detail"}
                     {block name='productdetails-details-include-image'}
                         {col cols=12 lg=6 class="product-gallery"}
@@ -37,12 +44,13 @@
                             {if ($Artikel->Bewertungen->oBewertungGesamt->nAnzahl > 0) || isset($Artikel->cArtNr)}
                                 {if ($Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->Bewertungen->oBewertungGesamt->nAnzahl > 0)}
                                     {block name='productdetails-details-info-rating-wrapper'}
-                                        <div class="rating-wrapper" itemprop="aggregateRating" itemscope="true" itemtype="https://schema.org/AggregateRating">
+                                        <div class="rating-wrapper" itemprop="aggregateRating" itemscope itemtype="https://schema.org/AggregateRating">
                                             <meta itemprop="ratingValue" content="{$Artikel->Bewertungen->oBewertungGesamt->fDurchschnitt}"/>
                                             <meta itemprop="bestRating" content="5"/>
                                             <meta itemprop="worstRating" content="1"/>
                                             <meta itemprop="reviewCount" content="{$Artikel->Bewertungen->oBewertungGesamt->nAnzahl}"/>
                                             {block name='productdetails-details-include-rating'}
+                                                {if empty($smarty.get.quickView)}
                                                 {link href="{$Artikel->cURLFull}#tab-votes"
                                                     id="jump-to-votes-tab"
                                                     aria=["label"=>{lang key='Votes'}]
@@ -50,6 +58,10 @@
                                                     {include file='productdetails/rating.tpl' stars=$Artikel->Bewertungen->oBewertungGesamt->fDurchschnitt total=$Artikel->Bewertungen->oBewertungGesamt->nAnzahl}
                                                     ({$Artikel->Bewertungen->oBewertungGesamt->nAnzahl} {lang key='rating'})
                                                 {/link}
+                                                {else}
+                                                    {include file='productdetails/rating.tpl' stars=$Artikel->Bewertungen->oBewertungGesamt->fDurchschnitt total=$Artikel->Bewertungen->oBewertungGesamt->nAnzahl}
+                                                    ({$Artikel->Bewertungen->oBewertungGesamt->nAnzahl} {lang key='rating'})
+                                                {/if}
                                             {/block}
                                         </div>
                                     {/block}
@@ -102,7 +114,11 @@
                                                 {block name='productdetails-details-info-category'}
                                                     <li class="product-category word-break">
                                                         <strong>{lang key='category'}: </strong>
-                                                        <a href="{$Brotnavi[$cidx]->getURLFull()}" itemprop="category">{$Brotnavi[$cidx]->getName()}</a>
+                                                        <a href="{$Brotnavi[$cidx]->getURLFull()}" itemprop="category"
+                                                           {if !empty($smarty.get.quickView)}target="_blank"{/if}
+                                                        >
+                                                            {$Brotnavi[$cidx]->getName()}
+                                                        </a>
                                                     </li>
                                                 {/block}
                                             {/if}
@@ -110,10 +126,10 @@
                                         {block name='productdetails-details-info-manufacturer-wrapper'}
                                             {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'N' && isset($Artikel->cHersteller)}
                                                 {block name='productdetails-details-product-info-manufacturer'}
-                                                    <li  class="product-manufacturer" itemprop="brand" itemscope="true" itemtype="https://schema.org/Organization">
+                                                    <li  class="product-manufacturer" itemprop="brand" itemscope itemtype="https://schema.org/Brand">
                                                         <strong>{lang key='manufacturers'}:</strong>
                                                         {if $Einstellungen.artikeldetails.artikel_weitere_artikel_hersteller_anzeigen === 'Y'}
-                                                            <a href="{if !empty($Artikel->cHerstellerHomepage)}{$Artikel->cHerstellerHomepage}{else}{$Artikel->cHerstellerSeo}{/if}"
+                                                            <a href="{if !empty($Artikel->cHerstellerHomepage)}{$Artikel->cHerstellerHomepage}{else}{$Artikel->cHerstellerURL}{/if}"
                                                                 {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'B'}
                                                                     data-toggle="tooltip"
                                                                     data-placement="left"
@@ -189,7 +205,7 @@
                                         {input type="hidden" name="VariKindArtikel" value=$Artikel->kVariKindArtikel}
                                     {/if}
                                     {if isset($smarty.get.ek)}
-                                        {input type="hidden" name="ek" value=$smarty.get.ek|intval}
+                                        {input type="hidden" name="ek" value=intval($smarty.get.ek)}
                                     {/if}
                                     {input type="hidden" name="AktuellerkArtikel" class="current_article" name="a" value=$Artikel->kArtikel}
                                     {input type="hidden" name="wke" value="1"}
@@ -220,7 +236,9 @@
                                                 {/col}
                                                 {col class="question-on-item col-auto"}
                                                     {block name='productdetails-details-question-on-item'}
-                                                        {if $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'P'}
+                                                        {if $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'P'
+                                                            && empty($smarty.get.quickView)
+                                                        }
                                                             <button type="button" id="z{$Artikel->kArtikel}"
                                                                     class="btn btn-link question"
                                                                     title="{lang key='productQuestion' section='productDetails'}"
@@ -234,14 +252,18 @@
                                                 {/col}
                                             {/row}
                                             {block name='snippets-stock-note-include-warehouse'}
+                                                {if empty($smarty.get.quickView)}
                                                 {include file='productdetails/warehouse.tpl'}
+                                                {/if}
                                             {/block}
                                         {/col}
                                     {/block}
                                 {/row}
                                 {*UPLOADS product-specific files, e.g. for customization*}
                                 {block name='productdetails-details-include-uploads'}
+                                    {if empty($smarty.get.quickView)}
                                     {include file="snippets/uploads.tpl" tplscope='product'}
+                                    {/if}
                                 {/block}
                                 {*WARENKORB anzeigen wenn keine variationen mehr auf lager sind?!*}
                                 {if $Artikel->bHasKonfig}
@@ -258,27 +280,43 @@
                                             {/if}
                                             {block name='productdetails-details-config-button-button'}
                                                 {col cols=12 sm=6}
-                                                    {button type="button"
-                                                        class="start-configuration js-start-configuration"
-                                                        value="{lang key='configure'}"
-                                                        block=true
-                                                        data=["toggle"=>"modal", "target"=>"#cfg-container"]
-                                                        disabled=(isset($Artikel->Variationen) && $Artikel->Variationen|count > 0)
-                                                    }
-                                                        <span>{lang key='configure'}</span> <i class="fas fa-cogs"></i>
-                                                    {/button}
+                                                    {if $Einstellungen.template.productdetails.config_position === 'popup'}
+                                                        {button type="button"
+                                                            class="start-configuration js-start-configuration"
+                                                            value="{lang key='configure'}"
+                                                            block=true
+                                                            data=["toggle"=>"modal", "target"=>"#cfg-container"]
+                                                            disabled=(isset($Artikel->Variationen) && $Artikel->Variationen|count > 0)
+                                                        }
+                                                            <span>{lang key='configure'}</span> <i class="fas fa-cogs"></i>
+                                                        {/button}
+                                                    {else}
+                                                        {link type="button"
+                                                            class="btn btn-secondary start-configuration js-start-configuration"
+                                                            value="{lang key='configure'}"
+                                                            block=true
+                                                            href="#cfg-container"
+                                                            disabled=(isset($Artikel->Variationen) && $Artikel->Variationen|count > 0)
+                                                        }
+                                                            <span>{lang key='configure'}</span> <i class="fas fa-cogs"></i>
+                                                        {/link}
+                                                    {/if}
                                                 {/col}
                                             {/block}
                                         {/row}
                                     {/block}
-                                    {block name='productdetails-details-include-config-container'}
-                                        {row id="product-configurator"}
-                                            {include file='productdetails/config_container.tpl'}
-                                        {/row}
+                                    {block name='productdetails-details-include-config-container-popup'}
+                                        {if $Einstellungen.template.productdetails.config_position === 'popup'}
+                                            {row id="product-configurator" class="cfg-position-{$Einstellungen.template.productdetails.config_position} cfg-layout-{$Einstellungen.template.productdetails.config_layout}"}
+                                                {include file='productdetails/config_container.tpl'}
+                                            {/row}
+                                        {/if}
                                     {/block}
                                 {else}
                                     {block name='productdetails-details-include-basket'}
-                                        {include file='productdetails/basket.tpl'}
+                                        {if empty($smarty.get.quickView)}
+                                            {include file='productdetails/basket.tpl'}
+                                        {/if}
                                     {/block}
                                 {/if}
                             </div>
@@ -286,6 +324,13 @@
                         {/block}{* productdetails-info *}
                         {opcMountPoint id='opc_after_product_info'}
                     {/col}
+                    {block name='productdetails-details-include-config-container-details'}
+                        {if $Artikel->bHasKonfig && $Einstellungen.template.productdetails.config_position === 'details'}
+                            {col cols=12 id="product-configurator" class="cfg-position-{$Einstellungen.template.productdetails.config_position} cfg-layout-{$Einstellungen.template.productdetails.config_layout}"}
+                                {include file='productdetails/config_container.tpl'}
+                            {/col}
+                        {/if}
+                    {/block}
                 {/row}
                 {block name='productdetails-details-include-matrix'}
                     {include file='productdetails/matrix.tpl'}
@@ -299,56 +344,58 @@
             {include file='productdetails/tabs.tpl'}
         {/block}
 
-        {*SLIDERS*}
-        {if isset($Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen) && $Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen === 'Y' && isset($Artikel->oStueckliste_arr) && $Artikel->oStueckliste_arr|count > 0
-        || isset($Einstellungen.artikeldetails.artikeldetails_produktbundle_nutzen) && $Einstellungen.artikeldetails.artikeldetails_produktbundle_nutzen === 'Y' && isset($Artikel->oProduktBundle_arr) && $Artikel->oProduktBundle_arr|count > 0
-        || isset($Xselling->Standard->XSellGruppen) && count($Xselling->Standard->XSellGruppen) > 0
-        || isset($Xselling->Kauf->Artikel) && count($Xselling->Kauf->Artikel) > 0
-        || isset($oAehnlicheArtikel_arr) && count($oAehnlicheArtikel_arr) > 0}
-            {container fluid=true class="{if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
-                {if isset($Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen) && $Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen === 'Y' && isset($Artikel->oStueckliste_arr) && $Artikel->oStueckliste_arr|count > 0}
-                    {block name='productdetails-details-include-product-slider-partslist'}
-                        <div class="partslist">
-                            {lang key='listOfItems' section='global' assign='slidertitle'}
-                            {include file='snippets/product_slider.tpl' id='slider-partslist' productlist=$Artikel->oStueckliste_arr title=$slidertitle showPartsList=true}
-                        </div>
-                    {/block}
-                {/if}
-
-                {if isset($Einstellungen.artikeldetails.artikeldetails_produktbundle_nutzen) && $Einstellungen.artikeldetails.artikeldetails_produktbundle_nutzen === 'Y' && isset($Artikel->oProduktBundle_arr) && $Artikel->oProduktBundle_arr|count > 0}
-                    {block name='productdetails-details-include-bundle'}
-                        <div class="bundle">
-                            {include file='productdetails/bundle.tpl' ProductKey=$Artikel->kArtikel Products=$Artikel->oProduktBundle_arr ProduktBundle=$Artikel->oProduktBundlePrice ProductMain=$Artikel->oProduktBundleMain}
-                        </div>
-                    {/block}
-                {/if}
-                {if isset($Xselling->Standard) || isset($Xselling->Kauf) || isset($oAehnlicheArtikel_arr)}
-                    <div class="recommendations d-print-none">
-                        {block name='productdetails-details-recommendations'}
-                            {if isset($Xselling->Standard->XSellGruppen) && count($Xselling->Standard->XSellGruppen) > 0}
-                                {foreach $Xselling->Standard->XSellGruppen as $Gruppe}
-                                    {include file='snippets/product_slider.tpl' class='x-supplies' id='slider-xsell-group-'|cat:$Gruppe@iteration productlist=$Gruppe->Artikel title=$Gruppe->Name}
-                                {/foreach}
-                            {/if}
-
-                            {if isset($Xselling->Kauf->Artikel) && count($Xselling->Kauf->Artikel) > 0}
-                                {lang key='customerWhoBoughtXBoughtAlsoY' section='productDetails' assign='slidertitle'}
-                                {include file='snippets/product_slider.tpl' class='x-sell' id='slider-xsell' productlist=$Xselling->Kauf->Artikel title=$slidertitle}
-                            {/if}
-
-                            {if isset($oAehnlicheArtikel_arr) && count($oAehnlicheArtikel_arr) > 0}
-                                {lang key='RelatedProducts' section='productDetails' assign='slidertitle'}
-                                {include file='snippets/product_slider.tpl' class='x-related' id='slider-related' productlist=$oAehnlicheArtikel_arr title=$slidertitle}
-                            {/if}
+        {if empty($smarty.get.quickView)}
+            {*SLIDERS*}
+            {if isset($Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen) && $Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen === 'Y' && isset($Artikel->oStueckliste_arr) && $Artikel->oStueckliste_arr|count > 0
+            || isset($Einstellungen.artikeldetails.artikeldetails_produktbundle_nutzen) && $Einstellungen.artikeldetails.artikeldetails_produktbundle_nutzen === 'Y' && isset($Artikel->oProduktBundle_arr) && $Artikel->oProduktBundle_arr|count > 0
+            || isset($Xselling->Standard->XSellGruppen) && count($Xselling->Standard->XSellGruppen) > 0
+            || isset($Xselling->Kauf->Artikel) && count($Xselling->Kauf->Artikel) > 0
+            || isset($oAehnlicheArtikel_arr) && count($oAehnlicheArtikel_arr) > 0}
+                {container fluid=true class="{if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
+                    {if isset($Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen) && $Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen === 'Y' && isset($Artikel->oStueckliste_arr) && $Artikel->oStueckliste_arr|count > 0}
+                        {block name='productdetails-details-include-product-slider-partslist'}
+                            <div class="partslist">
+                                {lang key='listOfItems' section='global' assign='slidertitle'}
+                                {include file='snippets/product_slider.tpl' id='slider-partslist' productlist=$Artikel->oStueckliste_arr title=$slidertitle showPartsList=true}
+                            </div>
                         {/block}
-                    </div>
-                {/if}
-            {/container}
+                    {/if}
+
+                    {if isset($Einstellungen.artikeldetails.artikeldetails_produktbundle_nutzen) && $Einstellungen.artikeldetails.artikeldetails_produktbundle_nutzen === 'Y' && isset($Artikel->oProduktBundle_arr) && $Artikel->oProduktBundle_arr|count > 0}
+                        {block name='productdetails-details-include-bundle'}
+                            <div class="bundle">
+                                {include file='productdetails/bundle.tpl' ProductKey=$Artikel->kArtikel Products=$Artikel->oProduktBundle_arr ProduktBundle=$Artikel->oProduktBundlePrice ProductMain=$Artikel->oProduktBundleMain}
+                            </div>
+                        {/block}
+                    {/if}
+                    {if isset($Xselling->Standard) || isset($Xselling->Kauf) || isset($oAehnlicheArtikel_arr)}
+                        <div class="recommendations d-print-none">
+                            {block name='productdetails-details-recommendations'}
+                                {if isset($Xselling->Standard->XSellGruppen) && count($Xselling->Standard->XSellGruppen) > 0}
+                                    {foreach $Xselling->Standard->XSellGruppen as $Gruppe}
+                                        {include file='snippets/product_slider.tpl' class='x-supplies' id='slider-xsell-group-'|cat:$Gruppe@iteration productlist=$Gruppe->Artikel title=$Gruppe->Name}
+                                    {/foreach}
+                                {/if}
+
+                                {if isset($Xselling->Kauf->Artikel) && count($Xselling->Kauf->Artikel) > 0}
+                                    {lang key='customerWhoBoughtXBoughtAlsoY' section='productDetails' assign='slidertitle'}
+                                    {include file='snippets/product_slider.tpl' class='x-sell' id='slider-xsell' productlist=$Xselling->Kauf->Artikel title=$slidertitle}
+                                {/if}
+
+                                {if isset($oAehnlicheArtikel_arr) && count($oAehnlicheArtikel_arr) > 0}
+                                    {lang key='RelatedProducts' section='productDetails' assign='slidertitle'}
+                                    {include file='snippets/product_slider.tpl' class='x-related' id='slider-related' productlist=$oAehnlicheArtikel_arr title=$slidertitle}
+                                {/if}
+                            {/block}
+                        </div>
+                    {/if}
+                {/container}
+            {/if}
+            {block name='productdetails-details-include-popups'}
+                <div id="article_popups">
+                    {include file='productdetails/popups.tpl'}
+                </div>
+            {/block}
         {/if}
-        {block name='productdetails-details-include-popups'}
-            <div id="article_popups">
-                {include file='productdetails/popups.tpl'}
-            </div>
-        {/block}
     {/block}
 {/block}

@@ -5,7 +5,7 @@ namespace JTL\Services\JTL\Validation;
 use function Functional\none;
 
 /**
- * Class ObjectValidationResult
+ * Class SetValidationResult
  * @package JTL\Services\JTL\Validation
  */
 class SetValidationResult implements SetValidationResultInterface
@@ -16,17 +16,11 @@ class SetValidationResult implements SetValidationResultInterface
     protected $fieldResults = [];
 
     /**
-     * @var array|object
-     */
-    protected $set;
-
-    /**
      * ObjectValidationResult constructor.
      * @param object|array $set
      */
-    public function __construct($set)
+    public function __construct(protected $set)
     {
-        $this->set = $set;
     }
 
     /**

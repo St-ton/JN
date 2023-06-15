@@ -12,11 +12,6 @@ use JTL\Model\DataModelInterface;
 class AbstractRateLimiter implements RateLimiterInterface
 {
     /**
-     * @var DbInterface
-     */
-    protected $db;
-
-    /**
      * @var string
      */
     protected $ip;
@@ -29,7 +24,7 @@ class AbstractRateLimiter implements RateLimiterInterface
     /**
      * @var string
      */
-    protected $type = 'generic';
+    protected string $type = 'generic';
 
     protected const LIMIT = 3;
 
@@ -40,9 +35,8 @@ class AbstractRateLimiter implements RateLimiterInterface
     /**
      * @param DbInterface $db
      */
-    public function __construct(DbInterface $db)
+    public function __construct(protected DbInterface $db)
     {
-        $this->db = $db;
     }
 
     /**
@@ -69,7 +63,7 @@ class AbstractRateLimiter implements RateLimiterInterface
     {
         /** @var Model $model */
         $model = $this->getModel();
-        $model->setIp($this->ip);
+        $model->setIP($this->ip);
         $model->setReference($this->key);
         $model->setProtectedType($this->type);
         $model->setTime('now()');
@@ -95,7 +89,7 @@ class AbstractRateLimiter implements RateLimiterInterface
                 FROM tfloodprotect
                 WHERE cIP = :ip
                     AND reference = :rid
-                    AND cType = :tpe
+                    AND cTyp = :tpe
                     AND TIMESTAMPDIFF(MINUTE, dErstellt, NOW()) < :td',
             [
                 'ip'  => $this->ip,

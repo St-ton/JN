@@ -9,14 +9,14 @@
         {include file='snippets/filter/search_in_items.tpl' itemCount=count($Merkmal->getOptions()) name=$Merkmal->getName()}
     {/block}
     {if $Merkmal->getData('cTyp') === 'BILD'}
-        <ul class="nav nav-filter-has-image">
+        <div class="nav nav-filter-has-image">
     {/if}
     {foreach $Merkmal->getOptions() as $attributeValue}
         {$attributeImageURL = null}
         {if ($Merkmal->getData('cTyp') === 'BILD' || $Merkmal->getData('cTyp') === 'BILD-TEXT')}
             {$attributeImageURL = $attributeValue->getImage(\JTL\Media\Image::SIZE_XS)}
-            {if $attributeImageURL|strpos:$smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN !== false
-                || $attributeImageURL|strpos:$smarty.const.BILD_KEIN_MERKMALWERTBILD_VORHANDEN !== false}
+            {if strpos($attributeImageURL, $smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN) !== false
+                || strpos($attributeImageURL, $smarty.const.BILD_KEIN_MERKMALWERTBILD_VORHANDEN) !== false}
                 {$attributeImageURL = null}
             {/if}
         {/if}
@@ -47,7 +47,7 @@
             {if $limit != -1 && $attributeValue@iteration > $limit && !$collapseInit}
                 {block name='snippets-filter-characteristics-more-top'}
                     <div class="collapse {if $Merkmal->isActive()} show{/if}" id="box-collps-filter-attribute-{$Merkmal->getValue()}" aria-expanded="false" role="button">
-                        <ul class="nav {if $Merkmal->getData('cTyp') !== 'BILD'}flex-column{/if}">
+                        <div class="nav {if $Merkmal->getData('cTyp') !== 'BILD'}flex-column{/if}">
                     {$collapseInit = true}
                 {/block}
             {/if}
@@ -86,7 +86,6 @@
                             {image lazy=true  webp=true
                                 src=$attributeImageURL
                                 alt=$attributeValue->getValue()|escape:'html'
-                                title="{if $showFilterCount}{$attributeValue->getValue()|escape:'html'}: {$attributeValue->getCount()}{else}{$attributeValue->getValue()|escape:'html'}{/if}"
                                 class="vmiddle filter-img"
                             }
                             <span class="d-none filter-item-value">
@@ -106,7 +105,6 @@
                                     {image lazy=true webp=true
                                         src=$attributeImageURL
                                         alt=$attributeValue->getValue()|escape:'html'
-                                        title="{if $showFilterCount}{$attributeValue->getValue()|escape:'html'}: {$attributeValue->getCount()}{else}{$attributeValue->getValue()|escape:'html'}{/if}"
                                         class="vmiddle filter-img"
                                     }
                                 {/if}
@@ -125,11 +123,10 @@
     {/foreach}
     {if !$is_dropdown && $limit != -1 && $Merkmal->getOptions()|count > $limit}
         {block name='snippets-filter-characteristics-more-bottom'}
-                </ul>
+                </div>
             </div>
             <div class="snippets-filter-show-all">
                 {button variant="link"
-                    role="button"
                     data=["toggle"=> "collapse", "target"=>"#box-collps-filter-attribute-{$Merkmal->getValue()}"]}
                     {lang key='showAll'}
                 {/button}
@@ -137,7 +134,7 @@
         {/block}
     {/if}
     {if $Merkmal->getData('cTyp') === 'BILD'}
-        </ul>
+        </div>
     {/if}
     </div>
 {/block}

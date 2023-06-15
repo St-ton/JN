@@ -9,7 +9,7 @@ use PDO;
 use stdClass;
 
 /**
- * Class CharacteristicValueImage
+ * Class CharacteristicValue
  * @package JTL\Media
  */
 class CharacteristicValue extends AbstractImage
@@ -55,7 +55,7 @@ class CharacteristicValue extends AbstractImage
                 WHERE a.kMerkmalWert = :cid
                     AND tsprache.cShopStandard = \'Y\'',
             ['cid' => $req->getID()]
-        )->each(static function ($item, $key) use ($req) {
+        )->each(static function ($item, $key) use ($req): void {
             if ($key === 0 && !empty($item->path)) {
                 $req->setSourcePath($item->path);
             }
@@ -73,13 +73,13 @@ class CharacteristicValue extends AbstractImage
                 /** @var string|null $result */
                 $result = $mixed->path ?? $mixed->cBildpfad ?? $mixed->currentImagePath ?? null;
                 if ($result !== null) {
-                    $result = \pathinfo($result)['filename'];
+                    $result = \pathinfo($result, \PATHINFO_FILENAME);
                 }
                 break;
             case 1:
                 $result = $mixed->seoPath ?? $mixed->val ?? null;
                 if ($result === null && !empty($mixed->currentImagePath)) {
-                    $result = \pathinfo($mixed->currentImagePath)['filename'];
+                    $result = \pathinfo($mixed->currentImagePath, \PATHINFO_FILENAME);
                 }
                 break;
             case 0:

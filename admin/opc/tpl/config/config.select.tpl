@@ -14,6 +14,9 @@
     </label>
     <div class="select-wrapper">
         <select class="form-control" id="config-{$propid}" name="{$propname}" {if $required === true}required{/if}>
+            {$propdesc.options =
+                $propdesc.options|default:
+                ['undefined' => 'No \'options\' defined for property \''|cat:{$propname}|cat:'\'']}
             {foreach $propdesc.options as $value => $label}
                 {if is_string($label)}
                     <option value="{$value}" {if $value == $propval}selected{/if}>

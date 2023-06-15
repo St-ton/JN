@@ -23,7 +23,7 @@ class Migration_20200420130000 extends Migration implements IMigration
      */
     public function up()
     {
-        $id = $this->__execute(
+        $id = $this->getDB()->query(
             "INSERT INTO `tconsent`
                 (`itemID`, `company`, `pluginID`, `active`)
                 VALUES ('youtube', 'Google Inc.', 0, 1)",

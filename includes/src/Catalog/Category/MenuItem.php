@@ -14,10 +14,13 @@ use stdClass;
  */
 class MenuItem
 {
-    use MagicCompatibilityTrait,
-        MultiSizeImage;
+    use MagicCompatibilityTrait;
+    use MultiSizeImage;
 
-    public static $mapping = [
+    /**
+     * @var string[]
+     */
+    public static array $mapping = [
         'kKategorie'                 => 'ID',
         'kOberKategorie'             => 'ParentID',
         'cBeschreibung'              => 'Description',
@@ -38,87 +41,97 @@ class MenuItem
     /**
      * @var int
      */
-    private $id = 0;
+    private int $id = 0;
 
     /**
      * @var int
      */
-    private $parentID = 0;
-
-    /**
-     * @var string
-     */
-    private $name = '';
-
-    /**
-     * @var string
-     */
-    private $shortName = '';
-
-    /**
-     * @var string
-     */
-    private $description = '';
-
-    /**
-     * @var string
-     */
-    private $url = '';
-
-    /**
-     * @var string
-     */
-    private $imageURL = '';
-
-    /**
-     * @var array
-     */
-    private $attributes = [];
-
-    /**
-     * @var array
-     */
-    private $functionalAttributes = [];
-
-    /**
-     * @var array
-     */
-    private $children = [];
-
-    /**
-     * @var bool
-     */
-    private $hasChildren = false;
+    private int $parentID = 0;
 
     /**
      * @var int
      */
-    private $productCount = -1;
+    private int $languageID = 0;
+
+    /**
+     * @var string
+     */
+    private string $name = '';
+
+    /**
+     * @var string
+     */
+    private string $shortName = '';
 
     /**
      * @var string|null
      */
-    public $customImgName;
+    private ?string $description = '';
+
+    /**
+     * @var string
+     */
+    private string $url = '';
+
+    /**
+     * @var string
+     */
+    private string $seo = '';
+
+    /**
+     * @var string
+     */
+    private string $imageURL = '';
+
+    /**
+     * @var array
+     */
+    private array $attributes = [];
+
+    /**
+     * @var array
+     */
+    private array $functionalAttributes = [];
+
+    /**
+     * @var array
+     */
+    private array $children = [];
 
     /**
      * @var bool
      */
-    public $orphaned = false;
+    private bool $hasChildren = false;
 
     /**
      * @var int
      */
-    private $lft = 0;
+    private int $productCount = -1;
+
+    /**
+     * @var string|null
+     */
+    public ?string $customImgName = null;
+
+    /**
+     * @var bool
+     */
+    public bool $orphaned = false;
 
     /**
      * @var int
      */
-    private $rght = 0;
+    private int $lft = 0;
 
     /**
      * @var int
      */
-    private $lvl = 0;
+    private int $rght = 0;
+
+    /**
+     * @var int
+     */
+    private int $lvl = 0;
 
     /**
      * @return int
@@ -214,6 +227,22 @@ class MenuItem
     public function setURL(string $url): void
     {
         $this->url = $url;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSeo(): string
+    {
+        return $this->seo;
+    }
+
+    /**
+     * @param string $seo
+     */
+    public function setSeo(string $seo): void
+    {
+        $this->seo = $seo;
     }
 
     /**
@@ -422,11 +451,28 @@ class MenuItem
     }
 
     /**
-     * MenuItem constructor.
-     * @param stdClass|Kategorie $data
+     * @return int
      */
-    public function __construct($data)
+    public function getLanguageID(): int
     {
+        return $this->languageID;
+    }
+
+    /**
+     * @param int $languageID
+     */
+    public function setLanguageID(int $languageID): void
+    {
+        $this->languageID = $languageID;
+    }
+
+    /**
+     * MenuItem constructor.
+     * @param stdClass $data
+     */
+    public function __construct(stdClass $data)
+    {
+        $this->setLanguageID((int)($data->languageID ?? 0));
         $this->setLeft((int)$data->lft);
         $this->setRight((int)$data->rght);
         $this->setLevel((int)$data->nLevel);
@@ -446,9 +492,11 @@ class MenuItem
         if (isset($data->customImgName)) {
             $this->customImgName = $data->customImgName;
         }
-        $this->setURL($data->cSeo ?? '');
+        $this->setURL($data->cURL ?? $data->cSeo ?? '');
+        $this->setSeo($data->cSeo ?? '');
         $this->setImageURL($data->cPfad ?? '');
         $this->generateAllImageSizes(true, 1, $data->cPfad ?? null);
+        $this->generateAllImageDimensions(1, $data->cPfad ?? null);
         $this->setProductCount((int)($data->cnt ?? 0));
         $this->setFunctionalAttributes($data->functionAttributes[$this->getID()] ?? []);
         $this->setAttributes($data->localizedAttributes[$this->getID()] ?? []);

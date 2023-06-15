@@ -22,7 +22,7 @@ class ReviewReminder
     /**
      * @var array
      */
-    private $settings;
+    private array $settings;
 
     /**
      * @var array
@@ -42,22 +42,22 @@ class ReviewReminder
     /**
      * @var string
      */
-    private $sqlPartCustomerGroups = '';
+    private string $sqlPartCustomerGroups = '';
 
     /**
      * @var string
      */
-    private $sqlPartBundle1 = '';
+    private string $sqlPartBundle1 = '';
 
     /**
      * @var string
      */
-    private $sqlPartBundle2 = '';
+    private string $sqlPartBundle2 = '';
 
     /**
      * @var array
      */
-    private $orders = [];
+    private array $orders = [];
 
     /**
      * ReviewReminder constructor.

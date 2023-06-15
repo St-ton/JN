@@ -3,7 +3,7 @@
     cBeschreibung=__('pluginverwaltungDesc')
 }
 <div id="content">
-    <form name="pluginverwaltung" method="post" action="{$adminURL}/pluginverwaltung.php">
+    <form name="pluginverwaltung" method="post" action="{$adminURL}{$route}">
         {$jtl_token}
         <input type="hidden" name="pluginverwaltung_uebersicht" value="1" />
         <input type="hidden" name="lizenzkeyadd" value="1" />

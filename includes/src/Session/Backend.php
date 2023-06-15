@@ -23,7 +23,7 @@ class Backend extends AbstractSession
     private const SESSION_HASH_KEY = 'session.hash';
 
     /**
-     * @var Backend
+     * @var Backend|null
      */
     protected static $instance;
 
@@ -65,14 +65,14 @@ class Backend extends AbstractSession
                 // default shop language is not a backend language
                 $lang = first(
                     LanguageHelper::getInstance()->gibInstallierteSprachen(),
-                    static function (LanguageModel $e) {
+                    static function (LanguageModel $e): bool {
                         return $e->isShopDefault() === true;
                     }
                 );
                 if ($lang === null) {
                     $lang = first(
                         LanguageHelper::getAllLanguages(),
-                        static function (LanguageModel $e) {
+                        static function (LanguageModel $e): bool {
                             return $e->getIso() === 'ger';
                         }
                     );
@@ -94,7 +94,7 @@ class Backend extends AbstractSession
     private function setLanguageFromDefault(): bool
     {
         $languages = LanguageHelper::getInstance()->gibInstallierteSprachen();
-        $lang      = first($languages, static function (LanguageModel $e) {
+        $lang      = first($languages, static function (LanguageModel $e): bool {
             return $e->isShopDefault() === true;
         });
         $allowed   = map($languages, static function (LanguageModel $e) {
@@ -154,9 +154,7 @@ class Backend extends AbstractSession
      */
     private static function createHash(): string
     {
-        return \function_exists('mhash')
-            ? \bin2hex(\mhash(\MHASH_SHA1, Shop::getApplicationVersion()))
-            : \sha1(Shop::getApplicationVersion());
+        return \hash('sha1', \APPLICATION_VERSION);
     }
 
     /**

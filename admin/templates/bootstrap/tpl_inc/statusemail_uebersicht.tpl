@@ -1,6 +1,6 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('statusemail') cBeschreibung=__('statusemailDesc') cDokuURL=__('statusemailURL')}
 <div id="content">
-    <form name="einstellen" method="post" action="{$adminURL}/statusemail.php">
+    <form name="einstellen" method="post" action="{$adminURL}{$route}">
         {$jtl_token}
         <input type="hidden" name="einstellungen" value="1" />
         <div id="settings">
@@ -44,7 +44,7 @@
                                     class="selectpicker custom-select">
                                 {foreach $oStatusemailEinstellungen->cIntervallMoeglich_arr as $key => $nIntervallMoeglich}
                                     <option value="{$nIntervallMoeglich}"
-                                            {if $nIntervallMoeglich|in_array:$oStatusemailEinstellungen->nIntervall_arr}selected{/if}>
+                                            {if in_array($nIntervallMoeglich, $oStatusemailEinstellungen->nIntervall_arr)}selected{/if}>
                                         {$key}
                                     </option>
                                 {/foreach}
@@ -68,7 +68,7 @@
                                     data-size="7">
                                 {foreach $oStatusemailEinstellungen->cInhaltMoeglich_arr as $key => $nInhaltMoeglich}
                                     <option value="{$nInhaltMoeglich}"
-                                            {if $nInhaltMoeglich|in_array:$oStatusemailEinstellungen->nInhalt_arr}selected{/if}>
+                                            {if in_array($nInhaltMoeglich, $oStatusemailEinstellungen->nInhalt_arr)}selected{/if}>
                                         {$key}
                                     </option>
                                 {/foreach}

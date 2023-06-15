@@ -19,7 +19,7 @@ final class DeliveryNotes extends AbstractSync
     {
         foreach ($starter->getXML(true) as $item) {
             [$file, $xml] = [\key($item), \reset($item)];
-            $fileName     = \pathinfo($file)['basename'];
+            $fileName     = \pathinfo($file, \PATHINFO_BASENAME);
             if ($fileName === 'lief.xml') {
                 $this->handleInserts($xml);
             } elseif ($fileName === 'del_lief.xml') {
@@ -55,11 +55,14 @@ final class DeliveryNotes extends AbstractSync
                 }
             }
 
+            \executeHook(\HOOK_DELIVERYNOTES_XML_INSERT, ['deliveryNote' => $item]);
             foreach ($item->tversand as $shipping) {
                 $shipping                = $this->mapper->map($shipping, 'mVersand');
                 $shipping->kLieferschein = $deliveryNote->kLieferschein;
                 $shipping->dErstellt     = \date_format(\date_create($shipping->dErstellt), 'U');
                 $this->upsert('tversand', [$shipping], 'kVersand');
+
+                \executeHook(\HOOK_DELIVERYNOTES_XML_SHIPPING, ['shipping' => $shipping]);
             }
         }
     }
@@ -74,6 +77,8 @@ final class DeliveryNotes extends AbstractSync
             $items = (array)$items;
         }
         foreach (\array_filter(\array_map('\intval', $items)) as $id) {
+            \executeHook(\HOOK_DELIVERYNOTES_XML_DELETE, ['deliveryNoteID' => $id]);
+
             $this->db->delete('tversand', 'kLieferschein', $id);
             $this->db->delete('tlieferschein', 'kLieferschein', $id);
             foreach ($this->db->selectAll(

@@ -17,116 +17,97 @@ abstract class Job implements JobInterface
     /**
      * @var string
      */
-    private $type;
+    private string $type = '';
 
     /**
      * @var string|null
      */
-    private $name;
+    private ?string $name = null;
 
     /**
      * @var int
      */
-    private $limit = 100;
+    private int $limit = 100;
 
     /**
      * @var int
      */
-    private $executed = 0;
+    private int $executed = 0;
 
     /**
      * @var int
      */
-    private $cronID = 0;
+    private int $cronID = 0;
 
     /**
      * @var int
      */
-    private $queueID = 0;
+    private int $queueID = 0;
 
     /**
      * @var int|null
      */
-    private $foreignKeyID;
+    private ?int $foreignKeyID = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $foreignKey = '';
+    private ?string $foreignKey = '';
 
     /**
-     * @var DateTime
+     * @var DateTime|null
      */
-    private $dateLastStarted;
+    private ?DateTime $dateLastStarted = null;
 
     /**
-     * @var DateTime
+     * @var DateTime|null
      */
-    private $dateLastFinished;
+    private ?DateTime $dateLastFinished = null;
 
     /**
-     * @var DateTime
+     * @var DateTime|null
      */
-    private $startTime;
+    private ?DateTime $startTime = null;
 
     /**
-     * @var DateTime
+     * @var DateTime|null
      */
-    private $startDate;
+    private ?DateTime $startDate = null;
 
     /**
-     * @var string
+     * @var DateTime|null
      */
-    private $tableName = '';
+    private ?DateTime $nextStart = null;
+
+    /**
+     * @var string|null
+     */
+    private ?string $tableName = '';
 
     /**
      * @var bool
      */
-    private $finished = false;
-
-    /**
-     * @var bool
-     */
-    private $running = false;
+    private bool $finished = false;
 
     /**
      * @var int
      */
-    private $frequency = 24;
+    private int $running = 0;
 
     /**
-     * @var DbInterface
+     * @var int
      */
-    protected $db;
-
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger;
-
-    /**
-     * @var JobHydrator
-     */
-    protected $hydrator;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    protected $cache;
+    private int $frequency = 24;
 
     /**
      * @inheritdoc
      */
     public function __construct(
-        DbInterface $db,
-        LoggerInterface $logger,
-        JobHydrator $hydrator,
-        JTLCacheInterface $cache
+        protected DbInterface $db,
+        protected LoggerInterface $logger,
+        protected JobHydrator $hydrator,
+        protected JTLCacheInterface $cache
     ) {
-        $this->db       = $db;
-        $this->logger   = $logger;
-        $this->hydrator = $hydrator;
-        $this->cache    = $cache;
     }
 
     /**
@@ -143,16 +124,19 @@ abstract class Job implements JobInterface
         $ins->frequency    = $this->getFrequency();
         $ins->startDate    = $this->getStartDate() === null
             ? '_DBNULL_'
-            : $this->getStartDate()->format('Y-m-d H:i');
+            : $this->getStartDate()->format('Y-m-d H:i:s');
         $ins->startTime    = $this->getStartTime() === null
             ? '_DBNULL_'
             : $this->getStartTime()->format('H:i:s');
         $ins->lastStart    = $this->getDateLastStarted() === null
             ? '_DBNULL_'
-            : $this->getDateLastStarted()->format('Y-m-d H:i');
+            : $this->getDateLastStarted()->format('Y-m-d H:i:s');
         $ins->lastFinish   = $this->getDateLastFinished() === null
             ? '_DBNULL_'
             : $this->getDateLastFinished()->format('Y-m-d H:i');
+        $ins->nextStart    = $this->getNextStartDate() === null
+            ? '_DBNULL_'
+            : $this->getNextStartDate()->format('Y-m-d H:i:s');
 
         $this->setCronID($this->db->insert('tcron', $ins));
 
@@ -354,6 +338,24 @@ abstract class Job implements JobInterface
     /**
      * @inheritdoc
      */
+    public function getNextStartDate(): ?DateTime
+    {
+        return $this->nextStart;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setNextStartDate($date): void
+    {
+        $this->nextStart = \is_string($date)
+            ? new DateTime($date)
+            : $date;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getForeignKeyID(): ?int
     {
         return $this->foreignKeyID;
@@ -474,7 +476,7 @@ abstract class Job implements JobInterface
      */
     public function isRunning(): bool
     {
-        return (int)$this->running === 1;
+        return $this->running === 1;
     }
 
     /**

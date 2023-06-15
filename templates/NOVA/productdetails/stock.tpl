@@ -44,17 +44,18 @@
             {if !isset($availability)}
             {block name='productdetails-stock-estimated-delivery'}
                 {if $Artikel->cEstimatedDelivery}
+                    {getCountry iso=$shippingCountry assign='selectedCountry'}
                     <li>
                         <div class="estimated-delivery"
                             {if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}
                                 data-toggle="popover"
                                 data-placement="top"
-                                data-content="{if $Firma->country !== null}{lang|sprintf:$Firma->country->getName():$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL():$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL() key='shippingInformation' section='productDetails'}{/if}"
+                                data-content="{if $selectedCountry !== null}{lang key='shippingInformation' section='productDetails' assign=silv}{sprintf($silv, $selectedCountry->getName(), $oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL(), $oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL())}{/if}"
                             {/if}>
                             {if !isset($shippingTime)}{lang key='shippingTime'}:{/if}
                             <span class="a{$Artikel->Lageranzeige->nStatus}">
                                 {$Artikel->cEstimatedDelivery}
-                                <span class="estimated-delivery-info">({lang key='shippingInfoIcon' section='productDetails'})</span>
+                                <span class="estimated-delivery-info">{lang key='shippingInfoIcon' section='productDetails' printf=$selectedCountry->getISO()}</span>
                             </span>
                         </div>
                     </li>

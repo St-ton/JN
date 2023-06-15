@@ -18,12 +18,12 @@ class CustomerAttributes implements ArrayAccess, IteratorAggregate, Countable
     /**
      * @var CustomerAttribute[]
      */
-    private $attributes = [];
+    private array $attributes = [];
 
     /**
      * @var int
      */
-    private $customerID = 0;
+    private int $customerID = 0;
 
     /**
      * CustomerAttributes constructor.
@@ -195,6 +195,7 @@ class CustomerAttributes implements ArrayAccess, IteratorAggregate, Countable
     /**
      * @inheritDoc
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         if (!isset($this->attributes[$offset])) {

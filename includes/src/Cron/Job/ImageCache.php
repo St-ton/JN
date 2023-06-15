@@ -17,7 +17,7 @@ final class ImageCache extends Job
     /**
      * @var int
      */
-    private $nextIndex = 0;
+    private int $nextIndex = 0;
 
     /**
      * @inheritdoc

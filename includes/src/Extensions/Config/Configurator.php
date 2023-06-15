@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Extensions\Config;
 
@@ -20,7 +20,7 @@ class Configurator
     /**
      * @var array
      */
-    private static $groups = [];
+    private static array $groups = [];
 
     /**
      * @return bool
@@ -139,8 +139,8 @@ class Configurator
             }
             if ($deleted) {
                 Shop::Container()->getLogService()->error(
-                    'Validierung der Konfiguration fehlgeschlagen - Warenkorbposition wurde entfernt: '
-                    . $item->cName[$_SESSION['cISOSprache']] . '(' . $item->kArtikel . ')'
+                    'Validierung der Konfiguration fehlgeschlagen - Warenkorbposition wurde entfernt: {name} ({id})',
+                    ['name' => $item->cName[$_SESSION['cISOSprache']], 'id' => $item->kArtikel]
                 );
             }
         }
@@ -262,7 +262,7 @@ class Configurator
      */
     public static function hasUnavailableGroup(array $confGroups): bool
     {
-        return some($confGroups, static function (Group $group) {
+        return some($confGroups, static function (Group $group): bool {
             return $group->getMin() > 0 && !$group->minItemsInStock();
         });
     }

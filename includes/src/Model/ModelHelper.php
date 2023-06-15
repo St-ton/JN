@@ -17,7 +17,7 @@ final class ModelHelper
      * @param string          $format
      * @return string|null
      */
-    private static function formatDateTime($value, $format = 'Y-m-d H:i:s'): ?string
+    private static function formatDateTime($value, string $format = 'Y-m-d H:i:s'): ?string
     {
         if (\is_a($value, DateTime::class)) {
             return $value->format($format);
@@ -52,7 +52,7 @@ final class ModelHelper
         if (\is_string($value)) {
             try {
                 return new DateTime(\str_replace('now()', 'now', $value));
-            } catch (Exception $e) {
+            } catch (Exception) {
                 return self::fromStrToDateTime($default);
             }
         }
@@ -89,36 +89,22 @@ final class ModelHelper
         if (\is_a($value, DateInterval::class)) {
             return $value;
         }
-        if (\is_string($value)) {
-            try {
-                $splits = \explode(':', $value, 3);
-
-                switch (\count($splits)) {
-                    case 0:
-                        $result = DateInterval::createFromDateString($value);
-                        break;
-                    case 1:
-                        $result = new DateInterval('PT' . (int)$splits[0] . 'H');
-                        break;
-                    case 2:
-                        $result = new DateInterval('PT' . (int)$splits[0] . 'H' . (int)$splits[1] . 'M');
-                        break;
-                    case 3:
-                        $result = new DateInterval(
-                            'PT' . (int)$splits[0] . 'H' . (int)$splits[1] . 'M' . (int)$splits[2] . 'S'
-                        );
-                        break;
-                    default:
-                        $result = self::fromStrToTime($default);
-                }
-
-                return $result;
-            } catch (Exception $e) {
-                return self::fromStrToTime($default);
-            }
+        if (!\is_string($value)) {
+            return self::fromStrToTime($default);
         }
+        try {
+            $splits = \explode(':', $value, 3);
 
-        return self::fromStrToTime($default);
+            return match (\count($splits)) {
+                0 => DateInterval::createFromDateString($value),
+                1 => new DateInterval('PT' . (int)$splits[0] . 'H'),
+                2 => new DateInterval('PT' . (int)$splits[0] . 'H' . (int)$splits[1] . 'M'),
+                3 => new DateInterval('PT' . (int)$splits[0] . 'H' . (int)$splits[1] . 'M' . (int)$splits[2] . 'S'),
+                default => self::fromStrToTime($default),
+            };
+        } catch (Exception) {
+            return self::fromStrToTime($default);
+        }
     }
 
     /**
@@ -138,10 +124,7 @@ final class ModelHelper
     public static function fromStrToDate($value, $default = null): ?DateTime
     {
         $dateTime = self::fromStrToDateTime($value, $default);
-
-        if (isset($dateTime)) {
-            $dateTime->setTime(0, 0);
-        }
+        $dateTime?->setTime(0, 0);
 
         return $dateTime;
     }

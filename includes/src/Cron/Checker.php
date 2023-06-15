@@ -12,16 +12,6 @@ use Psr\Log\LoggerInterface;
 class Checker
 {
     /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
      * @var resource|bool
      */
     private $filePointer;
@@ -31,13 +21,11 @@ class Checker
      * @param DbInterface     $db
      * @param LoggerInterface $logger
      */
-    public function __construct(DbInterface $db, LoggerInterface $logger)
+    public function __construct(private DbInterface $db, private LoggerInterface $logger)
     {
         if (!\file_exists(\JOBQUEUE_LOCKFILE)) {
             \touch(\JOBQUEUE_LOCKFILE);
         }
-        $this->db          = $db;
-        $this->logger      = $logger;
         $this->filePointer = \fopen(\JOBQUEUE_LOCKFILE, 'rb');
     }
 
@@ -81,26 +69,17 @@ class Checker
     public function check(): array
     {
         $jobs = $this->db->getObjects(
-            "SELECT tcron.*
+            'SELECT tcron.*
                 FROM tcron
                 LEFT JOIN tjobqueue 
                     ON tjobqueue.cronID = tcron.cronID
-                WHERE (tcron.lastStart IS NULL 
-                    OR IF(tcron.jobType = 'statusemail' AND tcron.frequency = 720,
-                          MONTH(tcron.lastStart) = MONTH(CURRENT_DATE - INTERVAL 1 MONTH),
-                          (NOW() > ADDDATE(tcron.lastStart, INTERVAL tcron.frequency HOUR))
-                        )
-                    OR (tcron.jobType = 'exportformat' 
-                        AND tjobqueue.jobQueueID IS NULL 
-                        AND (NOW() > ADDDATE(
-                            ADDTIME(DATE(tcron.lastStart), tcron.startTime), 
-                            INTERVAL tcron.frequency HOUR)
-                        )
-                    ))
+                WHERE (tcron.lastStart IS NULL
+                           OR tcron.nextStart IS NULL
+                           OR tcron.nextStart < NOW())
                     AND tcron.startDate < NOW()
-                    AND tjobqueue.jobQueueID IS NULL"
+                    AND tjobqueue.jobQueueID IS NULL'
         );
-        $this->logger->debug(\sprintf('Found %d new cron jobs.', \count($jobs)));
+        $this->logger->debug('Found {cnt} new cron jobs.', ['cnt' => \count($jobs)]);
 
         return $jobs;
     }

@@ -13,7 +13,7 @@ class DummyRenderer extends JavascriptRenderer
     /**
      * @inheritdoc
      */
-    public function renderHead()
+    public function renderHead(): string
     {
         return '';
     }
@@ -21,7 +21,7 @@ class DummyRenderer extends JavascriptRenderer
     /**
      * @inheritdoc
      */
-    public function render($initialize = true, $renderStackedData = true)
+    public function render($initialize = true, $renderStackedData = true): string
     {
         return '';
     }

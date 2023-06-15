@@ -55,7 +55,7 @@ class ConfigGroup extends AbstractImage
                 WHERE a.kKonfiggruppe = :cid
                 AND tsprache.cShopStandard = \'Y\'',
             ['cid' => $req->getID()]
-        )->map(static function ($item) {
+        )->map(static function ($item): string {
             return self::getCustomName($item);
         })->toArray();
     }
@@ -71,9 +71,9 @@ class ConfigGroup extends AbstractImage
         } elseif (\method_exists($mixed, 'getSprache')) {
             $result = $mixed->getSprache()->getName();
         } elseif (isset($mixed->path)) {
-            $result = \pathinfo($mixed->path)['filename'];
+            $result = \pathinfo($mixed->path, \PATHINFO_FILENAME);
         } elseif (isset($mixed->cBildpfad)) {
-            $result = \pathinfo($mixed->cBildpfad)['filename'];
+            $result = \pathinfo($mixed->cBildpfad, \PATHINFO_FILENAME);
         }
 
         return empty($result) ? 'image' : Image::getCleanFilename($result);

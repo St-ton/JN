@@ -1,7 +1,8 @@
 <tr>
-    <td class="text-vcenter text-center" width="140">
+    <td class="text-center">
+        {$preview = $listingItem->getPreview()}
         <div class="thumb-box thumb-sm">
-            <div class="thumb" style="background-image:url({if $listingItem->getPreview()|strlen > 0}{$shopURL}/{$smarty.const.PFAD_TEMPLATES}{$listingItem->getDir()}/{$listingItem->getPreview()}{else}{$shopURL}/gfx/keinBild.gif{/if})"></div>
+            <div class="thumb" style="background-image:url({$shopURL}/{if $preview !== null && $preview|strlen > 0}{$smarty.const.PFAD_TEMPLATES}{$listingItem->getDir()}/{$preview}{else}gfx/keinBild.gif{/if})"></div>
         </div>
     </td>
     <td>
@@ -14,7 +15,7 @@
                 <span class="badge badge-default">
                     <i class="far fa-folder" aria-hidden="true"></i> {$listingItem->getDir()}
                 </span>
-                {if $listingItem->isChild() === true}<span class="label label-info"><i class="fa fa-level-up" aria-hidden="true"></i> <abbr title="{{__('inheritsFrom')}|sprintf:{$listingItem->getParent()}}">{$listingItem->getParent()}</abbr></span>{/if}
+                {if $listingItem->isChild() === true}<span class="label label-info"><i class="fa fa-level-up" aria-hidden="true"></i> <abbr title="{sprintf(__('inheritsFrom'), $listingItem->getParent())}">{$listingItem->getParent()}</abbr></span>{/if}
 
                 {if isset($oStoredTemplate_arr[$listingItem->getDir()])}
                     {foreach $oStoredTemplate_arr[$listingItem->getDir()] as $oStored}
@@ -29,15 +30,13 @@
             </li>
         </ul>
     </td>
-    <td class="text-vcenter text-center">
+    <td class="text-center">
         {if $listingItem->hasError() === true}
-            <h4 class="label-wrap">
-                <span class="badge badge-danger">{__('faulty')}</span>
-            </h4>
+            <span class="badge badge-danger font-size-sm">{__('faulty')}</span>
         {elseif $listingItem->isActive()}
-            <h4 class="label-wrap">
-                <span class="badge badge-success">{__('activated')}</span>
-            </h4>
+            <span class="badge badge-success font-size-sm">{__('activated')}</span>
+        {elseif $listingItem->isPreview()}
+            <span class="badge badge-warning font-size-sm">{__('Preview activated')}</span>
         {/if}
         {$check = $listingItem->getChecksums()}
         {if $check !== null}
@@ -52,7 +51,7 @@
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title" id="tplModal{$listingItem->getName()}Label">
-                                    {$listingItem->getName()} – {__('modifiedFiles')} ({$check|count})
+                                    {$listingItem->getName()} – {__('modifiedFiles')} ({count($check)})
                                 </h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
@@ -87,13 +86,13 @@
             {/if}
         {/if}
     </td>
-    <td class="text-vcenter text-center">
+    <td class="text-center">
         {$listingItem->getVersion()}
     </td>
-    <td class="text-vcenter text-center">
+    <td class="text-center">
         {$listingItem->displayVersionRange()}
     </td>
-    <td class="text-vcenter text-center">
+    <td class="text-center action-buttons">
         {if $listingItem->hasError()}
             <span class="error"><strong>{__('error')}:</strong><br />
                 {$listingItem->getErrorMessage()}
@@ -115,10 +114,16 @@
                 </span>
             {/if}
             {if !$listingItem->isActive()}
-                <a class="btn btn-primary" href="{$adminURL}/shoptemplate.php?action=switch&dir={$listingItem->getDir()}{if $listingItem->getOptionsCount() > 0}&config=1{/if}&token={$smarty.session.jtl_token}"><i class="fal fa-share"></i> {__('activate')}</a>
+                <a class="btn btn-primary" href="{$adminURL}{$route}?action=switch&dir={$listingItem->getDir()}{if $listingItem->getOptionsCount() > 0}&config=1{/if}&token={$smarty.session.jtl_token}"><i class="fal fa-share"></i> {__('activate')}</a>
+                {if !$listingItem->isPreview()}
+                    <a class="btn btn-secondary" href="{$adminURL}{$route}?action=setPreview&dir={$listingItem->getDir()}{if $listingItem->getOptionsCount() > 0}&config=1{/if}&token={$smarty.session.jtl_token}"><i class="fal fa-share"></i> {__('Enable preview')}</a>
+                {else}
+                    <a class="btn btn-danger" href="{$adminURL}{$route}?action=unsetPreview&token={$smarty.session.jtl_token}"><i class="fal fa-share"></i> {__('Disable preview')}</a>
+                    <a class="btn btn-outline-primary" href="{$adminURL}{$route}?action=config&dir={$listingItem->getDir()}&token={$smarty.session.jtl_token}"><i class="fal fa-edit"></i> {__('settings')}</a>
+                {/if}
             {else}
                 {if $listingItem->getOptionsCount() > 0}
-                    <a class="btn btn-outline-primary" href="{$adminURL}/shoptemplate.php?action=config&dir={$listingItem->getDir()}&token={$smarty.session.jtl_token}"><i class="fal fa-edit"></i> {__('settings')}</a>
+                    <a class="btn btn-outline-primary" href="{$adminURL}{$route}?action=config&dir={$listingItem->getDir()}&token={$smarty.session.jtl_token}"><i class="fal fa-edit"></i> {__('settings')}</a>
                 {/if}
             {/if}
         {/if}

@@ -1949,6 +1949,12 @@ msgstr "Yes"
 msgid "news_kategorie_unternewsanzeigen_value(N)"
 msgstr "No"
 
+msgid "news_kommentare_anzahl_antwort_kommentare_anzeigen_value(Y)"
+msgstr "Show"
+
+msgid "news_kommentare_anzahl_antwort_kommentare_anzeigen_value(N)"
+msgstr "Hide"
+
 msgid "sitemap_seiten_anzeigen_value(Y)"
 msgstr "Yes"
 

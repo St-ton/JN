@@ -15,19 +15,14 @@ class CacheFile implements ICachingMethod
     use JTLCacheTrait;
 
     /**
-     * @var CacheFile
-     */
-    public static $instance;
-
-    /**
      * @param array $options
      */
     public function __construct(array $options)
     {
-        $this->journalID     = 'file_journal';
-        $this->options       = $options;
-        $this->isInitialized = true;
-        self::$instance      = $this;
+        $this->setIsInitialized(true);
+        $this->setJournalID('file_journal');
+        $this->setOptions($options);
+        self::$instance = $this;
     }
 
     /**
@@ -51,8 +46,8 @@ class CacheFile implements ICachingMethod
             return false;
         }
         $fileName = $this->getFileName($cacheID);
-        $info     = \pathinfo($fileName);
-        if ($fileName === false || \mb_strpos(\realpath($info['dirname']), \realpath($dir)) !== 0) {
+        $info     = \pathinfo($fileName, \PATHINFO_DIRNAME);
+        if ($fileName === false || !\str_starts_with(\realpath($info), \realpath($dir))) {
             return false;
         }
 

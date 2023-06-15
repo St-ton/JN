@@ -4,12 +4,12 @@
         'token'=>$smarty.session.jtl_token, 'kZahlungsart'=>$oZahlungsart->kZahlungsart]}
     {include file='tpl_inc/pagination.tpl' pagination=$pagination cParam_arr=['a'=>'payments',
         'token'=>$smarty.session.jtl_token, 'kZahlungsart'=>$oZahlungsart->kZahlungsart]}
-    <form method="post" action="{$adminURL}/zahlungsarten.php">
+    <form method="post" action="{$adminURL}{$route}">
         {$jtl_token}
         <input type="hidden" name="a" value="payments" />
         <input type="hidden" name="kZahlungsart" value="{$oZahlungsart->kZahlungsart}" />
         <div class="card">
-            {if $oZahlunseingang_arr|count > 0}
+            {if count($oZahlunseingang_arr) > 0}
                 <div class="table-responsive">
                     <table class="table">
                         <thead>
@@ -84,7 +84,7 @@
                         <i class="fa fa-refresh"></i>
                         {__('wawiSyncReset')}
                     </button>
-                    <a class="btn btn-primary" href="{$adminURL}/zahlungsarten.php">{__('goBack')}</a>
+                    <a class="btn btn-primary" href="{$adminURL}{$route}">{__('goBack')}</a>
                 </div>
             </div>
         </div>

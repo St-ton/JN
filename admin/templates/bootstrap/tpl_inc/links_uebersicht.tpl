@@ -18,7 +18,7 @@
             <p>{__('Please create the missing pages manually.')}</p>
         </div>
     {/if}
-    <form action="{$adminURL}/links.php" method="post">
+    <form action="{$adminURL}{$route}" method="post">
         {$jtl_token}
         <div class="row no-gutters">
             <div class="col-sm-6 col-xl-auto">
@@ -48,11 +48,11 @@
                                     {__('linksWithoutLinkGroup')}
                                 {/if}
                             </a>
-                            {if $missingTranslations|count > 0}
+                            {if count($missingTranslations) > 0}
                                 <i class="fal fa-exclamation-triangle text-warning"
                                       data-toggle="tooltip"
                                       data-placement="top"
-                                      title="{__('missingTranslations')}: {$missingTranslations|count}"></i>
+                                      title="{__('missingTranslations')}: {count($missingTranslations)}"></i>
                             {/if}
                             <i title="{__('hasAtLeastOneDuplicateSpecialLink')}"
                                class="d-none duplicate-special-page-warning fal fa-exclamation-triangle text-danger"
@@ -61,7 +61,7 @@
                         </span>
                     </div>
                     <div class="col-md-6">
-                        <form method="post" action="{$adminURL}/links.php">
+                        <form method="post" action="{$adminURL}{$route}">
                             {$jtl_token}
                             {if $linkgruppe->getID() > 0}
                                 <input type="hidden" name="kLinkgruppe" value="{$linkgruppe->getID()}">
@@ -91,7 +91,7 @@
                         </form>
                     </div>
                 </div>
-                <div id="collapse{$lgName}" class="card-body collapse" role="tabpanel" aria-labelledby="heading-{$lgName}">
+                <div id="collapse{$lgName}" class="card-body collapse" role="tabpanel" aria-labelledby="heading-{$lgName}" data-parent="#accordion2">
                     {if $linkgruppe->getLinks()->count() > 0}
                         <div class="table-responsive">
                             <table class="table">
@@ -105,7 +105,7 @@
             </div>
         {/foreach}
     </div>{* /accordion *}
-    <form action="{$adminURL}/links.php" method="post">
+    <form action="{$adminURL}{$route}" method="post">
         {$jtl_token}
         <div class="row no-gutters">
             <div class="col-sm-6 col-xl-auto mb-4">

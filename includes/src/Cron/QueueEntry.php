@@ -14,81 +14,96 @@ class QueueEntry
     /**
      * @var int
      */
-    public $jobQueueID;
+    public int $jobQueueID;
 
     /**
      * @var int
      */
-    public $cronID;
+    public int $cronID;
 
     /**
      * @var int
      */
-    public $foreignKeyID;
+    public int $foreignKeyID;
 
     /**
      * @var int
      */
-    public $taskLimit;
+    public int $taskLimit;
 
     /**
      * @var int
      */
-    public $tasksExecuted;
+    public int $tasksExecuted;
 
     /**
      * @var int
      */
-    public $lastProductID;
+    public int $lastProductID;
 
     /**
      * @var int
      */
-    public $isRunning;
+    public int $isRunning = 0;
 
     /**
      * @var string
      */
-    public $jobType;
+    public string $jobType;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $tableName;
+    public ?string $tableName;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $foreignKey;
-
-    /**
-     * @var DateTime
-     */
-    public $startTime;
+    public ?string $foreignKey;
 
     /**
      * @var DateTime
      */
-    public $lastStart;
+    public DateTime $cronStartTime;
 
     /**
      * @var DateTime
      */
-    public $lastFinish;
+    public DateTime $startTime;
+
+    /**
+     * @var DateTime
+     */
+    public DateTime $lastStart;
+
+    /**
+     * @var DateTime
+     */
+    public DateTime $lastFinish;
+
+    /**
+     * @var DateTime
+     */
+    public DateTime $nextStart;
+
+    /**
+     * @var int
+     */
+    public int $frequency;
 
     /**
      * compatibility only
      *
      * @var int
      */
-    public $nLimitN;
+    public int $nLimitN;
 
     /**
      * compatibility only
      *
      * @var int
      */
-    public $nLimitM;
+    public int $nLimitM;
 
     /**
      * QueueEntry constructor.
@@ -104,12 +119,14 @@ class QueueEntry
         $this->tasksExecuted = (int)$data->tasksExecuted;
         $this->nLimitM       = (int)$data->taskLimit;
         $this->lastProductID = (int)$data->lastProductID;
-        $this->isRunning     = 0;
+        $this->frequency     = (int)($data->frequency ?? 0);
         $this->jobType       = $data->jobType;
         $this->tableName     = $data->tableName;
         $this->foreignKey    = $data->foreignKey;
+        $this->cronStartTime = new DateTime($data->cronStartTime ?? '');
         $this->startTime     = new DateTime($data->startTime ?? '');
         $this->lastStart     = new DateTime($data->lastStart ?? '');
         $this->lastFinish    = new DateTime($data->lastFinish ?? '');
+        $this->nextStart     = new DateTime($data->nextStart ?? '');
     }
 }

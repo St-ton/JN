@@ -20,7 +20,7 @@ final class Downloads extends AbstractSync
     {
         foreach ($starter->getXML() as $item) {
             [$file, $xml] = [\key($item), \reset($item)];
-            if (\strpos($file, 'del_download.xml') !== false) {
+            if (\str_contains($file, 'del_download.xml')) {
                 $this->handleDeletes($xml);
             } else {
                 $this->handleInserts($xml);

@@ -4,6 +4,8 @@ namespace JTL\Catalog\Product;
 
 use Countable;
 use Illuminate\Support\Collection;
+use JTL\Customer\CustomerGroup;
+use JTL\Session\Frontend;
 use JTL\Shop;
 
 /**
@@ -155,7 +157,7 @@ class Bestseller
             'SELECT tartikel.kArtikel
                 FROM tartikel
                 JOIN tbestseller
-                    ON tbestseller.kArtikel = tartikel.kArtikel
+                    ON tbestseller.kArtikel = tartikel.kArtikel AND tbestseller.isBestseller = 1
                 LEFT JOIN tartikelsichtbarkeit
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                     AND tartikelsichtbarkeit.kKundengruppe = :cgid
@@ -206,8 +208,10 @@ class Bestseller
         $bestsellers    = [];
         $defaultOptions = Artikel::getDefaultOptions();
         $languageID     = Shop::getLanguageID();
+        $customerGroup  = CustomerGroup::getByID($customerGroupID);
+        $currency       = Frontend::getCurrency();
         foreach ($bestseller->fetch() as $productID) {
-            $product = new Artikel($db);
+            $product = new Artikel($db, $customerGroup, $currency);
             $product->fuelleArtikel($productID, $defaultOptions, $customerGroupID, $languageID);
             if ($product->kArtikel > 0) {
                 $bestsellers[] = $product;

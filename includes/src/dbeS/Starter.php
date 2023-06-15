@@ -99,11 +99,6 @@ class Starter
     ];
 
     /**
-     * @var Synclogin
-     */
-    private Synclogin $auth;
-
-    /**
      * @var mixed|null
      */
     private $data;
@@ -124,50 +119,25 @@ class Starter
     private string $unzipPath;
 
     /**
-     * @var FileHandler
-     */
-    private FileHandler $fileHandler;
-
-    /**
-     * @var LoggerInterface
-     */
-    private LoggerInterface $logger;
-
-    /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private JTLCacheInterface $cache;
-
-    /**
      * @var string
      */
     private string $wawiVersion = 'unknown';
 
     /**
      * Starter constructor.
-     * @param Synclogin         $syncLogin
+     * @param Synclogin         $auth
      * @param FileHandler       $fileHandler
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
-     * @param LoggerInterface   $log
+     * @param LoggerInterface   $logger
      */
     public function __construct(
-        Synclogin $syncLogin,
-        FileHandler $fileHandler,
-        DbInterface $db,
-        JTLCacheInterface $cache,
-        LoggerInterface $log
+        private Synclogin $auth,
+        private FileHandler $fileHandler,
+        private DbInterface $db,
+        private JTLCacheInterface $cache,
+        private LoggerInterface $logger
     ) {
-        $this->auth        = $syncLogin;
-        $this->fileHandler = $fileHandler;
-        $this->logger      = $log;
-        $this->db          = $db;
-        $this->cache       = $cache;
         $this->checkPermissions();
     }
 
@@ -241,8 +211,10 @@ class Starter
         if (!isset($post['userID'], $post['userPWD'])) {
             return false;
         }
+        $userID = Text::convertUTF8($post['userID']);
+        $pass   = Text::convertUTF8($post['userPWD']);
 
-        return $this->auth->checkLogin(\utf8_encode($post['userID']), \utf8_encode($post['userPWD'])) === true;
+        return $this->auth->checkLogin($userID, $pass) === true;
     }
 
     /**
@@ -297,7 +269,7 @@ class Starter
                 }
                 break;
             case 'bild':
-                $conf = Shop::getConfigValue(\CONF_BILDER, 'bilder_externe_bildschnittstelle');
+                $conf = Shop::getSettingValue(\CONF_BILDER, 'bilder_externe_bildschnittstelle');
                 if ($conf === 'N') {
                     exit(); // api disabled
                 }
@@ -411,7 +383,7 @@ class Starter
     public function getXML(bool $string = false): Generator
     {
         foreach ($this->files as $xmlFile) {
-            if (\strpos($xmlFile, '.xml') === false) {
+            if (!\str_contains($xmlFile, '.xml')) {
                 continue;
             }
             $data = \file_get_contents($xmlFile);

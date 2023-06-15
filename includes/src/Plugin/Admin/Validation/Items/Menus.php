@@ -42,14 +42,10 @@ final class Menus extends AbstractItem
     {
         foreach ($customLinks as $i => $customLink) {
             $i = (string)$i;
-            \preg_match('/[0-9]+\sattr/', $i, $hits1);
-            \preg_match('/[0-9]+/', $i, $hits2);
+            \preg_match('/\d+\sattr/', $i, $hits1);
+            \preg_match('/\d+/', $i, $hits2);
             if (\mb_strlen($hits2[0]) === \mb_strlen($i)) {
-                \preg_match(
-                    '/[\w\- ]+/u',
-                    $customLink['Name'],
-                    $hits
-                );
+                \preg_match('/[\w\- ]+/u', $customLink['Name'], $hits);
                 if (empty($customLink['Name']) || \mb_strlen($hits[0]) !== \mb_strlen($customLink['Name'])) {
                     return InstallCode::INVALID_CUSTOM_LINK_NAME;
                 }
@@ -77,8 +73,8 @@ final class Menus extends AbstractItem
         foreach ($settingsLinks as $i => $settingsLink) {
             $i            = (string)$i;
             $settingsLink = $this->sanitizeSettingsLink($settingsLink);
-            \preg_match('/[0-9]+\sattr/', $i, $hits1);
-            \preg_match('/[0-9]+/', $i, $hits2);
+            \preg_match('/\d+\sattr/', $i, $hits1);
+            \preg_match('/\d+/', $i, $hits2);
             if (\mb_strlen($hits2[0]) !== \mb_strlen($i)) {
                 continue;
             }
@@ -110,8 +106,8 @@ final class Menus extends AbstractItem
             }
             $j       = (string)$j;
             $setting = $this->sanitizeSetting($setting);
-            \preg_match('/[0-9]+\sattr/', $j, $hits3);
-            \preg_match('/[0-9]+/', $j, $hits4);
+            \preg_match('/\d+\sattr/', $j, $hits3);
+            \preg_match('/\d+/', $j, $hits4);
 
             if (isset($hits3[0]) && \mb_strlen($hits3[0]) === \mb_strlen($j)) {
                 $type = $setting['type'];
@@ -164,8 +160,8 @@ final class Menus extends AbstractItem
             if (\count($setting['SelectboxOptions'][0]) === 1) {
                 foreach ($setting['SelectboxOptions'][0]['Option'] as $y => $option) {
                     $y = (string)$y;
-                    \preg_match('/[0-9]+\sattr/', $y, $hits6);
-                    \preg_match('/[0-9]+/', $y, $hits7);
+                    \preg_match('/\d+\sattr/', $y, $hits6);
+                    \preg_match('/\d+/', $y, $hits7);
 
                     if (isset($hits6[0]) && \mb_strlen($hits6[0]) === \mb_strlen($y)) {
                         if (\mb_strlen($option['value']) === 0) {
@@ -211,8 +207,8 @@ final class Menus extends AbstractItem
             if (\count($setting['RadioOptions'][0]) === 1) {
                 foreach ($setting['RadioOptions'][0]['Option'] as $y => $option) {
                     $y = (string)$y;
-                    \preg_match('/[0-9]+\sattr/', $y, $hits6);
-                    \preg_match('/[0-9]+/', $y, $hits7);
+                    \preg_match('/\d+\sattr/', $y, $hits6);
+                    \preg_match('/\d+/', $y, $hits7);
                     if (isset($hits6[0]) && \mb_strlen($hits6[0]) === \mb_strlen($y)) {
                         if (\mb_strlen($option['value']) === 0) {
                             return InstallCode::INVALID_CONFIG_OPTION;

@@ -1649,6 +1649,14 @@ msgstr "Note on battery law"
 msgid "WRB-Formular"
 msgstr "Withdrawal form"
 
+# page type (tspezialseite)
+msgid "Bestellstatus"
+msgstr "Order status"
+
+# page type (tspezialseite)
+msgid "Bewertung"
+msgstr "Review"
+
 msgid "exception"
 msgstr "Exception"
 
@@ -2033,6 +2041,12 @@ msgstr "Further use of the extension may constitute a licence violation!"
 msgid "Please purchase a licence in the JTL-Extension Store or contact the manufacturer of the extension for information on rights of use."
 msgstr "Please purchase a licence in the JTL-Extension Store or contact the manufacturer of the extension for information on rights of use."
 
+msgid "btnExploreExtensionStore"
+msgstr "Explore JTL-Extension Store"
+
+msgid "btnAdditionalExtensionStore"
+msgstr "Explore available extensions"
+
 msgid "Licensing problem detected"
 msgstr "Licensing problem detected"
 
@@ -2161,3 +2175,24 @@ msgstr "Cannot open archive"
 
 msgid "pluginInstallInvalidArchive"
 msgstr "Invalid archive"
+
+msgid "No input file provided."
+msgstr "No input file provided."
+
+msgid "Successfully compiled CSS."
+msgstr "CSS compiled successfully."
+
+msgid "%s.css was compiled successfully."
+msgstr "%s.css was compiled successfully."
+
+msgid "An error occured while compiling the CSS: %s"
+msgstr "An error occured while compiling the CSS: %s"
+
+msgid "Cannot write to file %s."
+msgstr "Cannot write to file %s."
+
+msgid "No Theme selected. Please try to save the Template-Settings again."
+msgstr "No Theme selected. Please try to save the Template-Settings again."
+
+msgid "Theme %s does not exist."
+msgstr "Theme %s does not exist."

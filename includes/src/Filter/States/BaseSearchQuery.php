@@ -11,6 +11,8 @@ use JTL\Filter\StateSQL;
 use JTL\Helpers\Request;
 use JTL\Language\LanguageHelper;
 use JTL\MagicCompatibilityTrait;
+use JTL\Router\RoutableTrait;
+use JTL\Router\Router;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
@@ -23,11 +25,12 @@ use function Functional\filter;
 class BaseSearchQuery extends AbstractFilter
 {
     use MagicCompatibilityTrait;
+    use RoutableTrait;
 
     /**
      * @var array
      */
-    public static $mapping = [
+    public static array $mapping = [
         'kSuchanfrage' => 'ID',
         'kSuchcache'   => 'SearchCacheID',
         'cSuche'       => 'Name',
@@ -38,18 +41,18 @@ class BaseSearchQuery extends AbstractFilter
      * @former kSuchanfrage
      * @var int
      */
-    private $id = 0;
+    private int $id = 0;
 
     /**
      * @var int
      * @former kSuchCache
      */
-    private $searchCacheID = 0;
+    private int $searchCacheID = 0;
 
     /**
      * @var string|null
      */
-    public $error;
+    public ?string $error = null;
 
     /**
      * BaseSearchQuery constructor.
@@ -59,6 +62,7 @@ class BaseSearchQuery extends AbstractFilter
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
+        $this->setRouteType(Router::TYPE_SEARCH_QUERY);
         $this->setIsCustom(false)
             ->setUrlParam('suche')
             ->setUrlParamSEO(null);
@@ -88,7 +92,7 @@ class BaseSearchQuery extends AbstractFilter
      */
     public function setValue($value): FilterInterface
     {
-        $this->value = (int)$value;
+        $this->value = $value;
 
         return $this;
     }
@@ -109,9 +113,8 @@ class BaseSearchQuery extends AbstractFilter
                 $hits
             );
             if (\count($hits) === 0) {
-                $this->error = Shop::Lang()->get('expressionHasTo') . ' ' .
-                    $minChars . ' ' .
-                    Shop::Lang()->get('lettersDigits');
+                $this->error = Shop::Lang()->get('expressionHasTo')
+                    . ' ' . $minChars . ' ' . Shop::Lang()->get('lettersDigits');
             }
         }
 
@@ -194,10 +197,17 @@ class BaseSearchQuery extends AbstractFilter
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
             if ($seo !== null && $language->kSprache === (int)$seo->kSprache) {
-                $this->cSeo[$language->kSprache] = $seo->cSeo;
+                $this->setSlug($seo->cSeo, $language->kSprache);
             }
         }
-        if ($seo !== null & !empty($seo->cSuche)) {
+        if ($seo === null) {
+            return $this;
+        }
+        $this->createBySlug($this->getID());
+        foreach ($this->getURLPaths() as $langID => $slug) {
+            $this->cSeo[$langID] = \ltrim($slug, '/');
+        }
+        if (!empty($seo->cSuche)) {
             $this->setName($seo->cSuche);
         }
 
@@ -457,8 +467,7 @@ class BaseSearchQuery extends AbstractFilter
             ? $min
             : 3;
         if (\mb_strlen($query) < $minChars) {
-            require_once \PFAD_ROOT . \PFAD_INCLUDES . 'sprachfunktionen.php';
-            $this->error = \lang_suche_mindestanzahl($query, $minChars);
+            $this->error = Shop::Lang()->get('searchQueryMinLength', 'messages', $minChars, $query);
 
             return 0;
         }
@@ -855,9 +864,7 @@ class BaseSearchQuery extends AbstractFilter
                 }
             }
 
-            for ($i = 0; $i < ($brackets - 1); ++$i) {
-                $sql .= ')';
-            }
+            $sql .= \str_repeat(')', ($brackets - 1));
 
             if ($this->getLanguageID() > 0 && !LanguageHelper::isDefaultLanguageActive()) {
                 $prep['lid'] = $this->getLanguageID();
@@ -910,7 +917,7 @@ class BaseSearchQuery extends AbstractFilter
         $stripped    = \stripslashes($query);
         if ($stripped[0] !== '"' || $stripped[\mb_strlen($stripped) - 1] !== '"') {
             foreach ($parts as $searchString) {
-                if (\mb_strpos($searchString, '+') !== false) {
+                if (\str_contains($searchString, '+')) {
                     $searchPart = \explode('+', $searchString);
                     foreach ($searchPart as $part) {
                         $part = \trim($part);
@@ -952,7 +959,7 @@ class BaseSearchQuery extends AbstractFilter
         if ($searchCache->kSuchCache <= 0) {
             return $searchCache->kSuchCache;
         }
-        $productCols = \array_map(static function ($item) {
+        $productCols = \array_map(static function ($item): string {
             $items = \explode('.', $item, 2);
 
             return 'tartikel.' . $items[1];
@@ -1018,24 +1025,24 @@ class BaseSearchQuery extends AbstractFilter
         $result = [];
         foreach ($searchCols as $columns) {
             // Klasse 1: Artikelname und Artikel SEO
-            if (\mb_strpos($columns, 'cName') !== false
-                || \mb_strpos($columns, 'cSeo') !== false
-                || \mb_strpos($columns, 'cSuchbegriffe') !== false
+            if (\str_contains($columns, 'cName')
+                || \str_contains($columns, 'cSeo')
+                || \str_contains($columns, 'cSuchbegriffe')
             ) {
                 $result[1][] = $columns;
             }
             // Klasse 2: Artikelname und Artikel SEO
-            if (\mb_strpos($columns, 'cKurzBeschreibung') !== false
-                || \mb_strpos($columns, 'cBeschreibung') !== false
-                || \mb_strpos($columns, 'cAnmerkung') !== false
+            if (\str_contains($columns, 'cKurzBeschreibung')
+                || \str_contains($columns, 'cBeschreibung')
+                || \str_contains($columns, 'cAnmerkung')
             ) {
                 $result[2][] = $columns;
             }
             // Klasse 3: Artikelname und Artikel SEO
-            if (\mb_strpos($columns, 'cArtNr') !== false
-                || \mb_strpos($columns, 'cBarcode') !== false
-                || \mb_strpos($columns, 'cISBN') !== false
-                || \mb_strpos($columns, 'cHAN') !== false
+            if (\str_contains($columns, 'cArtNr')
+                || \str_contains($columns, 'cBarcode')
+                || \str_contains($columns, 'cISBN')
+                || \str_contains($columns, 'cHAN')
             ) {
                 $result[3][] = $columns;
             }
@@ -1105,7 +1112,7 @@ class BaseSearchQuery extends AbstractFilter
             $searchRows[] = self::getPrioritizedRows($searchRows, $config);
         }
 
-        return filter($searchRows, static function ($r) {
+        return filter($searchRows, static function ($r): bool {
             return $r !== '';
         });
     }

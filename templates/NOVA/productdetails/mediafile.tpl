@@ -32,7 +32,8 @@
                                     {/if}
                                 {/foreach}
                             {/if}
-                            {card class="mediafiles-image" img-src="{if !empty($oMedienDatei->cPfad)}{$ShopURL}/{$smarty.const.PFAD_MEDIAFILES}{$oMedienDatei->cPfad}{elseif !empty($oMedienDatei->cURL)}{$oMedienDatei->cURL}{/if}" title-text="{$oMedienDatei->cName}" img-top=true img-alt="{$cMediaAltAttr}"}
+                            {card class="mediafiles-image" img-src="{if !empty($oMedienDatei->cPfad)}{$ShopURL}/{$smarty.const.PFAD_MEDIAFILES}{$oMedienDatei->cPfad}{elseif !empty($oMedienDatei->cURL)}{$oMedienDatei->cURL}{/if}"
+                                title-text="{$oMedienDatei->cName}" img-top=true img-alt="{$cMediaAltAttr}"}
                                 <p>{$oMedienDatei->cBeschreibung}</p>
                             {/card}
                         {/block}
@@ -96,7 +97,7 @@
                                         {$oMedienDatei->cBeschreibung}
                                     {/col}
                                     {col cols=12}
-                                        {if $oMedienDatei->cURL|strpos:'youtube' !== false || $oMedienDatei->cURL|strpos:'youtu.be' !== false}
+                                        {if strpos($oMedienDatei->cURL, 'youtube') !== false || strpos($oMedienDatei->cURL, 'youtu.be') !== false}
                                             {include file='productdetails/mediafile_youtube_embed.tpl'}
                                         {else}
                                             {if isset($oMedienDatei->oEmbed) && $oMedienDatei->oEmbed->code}

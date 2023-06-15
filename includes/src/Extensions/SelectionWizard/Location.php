@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Extensions\SelectionWizard;
 
@@ -17,37 +17,37 @@ class Location
     /**
      * @var int
      */
-    public $kAuswahlAssistentOrt;
+    public int $kAuswahlAssistentOrt;
 
     /**
      * @var int
      */
-    public $kAuswahlAssistentGruppe;
+    public int $kAuswahlAssistentGruppe;
 
     /**
      * @var string
      */
-    public $cKey;
+    public string $cKey;
 
     /**
      * @var int
      */
-    public $kKey;
+    public int $kKey;
 
     /**
      * @var array
      */
-    public $oOrt_arr;
+    public array $oOrt_arr;
 
     /**
      * @var string
      */
-    public $cOrt;
+    public string $cOrt;
 
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * Location constructor.
@@ -91,23 +91,16 @@ class Location
         if ($location === null) {
             return;
         }
-        foreach (\array_keys(\get_object_vars($location)) as $member) {
-            $this->$member = $location->$member;
-        }
-        $this->kAuswahlAssistentGruppe = (int)$this->kAuswahlAssistentGruppe;
-        $this->kAuswahlAssistentOrt    = (int)$this->kAuswahlAssistentOrt;
-        $this->kKey                    = (int)$this->kKey;
+        $this->kAuswahlAssistentGruppe = (int)$location->kAuswahlAssistentGruppe;
+        $this->kAuswahlAssistentOrt    = (int)$location->kAuswahlAssistentOrt;
+        $this->kKey                    = (int)$location->kKey;
+        $this->cKey                    = $location->cKey;
         switch ($this->cKey) {
             case \AUSWAHLASSISTENT_ORT_KATEGORIE:
-                if ($backend) {
-                    unset($_SESSION['oKategorie_arr_new']);
-                }
-                $category = new Kategorie(
-                    $this->kKey,
-                    $this->getLanguage($this->kAuswahlAssistentGruppe)
-                );
+                $langID   = $this->getLanguage($this->kAuswahlAssistentGruppe);
+                $category = new Kategorie($this->kKey, $langID, 0, false, $this->db);
 
-                $this->cOrt = $category->cName . ' (' . \__('category') . ')';
+                $this->cOrt = $category->getName($langID) . ' (' . \__('category') . ')';
                 break;
 
             case \AUSWAHLASSISTENT_ORT_LINK:
@@ -215,7 +208,7 @@ class Location
             );
         }
 
-        return $rows > 0 && $this->saveLocation($params, $groupID);
+        return $rows >= 0 && $this->saveLocation($params, $groupID);
     }
 
     /**

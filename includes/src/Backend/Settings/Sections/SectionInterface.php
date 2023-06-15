@@ -44,6 +44,7 @@ interface SectionInterface
     /**
      * @param array $data
      * @param bool  $filter
+     * @param array $tags
      * @return array
      */
     public function update(array $data, bool $filter = true, array $tags = [\CACHING_GROUP_OPTION]): array;
@@ -58,8 +59,9 @@ interface SectionInterface
 
     /**
      * @param string $filter
+     * @return array
      */
-    public function filter(string $filter): void;
+    public function filter(string $filter): array;
 
     /**
      * @return int

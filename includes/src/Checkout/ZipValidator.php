@@ -13,7 +13,7 @@ class ZipValidator
     /**
      * @var array
      */
-    private static $patternHashList = [
+    private static array $patternHashList = [
         'AC' => 'ASCN 1ZZ',
         'AD' => 'AD[1-7]0\\d',
         'AF' => '\\d{4}',
@@ -201,20 +201,13 @@ class ZipValidator
     /**
      * @var string
      */
-    private $iso;
+    private string $errorString = '';
 
     /**
-     * @var string
+     * @param string $iso
      */
-    private $errorString;
-
-    /**
-     * @param string $cISO
-     */
-    public function __construct($cISO)
+    public function __construct(private string $iso)
     {
-        $this->iso         = $cISO;
-        $this->errorString = '';
     }
 
     /**
@@ -231,8 +224,8 @@ class ZipValidator
             if (!\preg_match('/^' . self::$patternHashList[$this->iso] . '$/', $zipCode)) {
                 $this->errorString = $this->beautifyErrorString($zipCode, self::$patternHashList[$this->iso]);
                 Shop::Container()->getLogService()->error(
-                    'Postleitzahl stimmt nicht mit Landesvorgabe überein! ' . $zipCode .
-                    ' (' . $this->iso . ', "' . self::$patternHashList[$this->iso] . '")'
+                    'Postleitzahl stimmt nicht mit Landesvorgabe überein! {zip} ({iso}, "{ptrn}")',
+                    ['zip' => $zipCode, 'iso' => $this->iso, 'ptrn' => self::$patternHashList[$this->iso]]
                 );
 
                 return '';
@@ -240,8 +233,11 @@ class ZipValidator
 
             return $zipCode;
         }
-        // country not in pattern-list
-        Shop::Container()->getLogService()->notice('Land nicht in Zip-Code-Pattern-Liste!' . $this->iso . ')');
+        // country not in pattern list
+        Shop::Container()->getLogService()->notice(
+            'Land nicht in Zip-Code-Pattern-Liste: {iso}',
+            ['iso' => $this->iso]
+        );
 
         return $zipCode;
     }

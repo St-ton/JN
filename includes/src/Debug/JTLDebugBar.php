@@ -3,6 +3,7 @@
 namespace JTL\Debug;
 
 use DebugBar\DataCollector\ConfigCollector;
+use DebugBar\DataCollector\DataCollectorInterface;
 use DebugBar\DataCollector\ExceptionsCollector;
 use DebugBar\DataCollector\MemoryCollector;
 use DebugBar\DataCollector\MessagesCollector;
@@ -24,9 +25,9 @@ use JTL\Debug\DataCollector\Errors;
 class JTLDebugBar extends DebugBar
 {
     /**
-     * @var TimeDataCollector
+     * @var DataCollectorInterface
      */
-    private $timer;
+    private DataCollectorInterface $timer;
 
     /**
      * JTLDebugBar constructor.
@@ -44,9 +45,9 @@ class JTLDebugBar extends DebugBar
     }
 
     /**
-     * @return TimeDataCollector
+     * @return DataCollectorInterface
      */
-    public function getTimer(): TimeDataCollector
+    public function getTimer(): DataCollectorInterface
     {
         return $this->timer;
     }

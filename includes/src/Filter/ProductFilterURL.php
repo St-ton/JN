@@ -10,6 +10,7 @@ use JTL\Filter\Items\Rating;
 use JTL\Filter\Items\Search;
 use JTL\Filter\Items\SearchSpecial;
 use JTL\Filter\States\BaseSearchQuery;
+use JTL\Helpers\URL;
 use JTL\Language\LanguageModel;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -23,33 +24,31 @@ use function Functional\first;
 class ProductFilterURL
 {
     /**
-     * @var ProductFilter
-     */
-    private $productFilter;
-
-    /**
      * ProductFilterURL constructor.
      * @param ProductFilter $productFilter
      */
-    public function __construct(ProductFilter $productFilter)
+    public function __construct(private ProductFilter $productFilter)
     {
-        $this->productFilter = $productFilter;
     }
 
     /**
-     * @param FilterInterface|null $extraFilter
-     * @param bool                 $canonical
+     * @param FilterInterface|stdClass|null $extraFilter
+     * @param bool                          $canonical
+     * @param array                         $additional
      * @return string
      */
-    public function getURL($extraFilter = null, $canonical = false): string
+    public function getURL($extraFilter = null, bool $canonical = false, array $additional = []): string
     {
         $isSearchQuery      = false;
-        $languageID         = $this->productFilter->getFilterConfig()->getLanguageID();
+        $productFilter      = $this->productFilter;
+        $filterConfig       = $productFilter->getFilterConfig();
+        $languageID         = $filterConfig->getLanguageID();
         $extraFilter        = $this->convertExtraFilter($extraFilter);
-        $base               = $this->productFilter->getBaseState();
+        $base               = $productFilter->getBaseState();
         $nonSeoFilterParams = [];
         $seoFilterParams    = [];
-        $urlParams          = [
+
+        $urlParams = [
             'kf'     => [],
             'hf'     => [],
             'mm'     => [],
@@ -60,8 +59,16 @@ class ProductFilterURL
             'custom' => [],
             'misc'   => []
         ];
+
+        $baseUrl = new URL($filterConfig->getBaseURL());
+        $baseUrl->setPath('');
+        $baseUrl = $baseUrl->normalize() . '/';
+
         if ($base->isInitialized()) {
-            $filterSeoUrl = $base->getSeo($languageID);
+            $filterSeoUrl = \count($additional) > 0
+                ? $base->getRoute($additional)
+                : null;
+            $filterSeoUrl = $filterSeoUrl ?? $base->getSeo($languageID);
             if (!empty($filterSeoUrl)) {
                 $seoParam          = new stdClass();
                 $seoParam->value   = $base->getValue();
@@ -78,14 +85,9 @@ class ProductFilterURL
             }
         }
         if ($canonical === true) {
-            return $this->productFilter->getFilterConfig()->getBaseURL() .
-                $this->buildURLString(
-                    $seoFilterParams,
-                    $nonSeoFilterParams
-                );
+            return $baseUrl . $this->buildURLString($seoFilterParams, $nonSeoFilterParams);
         }
-        $url    = $this->productFilter->getFilterConfig()->getBaseURL();
-        $active = $this->productFilter->getActiveFilters();
+        $active = $productFilter->getActiveFilters();
         // we need the base state + all active filters + optionally the additional filter to generate the correct url
         if ($extraFilter !== null && !$extraFilter->getDoUnset()) {
             $active[] = $extraFilter;
@@ -105,7 +107,7 @@ class ProductFilterURL
                 unset($active[$i]);
                 foreach ($filterValue as $singleValue) {
                     $class    = $filter->getClassName();
-                    $instance = new $class($this->productFilter);
+                    $instance = new $class($productFilter);
                     /** @var FilterInterface $instance */
                     $instance->init($singleValue);
                     $active[] = $instance;
@@ -191,7 +193,7 @@ class ProductFilterURL
         if ($extraFilter !== null && $extraFilter->isParamExclusive() === true) {
             // some filters (like rating filter) must only have one exclusive param (?bf=1 etc.) - no array of params
             foreach ($urlParams as $param => $value) {
-                if ($param === $extraFilter->getUrlParam() && \is_array($value)) {
+                if (\is_array($value) && $param === $extraFilter->getUrlParam()) {
                     foreach ($value as $index => $val) {
                         if (isset($val->value) && $val->value !== $extraFilter->getValue()) {
                             unset($urlParams[$param][$index]);
@@ -215,15 +217,15 @@ class ProductFilterURL
             }
         }
         if (empty($seoFilterParams) && $languageID !== Shop::getLanguageID()) {
-            $language = first(Frontend::getLanguages(), static function (LanguageModel $l) use ($languageID) {
+            $language = first(Frontend::getLanguages(), static function (LanguageModel $l) use ($languageID): bool {
                 return $l->getId() === $languageID;
             });
             if ($language !== null) {
-                $nonSeoFilterParams['lang'] = $language->cISO;
+                $nonSeoFilterParams['lang'] = $language->getCode();
             }
         }
 
-        return $url . $this->buildURLString($seoFilterParams, $this->collapse($nonSeoFilterParams));
+        return $baseUrl . $this->buildURLString($seoFilterParams, $this->collapse($nonSeoFilterParams));
     }
 
     /**
@@ -260,7 +262,7 @@ class ProductFilterURL
         }
 
         // remove numeric indices from array representation
-        return \preg_replace('/%5B[\d]+%5D/imU', '%5B%5D', $url);
+        return \preg_replace('/%5B\d+%5D/imU', '%5B%5D', $url);
     }
 
     /**
@@ -391,7 +393,7 @@ class ProductFilterURL
 
         foreach (\array_filter(
             $this->productFilter->getAvailableFilters(),
-            static function ($f) {
+            static function ($f): bool {
                 /** @var FilterInterface $f */
                 return $f->isInitialized() && $f->isCustom();
             }

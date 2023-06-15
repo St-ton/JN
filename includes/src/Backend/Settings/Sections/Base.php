@@ -2,7 +2,6 @@
 
 namespace JTL\Backend\Settings\Sections;
 
-use JTL\Alert\Alert;
 use JTL\Backend\Settings\Item;
 use JTL\Backend\Settings\Manager;
 use JTL\DB\DbInterface;
@@ -11,6 +10,7 @@ use JTL\Helpers\Text;
 use JTL\L10n\GetText;
 use JTL\MagicCompatibilityTrait;
 use JTL\Smarty\JTLSmarty;
+use JTL\Shop;
 use stdClass;
 use function Functional\filter;
 use function Functional\flatten;
@@ -37,11 +37,6 @@ class Base implements SectionInterface
      * @var JTLSmarty
      */
     protected JTLSmarty $smarty;
-
-    /**
-     * @var int
-     */
-    protected int $id;
 
     /**
      * @var string
@@ -77,11 +72,6 @@ class Base implements SectionInterface
      * @var array
      */
     protected array $configData;
-
-    /**
-     * @var Manager
-     */
-    protected Manager $manager;
 
     /**
      * @var GetText
@@ -127,13 +117,11 @@ class Base implements SectionInterface
     /**
      * @inheritdoc
      */
-    public function __construct(Manager $manager, int $sectionID)
+    public function __construct(protected Manager $manager, protected int $id)
     {
-        $this->manager = $manager;
         $this->db      = $manager->getDB();
         $this->smarty  = $manager->getSmarty();
         $this->getText = $manager->getGetText();
-        $this->id      = $sectionID;
         $this->initBaseData();
     }
 
@@ -275,8 +263,7 @@ class Base implements SectionInterface
         if ($min <= $confValue && $confValue <= $max) {
             return true;
         }
-        $this->manager->getAlertService()->addAlert(
-            Alert::TYPE_DANGER,
+        $this->manager->getAlertService()->addDanger(
             \sprintf(\__('errrorNumberRange'), \__($item->getName()), $min, $max),
             'errrorNumberRange'
         );
@@ -290,14 +277,11 @@ class Base implements SectionInterface
      */
     public function validate(Item $conf, $confValue): bool
     {
-        switch ($conf->getValueName()) {
-            case 'bilder_jpg_quali':
-                return $this->validateNumberRange(0, 100, $conf, $confValue);
-            case 'cron_freq':
-                return $this->validateNumberRange(10, 999999, $conf, $confValue);
-            default:
-                return true;
-        }
+        return match ($conf->getValueName()) {
+            'bilder_jpg_quali' => $this->validateNumberRange(0, 100, $conf, $confValue),
+            'cron_freq'        => $this->validateNumberRange(10, 999999, $conf, $confValue),
+            default            => true,
+        };
     }
 
     /**
@@ -318,6 +302,12 @@ class Base implements SectionInterface
             $id = $item->getValueName();
             if (!isset($data[$id])) {
                 continue;
+            }
+            if ($item->getInputType() === 'pass') {
+                if (empty($data[$id])) {
+                    $data[$id]       = $item->getCurrentValue();
+                    $unfiltered[$id] = $item->getCurrentValue();
+                }
             }
             $value->cWert                 = $data[$id];
             $value->cName                 = $id;
@@ -350,6 +340,7 @@ class Base implements SectionInterface
             }
             $updated[] = ['id' => $id, 'value' => $data[$id]];
         }
+        Shop::Container()->getCache()->flushTags($tags);
 
         return $updated;
     }
@@ -397,7 +388,7 @@ class Base implements SectionInterface
     /**
      * @inheritdoc
      */
-    public function filter(string $filter): void
+    public function filter(string $filter): array
     {
         $keys = [
             'configgroup_5_product_question'  => [
@@ -432,22 +423,23 @@ class Base implements SectionInterface
             ];
         }
 
-        if ($filter !== '' && isset($keys[$filter])) {
-            $keysToFilter = $keys[$filter];
-        } else {
-            $keysToFilter = flatten($keys);
-        }
-
-        $this->items = filter($this->getItems(), static function (Item $e) use ($keysToFilter) {
+        $keysToFilter = ($filter !== '' && isset($keys[$filter]))
+            ? $keys[$filter]
+            : flatten($keys);
+        $filtered     = [];
+        $this->items  = filter($this->getItems(), static function (Item $e) use ($keysToFilter): bool {
             return !\in_array($e->getValueName(), $keysToFilter, true);
         });
         foreach ($this->getSubsections() as $subsection) {
             foreach ($subsection->getItems() as $i => $item) {
                 if (\in_array($item->getValueName(), $keysToFilter, true)) {
+                    $filtered[] = $item;
                     $subsection->removeItemAtIndex($i);
                 }
             }
         }
+
+        return $filtered;
     }
 
     /**

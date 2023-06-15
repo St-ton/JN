@@ -52,7 +52,7 @@ if (!empty($_FILES)) {
     $fileData          = isset($_FILES['Filedata']['tmp_name'])
         ? $_FILES['Filedata']
         : $_FILES['file_data'];
-    $pathInfo          = pathinfo($fileData['name']);
+    $extension         = pathinfo($fileData['name'], PATHINFO_EXTENSION);
     $mime              = mime_content_type($fileData['tmp_name']);
     $allowedExtensions = [];
 
@@ -65,7 +65,7 @@ if (!empty($_FILES)) {
     if (!isset($_REQUEST['uniquename'], $_REQUEST['cname'])) {
         retCode(false);
     }
-    if (empty($allowedExtensions) || !in_array('*.' . strtolower($pathInfo['extension']), $allowedExtensions, true)) {
+    if (empty($allowedExtensions) || !in_array('*.' . strtolower($extension), $allowedExtensions, true)) {
         retCode(false, 400, 'extension_not_listed');
     }
     if (in_array($mime, $blacklist, true)) {
@@ -79,12 +79,12 @@ if (!empty($_FILES)) {
     $realPath   = str_replace('\\', '/', realpath($targetInfo['dirname']) . DIRECTORY_SEPARATOR);
 
     // legitimate uploads do not have an extension for the destination file name - but for the originally uploaded file
-    if (!isset($pathInfo['extension']) || isset($targetInfo['extension'])) {
+    if ($extension === '' || isset($targetInfo['extension'])) {
         retCode(false);
     }
     if (isset($fileData['error'], $fileData['name'])
         && (int)$fileData['error'] === UPLOAD_ERR_OK
-        && mb_strpos($realPath, realpath(PFAD_UPLOADS)) === 0
+        && str_starts_with($realPath, realpath(PFAD_UPLOADS))
         && move_uploaded_file($tempFile, $targetFile)
     ) {
         $file    = new stdClass();
@@ -99,10 +99,10 @@ if (!empty($_FILES)) {
                 . '_' . Seo::sanitizeSeoSlug(Seo::getFlatSeoPath($product->cName));
         }
         if (empty($_REQUEST['variation'])) {
-            $postName = '_' . $unique . '.' . $pathInfo['extension'];
+            $postName = '_' . $unique . '.' . $extension;
         } else {
             $postName = '_' . Seo::sanitizeSeoSlug(Seo::getFlatSeoPath($_REQUEST['variation']))
-                . '_' . $unique . '.' . $pathInfo['extension'];
+                . '_' . $unique . '.' . $extension;
         }
 
         $file->cName  = mb_substr($preName, 0, 200 - mb_strlen($postName)) . $postName;
@@ -129,7 +129,7 @@ if (!empty($_REQUEST['action'])) {
             $realPath   = str_replace('\\', '/', realpath($targetInfo['dirname'] . DIRECTORY_SEPARATOR));
             if (!isset($targetInfo['extension'])
                 && isset($_SESSION['Uploader'][$unique])
-                && mb_strpos($realPath, realpath(PFAD_UPLOADS)) === 0
+                && str_starts_with($realPath, realpath(PFAD_UPLOADS))
             ) {
                 unset($_SESSION['Uploader'][$unique]);
                 if (file_exists($filePath)) {
@@ -143,8 +143,8 @@ if (!empty($_REQUEST['action'])) {
         case 'exists':
             $filePath = PFAD_UPLOADS . $_REQUEST['uniquename'];
             $info     = pathinfo($filePath);
-            $realPath = realpath($info['dirname']) . DIRECTORY_SEPARATOR;
-            if ($realPath !== false && mb_strpos($realPath, realpath(PFAD_UPLOADS)) !== 0) {
+            $realPath = realpath($info['dirname']);
+            if ($realPath !== false && !str_starts_with($realPath . DIRECTORY_SEPARATOR, realpath(PFAD_UPLOADS))) {
                 retCode(false, 403, 'forbidden');
             }
             retCode(!isset($info['extension']) && file_exists(realpath($filePath)));

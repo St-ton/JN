@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Extensions\Download;
 
@@ -12,7 +12,6 @@ use JTL\Shop;
 /**
  * Class Download
  * @package JTL\Extensions\Download
- * @property array oDownloadHistory_arr
  */
 class Download
 {
@@ -33,74 +32,74 @@ class Download
     public const ERROR_MISSING_PARAMS = 7;
 
     /**
-     * @var int
+     * @var int|null
      */
-    public $kDownload;
+    public ?int $kDownload = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cID;
+    public ?string $cID = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cPfad;
+    public ?string $cPfad = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cPfadVorschau;
-
-    /**
-     * @var int
-     */
-    public $nAnzahl;
+    public ?string $cPfadVorschau = null;
 
     /**
      * @var int
      */
-    public $nTage;
+    public int $nAnzahl = 0;
 
     /**
      * @var int
      */
-    public $nSort;
-
-    /**
-     * @var string
-     */
-    public $dErstellt;
-
-    /**
-     * @var object
-     */
-    public $oDownloadSprache;
+    public int $nTage = 0;
 
     /**
      * @var int
      */
-    public $kBestellung;
+    public int $nSort = 0;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $dGueltigBis;
+    public ?string $dErstellt = null;
+
+    /**
+     * @var Localization|null
+     */
+    public ?Localization $oDownloadSprache = null;
+
+    /**
+     * @var int|null
+     */
+    public ?int $kBestellung = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $dGueltigBis = null;
 
     /**
      * @var array
      */
-    public $oArtikelDownload_arr;
+    public array $oArtikelDownload_arr = [];
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cLimit;
+    public ?string $cLimit = null;
 
     /**
      * @var array
      */
-    public static $mapping = [
+    public static array $mapping = [
         'oDownloadHistory_arr' => 'DownloadHistory'
     ];
 
@@ -136,21 +135,22 @@ class Download
     private function loadFromDB(int $id, int $languageID, bool $info, int $orderID): void
     {
         $item = Shop::Container()->getDB()->select('tdownload', 'kDownload', $id);
-        if ($item === null || (int)$item->kDownload <= 0) {
+        if ($item === null || $item->kDownload <= 0) {
             return;
         }
-        foreach (\array_keys(\get_object_vars($item)) as $member) {
-            $this->$member = $item->$member;
-        }
-        $this->kDownload = (int)$this->kDownload;
-        $this->nAnzahl   = (int)$this->nAnzahl;
-        $this->nTage     = (int)$this->nTage;
-        $this->nSort     = (int)$this->nSort;
+        $this->kDownload     = (int)$item->kDownload;
+        $this->nAnzahl       = (int)$item->nAnzahl;
+        $this->nTage         = (int)$item->nTage;
+        $this->nSort         = (int)$item->nSort;
+        $this->cID           = $item->cID;
+        $this->cPfad         = $item->cPfad;
+        $this->cPfadVorschau = $item->cPfadVorschau;
+        $this->dErstellt     = $item->dErstellt;
         if ($info) {
             if (!$languageID) {
                 $languageID = Shop::getLanguageID();
             }
-            $this->oDownloadSprache = new Localization($item->kDownload, $languageID);
+            $this->oDownloadSprache = new Localization($this->kDownload, $languageID);
         }
         if ($orderID > 0) {
             $this->kBestellung = $orderID;
@@ -236,29 +236,24 @@ class Download
                     ORDER BY tdownload.nSort, tdownload.dErstellt DESC',
                 $prep
             );
-            foreach ($items as $i => $download) {
-                $download->kDownload = (int)$download->kDownload;
-                $downloads[$i]       = new self(
-                    $download->kDownload,
+            foreach ($items as $i => $data) {
+                $data->kDownload   = (int)$data->kDownload;
+                $data->kBestellung = (int)($data->kBestellung ?? 0);
+                $data->kKunde      = (int)($data->kKunde ?? 0);
+                $download          = new self(
+                    $data->kDownload,
                     $languageID,
                     true,
-                    (int)($download->kBestellung ?? 0)
+                    $data->kBestellung
                 );
-                if (($orderID > 0 || $customerID > 0) && $downloads[$i]->getAnzahl() > 0) {
-                    $download->kKunde      = (int)$download->kKunde;
-                    $download->kBestellung = (int)$download->kBestellung;
-
-                    $history                    = History::getOrderHistory(
-                        $download->kKunde,
-                        $download->kBestellung
-                    );
-                    $id                         = $downloads[$i]->getDownload();
-                    $count                      = isset($history[$id])
-                        ? \count($history[$id])
-                        : 0;
-                    $downloads[$i]->cLimit      = $count . ' / ' . $downloads[$i]->getAnzahl();
-                    $downloads[$i]->kBestellung = $download->kBestellung;
+                if (($orderID > 0 || $customerID > 0) && $download->getAnzahl() > 0) {
+                    $history               = History::getOrderHistory($data->kKunde, $data->kBestellung);
+                    $id                    = $download->getDownload();
+                    $count                 = \count($history[$id] ?? []);
+                    $download->cLimit      = $count . ' / ' . $download->getAnzahl();
+                    $download->kBestellung = $data->kBestellung;
                 }
+                $downloads[$i] = $download;
             }
         }
 
@@ -304,6 +299,12 @@ class Download
                 ->setErstellt('NOW()')
                 ->save();
 
+            \executeHook(\HOOK_ORDER_DOWNLOAD_FILE, [
+                'download'   => $download,
+                'customerID' => $customerID,
+                'orderID'    => $orderID
+            ]);
+
             self::sendFileToBrowser(
                 \PFAD_DOWNLOADS . $download->getPfad(),
                 'application/octet-stream'
@@ -346,7 +347,7 @@ class Download
         $order->fuelleBestellung();
         $download = new self($downloadID, 0, false);
         // Gibt es einen Artikel der zum Download passt?
-        if (!\is_array($download->oArtikelDownload_arr) || \count($download->oArtikelDownload_arr) === 0) {
+        if (\count($download->oArtikelDownload_arr) === 0) {
             return self::ERROR_PRODUCT_NOT_FOUND;
         }
         foreach ($order->Positionen as $item) {
@@ -357,7 +358,7 @@ class Download
                 // Check Anzahl
                 if ($download->getAnzahl() > 0) {
                     $history = History::getOrderHistory($customerID, $orderID);
-                    if (\count($history[$download->kDownload]) >= $download->getAnzahl()) {
+                    if (\count($history[$download->kDownload] ?? []) >= $download->getAnzahl()) {
                         return self::ERROR_DOWNLOAD_LIMIT_REACHED;
                     }
                 }
@@ -389,31 +390,15 @@ class Download
      */
     public static function mapGetFileErrorCode(int $errorCode): string
     {
-        switch ($errorCode) {
-            case self::ERROR_ORDER_NOT_FOUND: // Bestellung nicht gefunden
-                $error = Shop::Lang()->get('dlErrorOrderNotFound');
-                break;
-            case self::ERROR_INVALID_CUSTOMER: // Kunde stimmt nicht
-                $error = Shop::Lang()->get('dlErrorCustomerNotMatch');
-                break;
-            case self::ERROR_PRODUCT_NOT_FOUND: // Kein Artikel mit Downloads gefunden
-                $error = Shop::Lang()->get('dlErrorDownloadNotFound');
-                break;
-            case self::ERROR_DOWNLOAD_LIMIT_REACHED: // Maximales Downloadlimit wurde erreicht
-                $error = Shop::Lang()->get('dlErrorDownloadLimitReached');
-                break;
-            case self::ERROR_DOWNLOAD_EXPIRED: // Maximales Datum wurde erreicht
-                $error = Shop::Lang()->get('dlErrorValidityReached');
-                break;
-            case self::ERROR_MISSING_PARAMS: // Paramter fehlen
-                $error = Shop::Lang()->get('dlErrorWrongParameter');
-                break;
-            default:
-                $error = '';
-                break;
-        }
-
-        return $error;
+        return match ($errorCode) {
+            self::ERROR_ORDER_NOT_FOUND        => Shop::Lang()->get('dlErrorOrderNotFound'),
+            self::ERROR_INVALID_CUSTOMER       => Shop::Lang()->get('dlErrorCustomerNotMatch'),
+            self::ERROR_PRODUCT_NOT_FOUND      => Shop::Lang()->get('dlErrorDownloadNotFound'),
+            self::ERROR_DOWNLOAD_LIMIT_REACHED => Shop::Lang()->get('dlErrorDownloadLimitReached'),
+            self::ERROR_DOWNLOAD_EXPIRED       => Shop::Lang()->get('dlErrorValidityReached'),
+            self::ERROR_MISSING_PARAMS         => Shop::Lang()->get('dlErrorWrongParameter'),
+            default                            => '',
+        };
     }
 
     /**
@@ -440,7 +425,7 @@ class Download
      * @param string $cID
      * @return $this
      */
-    public function setID($cID): self
+    public function setID(string $cID): self
     {
         $this->cID = $cID;
 
@@ -448,45 +433,45 @@ class Download
     }
 
     /**
-     * @param string $cPfad
+     * @param string $path
      * @return $this
      */
-    public function setPfad($cPfad): self
+    public function setPfad(string $path): self
     {
-        $this->cPfad = $cPfad;
+        $this->cPfad = $path;
 
         return $this;
     }
 
     /**
-     * @param string $cPfadVorschau
+     * @param string $path
      * @return $this
      */
-    public function setPfadVorschau($cPfadVorschau): self
+    public function setPfadVorschau(string $path): self
     {
-        $this->cPfadVorschau = $cPfadVorschau;
+        $this->cPfadVorschau = $path;
 
         return $this;
     }
 
     /**
-     * @param int $nAnzahl
+     * @param int $count
      * @return $this
      */
-    public function setAnzahl(int $nAnzahl): self
+    public function setAnzahl(int $count): self
     {
-        $this->nAnzahl = $nAnzahl;
+        $this->nAnzahl = $count;
 
         return $this;
     }
 
     /**
-     * @param int $nTage
+     * @param int $days
      * @return $this
      */
-    public function setTage(int $nTage): self
+    public function setTage(int $days): self
     {
-        $this->nTage = $nTage;
+        $this->nTage = $days;
 
         return $this;
     }
@@ -503,12 +488,12 @@ class Download
     }
 
     /**
-     * @param string $dErstellt
+     * @param string $date
      * @return $this
      */
-    public function setErstellt($dErstellt): self
+    public function setErstellt(string $date): self
     {
-        $this->dErstellt = $dErstellt;
+        $this->dErstellt = $date;
 
         return $this;
     }
@@ -542,7 +527,7 @@ class Download
      */
     public function hasPreview(): bool
     {
-        return \mb_strlen($this->cPfadVorschau) > 0;
+        return $this->cPfadVorschau !== null && \mb_strlen($this->cPfadVorschau) > 0;
     }
 
     /**
@@ -550,11 +535,8 @@ class Download
      */
     public function getExtension(): string
     {
-        if (\mb_strlen($this->cPfad) > 0) {
-            $pathInfo = \pathinfo($this->cPfad);
-            if (\is_array($pathInfo)) {
-                return \mb_convert_case($pathInfo['extension'], \MB_CASE_UPPER);
-            }
+        if ($this->cPfad !== null && \mb_strlen($this->cPfad) > 0) {
+            return \mb_convert_case(\pathinfo($this->cPfad, \PATHINFO_EXTENSION), \MB_CASE_UPPER);
         }
 
         return '';
@@ -565,14 +547,9 @@ class Download
      */
     public function getPreviewExtension(): string
     {
-        if (\mb_strlen($this->cPfadVorschau) > 0) {
-            $pathInfo = \pathinfo($this->cPfadVorschau);
-            if (\is_array($pathInfo)) {
-                return \mb_convert_case($pathInfo['extension'], \MB_CASE_UPPER);
-            }
-        }
-
-        return '';
+        return $this->hasPreview()
+            ? \mb_convert_case(\pathinfo($this->cPfadVorschau, \PATHINFO_EXTENSION), \MB_CASE_UPPER)
+            : '';
     }
 
     /**
@@ -580,31 +557,12 @@ class Download
      */
     public function getPreviewType(): string
     {
-        switch (\strtolower($this->getPreviewExtension())) {
-            case 'mpeg':
-            case 'mpg':
-            case 'avi':
-            case 'wmv':
-            case 'mp4':
-                return 'video';
-
-            case 'wav':
-            case 'mp3':
-            case 'wma':
-                return 'music';
-
-            case 'gif':
-            case 'jpeg':
-            case 'jpg':
-            case 'png':
-            case 'jpe':
-            case 'bmp':
-                return 'image';
-            default:
-                break;
-        }
-
-        return 'misc';
+        return match (\strtolower($this->getPreviewExtension())) {
+            'mpeg', 'mpg', 'avi', 'wmv', 'mp4'        => 'video',
+            'wav', 'mp3', 'wma'                       => 'music',
+            'gif', 'jpeg', 'jpg', 'png', 'jpe', 'bmp' => 'image',
+            default                                   => 'misc',
+        };
     }
 
     /**
@@ -655,9 +613,9 @@ class Download
     {
         $browser   = 'other';
         $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? '';
-        if (\preg_match('/Opera\/([0-9].[0-9]{1,2})/', $userAgent, $log_version)) {
+        if (\preg_match('/Opera\/(\d.\d{1,2})/', $userAgent, $log_version)) {
             $browser = 'opera';
-        } elseif (\preg_match('/MSIE ([0-9].[0-9]{1,2})/', $userAgent, $log_version)) {
+        } elseif (\preg_match('/MSIE (\d.\d{1,2})/', $userAgent, $log_version)) {
             $browser = 'ie';
         }
         if (($mimetype === 'application/octet-stream') || ($mimetype === 'application/octetstream')) {

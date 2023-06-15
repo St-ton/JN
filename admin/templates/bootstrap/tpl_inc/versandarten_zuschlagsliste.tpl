@@ -76,7 +76,7 @@
     <div class="card-footer save-wrapper">
         <div class="row">
             <div class="ml-auto col-sm-6 col-lg-auto">
-                <a class="btn btn-outline-primary btn-block" href="{$adminURL}/versandarten.php">
+                <a class="btn btn-outline-primary btn-block" href="{$adminURL}{$route}">
                     {__('goBack')}
                 </a>
             </div>
@@ -232,7 +232,10 @@
         }
         $('.zip-badge' + surchargeIDText).on('click', function(e){
             e.preventDefault();
-            ioCall('deleteShippingSurchargeZIP', [$(this).data('surcharge-id'), $(this).data('zip')], function (data) {
+            ioCall('deleteShippingSurchargeZIP', [
+                $(this).data('surcharge-id'),
+                String($(this).data('zip'))
+            ], function (data) {
                 $('.zip-badge[data-surcharge-id="' + data.surchargeID + '"][data-zip="' + data.ZIP + '"]').remove();
                 closeTooltips();
             });

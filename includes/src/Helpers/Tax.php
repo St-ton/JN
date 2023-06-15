@@ -2,7 +2,6 @@
 
 namespace JTL\Helpers;
 
-use JTL\Alert\Alert;
 use JTL\Cart\Cart;
 use JTL\Catalog\Currency;
 use JTL\Catalog\Product\Preise;
@@ -119,27 +118,24 @@ class Tax
             $currentURL  = (new URL(Shop::getURL() . $_SERVER['REQUEST_URI']))->normalize();
             $country     = LanguageHelper::getCountryCodeByCountryName($deliveryCountryCode);
 
-            Shop::Container()->getLogService()->error('Keine Steuerzone für "' . $country . '" hinterlegt!');
+            Shop::Container()->getLogService()->error('Keine Steuerzone für "{cny}" hinterlegt!', ['cny' => $country]);
 
             if (Request::isAjaxRequest()) {
                 $link = new Link($db);
                 $link->setLinkType(\LINKTYP_STARTSEITE);
                 $link->setTitle(Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages'));
 
-                Shop::Container()->getAlertService()->addAlert(
-                    Alert::TYPE_ERROR,
+                Shop::Container()->getAlertService()->addError(
                     Shop::Lang()->get('missingTaxZoneForDeliveryCountry', 'errorMessages', $country),
                     'missingTaxZoneForDeliveryCountry'
                 );
-                Shop::Smarty()
-                    ->assign('Link', $link)
+                Shop::Smarty()->assign('Link', $link)
                     ->display('layout/index.tpl');
                 exit;
             }
 
             if (\in_array($currentURL, [$redirURL, $logoutURL])) {
-                Shop::Container()->getAlertService()->addAlert(
-                    Alert::TYPE_ERROR,
+                Shop::Container()->getAlertService()->addError(
                     Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages') . '<br/>'
                     . Shop::Lang()->get('missingTaxZoneForDeliveryCountry', 'errorMessages', $country),
                     'missingParamShippingDetermination'
@@ -207,15 +203,14 @@ class Tax
             }
             $i = \array_search($item->fMwSt, $taxRates, true);
             if (!isset($taxPos[$i]->fBetrag) || !$taxPos[$i]->fBetrag) {
-                $taxPos[$i]                  = new stdClass();
-                $taxPos[$i]->cName           = \lang_steuerposition($item->fMwSt, $net);
-                $taxPos[$i]->fUst            = $item->fMwSt;
-                $taxPos[$i]->fBetrag         = ($item->fPreis * $item->nAnzahl * $item->fMwSt) / 100.0;
-                $taxPos[$i]->cPreisLocalized = Preise::getLocalizedPriceString($taxPos[$i]->fBetrag, $currency, $html);
+                $taxPos[$i]          = new stdClass();
+                $taxPos[$i]->cName   = \lang_steuerposition($item->fMwSt, $net);
+                $taxPos[$i]->fUst    = $item->fMwSt;
+                $taxPos[$i]->fBetrag = ($item->fPreis * $item->nAnzahl * $item->fMwSt) / 100.0;
             } else {
-                $taxPos[$i]->fBetrag        += ($item->fPreis * $item->nAnzahl * $item->fMwSt) / 100.0;
-                $taxPos[$i]->cPreisLocalized = Preise::getLocalizedPriceString($taxPos[$i]->fBetrag, $currency, $html);
+                $taxPos[$i]->fBetrag += ($item->fPreis * $item->nAnzahl * $item->fMwSt) / 100.0;
             }
+            $taxPos[$i]->cPreisLocalized = Preise::getLocalizedPriceString($taxPos[$i]->fBetrag, $currency, $html);
         }
 
         return $taxPos;

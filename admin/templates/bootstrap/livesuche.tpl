@@ -3,7 +3,7 @@
 <div id="content">
     <div class="card">
         <div class="card-body">
-            {include file='tpl_inc/language_switcher.tpl' action=$adminURL|cat:'/livesuche.php'}
+            {include file='tpl_inc/language_switcher.tpl' action=$adminURL|cat:$route}
         </div>
     </div>
     <nav class="tabs-nav">
@@ -37,9 +37,9 @@
     </nav>
     <div class="tab-content">
         <div id="suchanfrage" class="tab-pane fade {if !isset($tab) || $tab === 'suchanfrage'} active show{/if}">
-            {if isset($Suchanfragen) && $Suchanfragen|count > 0}
+            {if isset($Suchanfragen) && count($Suchanfragen) > 0}
                 <div class="search-toolbar mb-3">
-                    <form class="" name="suche" method="post" action="{$adminURL}/livesuche.php">
+                    <form class="" name="suche" method="post" action="{$adminURL}{$route}">
                         {$jtl_token}
                         <input type="hidden" name="Suche" value="1" />
                         <input type="hidden" name="tab" value="suchanfrage" />
@@ -58,7 +58,7 @@
                     </form>
                 </div>
                 {include file='tpl_inc/pagination.tpl' pagination=$oPagiSuchanfragen cAnchor='suchanfrage'}
-                <form name="login" method="post" action="{$adminURL}/livesuche.php">
+                <form name="login" method="post" action="{$adminURL}{$route}">
                     {$jtl_token}
                     <input type="hidden" name="livesuche" value="1" />
                     <input type="hidden" name="cSuche" value="{if isset($cSuche)}{$cSuche}{/if}" />
@@ -83,13 +83,13 @@
                                     <tr>
                                         <th class="th-1"></th>
                                         <th class="text-left">
-                                            (<a href="{$adminURL}/livesuche.php?{$cSuchStr}nSort=1{if $nSort == 1}1{/if}&tab=suchanfrage">{if $nSort == 1}Z...A{else}A...Z{/if}</a>) {__('search')}
+                                            (<a href="{$adminURL}{$route}?{$cSuchStr}nSort=1{if $nSort == 1}1{/if}&tab=suchanfrage">{if $nSort == 1}Z...A{else}A...Z{/if}</a>) {__('search')}
                                         </th>
                                         <th class="text-left">
-                                            (<a href="{$adminURL}/livesuche.php?{$cSuchStr}nSort=2{if $nSort == 2 || $nSort == -1}2{/if}&tab=suchanfrage">{if $nSort == 2 || $nSort == -1}1...9{else}9...1{/if}</a>) {__('searchcount')}
+                                            (<a href="{$adminURL}{$route}?{$cSuchStr}nSort=2{if $nSort == 2 || $nSort == -1}2{/if}&tab=suchanfrage">{if $nSort == 2 || $nSort == -1}1...9{else}9...1{/if}</a>) {__('searchcount')}
                                         </th>
                                         <th class="th-4">
-                                            (<a href="{$adminURL}/livesuche.php?{$cSuchStr}nSort=3{if $nSort == 3 || $nSort == -1}3{/if}&tab=suchanfrage">{if $nSort == 3 || $nSort == -1}0...1{else}1...0{/if}</a>) {__('active')}
+                                            (<a href="{$adminURL}{$route}?{$cSuchStr}nSort=3{if $nSort == 3 || $nSort == -1}3{/if}&tab=suchanfrage">{if $nSort == 3 || $nSort == -1}0...1{else}1...0{/if}</a>) {__('active')}
                                         </th>
                                         <th class="th-5">{__('mapping')}</th>
                                     </tr>
@@ -161,9 +161,9 @@
             {/if}
         </div>
         <div id="erfolglos" class="tab-pane fade {if isset($tab) && $tab === 'erfolglos'} active show{/if}">
-            {if $Suchanfragenerfolglos && $Suchanfragenerfolglos|count > 0}
+            {if $Suchanfragenerfolglos && count($Suchanfragenerfolglos) > 0}
                 {include file='tpl_inc/pagination.tpl' pagination=$oPagiErfolglos cAnchor='erfolglos'}
-                <form name="login" method="post" action="{$adminURL}/livesuche.php">
+                <form name="login" method="post" action="{$adminURL}{$route}">
                     {$jtl_token}
                     <input type="hidden" name="livesuche" value="2">
                     <input type="hidden" name="tab" value="erfolglos">
@@ -243,9 +243,9 @@
             {/if}
         </div>
         <div id="mapping" class="tab-pane fade {if isset($tab) && $tab === 'mapping'} active show{/if}">
-            {if $Suchanfragenmapping && $Suchanfragenmapping|count > 0}
+            {if $Suchanfragenmapping && count($Suchanfragenmapping) > 0}
                 {include file='tpl_inc/pagination.tpl' pagination=$oPagiMapping cAnchor='mapping'}
-                <form name="login" method="post" action="{$adminURL}/livesuche.php">
+                <form name="login" method="post" action="{$adminURL}{$route}">
                     {$jtl_token}
                     <input type="hidden" name="livesuche" value="4" />
                     <input type="hidden" name="tab" value="mapping" />
@@ -302,7 +302,7 @@
             {/if}
         </div>
         <div id="blacklist" class="tab-pane fade {if isset($tab) && $tab === 'blacklist'} active show{/if}">
-            <form name="login" method="post" action="{$adminURL}/livesuche.php">
+            <form name="login" method="post" action="{$adminURL}{$route}">
                 {$jtl_token}
                 <input type="hidden" name="livesuche" value="3" />
                 <input type="hidden" name="tab" value="blacklist" />
@@ -339,7 +339,7 @@
             </form>
         </div>
         <div id="einstellungen" class="tab-pane fade {if isset($tab) && $tab === 'einstellungen'} active show{/if}">
-            {include file='tpl_inc/config_section.tpl' name='einstellen' a='saveSettings' action=$adminURL|cat:'/livesuche.php' buttonCaption=__('saveWithIcon') title=__('settings') skipHeading=true tab='einstellungen'}
+            {include file='tpl_inc/config_section.tpl' name='einstellen' a='saveSettings' action=$adminURL|cat:$route buttonCaption=__('saveWithIcon') title=__('settings') skipHeading=true tab='einstellungen'}
         </div>
     </div>
 </div>

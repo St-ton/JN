@@ -16,20 +16,14 @@ class PasswordService implements PasswordServiceInterface
     /**
      * The highest allowed ascii character in decimal representation
      */
-    public const ASCII_MAX = 127;
-
-    /**
-     * @var CryptoServiceInterface
-     */
-    protected $cryptoService;
+    public const ASCII_MAX = 126;
 
     /**
      * PasswordService constructor.
      * @param CryptoServiceInterface $cryptoService
      */
-    public function __construct(CryptoServiceInterface $cryptoService)
+    public function __construct(protected CryptoServiceInterface $cryptoService)
     {
-        $this->cryptoService = $cryptoService;
     }
 
     /**
@@ -63,8 +57,8 @@ class PasswordService implements PasswordServiceInterface
          */
         $result = '';
         for ($x = 0; $x < $length; $x++) {
-            $no      = $this->cryptoService->randomInt(self::ASCII_MIN, self::ASCII_MAX);
-            $result .= \chr($no);
+            $number  = $this->cryptoService->randomInt(self::ASCII_MIN, self::ASCII_MAX);
+            $result .= \chr($number);
         }
 
         return $result;

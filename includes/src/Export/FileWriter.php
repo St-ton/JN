@@ -13,38 +13,20 @@ use JTL\Smarty\ExportSmarty;
 class FileWriter implements ExportWriterInterface
 {
     /**
-     * @var ExportSmarty|null
-     */
-    private ?ExportSmarty $smarty;
-
-    /**
-     * @var Model
-     */
-    private Model $model;
-
-    /**
-     * @var array
-     */
-    private array $config;
-
-    /**
      * @var string
      */
     private string $tmpFileName;
 
     /**
-     * @var resource
+     * @var resource|bool
      */
     private $currentHandle;
 
     /**
      * @inheritdoc
      */
-    public function __construct(Model $model, array $config, ExportSmarty $smarty = null)
+    public function __construct(private Model $model, private array $config, private ?ExportSmarty $smarty = null)
     {
-        $this->model       = $model;
-        $this->config      = $config;
-        $this->smarty      = $smarty;
         $this->tmpFileName = 'tmp_' . \basename($this->model->getFilename());
     }
 
@@ -140,7 +122,7 @@ class FileWriter implements ExportWriterInterface
     {
         if (\is_dir(\PFAD_ROOT . \PFAD_EXPORT) && ($dir = \opendir(\PFAD_ROOT . \PFAD_EXPORT)) !== false) {
             while (($fdir = \readdir($dir)) !== false) {
-                if ($fdir !== $fileName && \mb_strpos($fdir, $fileNameSplit) !== false) {
+                if ($fdir !== $fileName && \str_contains($fdir, $fileNameSplit)) {
                     \unlink(\PFAD_ROOT . \PFAD_EXPORT . $fdir);
                 }
             }
@@ -157,7 +139,7 @@ class FileWriter implements ExportWriterInterface
             if (\file_exists($path)) {
                 \unlink($path);
             }
-        } catch (Exception $e) {
+        } catch (Exception) {
         }
     }
 
@@ -175,7 +157,7 @@ class FileWriter implements ExportWriterInterface
     {
         $path = $this->model->getSanitizedFilepath();
         $file = $this->model->getFilename();
-        if ((int)$this->model->getSplitSize() <= 0 || !\file_exists($path)) {
+        if ($this->model->getSplitSize() <= 0 || !\file_exists($path)) {
             return $this;
         }
         $fileCounter = 1;

@@ -3,7 +3,7 @@
 </style>
 {include file='tpl_inc/seite_header.tpl' cTitel=__('news') cBeschreibung=__('newsDesc')}
 <div id="content">
-    <form name="news" method="post" action="{$adminURL}/news.php" enctype="multipart/form-data" class="hide-fileinput-remove">
+    <form name="news" method="post" action="{$adminURL}{$route}" enctype="multipart/form-data" class="hide-fileinput-remove">
         {$jtl_token}
         <input type="hidden" name="news" value="1" />
         <input type="hidden" name="news_speichern" value="1" />
@@ -29,7 +29,7 @@
                                 <select id="kkundengruppe"
                                         name="kKundengruppe[]"
                                         multiple="multiple"
-                                        class="selectpicker custom-select{if !empty($cPlausiValue_arr.kKundengruppe_arr)} error{/if}"
+                                        class="selectpicker custom-select{if !empty($validation.kKundengruppe_arr)} error{/if}"
                                         data-selected-text-format="count > 2"
                                         data-size="7">
                                     <option value="-1"
@@ -64,14 +64,14 @@
                             <label class="col col-sm-4 col-form-label text-sm-right" for="kNewsKategorie">{__('category')} *:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <select id="kNewsKategorie"
-                                        class="selectpicker custom-select{if !empty($cPlausiValue_arr.kNewsKategorie_arr)} error{/if}"
+                                        class="selectpicker custom-select{if !empty($validation.kNewsKategorie_arr)} error{/if}"
                                         name="kNewsKategorie[]"
                                         multiple="multiple"
                                         data-selected-text-format="count > 2"
                                         data-size="7"
                                         data-live-search="true"
                                         data-actions-box="true">
-                                    {foreach $oNewsKategorie_arr as $category}
+                                    {foreach $newsCategories as $category}
                                         <option value="{$category->getID()}"
                                             {if isset($cPostVar_arr.kNewsKategorie)}
                                                 {foreach $cPostVar_arr.kNewsKategorie as $kNewsKategorieNews}
@@ -118,13 +118,13 @@
                             <label class="col col-sm-4 col-form-label text-sm-right"for="kAuthor">{__('newsAuthor')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <select class="custom-select" id="kAuthor" name="kAuthor">
-                                    <option value="0">{if $oPossibleAuthors_arr|count > 0}{__('selectAuthor')}{else}{__('authorNotAvailable')}{/if}</option>
+                                    <option value="0">{if count($oPossibleAuthors_arr) > 0}{__('selectAuthor')}{else}{__('authorNotAvailable')}{/if}</option>
                                     {foreach $oPossibleAuthors_arr as $oPossibleAuthor}
                                         <option value="{$oPossibleAuthor->kAdminlogin}"{if isset($cPostVar_arr.nAuthor)}{if isset($cPostVar_arr.nAuthor) && $cPostVar_arr.nAuthor == $oPossibleAuthor->kAdminlogin} selected="selected"{/if}{elseif isset($oAuthor->kAdminlogin) && $oAuthor->kAdminlogin == $oPossibleAuthor->kAdminlogin} selected="selected"{/if}>{$oPossibleAuthor->cName}</option>
                                     {/foreach}
                                 </select>
                             </div>
-                            {if $oPossibleAuthors_arr|count === 0}
+                            {if count($oPossibleAuthors_arr) === 0}
                                 <div class="col-auto ml-sm-n4 order-2 order-sm-3">
                                     <span data-html="true" data-toggle="tooltip" data-placement="left" title="" data-original-title="{__('noNewsAuthor')}">
                                         <span class="fas fa-info-circle fa-fw"></span>
@@ -140,7 +140,7 @@
                                     fileMaxSize={$nMaxFileSize}
                                     fileInitialPreview="[
                                             {if !empty($oNews->getPreviewImage())}
-                                            '<img src=\"{$shopURL}/{$oNews->getPreviewImage()}\" class=\"preview-image\"/><a class=\"d-block\" href=\"news.php?news=1&news_editieren=1&kNews={$oNews->getID()}&delpic={$oNews->getPreviewImageBaseName()}&token={$smarty.session.jtl_token}\" title=\"{__('delete')}\"><i class=\"fas fa-trash-alt\"></i></a>',
+                                            '<img src=\"{$shopURL}/{$oNews->getPreviewImage()}\" class=\"preview-image\"/><a class=\"d-block\" href=\"{$adminURL}{$route}?news=1&news_editieren=1&kNews={$oNews->getID()}&delpic={$oNews->getPreviewImageBaseName()}&token={$smarty.session.jtl_token}\" title=\"{__('delete')}\"><i class=\"fas fa-trash-alt\"></i></a>',
                                             {/if}
                                         ]"
                                     fileInitialPreviewConfig="[
@@ -164,7 +164,7 @@
                                     fileIsSingle=false
                                     fileInitialPreview="[
                                             {foreach $files as $file}
-                                            '<img src=\"{$file->cURLFull}\" class=\"file-preview-image img-fluid\"/><a class=\"d-block\" href=\"news.php?news=1&news_editieren=1&kNews={$oNews->getID()}&delpic={$file->cName}&token={$smarty.session.jtl_token}\" title=\"{__('delete')}\"><i class=\"fas fa-trash-alt\"></i></a>',
+                                            '<img src=\"{$file->cURLFull}\" class=\"file-preview-image img-fluid\"/><a class=\"d-block\" href=\"{$adminURL}{$route}?news=1&news_editieren=1&kNews={$oNews->getID()}&delpic={$file->cName}&token={$smarty.session.jtl_token}\" title=\"{__('delete')}\"><i class=\"fas fa-trash-alt\"></i></a>',
                                             {/foreach}
                                         ]"
                                     fileInitialPreviewConfig="[
@@ -214,7 +214,7 @@
                                             {__('headline')} *:
                                         </label>
                                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                            <input class="form-control{if !empty($cPlausiValue_arr.cBetreff)} error{/if}"
+                                            <input class="form-control{if !empty($validation.cBetreff)} error{/if}"
                                                    id="cName_{$cISO}" type="text" name="cName_{$cISO}"
                                                    value="{if isset($cPostVar_arr.betreff) && $cPostVar_arr.betreff}{$cPostVar_arr.betreff}{else}{$oNews->getTitle($langID)}{/if}" />
                                         </div>
@@ -281,17 +281,13 @@
             <div class="card-footer save-wrapper">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
-                        <a class="btn btn-outline-primary btn-block" href="{$adminURL}/news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}">
+                        <a class="btn btn-outline-primary btn-block" href="{$adminURL}{$route}{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}">
                             <i class="fa fa-exclamation"></i> {__('Cancel')}
                         </a>
                     </div>
-                    {if $oNews->getID() > 0}
-                        <div class="col-sm-6 col-xl-auto">
-                            <button type="submit" name="continue" value="1" class="btn btn-outline-primary btn-block" id="save-and-continue">
-                                <i class="fal fa-save"></i> {__('saveAndContinue')}
-                            </button>
-                        </div>
-                    {/if}
+                    <div class="col-sm-6 col-xl-auto">
+                        {include file='snippets/buttons/saveAndContinueButton.tpl' value='news'}
+                    </div>
                     <div class="col-sm-6 col-xl-auto">
                         <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary btn-block">
                             {__('saveWithIcon')}

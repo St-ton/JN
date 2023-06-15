@@ -20,7 +20,7 @@ final class ConfigGroups extends AbstractSync
     {
         foreach ($starter->getXML(true) as $item) {
             [$file, $xml] = [\key($item), \reset($item)];
-            $fileName     = \pathinfo($file)['basename'];
+            $fileName     = \pathinfo($file, \PATHINFO_BASENAME);
             if ($fileName === 'del_konfig.xml') {
                 $this->handleDeletes($xml);
             } elseif ($fileName === 'konfig.xml') {

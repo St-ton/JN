@@ -19,29 +19,10 @@ use stdClass;
 /**
  * Class Controller
  * @package JTL\Cron\Admin
+ * @deprecated since 5.2.0
  */
 final class Controller
 {
-    /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @var JobHydrator
-     */
-    private $hydrator;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private $cache;
-
     /**
      * Controller constructor.
      * @param DbInterface       $db
@@ -50,32 +31,32 @@ final class Controller
      * @param JTLCacheInterface $cache
      */
     public function __construct(
-        DbInterface $db,
-        LoggerInterface $logger,
-        JobHydrator $hydrator,
-        JTLCacheInterface $cache
+        private DbInterface $db,
+        private LoggerInterface $logger,
+        private JobHydrator $hydrator,
+        private JTLCacheInterface $cache
     ) {
-        $this->db       = $db;
-        $this->logger   = $logger;
-        $this->hydrator = $hydrator;
-        $this->cache    = $cache;
     }
 
     /**
      * @param int $jobQueueId
      * @return int
+     * @deprecated since 5.2.0
      */
     public function resetQueueEntry(int $jobQueueId): int
     {
+        \trigger_error(__CLASS__ . ' is deprecated and should not be used anymore.', \E_USER_DEPRECATED);
         return $this->db->update('tjobqueue', 'jobQueueID', $jobQueueId, (object)['isRunning' => 0]);
     }
 
     /**
      * @param int $cronId
      * @return int
+     * @deprecated since 5.2.0
      */
     public function deleteQueueEntry(int $cronId): int
     {
+        \trigger_error(__CLASS__ . ' is deprecated and should not be used anymore.', \E_USER_DEPRECATED);
         $affected = $this->db->getAffectedRows(
             'DELETE FROM tjobqueue WHERE cronID = :id',
             ['id' => $cronId]
@@ -90,13 +71,15 @@ final class Controller
     /**
      * @param array $post
      * @return int
+     * @deprecated since 5.2.0
      */
     public function addQueueEntry(array $post): int
     {
+        \trigger_error(__METHOD__ . ' is deprecated and should not be used anymore.', \E_USER_DEPRECATED);
         $mapper = new JobTypeToJob();
         try {
             $class = $mapper->map($post['type']);
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             return -1;
         }
         if ($class === Statusmail::class) {
@@ -130,13 +113,16 @@ final class Controller
 
     /**
      * @return string[]
+     * @deprecated since 5.2.0
      */
     public function getAvailableCronJobs(): array
     {
+        \trigger_error(__METHOD__ . ' is deprecated and should not be used anymore.', \E_USER_DEPRECATED);
         $available = [
             Type::IMAGECACHE,
             Type::STATUSMAIL,
             Type::DATAPROTECTION,
+            Type::TOPSELLER,
         ];
         Dispatcher::getInstance()->fire(Event::GET_AVAILABLE_CRONJOBS, ['jobs' => &$available]);
 
@@ -145,9 +131,11 @@ final class Controller
 
     /**
      * @return JobInterface[]
+     * @deprecated since 5.2.0
      */
     public function getJobs(): array
     {
+        \trigger_error(__METHOD__ . ' is deprecated and should not be used anymore.', \E_USER_DEPRECATED);
         $jobs = [];
         $all  = $this->db->getObjects(
             'SELECT tcron.*, tjobqueue.isRunning, tjobqueue.jobQueueID, texportformat.cName AS exportName
@@ -172,7 +160,7 @@ final class Controller
                 $job   = new $class($this->db, $this->logger, $this->hydrator, $this->cache);
                 /** @var JobInterface $job */
                 $jobs[] = $job->hydrate($cron);
-            } catch (InvalidArgumentException $e) {
+            } catch (InvalidArgumentException) {
                 $this->logger->info('Invalid cron job found: ' . $cron->jobType);
             }
         }

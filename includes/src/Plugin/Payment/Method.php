@@ -80,13 +80,14 @@ class Method implements MethodInterface
     public $kZahlungsart;
 
     /**
-     * @var DbInterface|null
+     * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
-     * @param string $moduleID
-     * @param int    $nAgainCheckout
+     * @param string           $moduleID
+     * @param int              $nAgainCheckout
+     * @param DbInterface|null $db
      */
     public function __construct(string $moduleID, int $nAgainCheckout = 0, DbInterface $db = null)
     {
@@ -146,7 +147,7 @@ class Method implements MethodInterface
         if (isset($_SESSION['Zahlungsart']->nWaehrendBestellung)
             && (int)$_SESSION['Zahlungsart']->nWaehrendBestellung > 0
         ) {
-            return Shop::getURL() . '/bestellvorgang.php';
+            return Shop::Container()->getLinkService()->getStaticRoute('bestellvorgang.php');
         }
         if (Shop::getSettingValue(\CONF_KAUFABWICKLUNG, 'bestellabschluss_abschlussseite') === 'A') {
             // Abschlussseite
@@ -157,7 +158,8 @@ class Method implements MethodInterface
                 ['oid' => (int)$order->kBestellung]
             );
             if ($paymentID !== null) {
-                return Shop::getURL() . '/bestellabschluss.php?i=' . $paymentID->cId;
+                return Shop::Container()->getLinkService()->getStaticRoute('bestellabschluss.php')
+                    . '?i=' . $paymentID->cId;
             }
         }
 
@@ -194,7 +196,7 @@ class Method implements MethodInterface
      */
     public function getShopTitle(): string
     {
-        return Shop::getConfigValue(\CONF_GLOBAL, 'global_shopname');
+        return Shop::getSettingValue(\CONF_GLOBAL, 'global_shopname');
     }
 
     /**
@@ -295,6 +297,8 @@ class Method implements MethodInterface
             'cAbgeholt'         => 'N'
         ], (array)$payment);
         $this->db->insert('tzahlungseingang', $model);
+
+        executeHook(HOOK_PAYMENT_METHOD_ADDINCOMINGPAYMENT, ['oBestellung' => $order, 'oZahlungseingang' => $model]);
 
         return $this;
     }
@@ -418,11 +422,10 @@ class Method implements MethodInterface
 
         $customerGroups = PaymentMethod::load($this->db, $this->moduleID)->getCustomerGroups();
         $customerGroup  = (int)($customer->kKundengruppe ?? CustomerGroup::getCurrent());
-        if (count($customerGroups) > 0 && !\in_array($customerGroup, $customerGroups, true)) {
+        if (\count($customerGroups) > 0 && !\in_array($customerGroup, $customerGroups, true)) {
             return false;
         }
-
-        if ($this->getSetting('min_bestellungen') > 0) {
+        if (($minOrders = $this->getSetting('min_bestellungen')) > 0) {
             if (isset($customer->kKunde) && $customer->kKunde > 0) {
                 $count = (int)$this->db->getSingleObject(
                     'SELECT COUNT(*) AS cnt
@@ -435,11 +438,11 @@ class Method implements MethodInterface
                         'sts' => \BESTELLUNG_STATUS_VERSANDT
                     ]
                 )->cnt;
-                if ($count < $this->getSetting('min_bestellungen')) {
+                if ($count < $minOrders) {
                     ZahlungsLog::add(
                         $this->moduleID,
                         'Bestellanzahl ' . $count . ' ist kleiner als die Mindestanzahl von ' .
-                        $this->getSetting('min_bestellungen'),
+                        $minOrders,
                         null,
                         \LOGLEVEL_NOTICE
                     );

@@ -1,10 +1,38 @@
 {block name='productdetails-price'}
-    {if $smarty.session.Kundengruppe->mayViewPrices()}
+    {if $Artikel->Preise !== null && $smarty.session.Kundengruppe->mayViewPrices()}
         <div class="price_wrapper">
             {block name='productdetails-price-wrapper'}
             {if $Artikel->getOption('nShowOnlyOnSEORequest', 0) === 1}
                 {block name='productdetails-price-out-of-stock'}
                     <span class="price_label price_out_of_stock">{lang key='productOutOfStock' section='productDetails'}</span>
+                    {block name='productdetails-price-out-of-stock-microdata'}
+                        {if !($Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N')}
+                            <span itemprop="priceSpecification" itemscope itemtype="https://schema.org/UnitPriceSpecification">
+                                {if $Artikel->Preise->oPriceRange->isRange()}
+                                    <meta itemprop="minPrice" content="{$Artikel->Preise->oPriceRange->getMinLocalized($NettoPreise)|formatForMicrodata}">
+                                    <meta itemprop="maxPrice" content="{$Artikel->Preise->oPriceRange->getMaxLocalized($NettoPreise)|formatForMicrodata}">
+                                {/if}
+                                <meta itemprop="price" content="{$Artikel->Preise->cVKLocalized[$NettoPreise]|formatForMicrodata}">
+                                <meta itemprop="priceCurrency" content="{JTL\Session\Frontend::getCurrency()->getName()}">
+                                {if $Artikel->Preise->Sonderpreis_aktiv && $Artikel->dSonderpreisStart_en !== null && $Artikel->dSonderpreisEnde_en !== null}
+                                    <meta itemprop="validFrom" content="{$Artikel->dSonderpreisStart_en}">
+                                    <meta itemprop="validThrough" content="{$Artikel->dSonderpreisEnde_en}">
+                                    <meta itemprop="priceValidUntil" content="{$Artikel->dSonderpreisEnde_en}">
+                                {/if}
+                                {if !empty($Artikel->cLocalizedVPE)}
+                                    <span itemprop="priceSpecification" itemscope itemtype="https://schema.org/UnitPriceSpecification">
+                                        <meta itemprop="price" content="{if $Artikel->Preise->oPriceRange->isRange()}{($Artikel->Preise->oPriceRange->getMinLocalized($NettoPreise)|formatForMicrodata/$Artikel->fVPEWert)|string_format:"%.2f"}{else}{($Artikel->Preise->cVKLocalized[$NettoPreise]|formatForMicrodata/$Artikel->fVPEWert)|string_format:"%.2f"}{/if}">
+                                        <meta itemprop="priceCurrency" content="{JTL\Session\Frontend::getCurrency()->getName()}">
+                                        <span itemprop="referenceQuantity" itemscope itemtype="https://schema.org/QuantitativeValue">
+                                            <meta itemprop="price" content="{$Artikel->cLocalizedVPE[$NettoPreise]}">
+                                            <meta itemprop="value" content="{$Artikel->fGrundpreisMenge}">
+                                            <meta itemprop="unitText" content="{$Artikel->cVPEEinheit|regex_replace:"/[\d ]/":""}">
+                                        </span>
+                                    </span>
+                                {/if}
+                            </span>
+                        {/if}
+                    {/block}
                 {/block}
             {elseif $Artikel->Preise->fVKNetto == 0 && $Artikel->bHasKonfig}
                 {block name='productdetails-price-as-configured'}
@@ -17,8 +45,8 @@
             {else}
                 {block name='productdetails-price-label'}
                     {if ($tplscope !== 'detail' && $Artikel->Preise->oPriceRange->isRange() && $Artikel->Preise->oPriceRange->rangeWidth() > $Einstellungen.artikeluebersicht.articleoverview_pricerange_width)
-                        || ($tplscope === 'detail' && ($Artikel->nVariationsAufpreisVorhanden == 1 || $Artikel->bHasKonfig) && $Artikel->kVaterArtikel == 0)}
-                        <span class="price_label pricestarting">{lang key='priceStarting'} </span>
+                    || ($tplscope === 'detail' && ($Artikel->nVariationsAufpreisVorhanden == 1 || $Artikel->bHasKonfig) && $Artikel->kVaterArtikel == 0)}
+                    <span class="price_label pricestarting">{lang key='priceStarting'} </span>
                     {elseif $Artikel->Preise->rabatt > 0}
                         <span class="price_label nowonly">{lang key='nowOnly'} </span>
                     {/if}
@@ -46,12 +74,7 @@
                             <meta itemprop="minPrice" content="{$Artikel->Preise->oPriceRange->getMinLocalized($NettoPreise)|formatForMicrodata}">
                             <meta itemprop="maxPrice" content="{$Artikel->Preise->oPriceRange->getMaxLocalized($NettoPreise)|formatForMicrodata}">
                         {/if}
-                        {if $Artikel->Preise->oPriceRange->isRange()}
-                            {$priceNoCurr = $Artikel->Preise->oPriceRange->getMinLocalized($NettoPreise)|formatForMicrodata}
-                        {else}
-                            {$priceNoCurr = $Artikel->Preise->cVKLocalized[$NettoPreise]|formatForMicrodata}
-                        {/if}
-                        <meta itemprop="price" content="{$priceNoCurr}">
+                        <meta itemprop="price" content="{$Artikel->Preise->cVKLocalized[$NettoPreise]|formatForMicrodata}">
                         <meta itemprop="priceCurrency" content="{JTL\Session\Frontend::getCurrency()->getName()}">
                         {if $Artikel->Preise->Sonderpreis_aktiv && $Artikel->dSonderpreisStart_en !== null && $Artikel->dSonderpreisEnde_en !== null}
                             <meta itemprop="validFrom" content="{$Artikel->dSonderpreisStart_en}">
@@ -88,6 +111,25 @@
                                 <span class="vat_info">
                                     {include file='snippets/shipping_tax_info.tpl' taxdata=$Artikel->taxData}
                                 </span>
+                            {/block}
+
+                            {block name='productdetails-price-min-value-info'}
+                                {$minOrderValue = $smarty.session.Kundengruppe->getAttribute('mindestbestellwert')}
+                                {if $minOrderValue > 0}
+                                    {if $Artikel->Preise->oPriceRange->isRange() && ($Artikel->nVariationsAufpreisVorhanden == 1 || $Artikel->bHasKonfig) && $Artikel->kVaterArtikel == 0}
+                                        {if $NettoPreise == 1}
+                                            {$minPrice = $Artikel->Preise->oPriceRange->minNettoPrice}
+                                        {else}
+                                            {$minPrice = $Artikel->Preise->oPriceRange->minBruttoPrice}
+                                        {/if}
+                                    {else}
+                                        {$minPrice = $Artikel->Preise->fVK[$NettoPreise]}
+                                    {/if}
+
+                                    {if $minOrderValue > $minPrice}
+                                        <div class="min-value-wrapper">{lang key='minValueInfo' section='productDetails' printf=$minOrderValue|cat:':::'|cat:$smarty.session.Waehrung->getName()}</div>
+                                    {/if}
+                                {/if}
                             {/block}
 
                             {block name='productdetails-price-special-prices-detail'}
@@ -180,13 +222,20 @@
                     {block name='productdetails-price-price-note'}
                     <div class="price-note">
                         {* Grundpreis *}
-                        {if !empty($Artikel->cLocalizedVPE) && !$Artikel->Preise->oPriceRange->isRange()}
+                        {if !empty($Artikel->cLocalizedVPE)}
                             {block name='productdetails-price-list-base-price'}
                                 <div class="base_price" itemprop="priceSpecification" itemscope itemtype="https://schema.org/UnitPriceSpecification">
                                     <meta itemprop="price" content="{($Artikel->Preise->oPriceRange->getMinLocalized($NettoPreise)|formatForMicrodata/$Artikel->fVPEWert)|string_format:"%.2f"}">
                                     <meta itemprop="priceCurrency" content="{JTL\Session\Frontend::getCurrency()->getName()}">
                                     <span class="value" itemprop="referenceQuantity" itemscope itemtype="https://schema.org/QuantitativeValue">
                                         {$Artikel->cLocalizedVPE[$NettoPreise]}
+                                        {if ($Artikel->Preise->oPriceRange->isRange() === true)
+                                            && !(!empty($hasOnlyListableVariations)
+                                                 && empty($Artikel->FunktionsAttribute[\FKT_ATTRIBUT_NO_GAL_VAR_PREVIEW]))
+                                        }
+                                            <br>
+                                            {lang section='productOverview' key='moreVariationsAvailable'}
+                                        {/if}
                                         <meta itemprop="value" content="{$Artikel->fGrundpreisMenge}">
                                         <meta itemprop="unitText" content="{$Artikel->cVPEEinheit|regex_replace:"/[\d ]/":""}">
                                     </span>

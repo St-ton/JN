@@ -24,7 +24,7 @@ class SearchSpecial extends AbstractFilter
     /**
      * @var array
      */
-    public static $mapping = [
+    public static array $mapping = [
         'cName' => 'Name',
         'kKey'  => 'ValueCompat'
     ];
@@ -123,8 +123,10 @@ class SearchSpecial extends AbstractFilter
                     break;
                 default:
                     // invalid search special ID
-                    Shop::$is404        = true;
-                    Shop::$kSuchspecial = 0;
+                    Shop::$is404                      = true;
+                    Shop::$kSuchspecial               = 0;
+                    Shop::getState()->is404           = true;
+                    Shop::getState()->searchSpecialID = 0;
                     break;
             }
         }
@@ -155,11 +157,7 @@ class SearchSpecial extends AbstractFilter
         foreach ($values as $value) {
             switch ($value) {
                 case \SEARCHSPECIALS_BESTSELLER:
-                    $minSales = ($min = (int)$conf['global']['global_bestseller_minanzahl']) > 0
-                        ? $min
-                        : 100;
-
-                    $conditions[] = 'ROUND(tbestseller.fAnzahl) >= ' . $minSales;
+                    $conditions[] = 'tbestseller.isBestseller = 1';
                     break;
 
                 case \SEARCHSPECIALS_SPECIALOFFERS:
@@ -210,7 +208,7 @@ class SearchSpecial extends AbstractFilter
                     break;
             }
         }
-        $conditions = \array_map(static function ($e) {
+        $conditions = \array_map(static function ($e): string {
             return '(' . $e . ')';
         }, $conditions);
 
@@ -221,6 +219,7 @@ class SearchSpecial extends AbstractFilter
 
     /**
      * @inheritdoc
+     * @return Join[]
      */
     public function getSQLJoin()
     {

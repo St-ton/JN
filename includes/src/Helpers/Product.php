@@ -3,7 +3,6 @@
 namespace JTL\Helpers;
 
 use Illuminate\Support\Collection;
-use JTL\Alert\Alert;
 use JTL\Campaign;
 use JTL\Cart\CartHelper;
 use JTL\Catalog\Product\Artikel;
@@ -13,6 +12,8 @@ use JTL\CheckBox;
 use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
 use JTL\DB\SqlObject;
+use JTL\Exceptions\CircularReferenceException;
+use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Extensions\Config\Configurator;
 use JTL\Extensions\Config\Group;
 use JTL\Extensions\Config\Item;
@@ -22,6 +23,7 @@ use JTL\Mail\Mailer;
 use JTL\Optin\Optin;
 use JTL\Optin\OptinAvailAgain;
 use JTL\Optin\OptinRefData;
+use JTL\RateLimit\AvailabilityMessage as Limiter;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\SimpleMail;
@@ -272,9 +274,9 @@ class Product
         $langID          = Shop::getLanguageID();
         $attr            = new SqlObject();
         $attrVal         = new SqlObject();
-        foreach ($propertyValues as $i => $_u) {
+        foreach ($propertyValues as $i => $value) {
             $attributes[]      = $i;
-            $attributeValues[] = $propertyValues[$i];
+            $attributeValues[] = $value;
         }
         if ($langID > 0 && !LanguageHelper::isDefaultLanguageActive()) {
             $attr->setSelect('teigenschaftsprache.cName AS cName_teigenschaftsprache, ');
@@ -858,15 +860,11 @@ class Product
                 || (int)$product->inWarenkorbLegbar === \INWKNICHTLEGBAR_LAGERVAR
                 || ($product->fLagerbestand <= 0 && $product->cLagerKleinerNull !== 'Y'))
         ) {
-            switch ($config) {
-                case 'Y':
-                    return 1;
-                case 'P':
-                    return 2;
-                case 'L':
-                default:
-                    return 3;
-            }
+            return match ($config) {
+                'Y'     => 1,
+                'P'     => 2,
+                default => 3,
+            };
         }
 
         return 0;
@@ -963,13 +961,13 @@ class Product
      * @param array       $conf
      */
     private static function getXSellingPurchases(
-        stdClass $xSelling,
+        stdClass    $xSelling,
         DbInterface $db,
-        int $productID,
-        bool $isParent,
-        array $conf
+        int         $productID,
+        bool        $isParent,
+        array       $conf
     ): void {
-        if ($conf['artikeldetails_xselling_kauf_anzeigen'] !== 'Y') {
+        if ($conf['artikeldetails_xselling_kauf_anzeigen'] !== 'Y' || (int)$conf['artikeldetails_xselling_kauf_anzahl'] === 0) {
             return;
         }
         $limit = (int)$conf['artikeldetails_xselling_kauf_anzahl'];
@@ -1038,15 +1036,27 @@ class Product
      */
     public static function buildXSellersFromIDs($xSelling, int $productID): stdClass
     {
+        if ($xSelling === null) {
+            return (object)[
+                'kArtikelXSellerKey_arr' => [],
+                'oArtikelArr'            => [],
+                'Standard'               => null,
+                'Kauf'                   => (object)[
+                    'Artikel'    => [],
+                ],
+            ];
+        }
         $xSelling   = (object)$xSelling;
         $options    = Artikel::getDefaultOptions();
         $db         = Shop::Container()->getDB();
         $languageID = Shop::getLanguageID();
-        $cgroupID   = Frontend::getCustomerGroup()->getID();
+        $currency   = Frontend::getCurrency();
+        $cgroup     = Frontend::getCustomerGroup();
+        $cgroupID   = $cgroup->getID();
         foreach ($xSelling->Standard->XSellGruppen as $group) {
             $group->Artikel = [];
             foreach ($group->productIDs as $id) {
-                $product = new Artikel($db);
+                $product = new Artikel($db, $cgroup, $currency);
                 $product->fuelleArtikel($id, $options, $cgroupID, $languageID);
                 if ($product->kArtikel > 0 && $product->aufLagerSichtbarkeit()) {
                     $group->Artikel[] = $product;
@@ -1056,13 +1066,13 @@ class Product
             unset($group->productIDs);
         }
         foreach ($xSelling->Kauf->productIDs as $id) {
-            $product = new Artikel($db);
+            $product = new Artikel($db, $cgroup, $currency);
             $product->fuelleArtikel($id, $options, $cgroupID, $languageID);
             if ($product->kArtikel > 0 && $product->aufLagerSichtbarkeit()) {
                 $xSelling->Kauf->Artikel[] = $product;
             }
         }
-        $xSelling->Kauf->Artikel = self::separateByAvailability($xSelling->Kauf->Artikel);
+        $xSelling->Kauf->Artikel = self::separateByAvailability($xSelling->Kauf->Artikel ?? []);
         unset($xSelling->Kauf->productIDs);
 
         \executeHook(\HOOK_ARTIKEL_INC_XSELLING, [
@@ -1262,8 +1272,7 @@ class Product
         $history->dErstellt  = 'NOW()';
 
         $inquiryID = Shop::Container()->getDB()->insert('tproduktanfragehistory', $history);
-        Shop::Container()->getAlertService()->addAlert(
-            Alert::TYPE_SUCCESS,
+        Shop::Container()->getAlertService()->addSuccess(
             Shop::Lang()->get('thankYouForQuestion', 'messages'),
             'thankYouForQuestion'
         );
@@ -1318,7 +1327,7 @@ class Product
 
         \executeHook(\HOOK_ARTIKEL_INC_BENACHRICHTIGUNG_PLAUSI);
         if ($resultCode) {
-            if (!self::checkAvailibityFormFloodProtection($conf['benachrichtigung_sperre_minuten'])) {
+            if (!self::checkAvailibityFormRateLimit($conf['benachrichtigung_sperre_minuten'])) {
                 $dbHandler = Shop::Container()->getDB();
                 $refData   = (new OptinRefData())
                     ->setSalutation('')
@@ -1352,7 +1361,7 @@ class Product
                         ->getOptinInstance()
                         ->createOptin($refData)
                         ->sendActivationMail();
-                } catch (\Exception $e) {
+                } catch (\Exception) {
                 }
             } else {
                 $notices[] = Shop::Lang()->get('notificationNotPossible', 'messages');
@@ -1417,6 +1426,7 @@ class Product
      * @param int $min
      * @return bool
      * @former floodSchutzBenachrichtigung()
+     * @deprecated
      * @since 5.0.0
      */
     public static function checkAvailibityFormFloodProtection(int $min): bool
@@ -1436,16 +1446,48 @@ class Product
     }
 
     /**
+     * checkAvailibityFormFloodProtection is public and therefore cannot be dismissed
+     * This method uses RateLimiter to check for multiple requests from the specified IP
+     * @param int $min
+     * @return bool
+     * @former floodSchutzBenachrichtigung()
+     * @since 5.2.3
+     */
+    public static function checkAvailibityFormRateLimit(int $min): bool
+    {
+        if (!$min) {
+            return false;
+        }
+        $limiter = new Limiter(Shop::Container()->getDB());
+        $limiter->init(Request::getRealIP());
+        $limiter->setLimit(1);
+        $limiter->setFloodMinutes($min);
+        $limiter->setCleanupMinutes($min + 5);
+        if ($limiter->check() !== true) {
+            return true;
+        }
+        $limiter->persist();
+        $limiter->cleanup();
+
+        return false;
+    }
+
+    /**
      * @param int $productID
      * @param int $categoryID
      * @return stdClass
+     * @throws CircularReferenceException
+     * @throws ServiceNotFoundException
      * @former gibNaviBlaettern()
      * @since 5.0.0
      */
     public static function getProductNavigation(int $productID, int $categoryID): stdClass
     {
         $nav             = new stdClass();
-        $customerGroupID = Frontend::getCustomerGroup()->getID();
+        $currency        = Frontend::getCurrency();
+        $customerGroup   = Frontend::getCustomerGroup();
+        $languageID      = Shop::getLanguageID();
+        $customerGroupID = $customerGroup->getID();
         $db              = Shop::Container()->getDB();
         // Wurde der Artikel von der Artikelübersicht aus angeklickt?
         if ($productID > 0
@@ -1454,7 +1496,7 @@ class Product
         ) {
             $collection = $_SESSION['oArtikelUebersichtKey_arr'];
             if (!($collection instanceof Collection)) {
-                \collect($collection);
+                $collection = \collect($collection);
             }
             // Such die Position des aktuellen Artikels im Array der Artikelübersicht
             $prevID = 0;
@@ -1471,15 +1513,15 @@ class Product
                 $prevID = $collection[$index - 1];
             }
             if ($nextID > 0) {
-                $nav->naechsterArtikel = (new Artikel($db))
-                    ->fuelleArtikel($nextID, Artikel::getDefaultOptions(), $customerGroupID);
+                $nav->naechsterArtikel = (new Artikel($db, $customerGroup, $currency))
+                    ->fuelleArtikel($nextID, Artikel::getDefaultOptions(), $customerGroupID, $languageID);
                 if ($nav->naechsterArtikel === null) {
                     unset($nav->naechsterArtikel);
                 }
             }
             if ($prevID > 0) {
-                $nav->vorherigerArtikel = (new Artikel($db))
-                    ->fuelleArtikel($prevID, Artikel::getDefaultOptions(), $customerGroupID);
+                $nav->vorherigerArtikel = (new Artikel($db, $customerGroup, $currency))
+                    ->fuelleArtikel($prevID, Artikel::getDefaultOptions(), $customerGroupID, $languageID);
                 if ($nav->vorherigerArtikel === null) {
                     unset($nav->vorherigerArtikel);
                 }
@@ -1520,12 +1562,12 @@ class Product
             );
 
             if ($prev !== null && !empty($prev->kArtikel)) {
-                $nav->vorherigerArtikel = (new Artikel($db))
-                    ->fuelleArtikel((int)$prev->kArtikel, Artikel::getDefaultOptions(), $customerGroupID);
+                $nav->vorherigerArtikel = (new Artikel($db, $customerGroup, $currency))
+                    ->fuelleArtikel((int)$prev->kArtikel, Artikel::getDefaultOptions(), $customerGroupID, $languageID);
             }
             if ($next !== null && !empty($next->kArtikel)) {
-                $nav->naechsterArtikel = (new Artikel($db))
-                    ->fuelleArtikel((int)$next->kArtikel, Artikel::getDefaultOptions(), $customerGroupID);
+                $nav->naechsterArtikel = (new Artikel($db, $customerGroup, $currency))
+                    ->fuelleArtikel((int)$next->kArtikel, Artikel::getDefaultOptions(), $customerGroupID, $languageID);
             }
         }
 
@@ -1754,40 +1796,19 @@ class Product
      */
     public static function mapErrorCode(string $code, $credit = 0.0): string
     {
-        switch ($code) {
-            case 'f01':
-                $error = Shop::Lang()->get('mandatoryFieldNotification', 'errorMessages');
-                break;
-            case 'f02':
-                $error = Shop::Lang()->get('bewertungBewexist', 'errorMessages');
-                break;
-            case 'f03':
-                $error = Shop::Lang()->get('bewertungBewnotbought', 'errorMessages');
-                break;
-            case 'f04':
-                $error = Shop::Lang()->get('loginFirst', 'product rating');
-                break;
-            case 'f05':
-                $error = Shop::Lang()->get('ratingRange', 'errorMessages');
-                break;
-            case 'h01':
-                $error = Shop::Lang()->get('bewertungBewadd', 'messages');
-                break;
-            case 'h02':
-                $error = Shop::Lang()->get('bewertungHilfadd', 'messages');
-                break;
-            case 'h03':
-                $error = Shop::Lang()->get('bewertungHilfchange', 'messages');
-                break;
-            case 'h04':
-                $error = \sprintf(Shop::Lang()->get('bewertungBewaddCredits', 'messages'), (string)$credit);
-                break;
-            case 'h05':
-                $error = Shop::Lang()->get('bewertungBewaddacitvate', 'messages');
-                break;
-            default:
-                $error = '';
-        }
+        $error = match ($code) {
+            'f01' => Shop::Lang()->get('mandatoryFieldNotification', 'errorMessages'),
+            'f02' => Shop::Lang()->get('bewertungBewexist', 'errorMessages'),
+            'f03' => Shop::Lang()->get('bewertungBewnotbought', 'errorMessages'),
+            'f04' => Shop::Lang()->get('loginFirst', 'product rating'),
+            'f05' => Shop::Lang()->get('ratingRange', 'errorMessages'),
+            'h01' => Shop::Lang()->get('bewertungBewadd', 'messages'),
+            'h02' => Shop::Lang()->get('bewertungHilfadd', 'messages'),
+            'h03' => Shop::Lang()->get('bewertungHilfchange', 'messages'),
+            'h04' => \sprintf(Shop::Lang()->get('bewertungBewaddCredits', 'messages'), (string)$credit),
+            'h05' => Shop::Lang()->get('bewertungBewaddacitvate', 'messages'),
+            default => '',
+        };
         \executeHook(\HOOK_ARTIKEL_INC_BEWERTUNGHINWEISSWITCH, ['error' => $error]);
 
         return $error;
@@ -1796,7 +1817,7 @@ class Product
     /**
      * @param Artikel $parent
      * @param Artikel $child
-     * @return mixed
+     * @return Artikel
      * @former fasseVariVaterUndKindZusammen()
      * @since 5.0.0
      */
@@ -1815,8 +1836,8 @@ class Product
         $product->HilfreichsteBewertung       = $parent->HilfreichsteBewertung ?? null;
         $product->oVariationKombiVorschau_arr = $parent->oVariationKombiVorschau_arr ?? [];
         $product->oVariationDetailPreis_arr   = $parent->oVariationDetailPreis_arr;
-        $product->oVariationKombiVorschauText = $parent->oVariationKombiVorschauText ?? null;
         $product->cVaterURL                   = $parent->cURL;
+        $product->cVaterURLFull               = $parent->cURLFull;
         $product->VaterFunktionsAttribute     = $parent->FunktionsAttribute;
 
         \executeHook(\HOOK_ARTIKEL_INC_FASSEVARIVATERUNDKINDZUSAMMEN, ['article' => $product]);
@@ -1874,7 +1895,9 @@ class Product
             }
             $db                = Shop::Container()->getDB();
             $stockFilterSQL    = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
-            $customerGroupID   = Frontend::getCustomerGroup()->getID();
+            $currency          = Frontend::getCurrency();
+            $customerGroup     = Frontend::getCustomerGroup();
+            $customerGroupID   = $customerGroup->getID();
             $productAttributes = $db->getObjects(
                 'SELECT tartikelmerkmal.kArtikel, tartikel.kVaterArtikel
                     FROM tartikelmerkmal
@@ -1899,7 +1922,7 @@ class Product
             if (\count($productAttributes) > 0) {
                 $defaultOptions = Artikel::getDefaultOptions();
                 foreach ($productAttributes as $productAttribute) {
-                    $product = new Artikel($db);
+                    $product = new Artikel($db, $customerGroup, $currency);
                     $id      = $productAttribute->kVaterArtikel > 0
                         ? $productAttribute->kVaterArtikel
                         : $productAttribute->kArtikel;
@@ -1935,7 +1958,7 @@ class Product
                 if (\count($searchCacheHits) > 0) {
                     $defaultOptions = Artikel::getDefaultOptions();
                     foreach ($searchCacheHits as $hit) {
-                        $product = new Artikel($db);
+                        $product = new Artikel($db, $customerGroup, $currency);
                         $id      = ($hit->kVaterArtikel > 0)
                             ? $hit->kVaterArtikel
                             : $hit->kArtikel;
@@ -2033,7 +2056,7 @@ class Product
         $config->fGesamtpreis = [
             Tax::getGross(
                 $product->gibPreis($amount, $selectedProperties),
-                Tax::getSalesTax($product->kSteuerklasse)
+                Tax::getSalesTax($product->kSteuerklasse ?? 0)
             ) * $_amount,
             $product->gibPreis($amount, $selectedProperties) * $_amount
         ];
@@ -2107,7 +2130,10 @@ class Product
     public static function getEditConfigMode(int $configID, JTLSmarty $smarty): void
     {
         $cart = Frontend::getCart();
-        if (!isset($cart->PositionenArr[$configID]) || !Item::checkLicense()) {
+        if (!isset($cart->PositionenArr[$configID]->Artikel->FunktionsAttribute['jtl_voucher']) &&
+            !isset($cart->PositionenArr[$configID]->Artikel->FunktionsAttribute['jtl_voucher_flex']) &&
+            (!isset($cart->PositionenArr[$configID]) || !Item::checkLicense())
+        ) {
             return;
         }
         $baseItem = $cart->PositionenArr[$configID];
@@ -2184,6 +2210,9 @@ class Product
         $available  = [];
         $outOfStock = [];
         foreach ($items as $item) {
+            if ($item->kArtikel === null) {
+                continue;
+            }
             if ($item->inWarenkorbLegbar === 1) {
                 $available[] = $item;
             } else {
@@ -2232,6 +2261,6 @@ class Product
                     AND kKundengruppe = :cgid',
             'kArtikel',
             ['pid' => $productID, 'cgid' => $customerGroupID]
-        ) > 0;
+        ) < 1;
     }
 }

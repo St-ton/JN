@@ -18,7 +18,7 @@ class Blueprint implements \JsonSerializable
     /**
      * @var string
      */
-    protected $name = '';
+    protected string $name = '';
 
     /**
      * @var null|PortletInstance
@@ -99,7 +99,7 @@ class Blueprint implements \JsonSerializable
     /**
      * @return array
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'id'       => $this->getId(),

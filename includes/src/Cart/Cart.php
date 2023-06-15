@@ -3,7 +3,6 @@
 namespace JTL\Cart;
 
 use Exception;
-use JTL\Alert\Alert;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\EigenschaftWert;
 use JTL\Catalog\Product\Preise;
@@ -13,6 +12,7 @@ use JTL\Checkout\Versandart;
 use JTL\Extensions\Config\Item;
 use JTL\Extensions\Config\ItemLocalization;
 use JTL\Extensions\Download\Download;
+use JTL\Helpers\Form;
 use JTL\Helpers\Order;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
@@ -27,7 +27,7 @@ use function Functional\select;
 use function Functional\some;
 
 /**
- * Class Warenkorb
+ * Class Cart
  * @package JTL\Cart
  */
 class Cart
@@ -85,12 +85,12 @@ class Cart
     /**
      * @var array
      */
-    public static $updatedPositions = [];
+    public static array $updatedPositions = [];
 
     /**
      * @var array
      */
-    public static $deletedPositions = [];
+    public static array $deletedPositions = [];
 
     /**
      * @var array
@@ -110,7 +110,7 @@ class Cart
      */
     public function __sleep()
     {
-        return select(\array_keys(\get_object_vars($this)), static function ($e) {
+        return select(\array_keys(\get_object_vars($this)), static function ($e): bool {
             return $e !== 'config';
         });
     }
@@ -481,7 +481,7 @@ class Cart
                             $oVariationWert  = \current(
                                 \array_filter(
                                     $variation->Werte,
-                                    static function ($item) use ($propertyValueID) {
+                                    static function ($item) use ($propertyValueID): bool {
                                         return $item->kEigenschaftWert === $propertyValueID
                                             && !empty($item->cPfadNormal);
                                     }
@@ -638,7 +638,6 @@ class Cart
         $cartItem                  = new CartItem();
         $cartItem->nAnzahl         = $qty;
         $cartItem->nAnzahlEinzel   = $qty;
-        $cartItem->kArtikel        = 0;
         $cartItem->kSteuerklasse   = $taxClassID;
         $cartItem->fPreis          = $price;
         $cartItem->cUnique         = $unique;
@@ -972,8 +971,7 @@ class Cart
         $updated->cGesamtpreisLocalizedOld = $oldItem->cGesamtpreisLocalized;
         $updated->istKonfigVater           = $item->istKonfigVater();
         self::addUpdatedPosition($updated);
-        Shop::Container()->getAlertService()->addAlert(
-            Alert::TYPE_WARNING,
+        Shop::Container()->getAlertService()->addWarning(
             \sprintf(
                 Shop::Lang()->get('priceHasChanged', 'checkout'),
                 \is_array($item->cName) ? $item->cName[Shop::getLanguageCode()] : $item->cName
@@ -1263,7 +1261,7 @@ class Cart
      */
     public function posTypEnthalten(int $type): bool
     {
-        return some($this->PositionenArr, static function ($e) use ($type) {
+        return some($this->PositionenArr, static function ($e) use ($type): bool {
             return (int)$e->nPosTyp === $type;
         });
     }
@@ -1499,7 +1497,7 @@ class Cart
             }
             try {
                 $item->Artikel->getDeliveryTime($_SESSION['cLieferlandISO'], $item->nAnzahl);
-            } catch (Exception $e) {
+            } catch (Exception) {
                 continue;
             }
             CartItem::setEstimatedDelivery(
@@ -1619,7 +1617,7 @@ class Cart
             if (isset($_SESSION['Warenkorb']) && $this->gibAnzahlArtikelExt([\C_WARENKORBPOS_TYP_ARTIKEL]) > 0) {
                 $Kupon = Shop::Container()->getDB()->select('tkupon', 'kKupon', (int)$_SESSION['Kupon']->kKupon);
                 if (isset($Kupon->kKupon) && $Kupon->kKupon > 0 && $Kupon->cKuponTyp === Kupon::TYPE_STANDARD) {
-                    $isValid = (\angabenKorrekt(Kupon::checkCoupon($Kupon)) === 1);
+                    $isValid = (Form::hasNoMissingData(Kupon::checkCoupon($Kupon)) === 1);
                     $this->updateCouponValue();
                 } elseif (!empty($Kupon->kKupon) && $Kupon->cKuponTyp === Kupon::TYPE_SHIPPING) {
                     $isValid = true;
@@ -1641,7 +1639,7 @@ class Cart
                 $Kupon   = Shop::Container()->getDB()->select('tkupon', 'kKupon', (int)$_SESSION['Kupon']->kKupon);
                 $isValid = false;
                 if (isset($Kupon->kKupon) && $Kupon->kKupon > 0 && $Kupon->cKuponTyp === Kupon::TYPE_STANDARD) {
-                    $isValid = (\angabenKorrekt(Kupon::checkCoupon($Kupon)) === 1);
+                    $isValid = (Form::hasNoMissingData(Kupon::checkCoupon($Kupon)) === 1);
                 }
             }
             if ($isValid === false) {
@@ -1676,9 +1674,9 @@ class Cart
             $maxPreisKupon = $this->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true);
         }
         if ((int)$coupon->nGanzenWKRabattieren === 0
-            && $coupon->fWert > \gibGesamtsummeKuponartikelImWarenkorb($coupon, $this->PositionenArr)
+            && $coupon->fWert > CartHelper::getCouponProductsTotal($coupon, $this->PositionenArr)
         ) {
-            $maxPreisKupon = \gibGesamtsummeKuponartikelImWarenkorb($coupon, $this->PositionenArr);
+            $maxPreisKupon = CartHelper::getCouponProductsTotal($coupon, $this->PositionenArr);
         }
         $specialPosition        = new stdClass();
         $specialPosition->cName = [];
@@ -1815,17 +1813,11 @@ class Cart
             return null;
         }
         $currency         = Frontend::getCurrency();
-        $customerGroupID  = $_SESSION['Kunde']->kKundengruppe ?? 0;
+        $customerGroupID  = Frontend::getCustomer()->getGroupID();
         $customerGroupSQL = $customerGroupID > 0
             ? " OR FIND_IN_SET('" . $customerGroupID . "', REPLACE(va.cKundengruppen, ';', ',')) > 0"
             : '';
         $countryCode      = $_SESSION['cLieferlandISO'];
-        // if nothing changed, return cached shipping-object
-        if ($this->oFavourableShipping !== null
-            && $this->oFavourableShipping->getCountryCode() === $_SESSION['cLieferlandISO']
-        ) {
-            return $this->oFavourableShipping;
-        }
 
         $maxPrices       = 0;
         $itemCount       = 0;
@@ -1839,6 +1831,16 @@ class Cart
         ), static function ($e) {
             return $e->kVersandart;
         });
+
+        // if nothing changed, return cached shipping-object
+        if ($this->oFavourableShipping !== null
+            && $this->oFavourableShipping->getCountryCode() === $_SESSION['cLieferlandISO']
+        ) {
+            // customer may change language
+            $this->setFavourableShippingString(\count($shippingMethods));
+
+            return $this->oFavourableShipping;
+        }
 
         $this->oFavourableShipping = null;
         if (\count($shippingMethods) === 0) {
@@ -1996,6 +1998,34 @@ class Cart
             ?? Frontend::get('Lieferadresse')->cLand
             ?? Frontend::getCustomer()->cLand
             ?? Frontend::get('cLieferlandISO');
+    }
+
+    /**
+     * @return int
+     */
+    public function removeParentItems(): int
+    {
+        $deletedItemCount = 0;
+        foreach ($this->PositionenArr as $i => $item) {
+            $delete = false;
+            if ($item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL
+                && $item->Artikel->nIstVater === 1
+            ) {
+                $delete = true;
+                \executeHook(\HOOK_CART_DELETE_PARENT_CART_ITEM, [
+                    'positionItem' => $item,
+                    'delete'    => &$delete
+                ]);
+            }
+            if ($delete) {
+                $deletedItemCount++;
+                self::addDeletedPosition($item);
+                unset($this->PositionenArr[$i]);
+            }
+        }
+        $this->PositionenArr = \array_values($this->PositionenArr);
+
+        return $deletedItemCount;
     }
 
     /**

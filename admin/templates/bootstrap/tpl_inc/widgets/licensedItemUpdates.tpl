@@ -2,13 +2,13 @@
         <div class="row">
             <div class="col-md-4 border-right">
                 <div class="text-center">
-                    <h2>{$licenseItemUpdates->count()}{if $securityFixes > 0} <i class="fa fa-warning" data-toggle="tooltip" data-placement="top" title="{n__('Includes %d security fix', 'Includes %d security fixes', $securityFixes)|sprintf:$securityFixes}"></i>{/if}</h2>
+                    <h2>{$licenseItemUpdates->count()}{if $securityFixes > 0} <i class="fa fa-warning" data-toggle="tooltip" data-placement="top" title="{sprintf(n__('Includes %d security fix', 'Includes %d security fixes', $securityFixes), $securityFixes)}"></i>{/if}</h2>
                     <p>{n__('Update available', 'Updates available', $licenseItemUpdates->count())}</p>
                 </div>
             </div>
             <div class="col-md-4 border-right">
                 <div class="text-center">
-                    <h2>{$licenses->count()}{if $aboutToExpire->count() > 0} <i class="fa fa-warning" data-toggle="tooltip" data-placement="top" title="{n__('%d license about to expire', '%d licenses about to expire', $aboutToExpire->count())|sprintf:($aboutToExpire->count())}"></i>{/if}</h2>
+                    <h2>{$licenses->count()}{if $aboutToExpire->count() > 0} <i class="fa fa-warning" data-toggle="tooltip" data-placement="top" title="{sprintf(n__('%d license about to expire', '%d licenses about to expire', $aboutToExpire->count()), $aboutToExpire->count())}"></i>{/if}</h2>
                     <p>{n__('Licensed item', 'Licensed items', $licenses->count())}</p>
                 </div>
             </div>
@@ -34,7 +34,7 @@
                     {foreach $lastPurchases as $license}
                         <tr>
                             <td>
-                                <a href="{$adminURL}/licenses.php#license-item-{$license->getID()}">
+                                <a href="{$adminURL}/{JTL\Router\Route::LICENSE}#license-item-{$license->getID()}">
                                     {$license->getName()}
                                 </a> {if $license->getLicense()->isBound()}<span class="badge badge-primary">{__('bound')}</span>{else}<span class="badge badge-secondary">{__('unbound')}</span>{/if}</td>
                             <td>{$license->getLicense()->getCreated()->format('d.m.Y')}</td>
@@ -48,7 +48,7 @@
                 <table class="table table-condensed">
                     <thead>
                     <tr>
-                        <th class="w-75">{n__('%d license about to expire', '%d licenses about to expire', $aboutToExpire->count())|sprintf:($aboutToExpire->count())}</th>
+                        <th class="w-75">{sprintf(n__('%d license about to expire', '%d licenses about to expire', $aboutToExpire->count()), $aboutToExpire->count())}</th>
                         <th class="w-25">{__('Expiration')}</th>
                     </tr>
                     </thead>
@@ -56,9 +56,9 @@
                         {$days = $license->getLicense()->getDaysRemaining()}
                         <tr>
                             <td>
-                                <a href="{$adminURL}/licenses.php#license-item-{$license->getID()}">
+                                <a href="{$adminURL}/{JTL\Router\Route::LICENSE}#license-item-{$license->getID()}">
                                     {$license->getName()}
-                                </a>{if $days > 0} <span class="badge badge-danger">{n__('%d day remaining', '%d days remaining', $days)|sprintf:$days}</span>{/if}
+                                </a>{if $days > 0} <span class="badge badge-danger">{sprintf(n__('%d day remaining', '%d days remaining', $days), $days)}</span>{/if}
                             </td>
                             <td>
                                 {if $license->getLicense()->getValidUntil() !== null}
@@ -85,7 +85,7 @@
                         {$avail = $license->getReleases()->getAvailable()}
                         <tr>
                             <td>
-                                <a href="{$adminURL}/licenses.php#license-item-{$license->getID()}">
+                                <a href="{$adminURL}/{JTL\Router\Route::LICENSE}#license-item-{$license->getID()}">
                                     {$license->getName()}
                                 </a> {if $avail !== null && $avail->includesSecurityFixes()} <span class="badge badge-warning">{__('Security update')}</span> {/if}</td>
                             <td>
@@ -110,7 +110,7 @@
                     {foreach $testLicenses as $license}
                         <tr>
                             <td>
-                                <a href="{$adminURL}/licenses.php#license-item-{$license->getID()}">
+                                <a href="{$adminURL}/{JTL\Router\Route::LICENSE}#license-item-{$license->getID()}">
                                     {$license->getName()}
                                 </a>
                             <td>
@@ -130,4 +130,4 @@
     {include file='tpl_inc/exstore_banner.tpl' useExstoreWidgetBanner=true}
 {/if}
 <hr class="mb-3">
-<p class="text-right"><small>{__('last update')} {$lastUpdate|date_format:'%d.%m.%Y %H:%M:%S'}</small></p>
+<p class="text-right"><small>{__('last update')} {$lastUpdate|date_format:'d.m.Y H:i:s'}</small></p>

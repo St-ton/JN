@@ -22,6 +22,11 @@ trait MultiSizeImage
     protected $images = [];
 
     /**
+     * @var array
+     */
+    protected $imageDimensions = [];
+
+    /**
      * @var int|string|null
      */
     protected $iid;
@@ -136,7 +141,7 @@ trait MultiSizeImage
         );
         try {
             Image::render($req);
-        } catch (Exception $e) {
+        } catch (Exception) {
         }
 
         return $class::getThumbByRequest($req);
@@ -180,5 +185,57 @@ trait MultiSizeImage
         }
 
         return $this->images;
+    }
+
+    /**
+     * @param int $number
+     * @param string|null $source
+     * @return array
+     */
+    public function generateAllImageDimensions(int $number = 1, string $source = null): array
+    {
+        if (!empty($this->imageDimensions[$number])) {
+            return $this->imageDimensions[$number];
+        }
+
+        $this->imageDimensions[$number] = [];
+        $settings                       = Image::getSettings();
+
+        foreach (Image::getAllSizes() as $size) {
+            $path = $this->generateImagePath($size, $number, $source);
+            if (!\file_exists(\PFAD_ROOT . $path)) {
+                $this->generateImage($size, $number, $source);
+            }
+            if (!\file_exists(\PFAD_ROOT . $path)) {
+                $this->imageDimensions[$number][$size] = $settings[$this->getImageType()][$size];
+            } else {
+                [$width, $height, $type]               = \getimagesize(\PFAD_ROOT . $path);
+                $this->imageDimensions[$number][$size] = ['width' => $width, 'height' => $height];
+            }
+        }
+
+        return $this->imageDimensions[$number];
+    }
+
+    /**
+     * @param string $size
+     * @param int $number
+     * @return object
+     */
+    public function getImageWidth(string $size, int $number = 1): int
+    {
+        $this->generateAllImageDimensions($number);
+        return $this->imageDimensions[$number][$size]['width'];
+    }
+
+    /**
+     * @param string $size
+     * @param int $number
+     * @return object
+     */
+    public function getImageHeight(string $size, int $number = 1): int
+    {
+        $this->generateAllImageDimensions($number);
+        return $this->imageDimensions[$number][$size]['height'];
     }
 }

@@ -8,7 +8,7 @@ use JTL\Shop;
 
 /**
  * Class Eigenschaft
- * @package JTL
+ * @package JTL\Checkout
  */
 class Eigenschaft
 {

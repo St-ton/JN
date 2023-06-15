@@ -13,15 +13,15 @@ class Releases
     /**
      * @var Release|null
      */
-    private $latest;
+    private ?Release $latest = null;
 
     /**
      * @var Release|null
      */
-    private $available;
+    private ?Release $available = null;
 
     /**
-     * Link constructor.
+     * Releases constructor.
      * @param stdClass|null $json
      */
     public function __construct(?stdClass $json = null)

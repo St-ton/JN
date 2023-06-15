@@ -1,6 +1,6 @@
 {if $oPlugin !== null}
     <div class="settings-content">
-        <form method="post" action="{$adminURL}/plugin.php?kPlugin={$oPlugin->getID()}" class="navbar-form">
+        <form method="post" action="{$pluginBackendURL}" class="navbar-form">
             {$jtl_token}
             <input type="hidden" name="kPlugin" value="{$oPlugin->getID()}" />
             <input type="hidden" name="kPluginAdminMenu" value="{$oPluginAdminMenu->kPluginAdminMenu}" />
@@ -45,8 +45,8 @@
                                     data-size="7"
                                     data-actions-box="true">
                                 {foreach $confItem->options as $option}
-                                    {if $confItem->confType === JTL\Plugin\Data\Config::TYPE_DYNAMIC && $confItem->value|is_array}
-                                        {assign var=selected value=($option->value|in_array:$confItem->value)}
+                                    {if $confItem->confType === JTL\Plugin\Data\Config::TYPE_DYNAMIC && is_array($confItem->value)}
+                                        {assign var=selected value=(in_array($option->value, $confItem->value))}
                                     {else}
                                         {assign var=selected value=($confItem->value == $option->value)}
                                     {/if}

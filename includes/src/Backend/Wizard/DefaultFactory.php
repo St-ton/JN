@@ -21,7 +21,7 @@ final class DefaultFactory
     /**
      * @var Collection
      */
-    private $steps;
+    private Collection $steps;
 
     /**
      * DefaultFactory constructor.

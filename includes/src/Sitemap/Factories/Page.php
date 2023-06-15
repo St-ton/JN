@@ -23,7 +23,7 @@ final class Page extends AbstractFactory
     public function getCollection(array $languages, array $customerGroups): Generator
     {
         $customerGroup = first($customerGroups);
-        $languageCodes = map($languages, static function (LanguageModel $e) {
+        $languageCodes = map($languages, static function (LanguageModel $e): string {
             return "'" . $e->getCode() . "'";
         });
         $linkIDs       = $this->db->getInts(

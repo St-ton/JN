@@ -55,26 +55,26 @@ class IpAnonymizer
      *
      * @var string
      */
-    private $placeholderIP = '0.0.0.0';
+    private string $placeholderIP = '0.0.0.0';
 
     /**
      * flag for old-fashioned anonymization ("do not anonymize again")
      *
      * @var bool
      */
-    private $oldFashionedAnon = false;
+    private bool $oldFashionedAnon = false;
 
     /**
      * flag to get "0:0:0:0:0:0:0:0" instead of "::" ("::" is a valid IPv6-notation too!)
      *
      * @var bool
      */
-    private $beautifyFlag = false;
+    private bool $beautifyFlag = false;
 
     /**
      * @var LoggerInterface|null
      */
-    private $logger;
+    private ?LoggerInterface $logger;
 
     /**
      * @param string $ip
@@ -84,7 +84,7 @@ class IpAnonymizer
     {
         try {
             $this->logger = Shop::Container()->getLogService();
-        } catch (Exception $e) {
+        } catch (Exception) {
             $this->logger = null;
         }
 
@@ -97,9 +97,7 @@ class IpAnonymizer
                 $this->init();
             } catch (Exception $e) {
                 // The current PHP-version did not support IPv6 addresses!
-                if ($this->logger !== null) {
-                    $this->logger->notice($e->getMessage());
-                }
+                $this->logger?->notice($e->getMessage());
             }
         }
         if ($beautify !== false) {
@@ -114,7 +112,7 @@ class IpAnonymizer
      */
     private function init(): void
     {
-        if ($this->ip === '' || \mb_strpos($this->ip, '*') !== false) {
+        if ($this->ip === '' || \str_contains($this->ip, '*')) {
             // if there is an old-fashioned anonymization or
             // an empty string, we do nothing (but set a flag)
             $this->oldFashionedAnon = true;
@@ -123,15 +121,13 @@ class IpAnonymizer
         }
         // any ':' means, we got an IPv6-address
         // ("::127.0.0.1" or "::ffff:127.0.0.3" is valid too!)
-        if (\mb_strpos($this->ip, ':') !== false) {
+        if (\str_contains($this->ip, ':')) {
             $this->rawIp = @\inet_pton($this->ip);
         } else {
             $this->rawIp = @\inet_pton($this->rmLeadingZero($this->ip));
         }
         if ($this->rawIp === false) {
-            if ($this->logger !== null) {
-                $this->logger->warning('Wrong IP: ' . $this->ip);
-            }
+            $this->logger?->warning('Wrong IP: {ip}', ['ip' => $this->ip]);
             $this->rawIp = '';
         }
         $this->placeholderIP = '0.0.0.0';
@@ -178,7 +174,7 @@ class IpAnonymizer
             return $this->ip;
         }
         $readableIP = \inet_ntop(\inet_pton($this->ipMask) & $this->rawIp);
-        if ($this->beautifyFlag === true && \mb_strpos($readableIP, '::') !== false) {
+        if ($this->beautifyFlag === true && \str_contains($readableIP, '::')) {
             $colonPos    = \mb_strpos($readableIP, '::');
             $strEnd      = \mb_strlen($readableIP) - 2;
             $blockCount  = \count(
@@ -273,9 +269,9 @@ class IpAnonymizer
     private function rmLeadingZero(string $ipString): string
     {
         $ipParts = \preg_split('/[\.:]/', $ipString);
-        $glue    = \mb_strpos($ipString, '.') !== false ? '.' : ':';
+        $glue    = \str_contains($ipString, '.') ? '.' : ':';
 
-        return \implode($glue, \array_map(static function ($e) {
+        return \implode($glue, \array_map(static function ($e): int {
             return (int)$e;
         }, $ipParts));
     }

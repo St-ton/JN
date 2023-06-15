@@ -30,29 +30,29 @@ class Characteristic extends BaseCharacteristic
     use MagicCompatibilityTrait;
 
     /**
-     * @var int
+     * @var int|null
      */
     private $characteristicValueID;
 
     /**
-     * @var int
+     * @var int|null
      */
     private $id;
 
     /**
      * @var bool
      */
-    private $isMultiSelect = false;
+    private bool $isMultiSelect = false;
 
     /**
      * @var array
      */
-    private $batchCharacteristicData;
+    private array $batchCharacteristicData = [];
 
     /**
      * @var array
      */
-    public static $mapping = [
+    public static array $mapping = [
         'kMerkmal'     => 'CharacteristicIDCompat',
         'kMerkmalWert' => 'ValueCompat',
         'cName'        => 'Name',
@@ -248,7 +248,7 @@ class Characteristic extends BaseCharacteristic
     {
         return \array_reduce(
             $this->productFilter->getCharacteristicFilter(),
-            static function ($a, $b) use ($characteristicValueID) {
+            static function ($a, $b) use ($characteristicValueID): bool {
                 /** @var Characteristic $b */
                 return $a || $b->getValue() === $characteristicValueID;
             },
@@ -409,18 +409,15 @@ class Characteristic extends BaseCharacteristic
         $state->addSelect('tmerkmal.nMehrfachauswahl');
         $state->addSelect('tmerkmal.cBildPfad AS cMMBildPfad');
         if ($category !== null
-            && !empty($category->categoryFunctionAttributes[\KAT_ATTRIBUT_MERKMALFILTER])
+            && !empty($category->getCategoryFunctionAttribute(\KAT_ATTRIBUT_MERKMALFILTER))
             && $this->productFilter->hasCategory()
         ) {
-            $catAttributeFilters = \explode(
-                ';',
-                $category->categoryFunctionAttributes[\KAT_ATTRIBUT_MERKMALFILTER]
-            );
+            $catAttributeFilters = \explode(';', $category->getCategoryFunctionAttribute(\KAT_ATTRIBUT_MERKMALFILTER));
             if (\count($catAttributeFilters) > 0) {
                 $state->addCondition('tmerkmal.cName IN (' . \implode(',', map(
                     $catAttributeFilters,
-                    static function ($e) {
-                            return '"' . $e . '"';
+                    static function ($e): string {
+                        return '"' . $e . '"';
                     }
                 )) . ')');
             }
@@ -525,6 +522,7 @@ class Characteristic extends BaseCharacteristic
             $option->setValue($filter->kMerkmal);
             $option->setCount(0);
             $option->generateAllImageSizes();
+            $option->generateAllImageDimensions();
             $additionalFilter->setBatchCharacteristicData(
                 $this->batchGetDataForCharacteristicValue($filter->characteristicValues)
             );
@@ -560,6 +558,7 @@ class Characteristic extends BaseCharacteristic
                 $url = $filterURLGenerator->getURL($additionalFilter->init($filterValue->kMerkmalWert));
                 $characteristicOption->setURL($url);
                 $characteristicOption->generateAllImageSizes();
+                $characteristicOption->generateAllImageDimensions();
                 $option->addOption($characteristicOption);
             }
             // backwards compatibility
@@ -599,7 +598,7 @@ class Characteristic extends BaseCharacteristic
      */
     protected function isNumeric(Option $option): bool
     {
-        return every($option->getOptions(), static function (Option $item) {
+        return every($option->getOptions(), static function (Option $item): bool {
             return \is_numeric($item->getValue());
         });
     }
@@ -650,7 +649,7 @@ class Characteristic extends BaseCharacteristic
         if (\count($characteristicValues) === 0) {
             return [];
         }
-        $characteristicValueIDs = \implode(',', \array_map(static function ($row) {
+        $characteristicValueIDs = \implode(',', \array_map(static function ($row): int {
             return (int)$row->kMerkmalWert;
         }, $characteristicValues));
         $queryResult            = $this->productFilter->getDB()->getObjects(

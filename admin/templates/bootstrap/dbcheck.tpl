@@ -2,7 +2,7 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('dbcheck') cBeschreibung=__('dbcheckDesc') cDokuURL=__('dbcheckURL')}
 <div id="content">
     {if $maintenanceResult !== null}
-        {if $maintenanceResult|is_array}
+        {if is_array($maintenanceResult)}
             <ul class="list-group mb-3">
                 {foreach $maintenanceResult as $result}
                     <li class="list-group-item">
@@ -15,13 +15,13 @@
         {/if}
     {/if}
     <div id="pageCheck">
-        {if $cDBFileStruct_arr|count > 0}
+        {if count($cDBFileStruct_arr) > 0}
             {if isset($engineUpdate)}
                 {include file='tpl_inc/dbcheck_engineupdate.tpl'}
             {else}
-                <div class="alert alert-info"><strong>{__('countTables')}:</strong> {$cDBFileStruct_arr|count}<br /><strong>{__('showModifiedTables')}:</strong> {$cDBError_arr|count}</div>
+                <div class="alert alert-info"><strong>{__('countTables')}:</strong> {count($cDBFileStruct_arr)}<br /><strong>{__('showModifiedTables')}:</strong> {count($cDBError_arr)}</div>
             {/if}
-            <form action="{$adminURL}/dbcheck.php" method="post">
+            <form action="{$adminURL}{$route}" method="post">
                 {$jtl_token}
                 <div id="contentCheck" class="card">
                     <div class="card-header">
@@ -40,8 +40,8 @@
                         </tr>
                         </thead>
                         {foreach $cDBFileStruct_arr as $cTable => $oDatei}
-                            {assign var=hasError value=$cTable|array_key_exists:$cDBError_arr}
-                            <tr class="filestate {if !$cTable|array_key_exists:$cDBError_arr}unmodified{else}modified{/if}">
+                            {assign var=hasError value=array_key_exists($cTable, $cDBError_arr)}
+                            <tr class="filestate {if !array_key_exists($cTable, $cDBError_arr)}unmodified{else}modified{/if}">
                                 <td>
                                     {if $hasError}
                                         {$cTable}
@@ -50,20 +50,20 @@
                                     {/if}
                                 </td>
                                 <td>
-                                    {if $cTable|array_key_exists:$cDBStruct_arr}
+                                    {if array_key_exists($cTable, $cDBStruct_arr)}
                                         <span class="badge alert-{if $cDBStruct_arr.$cTable->ENGINE === 'InnoDB'}info{else}warning{/if}">{$cDBStruct_arr.$cTable->ENGINE}</span>
                                     {/if}
                                 </td>
                                 <td>
-                                    {if $cTable|array_key_exists:$cDBStruct_arr}
-                                        <span class="badge alert-{if $cDBStruct_arr.$cTable->TABLE_COLLATION|strpos:'utf8' === 0}info{else}warning{/if}">{$cDBStruct_arr.$cTable->TABLE_COLLATION}</span>
+                                    {if array_key_exists($cTable, $cDBStruct_arr)}
+                                        <span class="badge alert-{if strpos($cDBStruct_arr.$cTable->TABLE_COLLATION, 'utf8') === 0}info{else}warning{/if}">{$cDBStruct_arr.$cTable->TABLE_COLLATION}</span>
                                     {/if}
                                 </td>
                                 <td class="centered">
-                                    {if $cTable|array_key_exists:$cDBStruct_arr}{$cDBStruct_arr.$cTable->TABLE_ROWS|number_format:0:',':'.'}{/if}
+                                    {if array_key_exists($cTable, $cDBStruct_arr)}{$cDBStruct_arr.$cTable->TABLE_ROWS|number_format:0:',':'.'}{/if}
                                 </td>
                                 <td class="centered">
-                                    {if $cTable|array_key_exists:$cDBStruct_arr}{$cDBStruct_arr.$cTable->DATA_SIZE|formatByteSize:'%.0f'|upper|strip:'&nbsp;'}{/if}
+                                    {if array_key_exists($cTable, $cDBStruct_arr)}{$cDBStruct_arr.$cTable->DATA_SIZE|formatByteSize:'%.0f'|upper|strip:'&nbsp;'}{/if}
                                 </td>
                                 <td>
                                     {if $hasError}
@@ -76,9 +76,9 @@
                                     {if isset($cDBStruct_arr.$cTable)}
                                         {if $cDBStruct_arr.$cTable->Locked}
                                             <span title="Tabelle in Benutzung"><i class="fa fa-cog fa-spin fa-2x fa-fw"></i></span>
-                                        {elseif (($cDBStruct_arr.$cTable->Migration & DBMigrationHelper::MIGRATE_TABLE) !== DBMigrationHelper::MIGRATE_NONE) && $DB_Version->collation_utf8 && $DB_Version->innodb->support}
+                                        {elseif (($cDBStruct_arr.$cTable->Migration & JTL\Update\DBMigrationHelper::MIGRATE_TABLE) !== JTL\Update\DBMigrationHelper::MIGRATE_NONE) && $DB_Version->collation_utf8 && $DB_Version->innodb->support}
                                             <a href="#" class="btn btn-default btn-migrate" data-action="migrate" data-table="{$cTable}" data-step="1"><i class="fa fa-cogs"></i></a>
-                                        {elseif (($cDBStruct_arr.$cTable->Migration & DBMigrationHelper::MIGRATE_COLUMN) !== DBMigrationHelper::MIGRATE_NONE) && $DB_Version->collation_utf8 && $DB_Version->innodb->support}
+                                        {elseif (($cDBStruct_arr.$cTable->Migration & JTL\Update\DBMigrationHelper::MIGRATE_COLUMN) !== JTL\Update\DBMigrationHelper::MIGRATE_NONE) && $DB_Version->collation_utf8 && $DB_Version->innodb->support}
                                             <a href="#" class="btn btn-default btn-migrate" data-action="migrate" data-table="{$cTable}" data-step="2"><i class="fa fa-cogs"></i></a>
                                         {/if}
                                         <div class="custom-control custom-checkbox{if $hasError} d-none{/if}">
@@ -111,10 +111,14 @@
                         <div class="col-sm-6 col-xl-auto">
                             <button type="submit" class="btn btn-primary">{__('send')}</button>
                         </div>
-                        {if $cDBError_arr|count > 0}
+                        {if count($cDBError_arr) > 0}
                         <div class="col-sm-6 col-xl-auto ml-auto">
-                            <button id="viewAll" name="viewAll" type="button" class="btn btn-primary fade" value="Alle anzeigen"><i class="fa fa-share"></i> {__('showAll')}</button>
-                            <button id="viewModified" name="viewModified" type="button" class="btn btn-danger viewModified fade show" value="Modifizierte anzeigen"><i class="fal fa-exclamation-triangle"></i> {__('showModified')}</button>
+                            <button id="viewAll" name="viewAll" type="button" class="btn btn-primary fade" value="{__('showAll')}">
+                                <i class="fa fa-share"></i> {__('showAll')}
+                            </button>
+                            <button id="viewModified" name="viewModified" type="button" class="btn btn-danger viewModified fade show" value="{__('showModified')}">
+                                <i class="fal fa-exclamation-triangle"></i> {__('showModified')}
+                            </button>
                         </div>
                         {/if}
                     </div>

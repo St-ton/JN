@@ -6,45 +6,50 @@ use DateTime;
 
 /**
  * Trait JTLCacheTrait
- * @package Cache
+ * @package JTL\Cache
  */
 trait JTLCacheTrait
 {
     /**
      * @var array
      */
-    public $options;
+    public array $options;
 
     /**
      * @var string
      */
-    public $journalID;
+    public string $journalID = '';
 
     /**
      * @var array|null
      */
-    public $journal;
+    public ?array $journal = null;
 
     /**
      * @var bool
      */
-    public $isInitialized = false;
+    public bool $isInitialized = false;
 
     /**
      * @var bool
      */
-    public $journalHasChanged = false;
+    public bool $journalHasChanged = false;
 
     /**
      * @var string
      */
-    private $error = '';
+    private string $error = '';
+
+    /**
+     * @var ICachingMethod|null
+     */
+    public static ?ICachingMethod $instance = null;
 
     /**
      * @param array $options
-     * @return JTLCacheTrait
+     * @return ICachingMethod
      */
-    public static function getInstance(array $options)
+    public static function getInstance(array $options): ICachingMethod
     {
         return self::$instance ?? new self($options);
     }
@@ -54,10 +59,26 @@ trait JTLCacheTrait
      */
     public function __destruct()
     {
-        //save journal on destruct
-        if ($this->isInitialized === true && $this->journalHasChanged === true && \count($this->journal) > 0) {
+        // save journal on destruct
+        if ($this->isInitialized === true && $this->journalHasChanged === true) {
             $this->store($this->journalID, $this->journal, 0);
         }
+    }
+
+    /**
+     * @param array $data
+     * @return void
+     */
+    public function __unserialize(array $data): void
+    {
+    }
+
+    /**
+     * @return array
+     */
+    public function __serialize(): array
+    {
+        return [];
     }
 
     /**
@@ -106,7 +127,7 @@ trait JTLCacheTrait
      */
     public function is_serialized($data): bool
     {
-        //if it isn't a string, it isn't serialized
+        // if it isn't a string, it isn't serialized
         if (!\is_string($data)) {
             return false;
         }
@@ -121,14 +142,14 @@ trait JTLCacheTrait
             case 'a':
             case 'O':
             case 's':
-                if (\preg_match("/^{$badions[1]}:[0-9]+:.*[;}]\$/s", $data)) {
+                if (\preg_match("/^{$badions[1]}:\d+:.*[;}]\$/s", $data)) {
                     return true;
                 }
                 break;
             case 'b':
             case 'i':
             case 'd':
-                if (\preg_match("/^{$badions[1]}:[0-9.E-]+;\$/", $data)) {
+                if (\preg_match("/^{$badions[1]}:[\d.E-]+;\$/", $data)) {
                     return true;
                 }
                 break;
@@ -202,7 +223,6 @@ trait JTLCacheTrait
                     }
                 }
             }
-
             // remove duplicate keys from array and return it
             return \array_unique($res);
         }
@@ -299,7 +319,7 @@ trait JTLCacheTrait
     {
         if ($this->journal === null) {
             $this->journal = ($j = $this->load($this->journalID)) !== false
-                ? $j
+                ? ($j ?? [])
                 : [];
         }
 
@@ -365,6 +385,15 @@ trait JTLCacheTrait
     }
 
     /**
+     * @param bool $initialized
+     * @return void
+     */
+    public function setIsInitialized(bool $initialized): void
+    {
+        $this->isInitialized = $initialized;
+    }
+
+    /**
      * @inheritdoc
      */
     public function getError(): string
@@ -378,5 +407,21 @@ trait JTLCacheTrait
     public function setError(string $error): void
     {
         $this->error = $error;
+    }
+
+    /**
+     * @return array
+     */
+    public function getOptions(): array
+    {
+        return $this->options;
+    }
+
+    /**
+     * @param array $options
+     */
+    public function setOptions(array $options): void
+    {
+        $this->options = $options;
     }
 }

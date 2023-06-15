@@ -1,4 +1,5 @@
 {block name='productdetails-attributes'}
+{$inQuickView = !empty($smarty.get.quickView)}
 {if $showAttributesTable}
     <div class="product-attributes">
     {block name='productdetails-attributes-table'}
@@ -7,25 +8,28 @@
                 {block name='productdetails-attributes-characteristics'}
                     {foreach $Artikel->oMerkmale_arr as $characteristic}
                         <tr>
-                            <td class="h6">{$characteristic->cName}:</td>
+                            <td class="h6">{$characteristic->getName()}:</td>
                             <td class="attr-characteristic">
                                 {strip}
-                                    {foreach $characteristic->oMerkmalWert_arr as $characteristicValue}
-                                        {if $characteristic->cTyp === 'TEXT' || $characteristic->cTyp === 'SELECTBOX' || $characteristic->cTyp === ''}
+                                    {foreach $characteristic->getCharacteristicValues() as $characteristicValue}
+                                        {if $characteristic->getType() === 'TEXT' || $characteristic->getType() === 'SELECTBOX' || $characteristic->getType() === ''}
                                             {block name='productdetails-attributes-badge'}
-                                                {link href=$characteristicValue->cURLFull class="badge badge-primary"}{$characteristicValue->cWert|escape:'html'}{/link}
+                                                <a {if !$inQuickView}href="{$characteristicValue->getURL()}"{/if}
+                                                   class="badge badge-primary">
+                                                    {$characteristicValue->getValue()|escape:'html'}
+                                                </a>
                                             {/block}
                                         {else}
                                             {block name='productdetails-attributes-image'}
-                                                {link href=$characteristicValue->cURLFull
+                                                <a {if !$inQuickView}href="{$characteristicValue->getURL()}"{/if}
                                                     class="text-decoration-none-util"
-                                                    data=['toggle'=>'tooltip', 'placement'=>'top', 'boundary'=>'window']
-                                                    title=$characteristicValue->cWert|escape:'html'
-                                                    aria=["label"=>$characteristicValue->cWert|escape:'html']
-                                                }
+                                                    data-toggle="tooltip" data-placement="top" data-boundary="window"
+                                                    title="{$characteristicValue->getValue()|escape:'html'}"
+                                                    aria-label="{$characteristicValue->getValue()|escape:'html'}"
+                                                >
                                                     {$img = $characteristicValue->getImage(\JTL\Media\Image::SIZE_XS)}
-                                                    {if $img !== null && $img|strpos:$smarty.const.BILD_KEIN_MERKMALBILD_VORHANDEN === false
-                                                    && $img|strpos:$smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN === false}
+                                                    {if $img !== null && strpos($img, $smarty.const.BILD_KEIN_MERKMALBILD_VORHANDEN) === false
+                                                    && strpos($img, $smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN) === false}
                                                         {include file='snippets/image.tpl'
                                                             item=$characteristicValue
                                                             square=false
@@ -34,11 +38,11 @@
                                                             width='40'
                                                             height='40'
                                                             class='img-aspect-ratio'
-                                                            alt=$characteristicValue->cWert}
+                                                            alt=$characteristicValue->getValue()}
                                                     {else}
-                                                        {badge variant="primary"}{$characteristicValue->cWert|escape:'html'}{/badge}
+                                                        {badge variant="primary"}{$characteristicValue->getValue()|escape:'html'}{/badge}
                                                     {/if}
-                                                {/link}
+                                                </a>
                                             {/block}
                                         {/if}
                                     {/foreach}

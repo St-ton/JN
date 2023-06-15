@@ -169,10 +169,7 @@ class Form
     {
         $customerGroupID = Frontend::getCustomerGroup()->getID();
         if (!$customerGroupID) {
-            $customerGroupID = (int)$_SESSION['Kunde']->kKundengruppe;
-            if (!$customerGroupID) {
-                $customerGroupID = CustomerGroup::getDefaultGroupID();
-            }
+            $customerGroupID = Frontend::getCustomer()->getGroupID();
         }
 
         $subjects = Shop::Container()->getDB()->getObjects(
@@ -342,5 +339,18 @@ class Form
         }
 
         return $msg;
+    }
+
+    /**
+     * @param array $missingData
+     * @return int
+     * @former angabenKorrekt()
+     * @since 5.2.0
+     */
+    public static function hasNoMissingData(array $missingData): int
+    {
+        return (int)none($missingData, static function ($e) {
+            return $e > 0;
+        });
     }
 }

@@ -16,17 +16,7 @@ class NetSyncHandler
     /**
      * @var NetSyncHandler|null
      */
-    private static ?NetSyncHandler $instance = null;
-
-    /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var LoggerInterface
-     */
-    private LoggerInterface $logger;
+    protected static ?NetSyncHandler $instance = null;
 
     /**
      * NetSyncHandler constructor.
@@ -34,11 +24,9 @@ class NetSyncHandler
      * @param LoggerInterface $logger
      * @throws Exception
      */
-    public function __construct(DbInterface $db, LoggerInterface $logger)
+    public function __construct(protected DbInterface $db, protected LoggerInterface $logger)
     {
         self::$instance = $this;
-        $this->db       = $db;
-        $this->logger   = $logger;
         if (!$this->isAuthenticated()) {
             static::throwResponse(NetSyncResponse::ERRORLOGIN);
         }
@@ -85,7 +73,7 @@ class NetSyncHandler
             $response->cToken = \session_id();
             $response->oData  = $data;
         }
-        echo \json_encode($response);
+        echo \json_encode($response, \JSON_THROW_ON_ERROR);
         exit;
     }
 
@@ -156,9 +144,9 @@ class NetSyncHandler
     private function getBrowser(string $userAgent): string
     {
         $browser = 'other';
-        if (\preg_match('/^Opera(\/| )([0-9].[0-9]{1,2})/', $userAgent) === 1) {
+        if (\preg_match('/^Opera(\/| )(\d.\d{1,2})/', $userAgent) === 1) {
             $browser = 'opera';
-        } elseif (\preg_match('/^MSIE ([0-9].[0-9]{1,2})/', $userAgent) === 1) {
+        } elseif (\preg_match('/^MSIE (\d.\d{1,2})/', $userAgent) === 1) {
             $browser = 'ie';
         }
 
@@ -210,8 +198,8 @@ class NetSyncHandler
                     \str_replace([\PFAD_DOWNLOADS_PREVIEW, \PFAD_DOWNLOADS], '', $pathName),
                     $pathinfo['filename'],
                     $pathinfo['dirname'],
-                    $pathinfo['extension'],
-                    \filemtime($pathName),
+                    $pathinfo['extension'] ?? '',
+                    \filemtime($pathName) ?: 0,
                     \filesize($pathName)
                 );
             }

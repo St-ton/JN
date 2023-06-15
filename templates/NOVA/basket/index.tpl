@@ -4,10 +4,13 @@
     {/block}
 
     {block name='basket-index-content'}
+        {get_static_route id='warenkorb.php' assign='cartURL'}
         {container fluid=$Link->getIsFluid() class="basket {if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
             {row}
                 {block name='basket-index-main'}
-                {col cols=12 lg="{if ($Warenkorb->PositionenArr|count > 0)}7{else}12{/if}"}
+                {$lgCols = 12}
+                {if ($Warenkorb->PositionenArr|count > 0)}{$lgCols = 7}{/if}
+                {col cols=12 lg=$lgCols}
                     {opcMountPoint id='opc_before_heading'}
                     {block name='basket-index-heading'}
                         <h1 class="h2 basket-heading">{lang key='basket'} ({count(JTL\Session\Frontend::getCart()->PositionenArr)} {lang key='products'})</h1>
@@ -22,7 +25,12 @@
                             <div class="basket_wrapper">
                                 {block name='basket-index-basket-items'}
                                     {block name='basket-index-form-cart'}
-                                        {form id="cart-form" method="post" action="{get_static_route id='warenkorb.php'}" class="jtl-validate" slide=true}
+                                        {form id="cart-form" method="post" action=$cartURL class="jtl-validate" slide=true}
+                                            {button name="fake"
+                                                variant="hidden"
+                                                type="submit"
+                                                class="btn-hidden-default"
+                                            }{/button}
                                             {input type="hidden" name="wka" value="1"}
                                             <div class="basket-items">
                                                 {block name='basket-index-include-order-items'}
@@ -38,7 +46,7 @@
                                     {if $Einstellungen.kaufabwicklung.warenkorb_versandermittlung_anzeigen === 'Y'}
                                         {block name='basket-index-form-shipping-calc'}
                                             {opcMountPoint id='opc_before_shipping_calculator'}
-                                            {form id="basket-shipping-estimate-form" class="shipping-calculator-form" method="post" action="{get_static_route id='warenkorb.php'}#basket-shipping-estimate-form" slide=true}
+                                            {form id="basket-shipping-estimate-form" class="shipping-calculator-form" method="post" action="{$cartURL}#basket-shipping-estimate-form" slide=true}
                                                 {block name='basket-index-include-shipping-calculator'}
                                                     {include file='snippets/shipping_calculator.tpl' checkout=true hrAtEnd=false}
                                                 {/block}
@@ -61,10 +69,12 @@
                                                 {/col}
                                                 {col cols=12}
                                                     {block name='basket-index-form-freegift'}
-                                                        {form method="post" name="freegift" action="{get_static_route id='warenkorb.php'}" class="text-center-util" slide=true}
+                                                        {form method="post" name="freegift" action=$cartURL class="text-center-util" slide=true}
                                                             {block name='basket-index-freegifts'}
+                                                                {$additional = ''}
+                                                                {if $oArtikelGeschenk_arr|count < 3}{$additional = ' slider-no-preview'}{/if}
                                                                 {row id="freegift"
-                                                                     class="slick-smooth-loading carousel carousel-arrows-inside slick-lazy slick-type-half {if $oArtikelGeschenk_arr|count < 3}slider-no-preview{/if}"
+                                                                     class="slick-smooth-loading carousel carousel-arrows-inside slick-lazy slick-type-half{$additional}"
                                                                      data=["slick-type"=>"slider-half"]}
                                                                     {include file='snippets/slider_items.tpl' items=$oArtikelGeschenk_arr type='freegift'}
                                                                 {/row}
@@ -132,7 +142,7 @@
                                                 {collapse id="coupon-form"}
                                                     {cardbody}
                                                     {block name='basket-index-coupon-form'}
-                                                        {form class="jtl-validate" id="basket-coupon-form" method="post" action="{get_static_route id='warenkorb.php'}" slide=true}
+                                                        {form class="jtl-validate" id="basket-coupon-form" method="post" action=$cartURL slide=true}
                                                             {formgroup label-for="couponCode" label={lang key='couponCodePlaceholder' section='checkout'} class="mw-100{if !empty($invalidCouponCode)} has-error{/if}"}
                                                                 {input aria=["label"=>"{lang key='couponCode' section='account data'}"] type="text" name="Kuponcode" id="couponCode" maxlength="32" placeholder=" " required=true}
                                                             {/formgroup}

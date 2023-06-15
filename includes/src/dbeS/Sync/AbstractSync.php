@@ -31,36 +31,21 @@ use stdClass;
 abstract class AbstractSync
 {
     /**
-     * @var DbInterface
-     */
-    protected DbInterface $db;
-
-    /**
-     * @var LoggerInterface
-     */
-    protected LoggerInterface $logger;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    protected JTLCacheInterface $cache;
-
-    /**
      * @var Mapper
      */
     protected Mapper $mapper;
 
     /**
-     * Products constructor.
+     * AbstractSync constructor.
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      * @param LoggerInterface   $logger
      */
-    public function __construct(DbInterface $db, JTLCacheInterface $cache, LoggerInterface $logger)
-    {
-        $this->db     = $db;
-        $this->cache  = $cache;
-        $this->logger = $logger;
+    public function __construct(
+        protected DbInterface $db,
+        protected JTLCacheInterface $cache,
+        protected LoggerInterface $logger
+    ) {
         $this->mapper = new Mapper();
     }
 
@@ -224,18 +209,20 @@ abstract class AbstractSync
         $options                             = Artikel::getDefaultOptions();
         $options->nKeineSichtbarkeitBeachten = 1;
         $product                             = new Artikel($this->db);
-        $product->fuelleArtikel($data->kArtikel, $options);
+        $product->fuelleArtikel((int)$data->kArtikel, $options);
         if ($product->kArtikel === null) {
             return;
         }
         $campaign = new Campaign(\KAMPAGNE_INTERN_VERFUEGBARKEIT);
         if ($campaign->kKampagne > 0) {
-            $sep            = \strpos($product->cURL, '.php') === false ? '?' : '&';
+            $sep            = !\str_contains($product->cURL, '.php') ? '?' : '&';
             $product->cURL .= $sep . $campaign->cParameter . '=' . $campaign->cWert;
         }
+        $mailer = Shop::Container()->get(Mailer::class);
         foreach ($subscriptions as $msg) {
-            $availAgainOptin = (new Optin(OptinAvailAgain::class))->getOptinInstance()
-                ->setProduct($product)
+            /** @var OptinAvailAgain $availAgainOptin */
+            $availAgainOptin = (new Optin(OptinAvailAgain::class))->getOptinInstance();
+            $availAgainOptin->setProduct($product)
                 ->setEmail($msg->cMail);
             if (!$availAgainOptin->isActive()) {
                 continue;
@@ -252,9 +239,7 @@ abstract class AbstractSync
                 : $msg->cMail;
             $tplData->mail                             = $tplMail;
 
-            $mailer = Shop::Container()->get(Mailer::class);
-            $mail   = new Mail();
-
+            $mail = new Mail();
             // if original language was deleted between ActivationOptIn and now, try to send it in english,
             // if there is no english, use the shop-default.
             $mail->setLanguage(
@@ -382,12 +367,12 @@ abstract class AbstractSync
             }
             try {
                 $startDate = new DateTime($price->dStart);
-            } catch (Exception $e) {
+            } catch (Exception) {
                 $startDate = (new DateTime())->setTime(0, 0);
             }
             try {
                 $endDate = new DateTime($price->dEnde);
-            } catch (Exception $e) {
+            } catch (Exception) {
                 $endDate = (new DateTime())->setTime(0, 0);
             }
             $today = (new DateTime())->setTime(0, 0);
@@ -432,7 +417,8 @@ abstract class AbstractSync
             'INSERT INTO tpreis (kArtikel, kKundengruppe, kKunde)
                 VALUES (:productID, :customerGroup, :customerID)
                 ON DUPLICATE KEY UPDATE
-                    kKunde = :customerID',
+                    kKunde     = :customerID,
+                    noDiscount = IF(:customerID > 0, 0, noDiscount)',
             [
                 'productID'     => $productID,
                 'customerGroup' => $customerGroupID,
@@ -503,12 +489,17 @@ abstract class AbstractSync
                     AND tpreisdetail.nAnzahlAb > 0',
             ['productID' => $productID]
         );
-        // Insert price record for each customer group - ignore existing
+        // Insert price record for each customer group - update existing
         $this->db->queryPrepared(
-            'INSERT IGNORE INTO tpreis (kArtikel, kKundengruppe, kKunde)
-                SELECT :productID, kKundengruppe, 0
-                FROM tkundengruppe',
-            ['productID' => $productID]
+            'INSERT INTO tpreis (kArtikel, kKundengruppe, kKunde, noDiscount)
+                SELECT :productID, kKundengruppe, 0, COALESCE(:noDiscount, 0)
+                FROM tkundengruppe
+                ON DUPLICATE KEY UPDATE
+                    tpreis.noDiscount = COALESCE(:noDiscount, noDiscount)',
+            [
+                'productID'  => $productID,
+                'noDiscount' => isset($xml['nNichtRabattfaehig']) ? (int)$xml['nNichtRabattfaehig'] : null,
+            ]
         );
         // Insert base price for each price record - update existing
         $this->db->queryPrepared(
@@ -570,14 +561,14 @@ abstract class AbstractSync
     protected function mapSalutation(string $salutation): string
     {
         $salutation = \strtolower($salutation);
-        if ($salutation === 'w' || $salutation === 'm') {
-            return $salutation;
+        if ($salutation === 'm' || $salutation === 'herr' || $salutation === 'mr' || $salutation === 'mr.') {
+            return 'm';
         }
-        if ($salutation === 'frau' || $salutation === 'mrs' || $salutation === 'mrs.') {
+        if ($salutation === 'w' || $salutation === 'frau' || $salutation === 'mrs' || $salutation === 'mrs.') {
             return 'w';
         }
 
-        return 'm';
+        return '';
     }
 
     /**
@@ -664,5 +655,23 @@ abstract class AbstractSync
         }
 
         return (new Redirect())->saveExt('/' . $oldSeo, $newSeo, true);
+    }
+
+    /**
+     * faster than flatten() with a depth of 1
+     * @param array $tags
+     * @return array
+     * @since 5.2.0
+     */
+    protected function flattenTags(array $tags): array
+    {
+        $res = [];
+        foreach ($tags as $arr) {
+            foreach ($arr as $tag) {
+                $res[] = $tag;
+            }
+        }
+
+        return \array_unique($res);
     }
 }

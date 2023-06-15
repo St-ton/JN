@@ -30,7 +30,7 @@ final class CommentList implements ItemListInterface
     private Collection $items;
 
     /**
-     * LinkList constructor.
+     * CommentList constructor.
      * @param DbInterface $db
      */
     public function __construct(DbInterface $db)
@@ -58,9 +58,9 @@ final class CommentList implements ItemListInterface
                 GROUP BY tnewskommentar.kNewsKommentar
                 ORDER BY tnewskommentar.dErstellt DESC'
         );
-        $items   = map(group($data, static function ($e) {
+        $items   = map(group($data, static function ($e): int {
             return (int)$e->kNewsKommentar;
-        }), function ($e, $commentID) {
+        }), function ($e, $commentID): Comment {
             $l = new Comment($this->db);
             $l->setID($commentID);
             $l->map($e);
@@ -90,9 +90,9 @@ final class CommentList implements ItemListInterface
                     ORDER BY tnewskommentar.dErstellt DESC',
             ['nid' => $this->newsID]
         );
-        $items        = map(group($data, static function ($e) {
+        $items        = map(group($data, static function ($e): int {
             return (int)$e->kNewsKommentar;
-        }), function ($e, $commentID) {
+        }), function ($e, $commentID): Comment {
             $l = new Comment($this->db);
             $l->setID($commentID);
             $l->map($e);
@@ -112,7 +112,7 @@ final class CommentList implements ItemListInterface
      */
     public function filter(bool $active): Collection
     {
-        return $this->items->filter(static function (Comment $e) use ($active) {
+        return $this->items->filter(static function (Comment $e) use ($active): bool {
             return $e->isActive() === $active;
         });
     }
@@ -123,6 +123,25 @@ final class CommentList implements ItemListInterface
     public function getItems(): Collection
     {
         return $this->items;
+    }
+
+    /**
+     * @param string $whatcount
+     * @return int
+     */
+    public function getCommentsCount(string $whatcount = 'parent'): int
+    {
+        $parent = 0;
+        $child  = 0;
+        foreach ($this->items as $comment) {
+            if ($comment->getParentCommentID() === 0) {
+                $parent++;
+            } else {
+                $child++;
+            }
+        }
+
+        return $whatcount === 'parent' ? $parent : $child;
     }
 
     /**

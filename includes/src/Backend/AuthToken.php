@@ -20,9 +20,9 @@ class AuthToken
     private const AUTH_SERVER = 'https://oauth2.api.jtl-software.com/link';
 
     /**
-     * @var AuthToken
+     * @var AuthToken|null
      */
-    private static $instance;
+    private static ?AuthToken $instance = null;
 
     /**
      * @var string|null
@@ -50,17 +50,11 @@ class AuthToken
     private ?string $verified;
 
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
      * AuthToken constructor.
      * @param DbInterface $db
      */
-    public function __construct(DbInterface $db)
+    public function __construct(private DbInterface $db)
     {
-        $this->db = $db;
         $this->load();
         self::$instance = $this;
     }
@@ -79,10 +73,11 @@ class AuthToken
      */
     private function load(): void
     {
-        $this->authCode = null;
-        $this->token    = null;
-        $this->hash     = null;
-        $this->verified = null;
+        $this->authCode       = null;
+        $this->token          = null;
+        $this->hash           = null;
+        $this->verified       = null;
+        $this->decryptedToken = null;
 
         $token = $this->db->getSingleObject(
             'SELECT tstoreauth.auth_code, tstoreauth.access_token,
@@ -163,7 +158,7 @@ class AuthToken
         $payload = \base64_decode($parts[1]);
         try {
             $expiration = Carbon::createFromTimestamp(\json_decode($payload, false, 512, \JSON_THROW_ON_ERROR)->exp);
-        } catch (JsonException $e) {
+        } catch (JsonException) {
             return true;
         }
 
@@ -264,14 +259,12 @@ class AuthToken
         $token    = (string)Request::postVar('token', '');
         try {
             $logger = Shop::Container()->getLogService();
-        } catch (ServiceNotFoundException | CircularReferenceException $e) {
+        } catch (ServiceNotFoundException | CircularReferenceException) {
             $logger = null;
         }
 
         if ($authCode === '' || $authCode !== $this->authCode) {
-            if ($logger !== null) {
-                $logger->error('Call responseToken with invalid authcode!');
-            }
+            $logger?->error('Call responseToken with invalid authcode!');
             \http_response_code(404);
             exit;
         }

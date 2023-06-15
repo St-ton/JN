@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\VerificationVAT;
 
@@ -19,7 +19,7 @@ class VATCheckEU extends AbstractVATCheck
     /**
      * @var string
      */
-    private $viesWSDL = 'http://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl';
+    private string $viesWSDL = 'https://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl';
 
     /**
      * At this moment, the VIES-system, does not return any information other than "valid" or "invalid"
@@ -28,7 +28,7 @@ class VATCheckEU extends AbstractVATCheck
      *
      * @var array
      */
-    private $miasAnswerStrings = [
+    private array $miasAnswerStrings = [
         0  => 'MwSt-Nummer gültig.',
         10 => 'MwSt-Nummer ungültig.', // (D.h. die eingegebene Nummer ist zumindest an dem angegebenen Tag ungültig)
         20 => 'Bearbeitung derzeit nicht möglich. Bitte wiederholen Sie Ihre Anfrage später.',
@@ -83,11 +83,11 @@ class VATCheckEU extends AbstractVATCheck
             try {
                 $result = $soap->checkVat(['countryCode' => $countryCode, 'vatNumber' => $vatNumber]);
             } catch (\Exception $e) {
-                Shop::Container()->getLogService()->warning('VAT ID problem: ' . $e->getMessage());
+                Shop::Container()->getLogService()->warning('VAT ID problem: {msg}', ['msg' => $e->getMessage()]);
             }
 
             if ($result !== null && $result->valid === true) {
-                $this->logger->notice('VAT ID valid. (' . \print_r($result, true) . ')');
+                $this->logger->notice('VAT ID valid. ({msg})', ['msg' => \print_r($result, true)]);
 
                 return [
                     'success'   => true,
@@ -95,7 +95,7 @@ class VATCheckEU extends AbstractVATCheck
                     'errorcode' => ''
                 ];
             }
-            $this->logger->notice('VAT ID invalid! (' . \print_r($result, true) . ')');
+            $this->logger->notice('VAT ID invalid! ({msg})', ['msg' => \print_r($result, true)]);
 
             return [
                 'success'   => false,
@@ -104,7 +104,10 @@ class VATCheckEU extends AbstractVATCheck
             ];
         }
         // inform the user: "The VAT-office in this country has closed this time."
-        $this->logger->notice('TAX authority of this country currently not available. (ID: ' . $ustID . ')');
+        $this->logger->notice(
+            'TAX authority of this country currently not available. (ID: {id})',
+            ['id' => $ustID]
+        );
 
         return [
             'success'   => false,

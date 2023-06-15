@@ -6,7 +6,6 @@ use JTL\dbeS\Starter;
 use JTL\Media\Image\Product;
 use SimpleXMLElement;
 use stdClass;
-use function Functional\flatten;
 use function Functional\map;
 
 /**
@@ -24,13 +23,13 @@ final class ImageLink extends AbstractSync
         $productIDs = [];
         foreach ($starter->getXML(true) as $item) {
             [$file, $xml] = [\key($item), \reset($item)];
-            if (\strpos($file, 'del_bildartikellink.xml') !== false) {
+            if (\str_contains($file, 'del_bildartikellink.xml')) {
                 $productIDs[] = $this->handleDeletes($xml);
-            } elseif (\strpos($file, 'bildartikellink.xml') !== false) {
+            } elseif (\str_contains($file, 'bildartikellink.xml')) {
                 $productIDs[] = $this->handleInserts($xml);
             }
         }
-        $productIDs = \array_unique(flatten($productIDs));
+        $productIDs = $this->flattenTags($productIDs);
         Product::clearCache($productIDs);
         $this->cache->flushTags(map($productIDs, static function ($pid) {
             return \CACHING_GROUP_ARTICLE . '_' . $pid;
@@ -41,7 +40,7 @@ final class ImageLink extends AbstractSync
 
     /**
      * @param SimpleXMLElement $xml
-     * @return array
+     * @return int[]
      */
     private function handleInserts(SimpleXMLElement $xml): array
     {
@@ -62,7 +61,7 @@ final class ImageLink extends AbstractSync
 
     /**
      * @param SimpleXMLElement $xml
-     * @return array
+     * @return int[]
      */
     private function handleDeletes(SimpleXMLElement $xml): array
     {

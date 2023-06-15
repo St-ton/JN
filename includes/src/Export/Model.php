@@ -151,17 +151,27 @@ final class Model extends DataModel
         if ($this->languageID > 0) {
             try {
                 $this->language = Shop::Lang()->getLanguageByID($this->languageID);
-            } catch (Exception $e) {
+            } catch (Exception) {
                 $this->setHasError(1);
                 $this->language   = Shop::Lang()->getDefaultLanguage();
                 $this->languageID = 0;
             }
         }
         if ($this->currencyID > 0) {
-            $this->currency = new Currency($this->currencyID);
+            try {
+                $this->currency = new Currency($this->currencyID);
+            } catch (Exception) {
+                $this->setHasError(1);
+                $this->currency = (new Currency())->getDefault();
+            }
         }
         if ($this->customerGroupID > 0) {
-            $this->customerGroup = new CustomerGroup($this->customerGroupID);
+            try {
+                $this->customerGroup = new CustomerGroup($this->customerGroupID);
+            } catch (Exception) {
+                $this->setHasError(1);
+                $this->customerGroup = (new CustomerGroup())->loadDefaultGroup();
+            }
         }
     }
 
@@ -188,7 +198,7 @@ final class Model extends DataModel
         $base = \realpath(\PFAD_ROOT . \PFAD_EXPORT) . '/';
         $abs  = $base . $this->getFilename();
         $real = \realpath(\pathinfo($abs, \PATHINFO_DIRNAME)) . '/';
-        if (\strpos($real, $base) !== 0) {
+        if (!\str_starts_with($real, $base)) {
             throw new Exception(\sprintf(\__('Directory traversal detected for export %d.'), $this->getId()));
         }
 

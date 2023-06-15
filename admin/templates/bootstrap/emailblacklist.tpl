@@ -1,7 +1,7 @@
 {include file='tpl_inc/header.tpl'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('emailblacklist') cBeschreibung=__('emailblacklistDesc') cDokuURL=__('emailblacklistURL')}
 <div id="content">
-    <form method="post" action="{$adminURL}/emailblacklist.php">
+    <form method="post" action="{$adminURL}{$route}">
         {$jtl_token}
         <input type="hidden" name="einstellungen" value="1" />
         <input type="hidden" name="emailblacklist" value="1" />
@@ -28,7 +28,7 @@
             </div>
         </div>
     </form>
-    {if $blocked|count > 0}
+    {if count($blocked) > 0}
         <div class="card">
             <div class="card-header">
                 <div class="subheading1">{__('emailblacklistBlockedEmails')}</div>

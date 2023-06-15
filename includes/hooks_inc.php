@@ -823,6 +823,7 @@ const HOOK_EIGENSCHAFTWERT_CLASS_LOADFROMDB = 117;
  *
  * @file Firma.php
  * @param JTL\Firma instance - since 5.0.0
+ * @param bool cached - since 5.2.0
  */
 const HOOK_FIRMA_CLASS_LOADFROMDB = 118;
 
@@ -1903,11 +1904,40 @@ const HOOK_BESTELLUNG_SETZEGUTHABEN = 335;
 /**
  * @since 5.1.3
  * @file includes/src/dbeS/Sync/AbstractSync.php
- * @param bool   &sendMails
- * @param object product
- * @param array  subscriptions
+ * @param bool   &$sendMails
+ * @param object $product
+ * @param array  $subscriptions
  */
 const HOOK_SYNC_SEND_AVAILABILITYMAILS = 336;
+
+
+/**
+ * @since 5.1.3
+ * @file includes/src/Cart/Cart.php
+ * @param CartItem $positionItem
+ * @param bool     &$delete
+ */
+const HOOK_CART_DELETE_PARENT_CART_ITEM = 337;
+
+/**
+ * @file includes/src/dbeS/Sync/DeliveryNotes.php
+ * @param object $deliveryNote
+ */
+const HOOK_DELIVERYNOTES_XML_INSERT = 340;
+
+/**
+ * @since 5.1.3
+ * @file includes/src/dbeS/Sync/DeliveryNotes.php
+ * @param object $shipping
+ */
+const HOOK_DELIVERYNOTES_XML_SHIPPING = 341;
+
+/**
+ * @since 5.1.3
+ * @file includes/src/dbeS/Sync/DeliveryNotes.php
+ * @param int $deliveryNoteID
+ */
+const HOOK_DELIVERYNOTES_XML_DELETE = 342;
 
 /**
  * @since 5.2.0
@@ -1915,7 +1945,7 @@ const HOOK_SYNC_SEND_AVAILABILITYMAILS = 336;
  * @param JTL\Export\FormatExporter exporter
  * @param int                       exportID
  */
-const HOOK_EXPORT_PRE_RENDER = 340;
+const HOOK_EXPORT_PRE_RENDER = 350;
 
 /**
  * @since 5.2.0
@@ -1925,7 +1955,7 @@ const HOOK_EXPORT_PRE_RENDER = 340;
  * @param bool                      isAsync
  * @param bool                      isCron
  */
-const HOOK_EXPORT_START = 341;
+const HOOK_EXPORT_START = 351;
 
 /**
  * @since 5.2.0
@@ -1933,10 +1963,51 @@ const HOOK_EXPORT_START = 341;
  * @param int                       exportID
  * @param JTL\Export\Model          model
  */
-const HOOK_EXPORT_FACTORY_GET_EXPORTER = 342;
+const HOOK_EXPORT_FACTORY_GET_EXPORTER = 352;
+
+/**
+ * @since 5.2.0
+ * @param JTL\Catalog\Product\Artikel product
+ * @param int|string|float            &qty
+ */
+const HOOK_CARTHELPER_ADD_PRODUCT_ID_TO_CART = 355;
 
 /**
  * @since 5.2.0
  * @param JTL\News\Item item
  */
-const HOOK_NEWS_ITEM_MAPPED = 350;
+const HOOK_NEWS_ITEM_MAPPED = 360;
+
+/**
+ * @param JTL\Template\TemplateServiceInterface service
+ * @param array arguments
+ */
+const HOOK_TPL_LOAD_PRE = 361;
+
+
+/**
+ * @since 5.2.0
+ * @param int customerID
+ */
+const HOOK_REGISTRATION_CUSTOMER_CREATED = 362;
+
+/**
+ * @since 5.2.0
+ * @param JTL\Router\Router router
+ */
+const HOOK_ROUTER_PRE_DISPATCH = 400;
+
+/**
+ * @since 5.2.0
+ * @param stdClass              oBestellung - order object
+ * @param stdClass              oZahlungseingang
+ */
+const HOOK_PAYMENT_METHOD_ADDINCOMINGPAYMENT = 401;
+
+/**
+ * @since 5.2.3
+ * @param JTL\Extensions\Download\Download download
+ * @param int                              customerID
+ * @param int                              orderID
+ */
+const HOOK_ORDER_DOWNLOAD_FILE = 402;

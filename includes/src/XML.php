@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL;
 
@@ -9,9 +9,9 @@ namespace JTL;
 class XML
 {
     /**
-     * @var string|null
+     * @var string
      */
-    private static $lastParseError;
+    private static $lastParseError = '';
 
     /**
      * @var resource
@@ -187,13 +187,11 @@ class XML
      */
     private function checkError(): void
     {
-        $errCode = \xml_get_error_code($this->parser);
+        $errCode              = \xml_get_error_code($this->parser);
+        self::$lastParseError = '';
         if ($errCode !== \XML_ERROR_NONE) {
             $lineNumber           = \xml_get_current_line_number($this->parser);
-            self::$lastParseError = \xml_error_string($errCode)
-                . ($lineNumber !== false ? '- on line: ' . $lineNumber : '');
-        } else {
-            self::$lastParseError = '';
+            self::$lastParseError = \xml_error_string($errCode) . ' - on line: ' . $lineNumber;
         }
     }
 
@@ -202,6 +200,6 @@ class XML
      */
     public static function getLastParseError(): string
     {
-        return self::$lastParseError ?? '';
+        return self::$lastParseError;
     }
 }

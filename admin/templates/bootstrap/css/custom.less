@@ -2399,13 +2399,6 @@ pre#debug b {
     font-size: 30px;
 }
 
-.systemcheck .table>thead>tr>th {
-    color: #999;
-    font-weight: 600;
-    border-width: 1px;
-    font-size: 1.2em;
-}
-
 .systemcheck .test-name {
     color: #444;
 }
@@ -3058,8 +3051,13 @@ div.markdown thead tr td {
     column-width: 450px;
     column-gap: 2rem;
 
+    .config-card-wrapper {
+        padding-bottom: 2rem;
+    }
+
     .card {
         break-inside: avoid;
+        margin-bottom: 0;
         &.single {
             column-span: all;
         }

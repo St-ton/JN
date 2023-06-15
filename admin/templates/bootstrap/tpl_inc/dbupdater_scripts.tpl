@@ -1,5 +1,5 @@
 <script>
-    var adminPath = '{$PFAD_ADMIN}';
+    var adminPath = '{$adminURL}/';
     {literal}
 
     function backup($element)

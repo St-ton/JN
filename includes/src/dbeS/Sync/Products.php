@@ -11,7 +11,6 @@ use JTL\Language\LanguageHelper;
 use JTL\Shop;
 use JTL\XML;
 use stdClass;
-use function Functional\flatten;
 use function Functional\map;
 
 /**
@@ -53,7 +52,7 @@ final class Products extends AbstractSync
         $this->db->query('START TRANSACTION');
         foreach ($starter->getXML() as $i => $item) {
             [$file, $xml] = [\key($item), \reset($item)];
-            if (\strpos($file, 'artdel.xml') !== false) {
+            if (\str_contains($file, 'artdel.xml')) {
                 $productIDs[] = $this->handleDeletes($xml);
             } else {
                 $productIDs[] = $this->handleInserts($xml);
@@ -66,7 +65,7 @@ final class Products extends AbstractSync
                 );
             }
         }
-        $productIDs = \array_unique(flatten($productIDs));
+        $productIDs = $this->flattenTags($productIDs);
         $this->db->query('COMMIT');
         $this->clearProductCaches($productIDs);
 
@@ -319,13 +318,14 @@ final class Products extends AbstractSync
     }
 
     /**
-     * @param array $xml
-     * @param array $products
-     * @param int   $productID
+     * @param array      $xml
+     * @param array      $products
+     * @param int        $productID
+     * @param array|null $oldSeoData
      */
-    private function addProductLocalizations(array $xml, array $products, int $productID): void
+    private function addProductLocalizations(array $xml, array $products, int $productID, ?array $oldSeoData): void
     {
-        $seoData      = $this->getSeoFromDB($productID, 'kArtikel', null, 'kSprache');
+        $seoData      = $oldSeoData ?? $this->getSeoFromDB($productID, 'kArtikel', null, 'kSprache');
         $localized    = $this->mapper->mapArray(
             $xml['tartikel'],
             'tartikelsprache',
@@ -879,19 +879,20 @@ final class Products extends AbstractSync
         if (!\is_array($product)) {
             return $res;
         }
-        $products = $this->mapper->mapArray($xml, 'tartikel', 'mArtikel');
-        $oldSeo   = $this->db->getSingleObject(
+        $products   = $this->mapper->mapArray($xml, 'tartikel', 'mArtikel');
+        $oldSeo     = $this->db->getSingleObject(
             'SELECT cSeo 
                 FROM tartikel 
                 WHERE kArtikel = :pid',
             ['pid' => $productID]
         )->cSeo ?? null;
+        $oldSeoData = $this->getSeoFromDB($productID, 'kArtikel', null, 'kSprache');
         $this->checkCategoryCache($xml, $productID);
         $downloadKeys = $this->getDownloadIDs($productID);
         $this->deleteProduct($productID);
         $products = $this->addProduct($products);
         $this->addSeo($oldSeo, $products[0]->cSeo, $productID);
-        $this->addProductLocalizations($xml, $products, $productID);
+        $this->addProductLocalizations($xml, $products, $productID, $oldSeoData);
         $this->addAttributes($xml);
         $this->addMediaFiles($xml);
         $this->addDownloads($xml, $downloadKeys, $productID);
@@ -903,7 +904,7 @@ final class Products extends AbstractSync
         $this->upsertXML($product, 'tartikelattribut', 'mArtikelAttribut', 'kArtikelAttribut');
         $this->upsertXML($product, 'tartikelsichtbarkeit', 'mArtikelSichtbarkeit', 'kKundengruppe', 'kArtikel');
         $this->upsertXML($product, 'txsell', 'mXSell', 'kXSell');
-        $this->upsertXML($product, 'tartikelmerkmal', 'mArtikelSichtbarkeit', 'kMermalWert');
+        $this->upsertXML($product, 'tartikelmerkmal', 'mArtikelSichtbarkeit', 'kMerkmalWert', 'kArtikel');
         $this->addStockData($products[0]);
         $this->handleSQL($xml);
         $this->addWarehouseData($xml, $productID);
@@ -962,7 +963,10 @@ final class Products extends AbstractSync
                 Artikel::beachteVarikombiMerkmalLagerbestand($parent);
                 $res[] = $parent;
             }
-            \executeHook(\HOOK_ARTIKEL_XML_BEARBEITEDELETES, ['kArtikel' => $productID]);
+            \executeHook(\HOOK_ARTIKEL_XML_BEARBEITEDELETES, [
+                'kArtikel'      => $productID,
+                'kVaterArtikel' => $parent,
+            ]);
         }
 
         return $res;

@@ -101,7 +101,7 @@ class Adresse
     /**
      * @var array
      */
-    protected static $encodedProperties = [
+    protected static array $encodedProperties = [
         'cNachname',
         'cFirma',
         'cZusatz',
@@ -198,14 +198,11 @@ class Adresse
      */
     public function mappeAnrede(?string $anrede): string
     {
-        switch (\mb_convert_case($anrede, \MB_CASE_LOWER)) {
-            case 'm':
-                return Shop::Lang()->get('salutationM');
-            case 'w':
-                return Shop::Lang()->get('salutationW');
-            default:
-                return '';
-        }
+        return match (\mb_convert_case($anrede, \MB_CASE_LOWER)) {
+            'm'     => Shop::Lang()->get('salutationM'),
+            'w'     => Shop::Lang()->get('salutationW'),
+            default => '',
+        };
     }
 
     /**

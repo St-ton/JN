@@ -1,146 +1,115 @@
 <?php declare(strict_types=1);
 
-use JTL\Backend\AdminLoginStatus;
-use JTL\Backend\Revision;
-use JTL\Events\Event;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Language\LanguageHelper;
+use JTL\License\Checker;
+use JTL\License\Manager;
+use JTL\License\Mapper;
+use JTL\Plugin\Admin\StateChanger;
 use JTL\Profiler;
+use JTL\Router\Router;
+use JTL\Router\State;
 use JTL\Services\JTL\CaptchaServiceInterface;
 use JTL\Services\JTL\SimpleCaptchaService;
 use JTL\Session\Backend;
 use JTL\Shop;
+use JTL\Shopsetting;
+use JTL\Smarty\BackendSmarty;
 use JTL\Update\Updater;
-use JTLShop\SemVer\Version;
 
-if (!isset($bExtern) || !$bExtern) {
-    if (isset($_REQUEST['safemode'])) {
-        $GLOBALS['plgSafeMode'] = in_array(strtolower($_REQUEST['safemode']), ['1', 'on', 'ein', 'true', 'wahr']);
-    }
-    define('DEFINES_PFAD', __DIR__ . '/../../includes/');
-    require DEFINES_PFAD . 'config.JTL-Shop.ini.php';
-    require DEFINES_PFAD . 'defines.php';
-    require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admindefines.php';
-    defined('DB_HOST') || die('Kein MySQL-Datenbank Host angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
-    defined('DB_NAME') || die('Kein MySQL Datenbanknamen angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
-    defined('DB_USER') || die('Kein MySQL-Datenbank Benutzer angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
-    defined('DB_PASS') || die('Kein MySQL-Datenbank Passwort angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
+if (isset($_REQUEST['safemode'])) {
+    $GLOBALS['plgSafeMode'] = in_array(strtolower($_REQUEST['safemode']), ['1', 'on', 'ein', 'true', 'wahr']);
 }
+const DEFINES_PFAD = __DIR__ . '/../../includes/';
+require DEFINES_PFAD . 'config.JTL-Shop.ini.php';
+require DEFINES_PFAD . 'defines.php';
+
+error_reporting(ADMIN_LOG_LEVEL);
+date_default_timezone_set(SHOP_TIMEZONE);
+
+defined('DB_HOST') || die('Kein MySQL-Datenbankhost angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
+defined('DB_NAME') || die('Kein MySQL Datenbankname angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
+defined('DB_USER') || die('Kein MySQL-Datenbankbenutzer angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
+defined('DB_PASS') || die('Kein MySQL-Datenbankpasswort angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
 require PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
-require PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
-require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admin_tools.php';
-
-define(
-    'JTL_VERSION',
-    (int)sprintf(
-        '%d%02d',
-        Version::parse(APPLICATION_VERSION)->getMajor(),
-        Version::parse(APPLICATION_VERSION)->getMinor()
-    )
-); // DEPRECATED since 5.0.0
-define('JTL_MINOR_VERSION', (int)Version::parse(APPLICATION_VERSION)->getPatch()); // DEPRECATED since 5.0.0
 
 if (!function_exists('Shop')) {
     /**
      * @return Shop
+     * @deprecated since 5.2.0
      */
     function Shop(): Shop
     {
+        trigger_error(__METHOD__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
         return Shop::getInstance();
     }
 }
+
+/**
+ * @param string $route
+ * @return void
+ */
+function routeRedirect(string $route): void
+{
+    header('Location: ' . Shop::getAdminURL() . '/' . $route, true, 308);
+    exit();
+}
+
 Profiler::start();
-$db    = Shop::Container()->getDB();
-$cache = Shop::Container()->getCache()->setJtlCacheConfig(
+Shop::setIsFrontend(false);
+$db       = Shop::Container()->getDB();
+$cache    = Shop::Container()->getCache()->setJtlCacheConfig(
     $db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING)
 );
-Shop::setIsFrontend(false);
-$session    = Backend::getInstance();
-$lang       = LanguageHelper::getInstance($db, $cache);
-$oAccount   = Shop::Container()->getAdminAccount();
-$loggedIn   = $oAccount->logged();
-$updater    = new Updater($db);
-$hasUpdates = $updater->hasPendingUpdates();
-$conf       = Shop::getSettings([CONF_GLOBAL]);
-
-if ($loggedIn && isset($GLOBALS['plgSafeMode'])) {
-    if ($GLOBALS['plgSafeMode']) {
-        touch(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR . 'safemode.lck');
-    } elseif (file_exists(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR . 'safemode.lck')) {
-        unlink(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR . 'safemode.lck');
-    }
-}
-
-if (!empty($_COOKIE['JTLSHOP']) && empty($_SESSION['frontendUpToDate'])) {
-    $adminToken   = $_SESSION['jtl_token'];
-    $adminLangTag = $_SESSION['AdminAccount']->language;
-    $eSIdAdm      = session_id();
-    session_write_close();
-    session_name('JTLSHOP');
-    session_id($_COOKIE['JTLSHOP']);
-    session_start();
-    $_SESSION['loggedAsAdmin'] = $loggedIn;
-    $_SESSION['adminToken']    = $adminToken;
-    $_SESSION['adminLangTag']  = $adminLangTag;
-    session_write_close();
-    session_name('eSIdAdm');
-    session_id($eSIdAdm);
-    $session = new Backend();
-    $session::set('frontendUpToDate', true);
-}
-
-if ($loggedIn
-    && $_SERVER['REQUEST_METHOD'] === 'GET'
-    && Request::verifyGPDataString('action') !== 'quick_change_language'
-    && strpos($_SERVER['SCRIPT_FILENAME'], 'logout') === false
-    && strpos($_SERVER['SCRIPT_FILENAME'], 'dbupdater') === false
-    && strpos($_SERVER['SCRIPT_FILENAME'], 'io.php') === false
-    && $hasUpdates
-) {
-    header('Location: ' . Shop::getAdminURL(true) . '/dbupdater.php');
-    exit;
-}
-if ($loggedIn
-    && ($conf['global']['global_wizard_done'] ?? 'Y') === 'N'
-    && strpos($_SERVER['SCRIPT_FILENAME'], 'wizard') === false
-    && !$hasUpdates
-    && !Backend::get('redirectedToWizard')
-) {
-    header('Location: ' . Shop::getAdminURL(true) . '/wizard.php');
-    exit;
-}
-
-require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'smartyinclude.php';
+$session  = Backend::getInstance();
+$lang     = LanguageHelper::getInstance($db, $cache);
+$oAccount = Shop::Container()->getAdminAccount();
+$updates  = collect([]);
+$expired  = collect([]);
+Shop::setRouter(new Router(
+    $db,
+    $cache,
+    new State(),
+    Shop::Container()->getAlertService(),
+    Shopsetting::getInstance()->getAll()
+));
+$smarty = new BackendSmarty($db);
 
 Shop::Container()->singleton(CaptchaServiceInterface::class, static function () {
     return new SimpleCaptchaService(true);
 });
-if (!$hasUpdates) {
-    Shop::bootstrap(false);
-}
-if ($loggedIn) {
-    if (!$session->isValid()) {
-        $oAccount->logout();
-        $oAccount->redirectOnFailure(AdminLoginStatus::ERROR_SESSION_INVALID);
+$hasUpdates = (new Updater($db))->hasPendingUpdates();
+if ($hasUpdates === false) {
+    if (Request::getVar('licensenoticeaccepted') === 'true') {
+        $_SESSION['licensenoticeaccepted'] = 0;
     }
-
-    if (isset($_POST['revision-action'], $_POST['revision-type'], $_POST['revision-id']) && Form::validateToken()) {
-        $revision = new Revision($db);
-        Shop::fire(Event::REVISION_RESTORE_DELETE, ['revision' => $revision]);
-        if ($_POST['revision-action'] === 'restore') {
-            $revision->restoreRevision(
-                $_POST['revision-type'],
-                (int)$_POST['revision-id'],
-                Request::postInt('revision-secondary') === 1
-            );
-        } elseif ($_POST['revision-action'] === 'delete') {
-            $revision->deleteRevision((int)$_POST['revision-id']);
+    if (Request::postVar('action') === 'disable-expired-plugins' && Form::validateToken()) {
+        $sc = new StateChanger($db, $cache);
+        foreach ($_POST['pluginID'] as $pluginID) {
+            $sc->deactivate((int)$pluginID);
         }
     }
+    $mapper         = new Mapper(new Manager($db, $cache));
+    $checker        = new Checker(Shop::Container()->getBackendLogService(), $db, $cache);
+    $updates        = $checker->getUpdates($mapper);
+    $noticeAccepted = (int)($_SESSION['licensenoticeaccepted'] ?? -1);
+    if ($noticeAccepted === -1 && SAFE_MODE === false) {
+        $expired = $checker->getLicenseViolations($mapper);
+    } else {
+        $noticeAccepted++;
+    }
+    if ($noticeAccepted > 5) {
+        $noticeAccepted = -1;
+    }
+    $_SESSION['licensenoticeaccepted'] = $noticeAccepted;
+    Shop::bootstrap(false, $db, $cache);
 }
-
-Shop::Container()->getGetText()->loadAdminLocale('pages/' . basename($_SERVER['PHP_SELF'], '.php'));
+$smarty->assign('account', $oAccount->account())
+    ->assign('favorites', $oAccount->favorites())
+    ->assign('licenseItemUpdates', $updates)
+    ->assign('expiredLicenses', $expired)
+    ->assign('hasPendingUpdates', $hasUpdates);

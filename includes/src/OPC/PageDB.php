@@ -5,7 +5,8 @@ namespace JTL\OPC;
 use Exception;
 use JTL\Backend\Revision;
 use JTL\DB\DbInterface;
-use JTL\Shop;
+use JTL\Events\Dispatcher;
+use JTL\Events\Event;
 use JTL\Update\Updater;
 use stdClass;
 
@@ -16,17 +17,11 @@ use stdClass;
 class PageDB
 {
     /**
-     * @var DbInterface
-     */
-    protected $shopDB;
-
-    /**
      * PageDB constructor.
      * @param DbInterface $shopDB
      */
-    public function __construct(DbInterface $shopDB)
+    public function __construct(protected DbInterface $shopDB)
     {
-        $this->shopDB = $shopDB;
     }
 
     /**
@@ -94,6 +89,7 @@ class PageDB
      * @param int $id
      * @return object
      * @throws Exception
+     * @throws \JsonException
      */
     public function getRevisionRow(int $id)
     {
@@ -103,7 +99,7 @@ class PageDB
             throw new Exception('The OPC page revision could not be found in the database.');
         }
 
-        return \json_decode($revisionRow->content);
+        return \json_decode($revisionRow->content, false, 512, \JSON_THROW_ON_ERROR);
     }
 
     /**
@@ -188,7 +184,7 @@ class PageDB
         $publicRow = $this->getPublicPageRow($id);
         $page      = $publicRow === null ? null : $this->getPageFromRow($publicRow);
 
-        Shop::fire('shop.OPC.PageDB.getPublicPage', [
+        Dispatcher::getInstance()->fire(Event::OPC_PAGEDB_GETPUBLICPAGE, [
             'id'   => $id,
             'page' => &$page
         ]);
@@ -199,52 +195,35 @@ class PageDB
     /**
      * @param string $pageID
      * @return string|null
+     * @todo!! generate better URLs
      */
     public function getPageSeo(string $pageID): ?string
     {
-        $pageIdObj = \json_decode($pageID);
+        $pageIdObj = \json_decode($pageID, false, 512, \JSON_THROW_ON_ERROR);
 
         if (empty($pageIdObj)) {
             return null;
         }
 
-        switch ($pageIdObj->type) {
-            case 'product':
-                $cKey = 'kArtikel';
-                break;
-            case 'category':
-                $cKey = 'kKategorie';
-                break;
-            case 'manufacturer':
-                $cKey = 'kHersteller';
-                break;
-            case 'link':
-                $cKey = 'kLink';
-                break;
-            case 'attrib':
-                $cKey = 'kMerkmalWert';
-                break;
-            case 'special':
-                $cKey = 'suchspecial';
-                break;
-            case 'news':
-                $cKey = 'kNews';
-                break;
-            case 'newscat':
-                $cKey = 'kNewsKategorie';
-                break;
-            default:
-                $cKey = null;
-                break;
-        }
+        $key = match ($pageIdObj->type) {
+            'product'      => 'kArtikel',
+            'category'     => 'kKategorie',
+            'manufacturer' => 'kHersteller',
+            'link'         => 'kLink',
+            'attrib'       => 'kMerkmalWert',
+            'special'      => 'suchspecial',
+            'news'         => 'kNews',
+            'newscat'      => 'kNewsKategorie',
+            default        => null,
+        };
 
-        if (empty($cKey)) {
+        if (empty($key)) {
             return null;
         }
 
         $seo = $this->shopDB->getSingleObject(
             'SELECT cSeo FROM tseo WHERE cKey = :ckey AND kKey = :key AND kSprache = :lang',
-            ['ckey' => $cKey, 'key' => $pageIdObj->id, 'lang' => $pageIdObj->lang]
+            ['ckey' => $key, 'key' => $pageIdObj->id, 'lang' => $pageIdObj->lang]
         );
         if ($seo === null) {
             return null;
@@ -252,9 +231,11 @@ class PageDB
 
         if (!empty($pageIdObj->attribs)) {
             $attribSeos = $this->shopDB->getObjects(
-                "SELECT cSeo FROM tseo WHERE cKey = 'kMerkmalWert'
-                     AND kKey IN (" . \implode(',', $pageIdObj->attribs) . ')
-                     AND kSprache = :lang',
+                "SELECT cSeo 
+                    FROM tseo 
+                    WHERE cKey = 'kMerkmalWert'
+                        AND kKey IN (" . \implode(',', $pageIdObj->attribs) . ')
+                        AND kSprache = :lang',
                 ['lang' => $pageIdObj->lang]
             );
             if (\count($attribSeos) !== \count($pageIdObj->attribs)) {
@@ -301,7 +282,7 @@ class PageDB
             throw new Exception('The OPC page data to be saved is incomplete or invalid.');
         }
 
-        Shop::fire('shop.OPC.PageDB.saveDraft:afterValidate', [
+        Dispatcher::getInstance()->fire(Event::OPC_PAGEDB_SAVEDRAFT_POSTVALIDATE, [
             'page' => &$page
         ]);
 
@@ -313,7 +294,7 @@ class PageDB
             'dPublishTo'    => $page->getPublishTo() ?? '_DBNULL_',
             'cName'         => $page->getName(),
             'cPageUrl'      => $page->getUrl(),
-            'cAreasJson'    => \json_encode($page->getAreaList()),
+            'cAreasJson'    => \json_encode($page->getAreaList(), \JSON_THROW_ON_ERROR),
             'dLastModified' => $page->getLastModified() ?? '_DBNULL_',
             'cLockedBy'     => $page->getLockedBy(),
             'dLockedAt'     => $page->getLockedAt() ?? '_DBNULL_',
@@ -443,13 +424,13 @@ class PageDB
             ->setLockedBy($row->cLockedBy)
             ->setLockedAt($row->dLockedAt);
 
-        $areaData = \json_decode($row->cAreasJson, true);
+        $areaData = \json_decode($row->cAreasJson, true, 512, \JSON_THROW_ON_ERROR);
 
         if ($areaData !== null) {
             $page->getAreaList()->deserialize($areaData);
         }
 
-        Shop::fire('shop.OPC.PageDB.getPageRow', [
+        Dispatcher::getInstance()->fire(Event::OPC_PAGEDB_GETPAGEROW, [
             'row'  => &$row,
             'page' => &$page
         ]);

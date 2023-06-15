@@ -13,62 +13,62 @@ class Alert
     /**
      * @var string
      */
-    private $message;
+    private string $message;
 
     /**
      * @var string
      */
-    private $type;
+    private string $type;
 
     /**
      * @var string
      */
-    private $key;
+    private string $key;
 
     /**
      * @var bool
      */
-    private $dismissable = false;
+    private bool $dismissable = false;
 
     /**
      * @var int
      */
-    private $fadeOut = self::FADE_NEVER;
+    private int $fadeOut = self::FADE_NEVER;
 
     /**
      * @var bool
      */
-    private $showInAlertListTemplate = true;
+    private bool $showInAlertListTemplate = true;
 
     /**
      * @var bool
      */
-    private $saveInSession = false;
+    private bool $saveInSession = false;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $linkHref;
+    private ?string $linkHref = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $linkText;
+    private ?string $linkText = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $icon;
+    private ?string $icon = null;
 
     /**
      * @var array|null
      */
-    private $options;
+    private ?array $options = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $id;
+    private ?string $id = null;
 
     public const TYPE_PRIMARY   = 'primary';
     public const TYPE_SECONDARY = 'secondary';
@@ -390,7 +390,7 @@ class Alert
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getId(): ?string
     {
@@ -434,13 +434,10 @@ class Alert
      */
     public function getCssType(): string
     {
-        switch ($this->getType()) {
-            case self::TYPE_ERROR:
-                return self::TYPE_DANGER;
-            case self::TYPE_NOTE:
-                return self::TYPE_INFO;
-            default:
-                return $this->getType();
-        }
+        return match ($this->getType()) {
+            self::TYPE_ERROR => self::TYPE_DANGER,
+            self::TYPE_NOTE  => self::TYPE_INFO,
+            default          => $this->getType(),
+        };
     }
 }

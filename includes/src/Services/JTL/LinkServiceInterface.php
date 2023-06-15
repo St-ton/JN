@@ -40,6 +40,13 @@ interface LinkServiceInterface
     public function reset(): void;
 
     /**
+     * @param int    $languageID
+     * @param string $locale
+     * @return void
+     */
+    public function updateDefaultLanguageData(int $languageID, string $locale): void;
+
+    /**
      * @param int $id
      * @return LinkInterface|null
      */
@@ -85,9 +92,9 @@ interface LinkServiceInterface
     /**
      * @former gibLinkKeySpecialSeite()
      * @param int $linkType
-     * @return LinkInterface|null
+     * @return LinkInterface
      */
-    public function getSpecialPage(int $linkType): ?LinkInterface;
+    public function getSpecialPage(int $linkType): LinkInterface;
 
     /**
      * @former gibLinkKeySpecialSeite()

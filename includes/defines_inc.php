@@ -1,10 +1,12 @@
 <?php declare(strict_types=1);
 
 // Version
-const APPLICATION_VERSION         = '5.2.0-alpha';
+const APPLICATION_VERSION         = '5.2.3-beta';
 const APPLICATION_BUILD_SHA       = '#DEV#';
 const JTL_MIN_WAWI_VERSION        = 100000;
 const JTL_MIN_SHOP_UPDATE_VERSION = '4.2.0';
+
+const SMARTY_MBSTRING = true;
 // Einstellungssektionen
 const CONF_GLOBAL            = 1;
 const CONF_STARTSEITE        = 2;
@@ -224,6 +226,9 @@ const LINKTYP_BESTELLABSCHLUSS        = 33;
 const LINKTYP_WUNSCHLISTE             = 34;
 const LINKTYP_VERGLEICHSLISTE         = 35;
 const LINKTYP_REFERENZ                = 36;
+const LINKTYP_WARTUNG                 = 37;
+const LINKTYP_BESTELLSTATUS           = 38;
+const LINKTYP_BEWERTUNG               = 39;
 // Artikel
 const INWKNICHTLEGBAR_LAGER              = -1;
 const INWKNICHTLEGBAR_LAGERVAR           = -2;
@@ -268,6 +273,7 @@ const FKT_ATTRIBUT_INHALT                   = 'inhalt';
 const FKT_ATTRIBUT_CANONICALURL_VARKOMBI    = 'varkombi_canonicalurl';
 const FKT_ATTRIBUT_VOUCHER                  = 'jtl_voucher';
 const FKT_ATTRIBUT_VOUCHER_FLEX             = 'jtl_voucher_flex';
+const FKT_ATTRIBUT_NO_GAL_VAR_PREVIEW       = 'no_gall_var_preview';
 
 /**
  * @deprecated
@@ -386,7 +392,7 @@ const PAGE_NEWSLETTER     = 8; // Newsletter
 const PAGE_LOGIN          = 9; // Login
 const PAGE_REGISTRIERUNG  = 10; // Registrierung
 const PAGE_BESTELLVORGANG = 11; // Bestellvorgang
-const PAGE_BEWERTUNG      = 12; // Bewertung [NEIN]
+const PAGE_BEWERTUNG      = 12; // Bewertung
 /**
  * @deprecated
  */

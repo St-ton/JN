@@ -13,37 +13,37 @@ class Profiler
     /**
      * @var bool
      */
-    public static $functional = false;
+    public static bool $functional = false;
 
     /**
      * @var bool
      */
-    public static $enabled = false;
+    public static bool $enabled = false;
 
     /**
      * @var bool
      */
-    public static $started = false;
+    public static bool $started = false;
 
     /**
      * @var array
      */
-    public static $data = [];
+    public static array $data = [];
 
     /**
      * @var string
      */
-    public static $dataDir = '/tmp';
+    public static string $dataDir = '/tmp';
 
     /**
      * @var int
      */
-    public static $flags = -1;
+    public static int $flags = -1;
 
     /**
      * @var array
      */
-    public static $options = [];
+    public static array $options = [];
 
     /**
      * @var object
@@ -56,27 +56,27 @@ class Profiler
      *
      * @var bool
      */
-    private static $stopProfiling = false;
+    private static bool $stopProfiling = false;
 
     /**
      * @var array
      */
-    private static $pluginProfile = [];
+    private static array $pluginProfile = [];
 
     /**
      * @var array
      */
-    private static $sqlProfile = [];
+    private static array $sqlProfile = [];
 
     /**
      * @var array
      */
-    private static $sqlErrors = [];
+    private static array $sqlErrors = [];
 
     /**
      * @var array
      */
-    private static $cacheProfile = [
+    private static array $cacheProfile = [
         'options' => [],
         'get'     => ['success' => [], 'failure' => []],
         'set'     => ['success' => [], 'failure' => []],
@@ -212,7 +212,7 @@ class Profiler
                 $obj                       = new stdClass();
                 $obj->runtime              = $queryRun->time;
                 $obj->runcount             = $queryRun->count;
-                $obj->statement            = \trim($queryRun->statement);
+                $obj->statement            = \trim($queryRun->statement ?? '');
                 $obj->tablename            = $queryRun->table;
                 $obj->data                 = isset($queryRun->backtrace)
                     ? \serialize(['backtrace' => $queryRun->backtrace])
@@ -525,7 +525,7 @@ class Profiler
         }
         if (\defined('FILTER_SQL_QUERIES') && \FILTER_SQL_QUERIES === true) {
             $hashes           = [];
-            self::$sqlProfile = \array_filter(self::$sqlProfile, static function ($e) use (&$hashes) {
+            self::$sqlProfile = \array_filter(self::$sqlProfile, static function ($e) use (&$hashes): bool {
                 if (!\in_array($e->hash, $hashes, true)) {
                     $hashes[] = $e->hash;
 
@@ -591,5 +591,17 @@ class Profiler
             echo '</ul>';
         }
         echo '</div>';
+    }
+
+    public static function finalize(): void
+    {
+        self::savePluginProfile();
+        self::saveSQLProfile();
+        self::output();
+        if (self::getIsStarted() === true) {
+            self::finish();
+            $data = self::getData();
+            echo $data['html'];
+        }
     }
 }

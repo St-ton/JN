@@ -113,7 +113,7 @@ class OPC extends AbstractImage
             if (!$fileinfo->isFile() || !\in_array($fileinfo->getExtension(), self::$imageExtensions, true)) {
                 continue;
             }
-            if (\strpos($fileinfo->getPath(), '.tmb') !== false) {
+            if (\str_contains($fileinfo->getPath(), '.tmb')) {
                 continue;
             }
             if ($offset !== null && $offset > $index++) {
@@ -123,16 +123,13 @@ class OPC extends AbstractImage
             if ($limit !== null && $yielded > $limit) {
                 return;
             }
-            $path  = \str_replace($base, '', $fileinfo->getPathname());
-            $parts = \explode('/', $path);
-            $id    = 0;
-            if (isset($parts[0]) && \is_numeric($parts[0])) {
-                $id = (int)$parts[0];
-            }
+            $ext  = '.' . $fileinfo->getExtension();
+            $path = \str_replace($base, '', $fileinfo->getPathname());
+            $name = \str_replace($ext, '', $path);
             yield MediaImageRequest::create([
-                'id'         => $id,
+                'id'         => 0,
                 'type'       => self::TYPE,
-                'name'       => $fileinfo->getBasename('.' . $fileinfo->getExtension()),
+                'name'       => $name,
                 'number'     => 1,
                 'path'       => $path,
                 'sourcePath' => $path,

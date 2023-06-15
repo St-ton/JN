@@ -28,6 +28,11 @@ class Synclogin
     public ?string $cPass = null;
 
     /**
+     * @var int|null
+     */
+    public ?int $kSynclogin = null;
+
+    /**
      * Synclogin constructor.
      * @param DbInterface     $db
      * @param LoggerInterface $logger
@@ -36,9 +41,10 @@ class Synclogin
     {
         $obj = $db->select('tsynclogin', 'kSynclogin', 1);
         if ($obj !== null) {
-            foreach (\array_keys(\get_object_vars($obj)) as $member) {
-                $this->$member = $obj->$member;
-            }
+            $this->cMail      = $obj->cMail;
+            $this->cName      = $obj->cName;
+            $this->cPass      = $obj->cPass;
+            $this->kSynclogin = (int)$obj->kSynclogin;
         } else {
             $logger->error('Kein Sync-Login gefunden.');
         }

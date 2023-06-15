@@ -49,7 +49,7 @@ class Manufacturer extends AbstractImage
                 FROM thersteller
                 WHERE kHersteller = :mid',
             ['mid' => $req->getID()]
-        )->each(static function ($item, $key) use ($req) {
+        )->each(static function ($item, $key) use ($req): void {
             if ($key === 0 && !empty($item->path)) {
                 $req->setSourcePath($item->path);
             }
@@ -67,11 +67,13 @@ class Manufacturer extends AbstractImage
                 /** @var string|null $result */
                 $result = $mixed->path ?? $mixed->cBildpfad ?? null;
                 if ($result !== null) {
-                    $result = \pathinfo($result)['filename'];
+                    $result = \pathinfo($result, \PATHINFO_FILENAME);
                 }
                 break;
             case 1:
-                $result = $mixed->originalSeo ?? $mixed->seoPath ?? $mixed->cName ?? null;
+                $result = \method_exists($mixed, 'getOriginalSeo')
+                    ? $mixed->getOriginalSeo()
+                    : ($mixed->seoPath ?? $mixed->cName ?? null);
                 break;
             case 0:
             default:

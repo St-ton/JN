@@ -2,12 +2,12 @@
 
 namespace JTL\Crawler;
 
-use JTL\Alert\Alert;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
+use JTL\Router\Route;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Shop;
 use stdClass;
@@ -19,31 +19,16 @@ use stdClass;
 class Controller
 {
     /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private $cache;
-
-    /**
-     * @var AlertServiceInterface
-     */
-    protected $alertService;
-
-    /**
      * Crawler constructor.
      * @param DbInterface                $db
      * @param JTLCacheInterface          $cache
      * @param AlertServiceInterface|null $alertService
      */
-    public function __construct(DbInterface $db, JTLCacheInterface $cache, AlertServiceInterface $alertService = null)
-    {
-        $this->db           = $db;
-        $this->cache        = $cache;
-        $this->alertService = $alertService;
+    public function __construct(
+        private DbInterface $db,
+        private JTLCacheInterface $cache,
+        protected ?AlertServiceInterface $alertService = null
+    ) {
     }
 
     /**
@@ -88,7 +73,7 @@ class Controller
             return false;
         }
         $crawlers = $this->getAllCrawlers();
-        $result   = \array_filter($crawlers, static function ($item) use ($userAgent) {
+        $result   = \array_filter($crawlers, static function ($item) use ($userAgent): bool {
             return $item->cUserAgent !== '' && \mb_stripos($userAgent, $item->cUserAgent) !== false;
         });
         $result   = \array_values($result);
@@ -142,7 +127,7 @@ class Controller
         if (Form::validateToken() === false
             && (Request::postInt('save_crawler') || Request::postInt('delete_crawler'))
         ) {
-            $this->alertService->addAlert(Alert::TYPE_ERROR, \__('errorCSRF'), 'errorCSRF');
+            $this->alertService->addError(\__('errorCSRF'), 'errorCSRF');
 
             return false;
         }
@@ -158,16 +143,13 @@ class Controller
                 $item->cBeschreibung = Text::filterXSS(Request::postVar('description'));
                 $result              = $this->saveCrawler($item);
                 if ($result === -1) {
-                    $this->alertService->addAlert(
-                        Alert::TYPE_ERROR,
-                        \__('missingCrawlerFields'),
-                        'missingCrawlerFields'
-                    );
+                    $this->alertService->addError(\__('missingCrawlerFields'), 'missingCrawlerFields');
                 } else {
-                    \header('Location: ' . Shop::getAdminURL() . '/statistik.php?s=3&tab=settings');
+                    \header('Location: ' . Shop::getAdminURL() . '/' . Route::STATS . '/3?tab=settings');
+                    exit;
                 }
             } else {
-                $this->alertService->addAlert(Alert::TYPE_ERROR, \__('missingCrawlerFields'), 'missingCrawlerFields');
+                $this->alertService->addError(\__('missingCrawlerFields'), 'missingCrawlerFields');
             }
         }
         $crawler = false;

@@ -1,11 +1,11 @@
 {include file='tpl_inc/header.tpl'}
-{include file='tpl_inc/seite_header.tpl' cTitel=__('dbManager') cBeschreibung="<kbd>{__('tableViews')}({$tables|count})</kbd>" cDokuURL=__('dbcheckURL')}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('dbManager') cBeschreibung="<kbd>{__('tableViews')}({count($tables)})</kbd>" cDokuURL=__('dbcheckURL')}
 
 {function table_scope_header table=null}
     <h2>{__('table')}: {$table}
         <div class="btn-group btn-group-xs" role="group">
-            <a href="{$adminURL}/dbmanager.php?table={$table}&token={$smarty.session.jtl_token}" class="btn btn-default"><span class="glyphicon glyphicon-equalizer"></span> {__('structure')}</a>
-            <a href="{$adminURL}/dbmanager.php?select={$table}&token={$smarty.session.jtl_token}" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> {__('show')}</a>
+            <a href="{$adminURL}{$route}?table={$table}&token={$smarty.session.jtl_token}" class="btn btn-default"><span class="glyphicon glyphicon-equalizer"></span> {__('structure')}</a>
+            <a href="{$adminURL}{$route}?select={$table}&token={$smarty.session.jtl_token}" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> {__('show')}</a>
         </div>
     </h2>
 {/function}
@@ -40,11 +40,11 @@
 {/capture}
 
 <script>
-var $add_row_tpl = $({$filter_row_tpl_data|strip|json_encode});
-{if isset($info) && isset($info.statement)}var sql_query = {$info.statement|json_encode};{/if}
+var $add_row_tpl = $({json_encode($filter_row_tpl_data|strip)});
+{if isset($info) && isset($info.statement)}var sql_query = {json_encode($info.statement)};{/if}
 
 $(function() {
-    var new_content = '<form action="{$adminURL}/dbmanager.php?command" method="POST">';
+    var new_content = '<form action="{$adminURL}{$route}?command" method="POST">';
     new_content += '{$jtl_token}';
     $search = $('#db-search');
 
@@ -100,7 +100,7 @@ $(function() {
         var $inner_sql = $(this).parents('.query').find('code.sql');
         var old_text   = $inner_sql.html();
 
-        var new_content = '<form action="{$adminURL}/dbmanager.php?command" method="POST">';
+        var new_content = '<form action="{$adminURL}{$route}?command" method="POST">';
         new_content += '{$jtl_token}';
         new_content += '<div class="form-group"><textarea name="sql_query_edit" id="sql_query_edit">' + sql_query + '</textarea></div>';
         new_content += '<div class="form-group btn-group-xs last-child">';
@@ -131,9 +131,8 @@ $(function() {
 });
 
 function get_params(p) {
-    var params = $('#filter form').serializeArray();
-
-    for (var i = 0; i < params.length; i++) {
+    let params = $('#filter form').serializeArray();
+    for (let i = 0; i < params.length; i++) {
         if (params[i].name === 'page') {
             delete params[i];
         }
@@ -145,15 +144,14 @@ function get_params(p) {
 
 function add_row_listener() {
     $(document).on('click', '*[data-action="add-row"] > a', function(e) {
-        var $row = $(this).parent('.fieldset-row');
-        var $body = $row.parent('.fieldset-body');
+        let $row = $(this).parent('.fieldset-row');
+        let $body = $row.parent('.fieldset-body');
 
         if ($row.is('.fieldset-row:first')) {
             $add_row_tpl
                 .clone()
                 .appendTo($body);
-        }
-        else {
+        } else {
             $row.remove();
         }
 
@@ -163,14 +161,14 @@ function add_row_listener() {
 }
 
 function filter_tables(value) {
-    var rex = new RegExp(value, 'i');
-    var $nav = $('.db-sidenav');
-    var $items = $nav.find('li');
+    const rex = new RegExp(value, 'i');
+    const $nav = $('.db-sidenav');
+    const $items = $nav.find('li');
 
     $items.hide();
     $nav.unhighlight();
 
-    var $found = $items.filter(function () {
+    const $found = $items.filter(function () {
         return rex.test($(this).text());
     });
 
@@ -185,12 +183,12 @@ function filter_tables(value) {
 /*****************************************************************************************************/
 
 function highlight_sql($base) {
-    var $elm = $base.find('code.sql');
+    const $elm = $base.find('code.sql');
     $elm.each(function () {
-        var $sql = $(this),
+        let $sql = $(this),
             $div = $sql.find('div');
         if ($div.is(":visible")) {
-            var $highlight = $('<div class="sql-highlight cm-s-default"></div>');
+            let $highlight = $('<div class="sql-highlight cm-s-default"></div>');
             $sql.append($highlight);
             if (typeof CodeMirror !== 'undefined') {
                 CodeMirror.runMode($sql.text(), 'text/x-mysql', $highlight[0]);
@@ -203,7 +201,7 @@ function highlight_sql($base) {
 function get_sql_editor($textarea, options, resize, lintOptions) {
     if ($textarea.length > 0 && typeof CodeMirror !== 'undefined') {
         // merge options for CodeMirror
-        var defaults = {
+        let defaults = {
             lineNumbers: true,
             matchBrackets: true,
             extraKeys: { "Ctrl-Space": "autocomplete" },
@@ -230,7 +228,7 @@ function get_sql_editor($textarea, options, resize, lintOptions) {
         $.extend(true, defaults, options);
 
         // create CodeMirror editor
-        var codemirrorEditor = CodeMirror.fromTextArea($textarea[0], defaults);
+        const codemirrorEditor = CodeMirror.fromTextArea($textarea[0], defaults);
         codemirrorEditor.setCursor($textarea.val().length);
 
         // allow resizing
@@ -264,12 +262,12 @@ function get_sql_editor($textarea, options, resize, lintOptions) {
 }
 
 CodeMirror.runMode = function(string, modespec, callback, options) {
-    var mode = CodeMirror.getMode(CodeMirror.defaults, modespec),
+    const mode = CodeMirror.getMode(CodeMirror.defaults, modespec),
         ie = /MSIE \d/.test(navigator.userAgent),
         ie_lt9 = ie && (document.documentMode === null || document.documentMode < 9);
 
     if (callback.nodeType == 1) {
-        var tabSize = (options && options.tabSize) || CodeMirror.defaults.tabSize,
+        let tabSize = (options && options.tabSize) || CodeMirror.defaults.tabSize,
             node = callback, col = 0;
         node.innerHTML = "";
         callback = function(text, style) {
@@ -278,9 +276,9 @@ CodeMirror.runMode = function(string, modespec, callback, options) {
                 col = 0;
                 return;
             }
-            var content = "";
-            for (var pos = 0;;) {
-                var idx = text.indexOf("\t", pos);
+            let content = "";
+            for (let pos = 0;;) {
+                let idx = text.indexOf("\t", pos);
                 if (idx === -1) {
                     content += text.slice(pos);
                     col += text.length - pos;
@@ -288,15 +286,15 @@ CodeMirror.runMode = function(string, modespec, callback, options) {
                 } else {
                     col += idx - pos;
                     content += text.slice(pos, idx);
-                    var size = tabSize - col % tabSize;
+                    let size = tabSize - col % tabSize;
                     col += size;
-                    for (var i = 0; i < size; ++i) content += " ";
+                    for (let i = 0; i < size; ++i) content += " ";
                     pos = idx + 1;
                 }
             }
 
             if (style) {
-                var sp = node.appendChild(document.createElement("span"));
+                const sp = node.appendChild(document.createElement("span"));
                 sp.className = "cm-" + style.replace(/ +/g, " cm-");
                 sp.appendChild(document.createTextNode(content));
             } else {
@@ -305,10 +303,10 @@ CodeMirror.runMode = function(string, modespec, callback, options) {
         };
     }
 
-    var lines = CodeMirror.splitLines(string), state = (options && options.state) || CodeMirror.startState(mode);
-    for (var i = 0, e = lines.length; i < e; ++i) {
+    const lines = CodeMirror.splitLines(string), state = (options && options.state) || CodeMirror.startState(mode);
+    for (let i = 0, e = lines.length; i < e; ++i) {
         if (i) callback("\n");
-        var stream = new CodeMirror.StringStream(lines[i]);
+        const stream = new CodeMirror.StringStream(lines[i]);
         if (!stream.string && mode.blankLine) mode.blankLine(state);
         while (!stream.eol()) {
             var style = mode.token(stream, state);
@@ -319,11 +317,11 @@ CodeMirror.runMode = function(string, modespec, callback, options) {
 };
 
 function bindCodeMirrorToInlineEditor() {
-    var $inline_editor = $('#sql_query_edit');
+    const $inline_editor = $('#sql_query_edit');
     if ($inline_editor.length > 0) {
         if (typeof CodeMirror !== 'undefined') {
-            var height = $inline_editor.css('height');
-            codemirror_inline_editor = get_sql_editor($inline_editor);
+            const height = $inline_editor.css('height');
+            let codemirror_inline_editor = get_sql_editor($inline_editor);
             codemirror_inline_editor.getWrapperElement().style.height = height;
             codemirror_inline_editor.refresh();
             codemirror_inline_editor.focus();
@@ -387,7 +385,7 @@ $(function() {
             <nav class="db-sidebar hidden-print hidden-xs hidden-sm">
                 <ul class="nav flex-column db-sidenav">
                     {foreach $tables as $table}
-                        <li><a href="{$adminURL}/dbmanager.php?select={$table@key}&token={$smarty.session.jtl_token}">{$table@key}</a></li>
+                        <li><a href="{$adminURL}{$route}?select={$table@key}&token={$smarty.session.jtl_token}">{$table@key}</a></li>
                     {/foreach}
                 </ul>
             </nav>
@@ -395,9 +393,9 @@ $(function() {
 
         <div class="col-md-10">
             <ol class="simple-menu">
-                <li><a href="{$adminURL}/dbmanager.php">{__('overview')}</a></li>
-                <li><a href="{$adminURL}/dbmanager.php?token={$smarty.session.jtl_token}&command"><span class="glyphicon glyphicon-flash"></span> {__('sqlCommand')}</a></li>
-                <li><a href="{$adminURL}/dbcheck.php">{__('consistency')}</a></li>
+                <li><a href="{$adminURL}{$route}">{__('overview')}</a></li>
+                <li><a href="{$adminURL}{$route}?token={$smarty.session.jtl_token}&command"><span class="glyphicon glyphicon-flash"></span> {__('sqlCommand')}</a></li>
+                <li><a href="{$adminURL}/dbcheck">{__('consistency')}</a></li>
             </ol>
 
             {if $sub === 'command'}
@@ -414,10 +412,14 @@ $(function() {
                     </div>
                 {/if}
 
-                <form action="{$adminURL}/dbmanager.php?command" method="POST">
+                <form action="{$adminURL}{$route}?command" method="POST">
                     {$jtl_token}
+                    {$hint = ''}
+                    {if $jsTypo !== null}
+                        {$hint = json_encode($jsTypo)}
+                    {/if}
                     <div class="form-group">
-                        <textarea name="query" id="query" class="codemirror sql" data-hint='{$jsTypo|json_encode}'>{if isset($info) && isset($info.statement)}{$info.statement}{/if}</textarea>
+                        <textarea name="query" id="query" class="codemirror sql" data-hint='{$hint}'>{if isset($info) && isset($info.statement)}{$info.statement}{/if}</textarea>
                     </div>
                     <div class="form-group">
                         <button type="submit" class="btn btn-primary"><i class="fa fa-share"></i> {__('execute')}</button>
@@ -426,7 +428,7 @@ $(function() {
 
                 <!-- ###################################################### -->
                 {if isset($result) && !isset($result[0])}
-                    <div class="alert alert-xs alert-success">
+                    <div class="alert alert-xs alert-info" style="margin-top:20px;">
                         <p>{__('noData')}</p>
                     </div>
                 {elseif isset($result[0])}
@@ -454,7 +456,7 @@ $(function() {
                 <!-- ###################################################### -->
 
             {elseif $sub === 'default'}
-                {if isset($tables) && $tables|count > 0}
+                {if isset($tables) && count($tables) > 0}
                     <div class="table-responsive">
                         <table class="table table-striped table-condensed table-bordered table-hover table-sticky-header">
                             <thead>
@@ -468,12 +470,12 @@ $(function() {
                             </tr>
                             </thead>
                             {foreach $tables as $table}
-                                <tr class="text-vcenter{if count($definedTables) > 0 && !($table@key|in_array:$definedTables || $table@key|substr:0:8 === 'xplugin_')} warning{/if}" id="table-{$table@key}">
-                                    <td><a href="{$adminURL}/dbmanager.php?select={$table@key}&token={$smarty.session.jtl_token}">{$table@key}</a></td>
+                                <tr class="text-vcenter{if count($definedTables) > 0 && !(in_array($table@key, $definedTables) || substr($table@key, 0, 8) === 'xplugin_')} warning{/if}" id="table-{$table@key}">
+                                    <td><a href="{$adminURL}{$route}?select={$table@key}&token={$smarty.session.jtl_token}">{$table@key}</a></td>
                                     <td class="text-center">
                                         <div class="btn-group btn-group-xs" role="group">
-                                            <a href="{$adminURL}/dbmanager.php?table={$table@key}&token={$smarty.session.jtl_token}" class="btn btn-default"><span class="glyphicon glyphicon-equalizer"></span> {__('structure')}</a>
-                                            <a href="{$adminURL}/dbmanager.php?select={$table@key}&token={$smarty.session.jtl_token}" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> {__('show')}</a>
+                                            <a href="{$adminURL}{$route}?table={$table@key}&token={$smarty.session.jtl_token}" class="btn btn-default"><span class="glyphicon glyphicon-equalizer"></span> {__('structure')}</a>
+                                            <a href="{$adminURL}{$route}?select={$table@key}&token={$smarty.session.jtl_token}" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> {__('show')}</a>
                                         </div>
                                     </td>
                                     <td class="text-center">{$table->Engine}</td>
@@ -531,7 +533,11 @@ $(function() {
                 {table_scope_header table=$selectedTable}
                 {$headers = array_keys($columns)}
                 <div id="filter">
-                    <form method="GET" action="{$adminURL}/dbmanager.php" data-sql={$info.statement|json_encode}>
+                    {$stmt = ''}
+                    {if $info !== null}
+                        {$stmt = json_encode($info.statement)}
+                    {/if}
+                    <form method="GET" action="{$adminURL}{$route}" data-sql={$stmt}>
                         <input type="hidden" name="token" value="{$smarty.session.jtl_token}">
                         <input type="hidden" name="select" value="{$selectedTable}">
 
@@ -541,7 +547,7 @@ $(function() {
                             </legend>
 
                             <div class="fieldset-body">
-                                {if isset($filter.where.col) && $filter.where.col|count > 0}
+                                {if isset($filter.where.col) && count($filter.where.col) > 0}
                                     {for $i=0 to count($filter.where.col) - 1}
                                         {filter_row headers=$headers col=$filter.where.col[$i] op=$filter.where.op[$i] val=$filter.where.val[$i] remove=$i}
                                     {/for}
@@ -566,20 +572,20 @@ $(function() {
                         </fieldset>
                     </form>
                 </div>
-
-                <div class="query">
-                    <div class="query-code">
-                        <code class="sql"><div>{$info.statement}</div></code>
+                {if $info !== null}
+                    <div class="query">
+                        <div class="query-code">
+                            <code class="sql"><div>{$info.statement}</div></code>
+                        </div>
+                        <div class="query-sub">
+                            <span class="text-muted" title="Millisekunden"><i class="fa fa-clock-o" aria-hidden="true"></i> &nbsp;{"`$info.time*1000`"|number_format:2} ms</span>
+                            <span class="text-muted"><i class="fa fa-database" aria-hidden="true"></i> &nbsp;{$count|number_format:0} {__('dataEntries')}</span>
+                            <a href="{$adminURL}{$route}?command&query={urlencode($info.statement)}&token={$smarty.session.jtl_token}">
+                                <i class="fa fa-pencil" aria-hidden="true"></i> {__('edit')}
+                            </a>
+                        </div>
                     </div>
-                    <div class="query-sub">
-                        <span class="text-muted" title="Millisekunden"><i class="fa fa-clock-o" aria-hidden="true"></i> &nbsp;{"`$info.time*1000`"|number_format:2} ms</span>
-                        <span class="text-muted"><i class="fa fa-database" aria-hidden="true"></i> &nbsp;{$count|number_format:0} {__('dataEntries')}</span>
-                        <a href="{$adminURL}/dbmanager.php?command&query={$info.statement|urlencode}&token={$smarty.session.jtl_token}">
-                            <i class="fa fa-pencil" aria-hidden="true"></i> {__('edit')}
-                        </a>
-                    </div>
-                </div>
-
+                {/if}
                 {if count($data) > 0}
                     <div class="table-responsive">
                         <table class="table table-striped table-condensed table-bordered table-hover table-sql table-sticky-header nowrap">
@@ -597,10 +603,10 @@ $(function() {
                                         {$class = 'none'}
                                         {$info = $columns[$h]->Type_info}
 
-                                        {if $info->Name|in_array:['varchar', 'tinytext', 'text', 'mediumtext', 'longtext']}
+                                        {if in_array($info->Name, ['varchar', 'tinytext', 'text', 'mediumtext', 'longtext'], true)}
                                             {$class = 'str'}
                                             {$value = $value|escape:'html'|truncate:100:'...'}
-                                        {elseif $info->Name|in_array:['float', 'decimal']}
+                                        {elseif in_array($info->Name, ['float', 'decimal'], true)}
                                             {$class = 'float'}
                                             {if is_array($info->Size)}
                                                 {$decimals = (int)$info->Size[1]}
@@ -608,14 +614,14 @@ $(function() {
                                             {else}
                                                 {$value = $value|number_format:4}
                                             {/if}
-                                        {elseif $info->Name|in_array:['double']}
+                                        {elseif in_array($info->Name, ['double'], true)}
                                             {$class = 'float'}
                                             {$value = $value|number_format:4}
-                                        {elseif $info->Name|in_array:['tinyint', 'smallint', 'mediumint', 'int', 'bigint']}
+                                        {elseif in_array($info->Name, ['tinyint', 'smallint', 'mediumint', 'int', 'bigint'], true)}
                                             {$class = 'int'}
-                                        {elseif $info->Name|in_array:['date', 'datetime', 'time', 'timestamp', 'year']}
+                                        {elseif in_array($info->Name, ['date', 'datetime', 'time', 'timestamp', 'year'], true)}
                                             {$class = 'date'}
-                                        {elseif $info->Name|in_array:['bit', 'char']}
+                                        {elseif in_array($info->Name, ['bit', 'char'], true)}
                                             {$class = 'char'}
                                         {/if}
 
@@ -626,7 +632,7 @@ $(function() {
                         </table>
                     </div>
                 {else}
-                    <div class="alert alert-xs alert-success">
+                    <div class="alert alert-xs alert-info" style="margin-top: 20px;">
                         <p>{__('noData')}</p>
                     </div>
                 {/if}

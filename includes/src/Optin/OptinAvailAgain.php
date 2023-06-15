@@ -2,7 +2,6 @@
 
 namespace JTL\Optin;
 
-use JTL\Alert\Alert;
 use JTL\Campaign;
 use JTL\Catalog\Product\Artikel;
 use JTL\DB\ReturnType;
@@ -91,8 +90,7 @@ class OptinAvailAgain extends OptinBase implements OptinInterface
         $mail   = new Mail();
         $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR_OPTIN, $templateData));
 
-        Shop::Container()->getAlertService()->addAlert(
-            Alert::TYPE_INFO,
+        Shop::Container()->getAlertService()->addInfo(
             Shop::Lang()->get('availAgainOptinCreated', 'messages'),
             'availAgainOptinCreated'
         );
@@ -115,7 +113,7 @@ class OptinAvailAgain extends OptinBase implements OptinInterface
 
         \executeHook(\HOOK_ARTIKEL_INC_BENACHRICHTIGUNG, ['Benachrichtigung' => $data]);
 
-        $inquiryID = $this->dbHandler->queryPrepared(
+        $inquiryID = (int)$this->dbHandler->queryPrepared(
             'INSERT INTO tverfuegbarkeitsbenachrichtigung
                 (cVorname, cNachname, cMail, kSprache, kArtikel, cIP, dErstellt, nStatus)
                 VALUES

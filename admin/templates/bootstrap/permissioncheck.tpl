@@ -1,7 +1,7 @@
 {include file='tpl_inc/header.tpl'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('permissioncheck') cBeschreibung=__('permissioncheckDesc') cDokuURL=__('permissioncheckURL')}
 <div id="content">
-    {if isset($cDirAssoc_arr) && $cDirAssoc_arr|count > 0}
+    {if isset($cDirAssoc_arr) && count($cDirAssoc_arr) > 0}
         <div class="alert alert-info">
             <strong>{__('dirCount')}</strong> {$oStat->nCount}<br />
             <strong>{__('dirCountNotWriteable')}</strong> {$oStat->nCountInValid}

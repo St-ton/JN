@@ -76,10 +76,10 @@ final class ConsentModel extends DataModel
                         $this->getDB(),
                         ConsentLocalizationModel::ON_NOTEXISTS_NEW
                     );
-                } catch (Exception $e) {
+                } catch (Exception) {
                     continue;
                 }
-                $existing = $res->first(static function ($e) use ($loc) {
+                $existing = $res->first(static function ($e) use ($loc): bool {
                     return $e->consentID === $loc->consentID && $e->languageID === $loc->languageID;
                 });
                 if ($existing === null) {
@@ -110,7 +110,7 @@ final class ConsentModel extends DataModel
         }
         $all = LanguageHelper::getInstance($this->getDB())->gibInstallierteSprachen();
         if ($loc->count() !== \count($all)) {
-            $existingLanguageIDs = $loc->map(function (ConsentLocalizationModel $e) {
+            $existingLanguageIDs = $loc->map(function (ConsentLocalizationModel $e): int {
                 return $e->getLanguageID();
             });
             $default             = clone $loc->first();
@@ -119,7 +119,7 @@ final class ConsentModel extends DataModel
                 if (!$existingLanguageIDs->containsStrict($langID)) {
                     /** @var ConsentLocalizationModel $default */
                     $default->setLanguageID($languageModel->getId());
-                    $default->setId(0);
+                    $default->setID(0);
                     $loc->add($default);
                 }
             }

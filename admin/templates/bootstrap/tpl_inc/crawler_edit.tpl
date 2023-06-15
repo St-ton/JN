@@ -33,7 +33,7 @@
                 <div class="card-footer save-wrapper">
                     <div class="row">
                         <div class="ml-auto col-sm-6 col-xl-auto">
-                            <a class="btn btn-outline-primary btn-block" href="{$adminURL}/statistik.php?s=3&tab=settings">
+                            <a class="btn btn-outline-primary btn-block" href="{$adminURL}{$route}/?tab=settings">
                                 <i class="fa fa-exclamation"></i> {__('Cancel')}
                             </a>
                         </div>

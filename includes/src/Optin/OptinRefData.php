@@ -26,6 +26,11 @@ class OptinRefData implements \Serializable
     private ?int $customerID = null;
 
     /**
+     * @var int|null
+     */
+    private ?int $customerGroupID = null;
+
+    /**
      * @var string
      */
     private string $salutation = '';
@@ -69,7 +74,8 @@ class OptinRefData implements \Serializable
             $this->lastName,
             $this->email,
             $this->realIP,
-            $this->productID
+            $this->productID,
+            $this->customerGroupID
         ]);
     }
 
@@ -87,7 +93,8 @@ class OptinRefData implements \Serializable
             $this->lastName,
             $this->email,
             $this->realIP,
-            $this->productID
+            $this->productID,
+            $this->customerGroupID
         ] = \unserialize($data, ['OptinRefData']);
     }
 
@@ -97,15 +104,16 @@ class OptinRefData implements \Serializable
     public function __serialize(): array
     {
         return [
-            'optinClass' => $this->optinClass,
-            'languageID' => $this->languageID,
-            'customerID' => $this->customerID,
-            'salutation' => $this->salutation,
-            'firstName'  => $this->firstName,
-            'lastName'   => $this->lastName,
-            'email'      => $this->email,
-            'realIP'     => $this->realIP,
-            'productID'  => $this->productID
+            'optinClass'      => $this->optinClass,
+            'languageID'      => $this->languageID,
+            'customerID'      => $this->customerID,
+            'salutation'      => $this->salutation,
+            'firstName'       => $this->firstName,
+            'lastName'        => $this->lastName,
+            'email'           => $this->email,
+            'realIP'          => $this->realIP,
+            'productID'       => $this->productID,
+            'customerGroupID' => $this->customerGroupID
         ];
     }
 
@@ -291,6 +299,25 @@ class OptinRefData implements \Serializable
     }
 
     /**
+     * @return int|null
+     */
+    public function getCustomerGroupID(): ?int
+    {
+        return $this->customerGroupID;
+    }
+
+    /**
+     * @param int|null $customerGroupID
+     * @return $this
+     */
+    public function setCustomerGroupID(?int $customerGroupID): self
+    {
+        $this->customerGroupID = $customerGroupID;
+
+        return $this;
+    }
+
+    /**
      * @return $this
      */
     public function anonymized(): self
@@ -317,7 +344,8 @@ class OptinRefData implements \Serializable
             $this->lastName,
             $this->email,
             $this->realIP,
-            $this->productID
+            $this->productID,
+            $this->customerGroupID
         ]);
     }
 }

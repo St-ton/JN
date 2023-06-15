@@ -4,6 +4,7 @@ namespace JTL\dbeS\Sync;
 
 use DateTime;
 use Exception;
+use InvalidArgumentException;
 use JTL\Cache\JTLCacheInterface;
 use JTL\Campaign;
 use JTL\Catalog\Product\Artikel;
@@ -183,13 +184,14 @@ abstract class AbstractSync
         if ($data->kArtikel <= 0) {
             return;
         }
+        $productID      = (int)$data->kArtikel;
         $sendMails      = true;
         $stockRatio     = $conf['artikeldetails']['benachrichtigung_min_lagernd'] / 100;
         $stockRelevance = ($data->cLagerKleinerNull ?? '') !== 'Y' && ($data->cLagerBeachten ?? 'Y') === 'Y';
         $subscriptions  = $this->db->selectAll(
             'tverfuegbarkeitsbenachrichtigung',
             ['nStatus', 'kArtikel'],
-            [0, $data->kArtikel]
+            [0, $productID]
         );
         \executeHook(\HOOK_SYNC_SEND_AVAILABILITYMAILS, [
             'sendMails'     => &$sendMails,
@@ -209,7 +211,7 @@ abstract class AbstractSync
         $options                             = Artikel::getDefaultOptions();
         $options->nKeineSichtbarkeitBeachten = 1;
         $product                             = new Artikel($this->db);
-        $product->fuelleArtikel((int)$data->kArtikel, $options);
+        $product->fuelleArtikel($productID, $options);
         if ($product->kArtikel === null) {
             return;
         }
@@ -219,51 +221,57 @@ abstract class AbstractSync
             $product->cURL .= $sep . $campaign->cParameter . '=' . $campaign->cWert;
         }
         $mailer = Shop::Container()->get(Mailer::class);
-        foreach ($subscriptions as $msg) {
-            $product = new Artikel($this->db);
-            $product->fuelleArtikel((int)$data->kArtikel, $options, (int)$msg->customerGroupID, (int)$msg->kSprache);
-            /** @var OptinAvailAgain $availAgainOptin */
-            $availAgainOptin = (new Optin(OptinAvailAgain::class))->getOptinInstance();
-            $availAgainOptin->setProduct($product)
-                ->setEmail($msg->cMail);
-            if (!$availAgainOptin->isActive()) {
-                continue;
+        $upd    = (object)[
+            'nStatus'           => 1,
+            'dBenachrichtigtAm' => 'NOW()',
+            'cAbgeholt'         => 'N'
+        ];
+        foreach (\collect($subscriptions)->groupBy('kSprache') as $languageID => $byCustomerGroupID) {
+            $language = LanguageHelper::getAllLanguages(1)[$languageID]
+                ?? LanguageHelper::getAllLanguages(2)['eng']
+                ?? LanguageHelper::getDefaultLanguage();
+            foreach ($byCustomerGroupID->groupBy('customerGroupID') as $customerGroupID => $items) {
+                $product = new Artikel($this->db);
+                try {
+                    $product->fuelleArtikel($productID, $options, $customerGroupID, $languageID);
+                } catch (InvalidArgumentException) {
+                    $product->fuelleArtikel($productID, $options, 0, $languageID);
+                }
+                foreach ($items as $msg) {
+                    /** @var OptinAvailAgain $availAgainOptin */
+                    $availAgainOptin = (new Optin(OptinAvailAgain::class))->getOptinInstance();
+                    $availAgainOptin->setProduct($product)
+                        ->setEmail($msg->cMail);
+                    if (!$availAgainOptin->isActive()) {
+                        continue;
+                    }
+                    $availAgainOptin->finishOptin();
+                    $tplData                                   = new stdClass();
+                    $tplData->tverfuegbarkeitsbenachrichtigung = $msg;
+                    $tplData->tartikel                         = $product;
+                    $tplData->tartikel->cName                  = Text::htmlentitydecode($tplData->tartikel->cName);
+                    $tplMail                                   = new stdClass();
+                    $tplMail->toEmail                          = $msg->cMail;
+                    $tplMail->toName                           = ($msg->cVorname || $msg->cNachname)
+                        ? ($msg->cVorname . ' ' . $msg->cNachname)
+                        : $msg->cMail;
+                    $tplData->mail                             = $tplMail;
+
+                    $mail = new Mail();
+                    // if original language was deleted between ActivationOptIn and now, try to send it in english,
+                    // if there is no english, use the shop-default.
+                    $mail->setLanguage($language);
+                    $mail->setToMail($tplMail->toEmail);
+                    $mail->setToName($tplMail->toName);
+                    $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR, $tplData));
+                    $this->db->update(
+                        'tverfuegbarkeitsbenachrichtigung',
+                        'kVerfuegbarkeitsbenachrichtigung',
+                        $msg->kVerfuegbarkeitsbenachrichtigung,
+                        $upd
+                    );
+                }
             }
-            $availAgainOptin->finishOptin();
-            $tplData                                   = new stdClass();
-            $tplData->tverfuegbarkeitsbenachrichtigung = $msg;
-            $tplData->tartikel                         = $product;
-            $tplData->tartikel->cName                  = Text::htmlentitydecode($tplData->tartikel->cName);
-            $tplMail                                   = new stdClass();
-            $tplMail->toEmail                          = $msg->cMail;
-            $tplMail->toName                           = ($msg->cVorname || $msg->cNachname)
-                ? ($msg->cVorname . ' ' . $msg->cNachname)
-                : $msg->cMail;
-            $tplData->mail                             = $tplMail;
-
-            $mail = new Mail();
-            // if original language was deleted between ActivationOptIn and now, try to send it in english,
-            // if there is no english, use the shop-default.
-            $mail->setLanguage(
-                LanguageHelper::getAllLanguages(1)[(int)$msg->kSprache] ??
-                LanguageHelper::getAllLanguages(2)['eng'] ??
-                LanguageHelper::getDefaultLanguage()
-            );
-
-            $mail->setToMail($tplMail->toEmail);
-            $mail->setToName($tplMail->toName);
-            $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR, $tplData));
-
-            $upd                    = new stdClass();
-            $upd->nStatus           = 1;
-            $upd->dBenachrichtigtAm = 'NOW()';
-            $upd->cAbgeholt         = 'N';
-            $this->db->update(
-                'tverfuegbarkeitsbenachrichtigung',
-                'kVerfuegbarkeitsbenachrichtigung',
-                $msg->kVerfuegbarkeitsbenachrichtigung,
-                $upd
-            );
         }
     }
 

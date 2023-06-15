@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use JTL\DB\ReturnType;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
 
@@ -10,7 +9,7 @@ use JTL\Update\Migration;
 class Migration_20230614142200 extends Migration implements IMigration
 {
     protected $author = 'fm';
-    protected $description = 'add mandatory consent item';
+    protected $description = 'add customer group id to tverfuegbarkeitsbenachrichtigung';
 
     /**
      * @inheritdoc
@@ -19,9 +18,8 @@ class Migration_20230614142200 extends Migration implements IMigration
     {
         $this->execute(
             'ALTER TABLE `tverfuegbarkeitsbenachrichtigung` 
-                ADD COLUMN `customerGroupID` INT NOT NULL DEFAULT 0 AFTER `dBenachrichtigtAm`'
+                ADD COLUMN `customerGroupID` INT NOT NULL DEFAULT 0'
         );
-
         $this->execute(
             'UPDATE `tverfuegbarkeitsbenachrichtigung`
                 SET `customerGroupID` = (SELECT kKundengruppe FROM tkundengruppe WHERE cStandard = \'Y\')'

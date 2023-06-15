@@ -29,7 +29,7 @@ final class ImageAPI extends AbstractPush
     /**
      * @inheritdoc
      */
-    public function getData()
+    public function getData(): void
     {
         try {
             $this->getImageType();

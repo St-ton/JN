@@ -17,7 +17,7 @@ class Migration_20160318101947 extends Migration implements IMigration
     protected $author = 'wp';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -27,7 +27,7 @@ class Migration_20160318101947 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

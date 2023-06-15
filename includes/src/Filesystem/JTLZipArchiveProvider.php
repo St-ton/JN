@@ -29,9 +29,9 @@ class JTLZipArchiveProvider implements ZipArchiveProvider
      * @param int    $mode
      */
     public function __construct(
-        private string $filename,
-        private int $localDirectoryPermissions = 0700,
-        private int $mode = ZipArchive::CREATE
+        private readonly string $filename,
+        private readonly int    $localDirectoryPermissions = 0700,
+        private readonly int    $mode = ZipArchive::CREATE
     ) {
     }
 

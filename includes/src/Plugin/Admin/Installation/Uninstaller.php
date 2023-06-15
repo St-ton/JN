@@ -29,7 +29,7 @@ final class Uninstaller
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */
-    public function __construct(private DbInterface $db, private JTLCacheInterface $cache)
+    public function __construct(private readonly DbInterface $db, private readonly JTLCacheInterface $cache)
     {
     }
 
@@ -47,9 +47,9 @@ final class Uninstaller
      * 3 = SQL-Fehler
      */
     public function uninstall(
-        int $pluginID,
+        int  $pluginID,
         bool $update = false,
-        int $newID = null,
+        int  $newID = null,
         bool $deleteData = true,
         bool $deleteFiles = false
     ): int {
@@ -57,7 +57,7 @@ final class Uninstaller
             return InstallCode::WRONG_PARAM;
         }
         $data   = $this->db->select('tplugin', 'kPlugin', $pluginID);
-        $loader = (int)$data->bExtension === 1
+        $loader = (int)($data->bExtension ?? 0) === 1
             ? new PluginLoader($this->db, $this->cache)
             : new LegacyPluginLoader($this->db, $this->cache);
         try {
@@ -72,7 +72,10 @@ final class Uninstaller
             if (!\SAFE_MODE && ($p = Helper::bootstrap($pluginID, $loader)) !== null) {
                 $p->uninstalled($deleteData);
             }
-            $this->executeMigrations($plugin, $deleteData);
+            try {
+                $this->executeMigrations($plugin, $deleteData);
+            } catch (Exception) {
+            }
             $uninstaller = $plugin->getPaths()->getUninstaller();
             if ($uninstaller !== null && \file_exists($uninstaller)) {
                 try {
@@ -87,7 +90,7 @@ final class Uninstaller
                     'root' => Shop::Container()->get(LocalFilesystem::class),
                     'plgn' => Shop::Container()->get(Filesystem::class)
                 ]);
-                $dirName = (int)$data->bExtension === 1
+                $dirName = (int)($data->bExtension ?? 0) === 1
                     ? (\PLUGIN_DIR . $dir)
                     : (\PFAD_PLUGIN . $dir);
                 try {

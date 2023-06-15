@@ -249,11 +249,11 @@ class DataAttribute
         string $name,
         string $dataType,
         $default = null,
-        bool $nullable = true,
-        bool $isPrimaryKey = false,
+        bool   $nullable = true,
+        bool   $isPrimaryKey = false,
         string $foreignKey = null,
         $foreignKeyChild = null,
-        bool $dynamic = false
+        bool   $dynamic = false
     ): self {
         $item = new self();
         $item->setName($name)

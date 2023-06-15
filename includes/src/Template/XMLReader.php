@@ -72,9 +72,9 @@ class XMLReader
      */
     protected function parseSections(
         SimpleXMLElement $xmlSections,
-        array &$sections,
-        array &$ignored,
-        string $dir
+        array            &$sections,
+        array            &$ignored,
+        string           $dir
     ): array {
         foreach ($xmlSections as $xmlSection) {
             $section   = null;

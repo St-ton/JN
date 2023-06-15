@@ -140,9 +140,9 @@ class Application extends BaseApplication
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
-    public function doRun(InputInterface $input, OutputInterface $output)
+    public function doRun(InputInterface $input, OutputInterface $output): int
     {
         $this->io = new ConsoleIO($input, $output, $this->getHelperSet());
 
@@ -158,7 +158,7 @@ class Application extends BaseApplication
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function getDefaultCommands(): array
     {

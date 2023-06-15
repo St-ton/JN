@@ -16,7 +16,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class DatabaseCommand extends Command
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function configure(): void
     {
@@ -27,7 +27,7 @@ class DatabaseCommand extends Command
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {

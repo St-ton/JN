@@ -94,7 +94,7 @@ class XML
      * @param null  $prevKey
      * @return string
      */
-    public static function serialize($data, $level = 0, $prevKey = null)
+    public static function serialize($data, $level = 0, $prevKey = null): string
     {
         return (new XMLParser())->serializeXML($data, $level, $prevKey);
     }

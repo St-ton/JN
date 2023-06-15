@@ -52,7 +52,7 @@ abstract class AbstractItem implements ItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getDB(): DbInterface
     {
@@ -60,7 +60,7 @@ abstract class AbstractItem implements ItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setDB(DbInterface $db): void
     {
@@ -68,7 +68,7 @@ abstract class AbstractItem implements ItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getPlugin(): stdClass
     {
@@ -76,7 +76,7 @@ abstract class AbstractItem implements ItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setPlugin(stdClass $plugin): void
     {
@@ -84,7 +84,7 @@ abstract class AbstractItem implements ItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getOldPlugin(): ?PluginInterface
     {
@@ -92,7 +92,7 @@ abstract class AbstractItem implements ItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setOldPlugin($plugin): void
     {
@@ -100,7 +100,7 @@ abstract class AbstractItem implements ItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getBaseNode(): array
     {
@@ -108,7 +108,7 @@ abstract class AbstractItem implements ItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setBaseNode(array $baseNode): void
     {

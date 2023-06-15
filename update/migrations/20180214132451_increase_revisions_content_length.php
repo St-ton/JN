@@ -18,7 +18,7 @@ class Migration_20180214132451 extends Migration implements IMigration
     protected $description = 'Increase revisions content length';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -26,7 +26,7 @@ class Migration_20180214132451 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

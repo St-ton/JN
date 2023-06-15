@@ -74,7 +74,6 @@ ifndef('MAX_CORRUPTED_IMAGES', 50);
 ifndef('MAX_IMAGES_PER_STEP', 50000);
 
 // Pfade
-ifndef('PFAD_CLASSES', 'classes/old/'); // DEPRECATED
 ifndef('PFAD_CONFIG', 'config/');
 ifndef('PFAD_INCLUDES', 'includes/');
 ifndef('PFAD_TEMPLATES', 'templates/');
@@ -297,6 +296,11 @@ ifndef('TRACK_VISITORS', true);
 
 ifndef('COMPRESS_DESCRIPTIONS', false);
 
+ifndef('DELIVERY_TIME_DAYS_TO_WEEKS_LIMIT', 15);
+ifndef('DELIVERY_TIME_DAYS_TO_MONTHS_LIMIT', 61);
+ifndef('DELIVERY_TIME_DAYS_PER_WEEK', 7);
+ifndef('DELIVERY_TIME_DAYS_PER_MONTH', 30);
+
 const ADMINGROUP                          = 1;
 const MAX_LOGIN_ATTEMPTS                  = 3;
 const LOCK_TIME                           = 5;
@@ -306,7 +310,7 @@ const SHIPPING_CLASS_MAX_VALIDATION_COUNT = 10;
  * @param string $constant
  * @param mixed  $value
  */
-function ifndef(string $constant, $value)
+function ifndef(string $constant, mixed $value): void
 {
     defined($constant) || define($constant, $value);
 }

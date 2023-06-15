@@ -26,7 +26,7 @@ class TemplateInstaller implements InstallerInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function update(string $exsID, string $zip, AjaxResponse $response): int
     {
@@ -50,7 +50,7 @@ class TemplateInstaller implements InstallerInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function install(string $itemID, string $zip, AjaxResponse $response): int
     {
@@ -58,7 +58,7 @@ class TemplateInstaller implements InstallerInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function forceUpdate(string $zip, AjaxResponse $response): int
     {

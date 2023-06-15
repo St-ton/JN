@@ -18,7 +18,7 @@ class Migration_20190129150943 extends Migration implements IMigration
     protected $description = 'Remove unused lang variables';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -32,7 +32,7 @@ class Migration_20190129150943 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

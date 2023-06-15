@@ -17,7 +17,7 @@ class Migration_20190319103100 extends Migration implements IMigration
     protected $description = 'Change kSprache column to store an IETF language tag';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -26,7 +26,7 @@ class Migration_20190319103100 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

@@ -50,7 +50,7 @@ class KategoriePict
      */
     public function loadFromDB(int $id): self
     {
-        $obj = Shop::Container()->getDB()->select('tkategoriepict', 'kKategoriePict', $id);
+        $obj = Shop::Container()->getDB()->select('tkategoriepict', 'kKategoriePict', $id) ?? new \stdClass();
         foreach (\get_object_vars($obj) as $k => $v) {
             $this->$k = $v;
         }

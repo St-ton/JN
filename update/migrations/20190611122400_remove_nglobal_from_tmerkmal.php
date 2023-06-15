@@ -18,7 +18,7 @@ class Migration_20190611122400 extends Migration implements IMigration
     protected $description = 'Remove nGlobal from tmerkmal';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -26,7 +26,7 @@ class Migration_20190611122400 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

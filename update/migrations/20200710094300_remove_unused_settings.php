@@ -18,7 +18,7 @@ class Migration_20200710094300 extends Migration implements IMigration
     protected $description = 'Remove unused settings';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -48,7 +48,7 @@ class Migration_20200710094300 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

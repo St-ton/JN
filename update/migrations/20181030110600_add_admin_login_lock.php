@@ -16,7 +16,7 @@ class Migration_20181030110600 extends Migration implements IMigration
     protected $description = 'Add admin login lock';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -24,7 +24,7 @@ class Migration_20181030110600 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

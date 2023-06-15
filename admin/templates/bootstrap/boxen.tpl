@@ -118,55 +118,57 @@
                             <div class="card-header">
                                 <div class="subheading1">{__('invisibleBoxes')}</div>
                             </div>
-                            <div class="table-responsive card-body">
-                                <table class="table table-align-top">
-                                    <tr class="boxRow">
-                                        <th class="check">&nbsp;</th>
-                                        <th>
-                                            <strong>{__('boxTitle')}</strong>
-                                        </th>
-                                        <th>
-                                            <strong>{__('boxLabel')}</strong>
-                                        </th>
-                                        <th>
-                                            <strong>{__('boxTemplate')}</strong>
-                                        </th>
-                                        <th>
-                                            <strong>{__('position')}</strong>
-                                        </th>
-                                    </tr>
-                                    {foreach $invisibleBoxes as $invisibleBox}
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-align-top">
+                                        <tr class="boxRow">
+                                            <th class="check">&nbsp;</th>
+                                            <th>
+                                                <strong>{__('boxTitle')}</strong>
+                                            </th>
+                                            <th>
+                                                <strong>{__('boxLabel')}</strong>
+                                            </th>
+                                            <th>
+                                                <strong>{__('boxTemplate')}</strong>
+                                            </th>
+                                            <th>
+                                                <strong>{__('position')}</strong>
+                                            </th>
+                                        </tr>
+                                        {foreach $invisibleBoxes as $invisibleBox}
+                                            <tr>
+                                                <td class="check">
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input class="custom-control-input" name="kInvisibleBox[]" type="checkbox" value="{$invisibleBox->kBox}" id="kInvisibleBox-{$invisibleBox@index}">
+                                                        <label class="custom-control-label" for="kInvisibleBox-{$invisibleBox@index}"></label>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <label for="kInvisibleBox-{$invisibleBox@index}">{$invisibleBox->cTitel}</label>
+                                                </td>
+                                                <td>
+                                                    {$invisibleBox->cName}
+                                                </td>
+                                                <td>
+                                                    {$invisibleBox->cTemplate}
+                                                </td>
+                                                <td>
+                                                    {$invisibleBox->ePosition}
+                                                </td>
+                                            </tr>
+                                        {/foreach}
                                         <tr>
                                             <td class="check">
                                                 <div class="custom-control custom-checkbox">
-                                                    <input class="custom-control-input" name="kInvisibleBox[]" type="checkbox" value="{$invisibleBox->kBox}" id="kInvisibleBox-{$invisibleBox@index}">
-                                                    <label class="custom-control-label" for="kInvisibleBox-{$invisibleBox@index}"></label>
+                                                    <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
+                                                    <label class="custom-control-label" for="ALLMSGS"></label>
                                                 </div>
                                             </td>
-                                            <td>
-                                                <label for="kInvisibleBox-{$invisibleBox@index}">{$invisibleBox->cTitel}</label>
-                                            </td>
-                                            <td>
-                                                {$invisibleBox->cName}
-                                            </td>
-                                            <td>
-                                                {$invisibleBox->cTemplate}
-                                            </td>
-                                            <td>
-                                                {$invisibleBox->ePosition}
-                                            </td>
+                                            <td colspan="4" class="text-left"><label for="ALLMSGS">{__('globalSelectAll')}</label></td>
                                         </tr>
-                                    {/foreach}
-                                    <tr>
-                                        <td class="check">
-                                            <div class="custom-control custom-checkbox">
-                                                <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
-                                                <label class="custom-control-label" for="ALLMSGS"></label>
-                                            </div>
-                                        </td>
-                                        <td colspan="4" class="text-left"><label for="ALLMSGS">{__('globalSelectAll')}</label></td>
-                                    </tr>
-                                </table>
+                                    </table>
+                                </div>
                             </div>
                             <div class="card-footer">
                                 <button name="action" type="submit" class="btn btn-danger" value="delete-invisible"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>

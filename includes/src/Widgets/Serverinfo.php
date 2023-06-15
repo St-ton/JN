@@ -13,7 +13,7 @@ class Serverinfo extends AbstractWidget
     /**
      *
      */
-    public function init()
+    public function init(): void
     {
         $parsed = \parse_url(Shop::getURL());
         $this->oSmarty->assign('phpOS', \PHP_OS)
@@ -30,7 +30,7 @@ class Serverinfo extends AbstractWidget
     /**
      * @return string
      */
-    public function getContent()
+    public function getContent(): string
     {
         return $this->oSmarty->fetch('tpl_inc/widgets/serverinfo.tpl');
     }

@@ -19,7 +19,7 @@ class Migration_20191212093000 extends Migration implements IMigration
     protected $description = 'Wizard setup data';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -45,7 +45,7 @@ class Migration_20191212093000 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

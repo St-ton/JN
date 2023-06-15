@@ -15,7 +15,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ResetCommand extends Command
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function configure(): void
     {
@@ -24,7 +24,7 @@ class ResetCommand extends Command
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -36,7 +36,7 @@ class ResetCommand extends Command
             EmailTemplateController::resetTemplate((int)$template->kEmailVorlage, $db);
             $count++;
         }
-        $io->writeln('<info>' . $count. ' templates have been reset.</info>');
+        $io->writeln('<info>' . $count . ' templates have been reset.</info>');
 
         return Command::SUCCESS;
     }

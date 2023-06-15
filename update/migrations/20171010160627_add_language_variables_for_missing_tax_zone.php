@@ -18,7 +18,7 @@ class Migration_20171010160627 extends Migration implements IMigration
     protected $description = 'Add language variables for missing tax zone';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -27,7 +27,7 @@ class Migration_20171010160627 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

@@ -42,7 +42,7 @@ class Upload extends AbstractRateLimiter
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getLimit(): int
     {
@@ -50,7 +50,7 @@ class Upload extends AbstractRateLimiter
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setLimit(int $limit): void
     {

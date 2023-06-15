@@ -18,7 +18,7 @@ class Migration_20180202145224 extends Migration implements IMigration
     protected $description = 'Add Table tpasswordreset';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -35,7 +35,7 @@ class Migration_20180202145224 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

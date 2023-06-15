@@ -512,8 +512,8 @@ class Helper
      * @return LoaderInterface
      */
     public static function getLoaderByPluginID(
-        int $id,
-        ?DbInterface $db = null,
+        int                $id,
+        ?DbInterface       $db = null,
         ?JTLCacheInterface $cache = null
     ) : LoaderInterface {
         $cache = $cache ?? Shop::Container()->getCache();
@@ -530,8 +530,8 @@ class Helper
      * @return LoaderInterface
      */
     public static function getLoader(
-        bool $isExtension,
-        ?DbInterface $db = null,
+        bool               $isExtension,
+        ?DbInterface       $db = null,
         ?JTLCacheInterface $cache = null
     ): LoaderInterface {
         $cache = $cache ?? Shop::Container()->getCache();
@@ -547,8 +547,8 @@ class Helper
     public static function ioTestLoading(int $pluginID): stdClass
     {
         $result = (object)[
-            'code'     => InstallCode::WRONG_PARAM,
-            'message'  => '',
+            'code'    => InstallCode::WRONG_PARAM,
+            'message' => '',
         ];
         if ($pluginID <= 0) {
             $result->code    = InstallCode::NO_PLUGIN_FOUND;
@@ -569,7 +569,7 @@ class Helper
         $db     = Shop::Container()->getDB();
         $cache  = Shop::Container()->getCache();
         $data   = $db->select('tplugin', 'kPlugin', $pluginID);
-        $loader = (int)$data->bExtension === 1
+        $loader = (int)($data->bExtension ?? 0) === 1
             ? new PluginLoader($db, $cache)
             : new LegacyPluginLoader($db, $cache);
         try {

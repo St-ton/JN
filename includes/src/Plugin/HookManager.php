@@ -35,11 +35,11 @@ class HookManager
      * @param array             $hookList
      */
     public function __construct(
-        private DbInterface $db,
+        private DbInterface       $db,
         private JTLCacheInterface $cache,
         private TimeDataCollector $timer,
-        private Dispatcher $dispatcher,
-        private array $hookList
+        private Dispatcher        $dispatcher,
+        private array             $hookList
     ) {
         self::$instance = $this;
         $this->createEvents();

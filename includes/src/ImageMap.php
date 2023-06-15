@@ -28,7 +28,7 @@ class ImageMap implements IExtensionPoint
      * ImageMap constructor.
      * @param DbInterface $db
      */
-    public function __construct(private DbInterface $db)
+    public function __construct(private readonly DbInterface $db)
     {
         $this->kSprache      = Shop::getLanguageID();
         $this->kKundengruppe = Frontend::getCustomer()->getGroupID();

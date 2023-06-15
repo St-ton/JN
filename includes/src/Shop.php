@@ -16,7 +16,6 @@ use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\Tax;
 use JTL\Language\LanguageHelper;
-use JTL\Link\SpecialPageNotFoundException;
 use JTL\Mapper\PageTypeToPageName;
 use JTL\Plugin\Helper as PluginHelper;
 use JTL\Plugin\LegacyPluginLoader;
@@ -653,9 +652,9 @@ final class Shop extends ShopBC
      * @return ProductFilter
      */
     public static function buildProductFilter(
-        array $params,
+        array                  $params,
         ProductFilter|stdClass $productFilter = null,
-        bool $validate = true
+        bool                   $validate = true
     ): ProductFilter {
         $pf = new ProductFilter(
             Config::getDefault(),

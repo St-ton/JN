@@ -18,7 +18,7 @@ class Migration_20200109114500 extends Migration implements IMigration
     protected $description = 'Add missing linkgroup box names';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -38,7 +38,7 @@ class Migration_20200109114500 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

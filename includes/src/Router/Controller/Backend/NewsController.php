@@ -1535,6 +1535,7 @@ class NewsController extends AbstractBackendController
     }
 
     /**
+     * @param Category|null $category
      * @return Category
      */
     private function actionEditCategory(?Category $category = null): Category

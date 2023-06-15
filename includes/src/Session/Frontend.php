@@ -46,15 +46,15 @@ class Frontend extends AbstractSession
     private bool $mustUpdate = false;
 
     /**
-     * @param bool   $start       - call session_start()?
-     * @param bool   $force       - force new instance?
+     * @param bool   $start - call session_start()?
+     * @param bool   $force - force new instance?
      * @param string $sessionName - if null, then default to current session name
      * @return Frontend
      * @throws Exception
      */
     public static function getInstance(
-        bool $start = true,
-        bool $force = false,
+        bool   $start = true,
+        bool   $force = false,
         string $sessionName = self::DEFAULT_SESSION
     ): self {
         return ($force === true || self::$instance === null || self::$sessionName !== $sessionName)

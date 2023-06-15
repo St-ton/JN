@@ -41,8 +41,11 @@ class Resources
      * @param SimpleXMLElement      $xml
      * @param SimpleXMLElement|null $parentXML
      */
-    public function __construct(private DbInterface $db, SimpleXMLElement $xml, ?SimpleXMLElement $parentXML = null)
-    {
+    public function __construct(
+        private readonly DbInterface $db,
+        SimpleXMLElement             $xml,
+        ?SimpleXMLElement            $parentXML = null
+    ) {
         $this->xmlList = [$parentXML, $xml];
     }
 

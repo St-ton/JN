@@ -18,7 +18,7 @@ class Migration_20180912112614 extends Migration implements IMigration
     protected $description = 'Change check city description';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -26,7 +26,7 @@ class Migration_20180912112614 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

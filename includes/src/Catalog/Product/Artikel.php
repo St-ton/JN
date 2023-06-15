@@ -751,7 +751,7 @@ class Artikel implements RoutableInterface
     /**
      * @var string|null
      */
-    public ?string  $dSonderpreisStart_de = null;
+    public ?string $dSonderpreisStart_de = null;
 
     /**
      * @var string|null
@@ -1499,7 +1499,7 @@ class Artikel implements RoutableInterface
         }
         $paths = [];
         foreach ($images as $i => $item) {
-            if (\in_array($item->cPfad, $paths)) {
+            if (\in_array($item->cPfad, $paths, true)) {
                 continue;
             }
             $paths[] = $item->cPfad;
@@ -1565,9 +1565,9 @@ class Artikel implements RoutableInterface
     private function getProductImageSize(stdClass $image, string $size)
     {
         $imagePath = match ($size) {
-            'xs' => $image->cPfadMini,
-            'sm' => $image->cPfadKlein,
-            'md' => $image->cPfadNormal,
+            'xs'    => $image->cPfadMini,
+            'sm'    => $image->cPfadKlein,
+            'md'    => $image->cPfadNormal,
             default => $image->cPfadGross,
         };
         if ($imagePath !== null && \file_exists(\PFAD_ROOT . $imagePath)) {
@@ -1676,7 +1676,7 @@ class Artikel implements RoutableInterface
                     'kSprache',
                     $this->kSprache
                 );
-                if (!empty($attributsprache->cName)) {
+                if ($attributsprache !== null && !empty($attributsprache->cName)) {
                     $attribute->cName = $attributsprache->cName;
                     if ($attributsprache->cStringWert) {
                         $attribute->cWert = $attributsprache->cStringWert;
@@ -2016,12 +2016,12 @@ class Artikel implements RoutableInterface
      * @return $this
      */
     public function holeBewertung(
-        int $perPage = 10,
-        int $page = 1,
-        int $stars = 0,
+        int    $perPage = 10,
+        int    $page = 1,
+        int    $stars = 0,
         string $unlock = 'N',
-        int $opt = 0,
-        bool $allLanguages = false
+        int    $opt = 0,
+        bool   $allLanguages = false
     ): self {
         $this->Bewertungen = new Bewertung(
             $this->kArtikel,
@@ -3307,11 +3307,11 @@ class Artikel implements RoutableInterface
      * @throws \Exception
      */
     public function fuelleArtikel(
-        int $productID,
+        int       $productID,
         ?stdClass $options = null,
-        int $customerGroupID = 0,
-        int $langID = 0,
-        bool $noCache = false
+        int       $customerGroupID = 0,
+        int       $langID = 0,
+        bool      $noCache = false
     ): ?self {
         if (!$productID) {
             return null;
@@ -4736,7 +4736,7 @@ class Artikel implements RoutableInterface
             return false;
         }
         $att = $this->getDB()->select('tattribut', 'kArtikel', $this->kArtikel, 'cName', $name);
-        if ($this->kSprache > 0 && isset($att->kAttribut) && $att->kAttribut > 0) {
+        if ($att !== null && $this->kSprache > 0 && isset($att->kAttribut) && $att->kAttribut > 0) {
             $att   = $this->getDB()->select(
                 'tattributsprache',
                 'kAttribut',
@@ -6149,7 +6149,7 @@ class Artikel implements RoutableInterface
     /**
      * @return string
      */
-    public function getBackorderString():string
+    public function getBackorderString(): string
     {
         $backorder = '';
         if ($this->cLagerBeachten === 'Y'

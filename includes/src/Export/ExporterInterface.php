@@ -51,12 +51,12 @@ interface ExporterInterface
      * @throws InvalidArgumentException
      */
     public function startExport(
-        int $exportID,
+        int        $exportID,
         QueueEntry $queueEntry,
-        bool $isAsync = false,
-        bool $back = false,
-        bool $isCron = false,
-        int $max = null
+        bool       $isAsync = false,
+        bool       $back = false,
+        bool       $isCron = false,
+        int        $max = null
     ): bool;
 
     /**

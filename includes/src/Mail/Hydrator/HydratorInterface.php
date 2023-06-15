@@ -21,7 +21,7 @@ interface HydratorInterface
 
     /**
      * @param string $variable
-     * @param mixed   $content
+     * @param mixed  $content
      */
     public function add(string $variable, $content): void;
 

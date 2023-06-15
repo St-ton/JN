@@ -24,9 +24,9 @@ class TemplateInstallerFactory
      * @param Model                 $model
      */
     public function __construct(
-        protected DbInterface $db,
-        protected SimpleXMLElement $xml,
-        protected ?SimpleXMLElement $parentXml,
+        protected DbInterface        $db,
+        protected SimpleXMLElement   $xml,
+        protected ?SimpleXMLElement  $parentXml,
         protected DataModelInterface $model
     ) {
     }

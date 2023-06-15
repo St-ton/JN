@@ -40,7 +40,7 @@ final class LinkService implements LinkServiceInterface
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */
-    public function __construct(private DbInterface $db, private JTLCacheInterface $cache)
+    public function __construct(private readonly DbInterface $db, private readonly JTLCacheInterface $cache)
     {
         self::$instance      = $this;
         $this->linkGroupList = new LinkGroupList($db, $cache);
@@ -292,8 +292,8 @@ final class LinkService implements LinkServiceInterface
      */
     public function getStaticRoute(
         string $id = 'kontakt.php',
-        bool $full = true,
-        bool $secure = false,
+        bool   $full = true,
+        bool   $secure = false,
         string $langISO = null
     ): string {
         $idx = null;
@@ -552,7 +552,7 @@ final class LinkService implements LinkServiceInterface
             'kSprache',
             $langID
         );
-        if (empty($data->kText)) {
+        if ($data === null || empty($data->kText)) {
             $data = $this->db->select(
                 'ttext',
                 'kKundengruppe',

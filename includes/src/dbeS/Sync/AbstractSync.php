@@ -220,6 +220,8 @@ abstract class AbstractSync
         }
         $mailer = Shop::Container()->get(Mailer::class);
         foreach ($subscriptions as $msg) {
+            $product = new Artikel($this->db);
+            $product->fuelleArtikel((int)$data->kArtikel, $options, (int)$msg->customerGroupID, (int)$msg->kSprache);
             /** @var OptinAvailAgain $availAgainOptin */
             $availAgainOptin = (new Optin(OptinAvailAgain::class))->getOptinInstance();
             $availAgainOptin->setProduct($product)

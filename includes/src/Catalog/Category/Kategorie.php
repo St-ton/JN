@@ -302,7 +302,7 @@ class Kategorie implements RoutableInterface
             $toSave = clone $this;
             if (\COMPRESS_DESCRIPTIONS === true) {
                 foreach ($toSave->descriptions as &$description) {
-                    $description = \gzcompress($description);
+                    $description = \gzcompress($description, \COMPRESSION_LEVEL);
                 }
                 unset($description);
                 $toSave->compressed = true;

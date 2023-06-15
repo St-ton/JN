@@ -3508,8 +3508,8 @@ class Artikel implements RoutableInterface
             $toSave->oVariationKombiKinderAssoc_arr = null;
             $toSave->Preise                         = $basePrice;
             if (\COMPRESS_DESCRIPTIONS === true) {
-                $toSave->cBeschreibung    = \gzcompress($toSave->cBeschreibung);
-                $toSave->cKurzbezeichnung = \gzcompress($toSave->cKurzbezeichnung);
+                $toSave->cBeschreibung    = \gzcompress($toSave->cBeschreibung, \COMPRESSION_LEVEL);
+                $toSave->cKurzbezeichnung = \gzcompress($toSave->cKurzbezeichnung, \COMPRESSION_LEVEL);
                 $toSave->compressed       = true;
             }
             Shop::Container()->getCache()->set($this->cacheID, $toSave, $cacheTags);

@@ -295,6 +295,7 @@ ifndef('SAFE_MODE', $GLOBALS['plgSafeMode'] ?? file_exists(SAFE_MODE_LOCK));
 ifndef('TRACK_VISITORS', true);
 
 ifndef('COMPRESS_DESCRIPTIONS', false);
+ifndef('COMPRESSION_LEVEL', -1);
 
 ifndef('DELIVERY_TIME_DAYS_TO_WEEKS_LIMIT', 15);
 ifndef('DELIVERY_TIME_DAYS_TO_MONTHS_LIMIT', 61);

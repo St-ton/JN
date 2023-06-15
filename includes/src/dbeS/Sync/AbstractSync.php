@@ -227,6 +227,8 @@ abstract class AbstractSync
             'cAbgeholt'         => 'N'
         ];
         foreach (\collect($subscriptions)->groupBy('kSprache') as $languageID => $byCustomerGroupID) {
+            // if original language was deleted between ActivationOptIn and now, try to send it in english,
+            // if there is no english, use the shop-default.
             $language = LanguageHelper::getAllLanguages(1)[$languageID]
                 ?? LanguageHelper::getAllLanguages(2)['eng']
                 ?? LanguageHelper::getDefaultLanguage();
@@ -258,8 +260,6 @@ abstract class AbstractSync
                     $tplData->mail                             = $tplMail;
 
                     $mail = new Mail();
-                    // if original language was deleted between ActivationOptIn and now, try to send it in english,
-                    // if there is no english, use the shop-default.
                     $mail->setLanguage($language);
                     $mail->setToMail($tplMail->toEmail);
                     $mail->setToName($tplMail->toName);

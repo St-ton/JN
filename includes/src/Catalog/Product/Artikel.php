@@ -3384,7 +3384,7 @@ class Artikel implements RoutableInterface
             $tmpProduct->fNettoPreis       = null;
         }
         $this->holPreise($customerGroupID, $tmpProduct);
-        $this->initLanguageID($this->kSprache, LanguageHelper::getIsoFromLangID($this->kSprache)->cISO);
+        $this->initLanguageID($this->kSprache, LanguageHelper::getIsoFromLangID($this->kSprache)->cISO ?? null);
         if ($this->getOption('nArtikelAttribute', 0) === 1) {
             $this->holArtikelAttribute();
         }

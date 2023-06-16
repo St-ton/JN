@@ -234,7 +234,7 @@ class CheckBox
                 $this->$member = $checkbox->$member;
             }
             $this->loadLink();
-
+            $this->checkAndUpdateFunctionIfNecessary($checkbox);
             return $this;
         }
         $checkbox = $this->service->get($id);
@@ -609,11 +609,7 @@ class CheckBox
         if (\count($checkboxDTO->getLanguages()) === 0) {
             return $this;
         }
-        if ($checkboxDTO->getID() > 0) {
-            $this->updateDB($checkboxDTO);
-        }
         $this->insertDB(null, null, $checkboxDTO);
-
         $this->fillProperties($checkboxDTO);
         $this->saveToCache('chkbx_' . $checkboxDTO->getID());
 
@@ -928,9 +924,11 @@ class CheckBox
             }
             $this->oCheckBoxFunktion = $func->toObject();
         } else {
+            $data                    = (new CheckboxFunctionDataTableObject())
+                ->hydrateWithObject($checkbox);
             $this->kCheckBoxFunktion = 0;
-            $checkbox->setCheckboxFunctionID(0);
-            $this->service->update($checkbox);
+            $data->setCheckboxFunctionID(0);
+            $this->service->update($data);
         }
     }
 }

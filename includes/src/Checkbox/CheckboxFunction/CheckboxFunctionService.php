@@ -11,6 +11,9 @@ use JTL\Interfaces\RepositoryInterface;
  */
 class CheckboxFunctionService extends AbstractService
 {
+    /**
+     * @inheritdoc
+     */
     protected function initRepository(): void
     {
         $this->repository = new CheckboxFunctionRepository();
@@ -24,6 +27,9 @@ class CheckboxFunctionService extends AbstractService
         return $this->repository;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function get(int $ID): ?\stdClass
     {
         return $this->getRepository()->get($ID);

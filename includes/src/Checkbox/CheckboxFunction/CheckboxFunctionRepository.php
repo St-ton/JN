@@ -26,6 +26,9 @@ class CheckboxFunctionRepository extends AbstractRepository
         return 'kCheckBoxFunktion';
     }
 
+    /**
+     * @inheritdoc
+     */
     public function get(int $id): ?\stdClass
     {
         return $this->getDB()->getSingleObject(

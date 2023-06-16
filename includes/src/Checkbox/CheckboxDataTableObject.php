@@ -2,6 +2,7 @@
 
 namespace JTL\Checkbox;
 
+use JTL\Checkbox\CheckboxLanguage\CheckboxLanguageDataTableObject;
 use JTL\DataObjects\AbstractDataObject;
 use JTL\DataObjects\DataTableObjectInterface;
 
@@ -82,6 +83,21 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
     private array $languages = [];
 
     /**
+     * @var CheckboxLanguageDataTableObject[]
+     */
+    private array $checkBoxLanguage_arr = [];
+
+    /**
+     * @var array
+     */
+    private array $customerGroup_arr = [];
+
+    /**
+     * @var array
+     */
+    private array $displayAt_arr = [];
+
+    /**
      * @var string[]
      */
     private array $mapping = [
@@ -97,25 +113,31 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
         'hasLogging'             => 'hasLogging',
         'sort'                   => 'sort',
         'created'                => 'created',
-        'created_DE'             => 'created_DE',
+        'created_DE'             => 'createdDE',
+        'oCheckBoxLanguage_arr'  => 'checkBoxLanguage_arr',
+        'customerGroup_arr'      => 'customerGroup_arr',
+        'displayAt_arr'          => 'displayAt_arr',
     ];
 
     /**
      * @var string[]
      */
     private array $columnMapping = [
-        'kCheckBox'         => 'checkboxID',
-        'kLink'             => 'linkID',
-        'kCheckBoxFunktion' => 'checkboxFunctionID',
-        'cName'             => 'name',
-        'cKundengruppe'     => 'customerGroupsSelected',
-        'cAnzeigeOrt'       => 'displayAt',
-        'nAktiv'            => 'active',
-        'nPflicht'          => 'isMandatory',
-        'nLogging'          => 'hasLogging',
-        'nSort'             => 'sort',
-        'dErstellt'         => 'created',
-        'dErstellt_DE'      => 'created_DE',
+        'kCheckBox'            => 'checkboxID',
+        'kLink'                => 'linkID',
+        'kCheckBoxFunktion'    => 'checkboxFunctionID',
+        'cName'                => 'name',
+        'cKundengruppe'        => 'customerGroupsSelected',
+        'cAnzeigeOrt'          => 'displayAt',
+        'nAktiv'               => 'active',
+        'nPflicht'             => 'isMandatory',
+        'nLogging'             => 'hasLogging',
+        'nSort'                => 'sort',
+        'dErstellt'            => 'created',
+        'dErstellt_DE'         => 'createdDE',
+        'oCheckBoxSprache_arr' => 'checkBoxLanguage_arr',
+        'kKundengruppe_arr'    => 'customerGroup_arr',
+        'kAnzeigeOrt_arr'      => 'displayAt_arr',
     ];
 
     /**
@@ -186,10 +208,10 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
     }
 
     /**
-     * @param int|string $linkID
+     * @param int|string|null $linkID
      * @return CheckboxDataTableObject
      */
-    public function setLinkID(int|string  $linkID): CheckboxDataTableObject
+    public function setLinkID(int|string|null $linkID): CheckboxDataTableObject
     {
         $this->linkID = (int)$linkID;
 
@@ -205,10 +227,10 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
     }
 
     /**
-     * @param int|string  $checkboxFunctionID
+     * @param int|string|null $checkboxFunctionID
      * @return CheckboxDataTableObject
      */
-    public function setCheckboxFunctionID(int|string  $checkboxFunctionID): CheckboxDataTableObject
+    public function setCheckboxFunctionID(int|string|null $checkboxFunctionID): CheckboxDataTableObject
     {
         $this->checkboxFunctionID = (int)$checkboxFunctionID;
 
@@ -252,6 +274,7 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
             $customerGroupsSelected = ';' . \implode(';', $customerGroupsSelected) . ';';
         }
         $this->customerGroupsSelected = $customerGroupsSelected;
+        $this->setCustomerGroupArr(\array_filter(\explode(';', $customerGroupsSelected)));
 
         return $this;
     }
@@ -274,6 +297,7 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
             $displayAt = ';' . \implode(';', $displayAt) . ';';
         }
         $this->displayAt = $displayAt;
+        $this->setDisplayAtArr(\array_filter(\explode(';', $displayAt)));
 
         return $this;
     }
@@ -306,7 +330,7 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
     }
 
     /**
-     * @param  bool|int|string $isMandatory
+     * @param bool|int|string $isMandatory
      * @return CheckboxDataTableObject
      */
     public function setIsMandatory(bool|int|string $isMandatory): CheckboxDataTableObject
@@ -325,7 +349,7 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
     }
 
     /**
-     * @param  bool|int|string $hasLogging
+     * @param bool|int|string $hasLogging
      * @return CheckboxDataTableObject
      */
     public function setHasLogging(bool|int|string $hasLogging): CheckboxDataTableObject
@@ -408,6 +432,74 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
     public function addLanguage(string $code, array $language): CheckboxDataTableObject
     {
         $this->languages[$code] = $language;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCheckBoxLanguageArr(): array
+    {
+        return $this->checkBoxLanguage_arr;
+    }
+
+    /**
+     * @param array $checkBoxLanguage_arr
+     * @return CheckboxDataTableObject
+     */
+    public function setCheckBoxLanguageArr(array $checkBoxLanguage_arr): CheckboxDataTableObject
+    {
+        $this->checkBoxLanguage_arr = $checkBoxLanguage_arr;
+
+        return $this;
+    }
+
+    /**
+     * @param CheckboxLanguageDataTableObject $checkBoxLanguage
+     * @return CheckboxDataTableObject
+     */
+    public function addCheckBoxLanguageArr(CheckboxLanguageDataTableObject $checkBoxLanguage): CheckboxDataTableObject
+    {
+        $this->checkBoxLanguage_arr[] = $checkBoxLanguage;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCustomerGroupArr(): array
+    {
+        return $this->customerGroup_arr;
+    }
+
+    /**
+     * @param array $customerGroup_arr
+     * @return CheckboxDataTableObject
+     */
+    public function setCustomerGroupArr(array $customerGroup_arr): CheckboxDataTableObject
+    {
+        $this->customerGroup_arr = $customerGroup_arr;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getDisplayAtArr(): array
+    {
+        return $this->displayAt_arr;
+    }
+
+    /**
+     * @param array $displayAt_arr
+     * @return CheckboxDataTableObject
+     */
+    public function setDisplayAtArr(array $displayAt_arr): CheckboxDataTableObject
+    {
+        $this->displayAt_arr = $displayAt_arr;
 
         return $this;
     }

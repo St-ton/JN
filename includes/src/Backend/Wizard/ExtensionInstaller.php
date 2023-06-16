@@ -140,6 +140,7 @@ class ExtensionInstaller
                 }
                 $itemID = $license->getID();
                 try {
+                    $this->helper->validatePrerequisites($itemID);
                     $installer   = $this->helper->getInstaller($itemID);
                     $download    = $this->helper->getDownload($itemID);
                     $installCode = $installer->install($itemID, $download, $ajaxResponse);
@@ -148,7 +149,7 @@ class ExtensionInstaller
                         $installCode = $installer->forceUpdate($download, $ajaxResponse);
                     }
                 } catch (InvalidArgumentException $e) {
-                    $errorMsg .= \sprintf('%s: %s <br>', $license->getName(), $e->getMessage());
+                    $errorMsg .= \sprintf('%s: %s <br>', $license->getName(), \__($e->getMessage()));
                 }
                 if (isset($installCode) && $installCode !== InstallCode::OK) {
                     $mapper    = new PluginValidation();

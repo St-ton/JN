@@ -14,6 +14,12 @@ use stdClass;
  */
 class Release
 {
+    public const PHP_VERSION_OK = 0;
+
+    public const PHP_VERSION_LOW = -1;
+
+    public const PHP_VERSION_HIGH = 1;
+
     public const TYPE_SECURITY = 'security';
 
     public const TYPE_FEATURE = 'feature';
@@ -61,6 +67,11 @@ class Release
     private ?Version $phpMaxVersion = null;
 
     /**
+     * @var int
+     */
+    private int $phpVersionOK = self::PHP_VERSION_OK;
+
+    /**
      * @var bool
      */
     private bool $includesSecurityFixes = false;
@@ -93,6 +104,20 @@ class Release
         }
         if (isset($json->max_php_version)) {
             $this->setPhpMaxVersion(Version::parse($json->max_php_version));
+        }
+        $this->checkPhpVersion();
+    }
+
+    private function checkPhpVersion(): void
+    {
+        $php     = Version::parse(\PHP_VERSION);
+        $version = new Version();
+        $version->setMajor($php->getMajor());
+        $version->setMinor($php->getMinor());
+        if ($this->getPhpMaxVersion() !== null && $version->greaterThan($this->getPhpMaxVersion())) {
+            $this->setPhpVersionOK(self::PHP_VERSION_HIGH);
+        } elseif ($this->getPhpMinVersion() !== null && $version->smallerThan($this->getPhpMinVersion())) {
+            $this->setPhpVersionOK(self::PHP_VERSION_LOW);
         }
     }
 
@@ -243,5 +268,21 @@ class Release
     public function setPhpMaxVersion(?Version $phpMaxVersion): void
     {
         $this->phpMaxVersion = $phpMaxVersion;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPhpVersionOK(): int
+    {
+        return $this->phpVersionOK;
+    }
+
+    /**
+     * @param int $phpVersionOK
+     */
+    public function setPhpVersionOK(int $phpVersionOK): void
+    {
+        $this->phpVersionOK = $phpVersionOK;
     }
 }

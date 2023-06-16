@@ -20,37 +20,37 @@ class RMADataTableObject extends AbstractDataObject implements DataTableObjectIn
     /**
      * @var int
      */
-    private int $id = 0;
+    protected int $id = 0;
     
     /**
      * @var int
      */
-    private int $wawiID = 0;
+    protected int $wawiID = 0;
     
     /**
      * @var int
      */
-    private int $customerID = 0;
+    protected int $customerID = 0;
     
     /**
      * @var int
      */
-    private int $pickupAddressID = 0;
+    protected int $pickupAddressID = 0;
     
     /**
      * @var string
      */
-    private string $status = '';
+    protected string $status = '';
     
     /**
      * @var string
      */
-    private string $createDate = '';
+    protected string $createDate = '';
     
     /**
      * @var string
      */
-    private string $lastModified = '';
+    protected string $lastModified = '';
     
     /**
      * @var string[]
@@ -103,5 +103,119 @@ class RMADataTableObject extends AbstractDataObject implements DataTableObjectIn
     public function getColumnMapping(): array
     {
         return $this->columnMapping;
+    }
+
+    /**
+     * @return int
+     */
+    public function getWawiID(): int
+    {
+        return $this->wawiID;
+    }
+
+    /**
+     * @param int|string $wawiID
+     * @return self
+     */
+    public function setWawiID(int|string $wawiID): self
+    {
+        $this->wawiID = (int)$wawiID;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCustomerID(): int
+    {
+        return $this->customerID;
+    }
+
+    /**
+     * @param int|string $customerID
+     * @return $this
+     */
+    public function setCustomerID(int|string $customerID): self
+    {
+        $this->customerID = (int)$customerID;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPickupAddressID(): int
+    {
+        return $this->pickupAddressID;
+    }
+
+    /**
+     * @param int|string $pickupAddressID
+     * @return $this
+     */
+    public function setPickupAddressID(int|string $pickupAddressID): self
+    {
+        $this->pickupAddressID = (int)$pickupAddressID;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getStatus(): string
+    {
+        return $this->status;
+    }
+
+    /**
+     * @param int|string $status
+     * @return $this
+     */
+    public function setStatus(int|string $status): self
+    {
+        $this->status = (string)$status;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCreateDate(): string
+    {
+        return $this->createDate;
+    }
+
+    /**
+     * @param string $createDate
+     * @return $this
+     */
+    public function setCreateDate(string $createDate): self
+    {
+        $this->createDate = $createDate;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLastModified(): string
+    {
+        return $this->lastModified;
+    }
+
+    /**
+     * @param string $lastModified
+     * @return $this
+     */
+    public function setLastModified(string $lastModified): self
+    {
+        $this->lastModified = $lastModified;
+
+        return $this;
     }
 }

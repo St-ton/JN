@@ -130,7 +130,7 @@ class RMAService extends AbstractService
         return Shop::Container()->getDB()->getCollection(
             "SELECT twarenkorbpos.kArtikel AS id, twarenkorbpos.cEinheit AS unit,
        twarenkorbpos.cArtNr AS productNR, twarenkorbpos.fPreisEinzelNetto AS unitPriceNet, twarenkorbpos.fMwSt AS vat,
-       twarenkorbpos.cName AS name, tbestellung.kBestellung AS orderID, tbestellung.kKunde AS clientID,
+       twarenkorbpos.cName AS name, tbestellung.kKunde AS clientID,
        tbestellung.kLieferadresse AS shippingAddressID, tbestellung.cStatus AS status,
        tbestellung.cBestellNr AS orderID, tlieferscheinpos.kLieferscheinPos AS shippingNotePosID,
        tlieferscheinpos.kLieferschein AS shippingNoteID, tlieferscheinpos.fAnzahl AS quantity,
@@ -163,12 +163,20 @@ class RMAService extends AbstractService
                 'notReturnable' => \PRODUCT_NOT_RETURNABLE
             ]
         )->map(static function ($product): \stdClass {
-            $product->unitPriceNet = Preise::getLocalizedPriceString($product->unitPriceNet);
-            $product->Artikel      = new Artikel();
+            $product->id                    = (int)$product->id;
+            $product->vat                   = (float)$product->vat;
+            $product->clientID              = (int)$product->clientID;
+            $product->shippingAddressID     = (int)$product->shippingAddressID;
+            $product->shippingNotePosID     = (int)$product->shippingNotePosID;
+            $product->shippingNoteID        = (int)$product->shippingNoteID;
+            $product->quantity              = (int)$product->quantity;
+            $product->unitPriceNet          = (float)$product->unitPriceNet;
+            $product->unitPriceNetLocalized = Preise::getLocalizedPriceString($product->unitPriceNet);
+            $product->Artikel               = new Artikel();
             // Set ID and do "$product->Artikel->holBilder();" to get only images
             $product->Artikel->fuelleArtikel((int)$product->id);
-            
+
             return $product;
-        })->all();
+        })->keyBy('shippingNotePosID')->all();
     }
 }

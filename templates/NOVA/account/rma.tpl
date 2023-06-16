@@ -70,7 +70,7 @@
                                                                     {lang key='productNo'}: {link href=$product->orderID}
                                                                         {$product->productNR}
                                                                     {/link}<br>
-                                                                    {$product->quantity} {$product->unit|default:''} x {$product->unitPriceNet}
+                                                                    {$product->quantity} {$product->unit|default:''} x {$product->unitPriceNetLocalized}
                                                                 </small>
                                                             </div>
                                                         </div>
@@ -93,11 +93,7 @@
                                                                 id="qty-{$product->shippingNotePosID}" class="quantity" name="quantity"
                                                                 aria=["label"=>"{lang key='quantity'}"]
                                                                 value=$product->quantity
-                                                                data=[
-                                                                "decimals" => {getDecimalLength quantity=$product->Artikel->fAbnahmeintervall},
-                                                                "product-id" => "{if isset($product->Artikel->kVariKindArtikel)}{$product->Artikel->kVariKindArtikel}{else}{$product->Artikel->kArtikel}{/if}",
-                                                                "snposid" => {$product->shippingNotePosID}
-                                                                ]
+                                                                data=["snposid" => {$product->shippingNotePosID}]
                                                                 }
                                                                 {inputgroupappend}
                                                                 {button variant="" class="btn-increment"
@@ -112,9 +108,7 @@
                                                             <div class="mr-2 mb-2">
                                                                 {select aria=["label"=>""]
                                                                 name="reason"
-                                                                data=[
-                                                                "snposid" => "{$product->shippingNotePosID}"
-                                                                ]
+                                                                data=["snposid" => "{$product->shippingNotePosID}"]
                                                                 class="custom-select form-control"}
                                                                     <option value="-1" selected>{lang key='rma_comment_choose' section='rma'}</option>
                                                                     <option value="0">Artikel defekt</option>
@@ -125,9 +119,7 @@
 
                                                             <div class="flex-grow-1 mr-2 mb-2">
                                                                 {textarea name="comment"
-                                                                data=[
-                                                                "snposid" => "{$product->shippingNotePosID}"
-                                                                ]
+                                                                data=["snposid" => "{$product->shippingNotePosID}"]
                                                                 rows=1
                                                                 maxlength="255"
                                                                 placeholder="{lang key='comment' section='productDetails'}"}{/textarea}
@@ -328,7 +320,7 @@
                                 return;
                             }
                             if (!data['response']['result']) {
-                                console.log(data['response']['msg']);
+                                alert(data['response']['msg']);
                             } else {
                                 console.log(data['response']['data']);
                             }

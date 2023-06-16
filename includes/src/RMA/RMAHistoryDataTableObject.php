@@ -20,32 +20,32 @@ class RMAHistoryDataTableObject extends AbstractDataObject implements DataTableO
     /**
      * @var int
      */
-    private int $id = 0;
+    protected int $id = 0;
     
     /**
      * @var int
      */
-    private int $rmaPosID = 0;
+    protected int $rmaPosID = 0;
     
     /**
      * @var string
      */
-    private string $keyName = '';
+    protected string $keyName = '';
     
     /**
      * @var string|null
      */
-    private ?string $oldValue;
+    protected ?string $oldValue;
     
     /**
      * @var string
      */
-    private string $newValue = '';
+    protected string $newValue = '';
     
     /**
      * @var string
      */
-    private string $lastModified = '';
+    protected string $lastModified = '';
     
     
     /**

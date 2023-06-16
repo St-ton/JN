@@ -1482,8 +1482,10 @@ class IOMethods
             $data->customerID      = $customerID;
             $data->pickupAddressID = 0;
             $data->createDate      = date('Y-m-d H:i:s');
-            $rmaTableObject        = (new RMADataTableObject)->hydrateWithObject($data);
-            $rmaID                 = $RMAService->getRepository()->insert($rmaTableObject);
+            $rmaTableObject        = new RMADataTableObject();
+            $rmaTableObject->hydrateWithObject($data);
+            // Why is wawiID not NULL ? Should be NULL on default in Controller ...
+            $rmaID = $RMAService->getRepository()->insert($rmaTableObject);
             if ($rmaID <= 0) {
                 $response->result = false;
                 $response->msg    = Shop::Lang()->get('unknownError', 'messages');
@@ -1491,19 +1493,34 @@ class IOMethods
 
                 return $ioResponse;
             }
-            // HIER WEITERMACHEN ...
+
+            $returnableProducts = $RMAService->getReturnableProducts($customerID);
+
             foreach ($param['quantity'] as $key => $quantity) {
-                $data                    = new stdClass();
-                $data->rmaID             = $rmaID;
-                $data->shippingNoteID    = $param['shippingNotePosID'][$key];
-                $data->shippingNotePosID = $param['shippingNotePosID'][$key];
-                $data->productID         = $param['productID'][$key];
-                $data->quantity          = $quantity;
-                $data->reason            = $param['reason'][$key];
-                $data->comment           = $param['comment'][$key];
-                $rmaPosTableObject       = (new RMAPosDataTableObject)->hydrateWithObject($data);
+                $dbData                    = $returnableProducts[(int)$quantity['shippingNotePosID']];
+                $data                      = new stdClass();
+                $data->rmaID               = $rmaID;
+                $data->shippingNotePosID   = $dbData->shippingNotePosID;
+                $data->orderPosID          = 0;
+                $data->productID           = $dbData->Artikel->kArtikel;
+                $data->name                = $dbData->name;
+                $data->unitPriceNet        = $dbData->unitPriceNet;
+                $data->quantity            = (int)$quantity['quantity'];
+                $data->vat                 = $dbData->vat;
+                $data->unit                = $dbData->unit;
+                $data->stockBeforePurchase = 0.00;
+                $data->longestMinDelivery  = 0;
+                $data->longestMaxDelivery  = 0;
+                $data->comment             = $param['comment'][$key]['value'];
+                $data->createDate          = date('Y-m-d H:i:s');
+                $rmaPosTableObject         = new RMAPosDataTableObject();
+                $rmaPosTableObject->hydrateWithObject($data);
                 $RMAService->getRepository('RMAPosRepository')->insert($rmaPosTableObject);
             }
+
+            // Continue with the reasons
+            // (int)$param['reason'][0]['value']
+
 
             $response->result = true;
         }

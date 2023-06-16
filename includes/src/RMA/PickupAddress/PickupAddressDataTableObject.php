@@ -20,98 +20,98 @@ class PickupAddressDataTableObject extends AbstractDataObject implements DataTab
     /**
      * @var int
      */
-    private int $id = 0;
+    protected int $id = 0;
     
     /**
      * @var int
      */
-    private int $customerID = 0;
+    protected int $customerID = 0;
     
     /**
      * @var string
      */
-    private string $salutation = '';
+    protected string $salutation = '';
     
     /**
      * @var string
      */
-    private string $firstName = '';
+    protected string $firstName = '';
     
     /**
      * @var string
      */
-    private string $lastName = '';
+    protected string $lastName = '';
     
     /**
      * @var string
      */
-    private string $academicTitle = '';
+    protected string $academicTitle = '';
     
     /**
      * @var string
      */
-    private string $companyName = '';
+    protected string $companyName = '';
     
     /**
      * @var string
      */
-    private string $companyAdditional = '';
+    protected string $companyAdditional = '';
     
     /**
      * @var string
      */
-    
-    private string $street = '';
+
+    protected string $street = '';
     /**
      * @var string
      */
-    
-    private string $houseNumber = '';
-    
-    /**
-     * @var string
-     */
-    private string $addressAdditional = '';
+
+    protected string $houseNumber = '';
     
     /**
      * @var string
      */
-    private string $postalCode = '';
+    protected string $addressAdditional = '';
     
     /**
      * @var string
      */
-    private string $city = '';
+    protected string $postalCode = '';
     
     /**
      * @var string
      */
-    private string $state = '';
+    protected string $city = '';
     
     /**
      * @var string
      */
-    private string $country = '';
+    protected string $state = '';
     
     /**
      * @var string
      */
-    private string $phone = '';
+    protected string $country = '';
     
     /**
      * @var string
      */
-    private string $mobilePhone = '';
+    protected string $phone = '';
     
     /**
      * @var string
      */
-    private string $fax = '';
+    protected string $mobilePhone = '';
     
     /**
      * @var string
      */
-    private string $mail = '';
+    protected string $fax = '';
+    
+    /**
+     * @var string
+     */
+    protected string $mail = '';
     
     
     

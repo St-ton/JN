@@ -20,22 +20,22 @@ class RMAReasonsLangDataTableObject extends AbstractDataObject implements DataTa
     /**
      * @var int
      */
-    private int $id = 0;
+    protected int $id = 0;
     
     /**
      * @var int
      */
-    private int $reasonID = 0;
+    protected int $reasonID = 0;
     
     /**
      * @var int
      */
-    private int $langID = 0;
+    protected int $langID = 0;
     
     /**
      * @var string
      */
-    private string $title = '';
+    protected string $title = '';
     
     /**
      * @var string[]

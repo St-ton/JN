@@ -20,12 +20,12 @@ class RMAReasonsDataTableObject extends AbstractDataObject implements DataTableO
     /**
      * @var int
      */
-    private int $id = 0;
+    protected int $id = 0;
     
     /**
      * @var int
      */
-    private int $wawiID = 0;
+    protected int $wawiID = 0;
     
     /**
      * @var string[]

@@ -296,6 +296,16 @@ function checkSingleSettingCard() {
     }
 }
 
+function toggleTheme() {
+    let theme = $('#theme').val();
+    if (theme === 'dark') {
+        $('#theme').val('light');
+    } else {
+        $('#theme').val('dark');
+    }
+    $('#themeForm').submit();
+}
+
 /**
  * document ready
  */
@@ -503,6 +513,32 @@ $(document).ready(function () {
                 chevron.trigger('click');
             }
         }
+    });
+
+    $('#theme-toggle a.dropdown-item').on('click', function (e) {
+        e.preventDefault();
+        let btn = $(this),
+            theme = $(this).data('theme');
+        ioCall('setTheme', [theme], function (data) {
+            if (data['theme'] === theme) {
+                $('#theme-toggle a.dropdown-item').removeClass('active');
+                btn.addClass('active');
+
+                $('html')
+                    .removeClass('theme-auto')
+                    .removeClass('theme-light')
+                    .removeClass('theme-dark')
+                    .addClass('theme-' + data['theme']);
+
+                $('#theme-toggle .toggleIcon')
+                    .removeClass('fa-sun-o')
+                    .removeClass('fa-moon-o')
+                    .removeClass('fa-adjust')
+                    .addClass(btn.data('icon'));
+            } else {
+                showNotify('danger', 'Theme', 'Theme konnte nicht gesetzt werden.');
+            }
+        });
     });
 });
 

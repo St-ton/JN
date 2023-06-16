@@ -1,6 +1,7 @@
 {assign var=bForceFluid value=$bForceFluid|default:false}
+{assign var=themeMode value=$config.global.backend_theme|default:'auto'}
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" class="theme-{$themeMode}">
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta charset="utf-8">
@@ -120,6 +121,29 @@
                                         </a>
                                     {/if}
                                 {/foreach}
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown fa-lg" id="theme-toggle">
+                            <a href="#" class="nav-link text-dark-gray px-2" data-toggle="dropdown">
+                                <span class="fal
+                                    {if $themeMode === 'auto'} fa-adjust
+                                    {elseif $themeMode === 'light'} fa-sun-o
+                                    {else} fa-moon-o{/if} fa-fw toggleIcon"></span>
+                                <i class="far fa-chevron-down rotate-180"></i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <a class="dropdown-item py-3{if $themeMode === 'light'} active{/if}"
+                                   href="#" rel="noopener" data-theme="light" data-icon="fa-sun-o">
+                                    <span class="fal fa-sun-o fa-fw fa-lg"></span> Light
+                                </a>
+                                <a class="dropdown-item py-3{if $themeMode === 'dark'} active{/if}"
+                                   href="#" rel="noopener" data-theme="dark" data-icon="fa-moon-o">
+                                    <span class="fal fa-moon-o fa-fw fa-lg"></span> Dark
+                                </a>
+                                <a class="dropdown-item py-3{if $themeMode === 'auto'} active{/if}"
+                                   href="#" rel="noopener" data-theme="auto" data-icon="fa-adjust">
+                                    <span class="fal fa-adjust fa-fw fa-lg"></span> Auto
+                                </a>
                             </div>
                         </li>
                     </ul>

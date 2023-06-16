@@ -172,7 +172,8 @@ class IOController extends AbstractBackendController
                     'CONTENT_EMAIL_TEMPLATE_VIEW'
                 )
                 ->register('notificationAction', Notification::ioNotification(...))
-                ->register('pluginTestLoading', Helper::ioTestLoading(...));
+                ->register('pluginTestLoading', Helper::ioTestLoading(...))
+                ->register('setTheme', $this->setTheme(...));
         } catch (Exception $e) {
             return $io->getResponse(new IOError($e->getMessage(), $e->getCode()));
         }
@@ -608,5 +609,29 @@ class IOController extends AbstractBackendController
             ->fetch('snippets/zuschlagliste_plz_badges.tpl');
 
         return (object)['message' => $message, 'badges' => $badges, 'surchargeID' => $surcharge->getID()];
+    }
+
+    /**
+     * @param string $theme
+     * @return stdClass
+     * @since 5.3.0
+     */
+    public function setTheme(string $theme): stdClass
+    {
+        if (!\in_array($theme, ['light', 'dark', 'auto'], true)) {
+            return (object)['theme' => ''];
+        }
+        // SET THEME
+        $shopSettings = Shopsetting::getInstance();
+        if ($this->db->update(
+            'teinstellungen',
+            ['kEinstellungenSektion', 'cName'],
+            [\CONF_GLOBAL, 'backend_theme'],
+            (object)['cWert' => $theme]
+        ) >= 0) {
+            //$shopSettings->reset();
+            return (object)['theme' => $theme];
+        }
+        return (object)['theme' => ''];
     }
 }

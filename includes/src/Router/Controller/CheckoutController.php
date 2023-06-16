@@ -183,7 +183,6 @@ class CheckoutController extends RegistrationController
         //autom. step ermitteln
         if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
             if (!isset($_SESSION['Lieferadresse'])) {
-                $shippingID = 0;
                 if ($this->config['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] === 'N') {
                     $shippingID = $this->db->getSingleInt(
                         'SELECT DISTINCT(kLieferadresse) AS id
@@ -193,11 +192,11 @@ class CheckoutController extends RegistrationController
                         'id',
                         ['cid' => $this->customer->getID()]
                     );
+                } else {
+                    $shippingID = Order::getLastOrderRefIDs($this->customer->getID())->kLieferadresse;
                 }
                 $form->pruefeLieferdaten([
-                    'kLieferadresse' => $shippingID > 0
-                        ? $shippingID
-                        : Order::getLastOrderRefIDs($this->customer->getID())->kLieferadresse
+                    'kLieferadresse' => max($shippingID, 0)
                 ]);
                 if (isset($_SESSION['Lieferadresse']) && $_SESSION['Lieferadresse']->kLieferadresse > 0) {
                     $_GET['editLieferadresse'] = 1;

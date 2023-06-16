@@ -3,10 +3,12 @@
 namespace JTL\dbeS\Sync;
 
 use DateTime;
+use JTL\Cart\Cart;
 use JTL\Checkout\Adresse;
 use JTL\Checkout\Bestellung;
 use JTL\Checkout\Lieferadresse;
 use JTL\Checkout\Lieferschein;
+use JTL\Checkout\OrderHandler;
 use JTL\Checkout\Rechnungsadresse;
 use JTL\Customer\Customer;
 use JTL\dbeS\Starter;
@@ -48,6 +50,8 @@ final class Orders extends AbstractSync
                 $this->handleSet($xml);
             } elseif (\str_contains($file, 'upd_bestellung.xml')) {
                 $this->handleUpdate($xml);
+            } elseif (\str_contains($file, 'ins_bestellung.xml')) {
+                $this->handleInsert($xml);
             }
         }
 
@@ -289,6 +293,85 @@ final class Orders extends AbstractSync
             'oBestellungAlt' => &$oldOrder,
             'oKunde'         => &$customer
         ]);
+    }
+
+    /**
+     * @param int $customerId
+     * @return Customer
+     */
+    private function validateCustomer(int $customerId): Customer
+    {
+        $customer = new Customer($customerId);
+        if ($customer->kKunde > 0) {
+            return $customer;
+        }
+
+        \syncException(
+            'Fehler: Der Kunde mit der ID ' . $customerId . ' existiert nicht im Shop!',
+            \FREIDEFINIERBARER_FEHLER
+        );
+
+        exit();
+    }
+
+    /**
+     * @param string   $orderNr
+     * @param Customer $customer
+     * @param Cart     $cart
+     * @return string
+     */
+    private function validateOrderNr(string $orderNr, Customer $customer, Cart $cart): string
+    {
+        if ($orderNr !== '') {
+            $order = $this->db->select('tbestellung', 'cBestellNr', $orderNr);
+            if ($order !== null && (int)$order->kBestellung > 0) {
+                \syncException(
+                    'Fehler: Die Bestellung mit der Bestellnummer ' . $orderNr . ' existiert bereits im Shop!',
+                    \FREIDEFINIERBARER_FEHLER
+                );
+
+                exit();
+            }
+
+            return $orderNr;
+        }
+
+        return (new OrderHandler($this->db, $customer, $cart))->createOrderNo();
+    }
+
+    /**
+     * @param array $xml
+     * @return void
+     */
+    private function handleInsert(array $xml): void
+    {
+        $orders = $this->mapper->mapArray($xml, 'tbestellung', 'mBestellung');
+        if (\count($orders) !== 1) {
+            \syncException('Fehler: keine XML-Daten vorhanden', 5);
+        }
+        $orderData = $orders[0];
+
+        $orderData->kRechnungsadresse = 0;
+        $orderData->kLieferadresse    = 0;
+        $orderData->kKunde            = (int)$orderData->kKunde;
+
+        if ((int)($orderData->kBestellung ?? 0) > 0) {
+            $this->handleUpdate($xml);
+
+            return;
+        }
+
+        $cart                  = new Cart();
+        $customer              = $this->validateCustomer($orderData->kKunde);
+        $orderData->cBestellNr = $this->validateOrderNr($orderData->cBestellNr ?? '', $customer, $cart);
+        $correctionFactor      = $this->applyCorrectionFactor($orderData);
+        $billingAddress        = $this->getBillingAddress($orderData, $xml);
+        // Die Wawi schickt in fGesamtsumme die Rechnungssumme (Summe aller Positionen), der Shop erwartet hier
+        // aber tatsächlich eine Gesamtsumme oder auch den Zahlungsbetrag (Rechnungssumme abzgl. evtl. Guthaben)
+        $orderData->fGesamtsumme     -= $orderData->fGuthaben;
+        $orderData->kRechnungsadresse = $billingAddress->insertInDB();
+        $order = new Bestellung();
+        $this->updateAddresses($orderData, $billingAddress, $xml);
     }
 
     /**

@@ -397,7 +397,10 @@ final class Mapper
             'cZahlungsartName',
             'fWaehrungsFaktor',
             'cBezahlt',
-            'cPUIZahlungsdaten'
+            'cPUIZahlungsdaten',
+            'nLongestMinDelivery',
+            'nLongestMaxDelivery',
+            'dErstellt'
         ],
 
         'mGutschein' => [

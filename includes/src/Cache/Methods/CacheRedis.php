@@ -83,7 +83,7 @@ class CacheRedis implements ICachingMethod
         if ($pass !== null && $pass !== '') {
             try {
                 if ($user !== null && $user !== '') {
-                    $res = $redis->auth([$pass, $user]);
+                    $res = $redis->auth([$user, $pass]);
                 } else {
                     $res = $redis->auth($pass);
                 }

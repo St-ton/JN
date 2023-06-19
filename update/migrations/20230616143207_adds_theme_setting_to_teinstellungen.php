@@ -15,22 +15,14 @@ use JTL\Update\Migration;
 class Migration_20230616143207 extends Migration implements IMigration
 {
     protected $author = 'Tim Niko Tegtmeyer';
-    protected $description = 'Adds theme mode setting to teinstellungen';
+    protected $description = 'Adds theme mode setting to tadminlogin';
 
     /**
      * @inheritdoc
      */
     public function up()
     {
-        $this->setConfig(
-            'backend_theme',
-            'auto',
-            CONF_GLOBAL,
-            'Light- oder Darkmode',
-            'text',
-            1517,
-            (object)['nStandardAnzeigen' => 0]
-        );
+        $this->execute("ALTER TABLE `tadminlogin` ADD theme VARCHAR(5) NOT NULL DEFAULT 'auto'");
     }
 
     /**
@@ -38,6 +30,6 @@ class Migration_20230616143207 extends Migration implements IMigration
      */
     public function down()
     {
-        $this->removeConfig('backend_theme');
+        $this->execute('ALTER TABLE `tadminlogin` DROP COLUMN theme');
     }
 }

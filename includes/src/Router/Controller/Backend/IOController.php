@@ -621,15 +621,13 @@ class IOController extends AbstractBackendController
         if (!\in_array($theme, ['light', 'dark', 'auto'], true)) {
             return (object)['theme' => ''];
         }
-        // SET THEME
-        $shopSettings = Shopsetting::getInstance();
+        $_SESSION['adminTheme'] = $theme;
         if ($this->db->update(
-            'teinstellungen',
-            ['kEinstellungenSektion', 'cName'],
-            [\CONF_GLOBAL, 'backend_theme'],
-            (object)['cWert' => $theme]
+            'tadminlogin',
+            'kAdminlogin',
+            $this->account->getID(),
+            (object)['theme' => $theme]
         ) >= 0) {
-            //$shopSettings->reset();
             return (object)['theme' => $theme];
         }
         return (object)['theme' => ''];

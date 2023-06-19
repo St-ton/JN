@@ -18,8 +18,11 @@ use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Plugin\Payment\LegacyMethod;
+use JTL\Plugin\Payment\MethodInterface;
 use JTL\Session\Frontend;
 use JTL\Shop;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use stdClass;
 
 /**
@@ -33,7 +36,7 @@ final class Orders extends AbstractSync
      * @return mixed|null
      * @throws Exception
      */
-    public function handle(Starter $starter)
+    public function handle(Starter $starter): mixed
     {
         foreach ($starter->getXML() as $item) {
             [$file, $xml] = [\key($item), \reset($item)];
@@ -84,9 +87,9 @@ final class Orders extends AbstractSync
 
     /**
      * @param int $orderID
-     * @return bool|LegacyMethod
+     * @return MethodInterface|null
      */
-    private function getPaymentMethod(int $orderID)
+    private function getPaymentMethod(int $orderID): ?MethodInterface
     {
         $order = $this->db->getSingleObject(
             'SELECT tbestellung.kBestellung, tzahlungsart.cModulId
@@ -98,7 +101,7 @@ final class Orders extends AbstractSync
             ['oid' => $orderID]
         );
 
-        return ($order === null || empty($order->cModulId)) ? false : LegacyMethod::create($order->cModulId);
+        return ($order === null || empty($order->cModulId)) ? null : LegacyMethod::create($order->cModulId);
     }
 
     /**
@@ -116,7 +119,7 @@ final class Orders extends AbstractSync
                 continue;
             }
             $module = $this->getPaymentMethod($orderID);
-            if ($module) {
+            if ($module !== null) {
                 $module->cancelOrder($orderID, true);
             }
             $this->deleteOrder($orderID);
@@ -136,7 +139,7 @@ final class Orders extends AbstractSync
             : [$xml['del_bestellungen']['kBestellung']];
         foreach (\array_filter(\array_map('\intval', $orderIDs)) as $orderID) {
             $module = $this->getPaymentMethod($orderID);
-            if ($module) {
+            if ($module !== null) {
                 $module->cancelOrder($orderID, true);
             }
             $this->deleteOrder($orderID);
@@ -157,7 +160,7 @@ final class Orders extends AbstractSync
             $tmpOrder = new Bestellung($orderID);
             $customer = new Customer($tmpOrder->kKunde);
             $tmpOrder->fuelleBestellung();
-            if ($module) {
+            if ($module !== null) {
                 $module->cancelOrder($orderID);
             } else {
                 if (!empty($customer->cMail)
@@ -168,9 +171,13 @@ final class Orders extends AbstractSync
                     $data->tkunde      = $customer;
                     $data->tbestellung = $tmpOrder;
 
-                    $mailer = Shop::Container()->get(Mailer::class);
-                    $mail   = new Mail();
-                    $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_BESTELLUNG_STORNO, $data));
+                    try {
+                        $mailer = Shop::Container()->get(Mailer::class);
+                        $mail   = new Mail();
+                        $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_BESTELLUNG_STORNO, $data));
+                    } catch (NotFoundExceptionInterface | ContainerExceptionInterface) {
+                        $this->logger->error('Mailer not available.');
+                    }
                 }
                 $this->db->update(
                     'tbestellung',
@@ -198,20 +205,26 @@ final class Orders extends AbstractSync
         }
         foreach (\array_filter(\array_map('\intval', $source)) as $orderID) {
             $module = $this->getPaymentMethod($orderID);
-            if ($module) {
+            if ($module !== null) {
                 $module->reactivateOrder($orderID);
             } else {
                 $tmpOrder = new Bestellung($orderID);
                 $customer = new Customer($tmpOrder->kKunde);
                 $tmpOrder->fuelleBestellung();
-                if (($tmpOrder->Zahlungsart->nMailSenden & \ZAHLUNGSART_MAIL_STORNO) && \strlen($customer->cMail) > 0) {
+                if (($tmpOrder->Zahlungsart->nMailSenden & \ZAHLUNGSART_MAIL_STORNO)
+                    && ($customer->cMail ?? '') !== ''
+                ) {
                     $data              = new stdClass();
                     $data->tkunde      = $customer;
                     $data->tbestellung = $tmpOrder;
 
-                    $mailer = Shop::Container()->get(Mailer::class);
-                    $mail   = new Mail();
-                    $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_BESTELLUNG_RESTORNO, $data));
+                    try {
+                        $mailer = Shop::Container()->get(Mailer::class);
+                        $mail   = new Mail();
+                        $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_BESTELLUNG_RESTORNO, $data));
+                    } catch (NotFoundExceptionInterface | ContainerExceptionInterface) {
+                        $this->logger->error('Mailer not available.');
+                    }
                 }
                 $this->db->update(
                     'tbestellung',
@@ -621,6 +634,7 @@ final class Orders extends AbstractSync
             $updateSql           .= ', nLongestMaxDelivery = :longestMax';
             $params['longestMax'] = (int)$order->nLongestMaxDelivery;
         }
+        /** @noinspection SqlWithoutWhere */
         $this->db->queryPrepared(
             'UPDATE tbestellung SET
                 fGuthaben = :fg,
@@ -647,15 +661,19 @@ final class Orders extends AbstractSync
             && $tpl->getModel() !== null
             && $tpl->getModel()->getActive() === true
         ) {
-            if ($module) {
+            if ($module !== null) {
                 $module->sendMail($oldOrder->kBestellung, \MAILTEMPLATE_BESTELLUNG_AKTUALISIERT);
             } else {
                 $data              = new stdClass();
                 $data->tkunde      = $customer;
                 $data->tbestellung = new Bestellung((int)$oldOrder->kBestellung, true);
 
-                $mailer = Shop::Container()->get(Mailer::class);
-                $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_BESTELLUNG_AKTUALISIERT, $data));
+                try {
+                    $mailer = Shop::Container()->get(Mailer::class);
+                    $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_BESTELLUNG_AKTUALISIERT, $data));
+                } catch (NotFoundExceptionInterface | ContainerExceptionInterface) {
+                    $this->logger->error('Mailer not available.');
+                }
             }
         }
     }
@@ -765,7 +783,7 @@ final class Orders extends AbstractSync
         if (isset($order->cBezahlt) && $order->cBezahlt === 'Y') {
             $state = \BESTELLUNG_STATUS_BEZAHLT;
         }
-        if (isset($order->dVersandt) && \strlen($order->dVersandt) > 0) {
+        if (isset($order->dVersandt) && $order->dVersandt !== '') {
             $state = \BESTELLUNG_STATUS_VERSANDT;
         }
         $updatedOrder = new Bestellung($shopOrder->kBestellung, true);
@@ -784,7 +802,7 @@ final class Orders extends AbstractSync
     private function getTrackingURL(stdClass $shopOrder, stdClass $order): string
     {
         $trackingURL = '';
-        if ($order->cIdentCode !== null && \strlen($order->cIdentCode) > 0) {
+        if (($order->cIdentCode ?? '') !== '') {
             $trackingURL = $order->cLogistikURL;
             if ($shopOrder->kLieferadresse > 0) {
                 $deliveryAddress = $this->db->getSingleObject(
@@ -829,7 +847,7 @@ final class Orders extends AbstractSync
         $upd->cTrackingURL  = $this->db->escape($trackingURL);
         $upd->cStatus       = $state;
         $upd->cVersandInfo  = $this->db->escape($order->cVersandInfo);
-        if (\strlen($methodName) > 0) {
+        if ($methodName !== '') {
             $upd->cZahlungsartName = $methodName;
         }
         $upd->dBezahltDatum = empty($clearedDate)
@@ -857,9 +875,13 @@ final class Orders extends AbstractSync
                 break;
             }
         }
-        $earlier = new DateTime(\date('Y-m-d', \strtotime($updatedOrder->dVersandDatum ?? '1970-01-01')));
-        $now     = new DateTime(\date('Y-m-d'));
-        $diff    = $now->diff($earlier)->format('%a');
+        try {
+            $earlier = new DateTime(\date('Y-m-d', \strtotime($updatedOrder->dVersandDatum ?? '1970-01-01')));
+        } catch (Exception) {
+            $earlier = new DateTime();
+        }
+        $now  = new DateTime();
+        $diff = $now->diff($earlier)->format('%a');
 
         if (($state === \BESTELLUNG_STATUS_VERSANDT &&
                 $shopOrder->cStatus !== \BESTELLUNG_STATUS_VERSANDT &&
@@ -873,16 +895,20 @@ final class Orders extends AbstractSync
             if (!isset($updatedOrder->oVersandart->cSendConfirmationMail)
                 || $updatedOrder->oVersandart->cSendConfirmationMail !== 'N'
             ) {
-                if ($module) {
+                if ($module !== null) {
                     $module->sendMail($shopOrder->kBestellung, $mailType);
                 } else {
                     $data              = new stdClass();
                     $data->tkunde      = $customer;
                     $data->tbestellung = $updatedOrder;
 
-                    $mailer = Shop::Container()->get(Mailer::class);
-                    $mail   = new Mail();
-                    $mailer->send($mail->createFromTemplateID($mailType, $data));
+                    try {
+                        $mailer = Shop::Container()->get(Mailer::class);
+                        $mail   = new Mail();
+                        $mailer->send($mail->createFromTemplateID($mailType, $data));
+                    } catch (NotFoundExceptionInterface | ContainerExceptionInterface) {
+                        $this->logger->error('Mailer not available.');
+                    }
                 }
             }
             /** @var Lieferschein $note */
@@ -900,29 +926,37 @@ final class Orders extends AbstractSync
     private function sendPaymentMail(stdClass $shopOrder, stdClass $order, Customer $customer): void
     {
         if (!$shopOrder->dBezahltDatum && $order->dBezahltDatum && $customer->kKunde > 0) {
-            $earlier = new DateTime(\date('Y-m-d', \strtotime($order->dBezahltDatum)));
-            $now     = new DateTime(\date('Y-m-d'));
-            $diff    = $now->diff($earlier)->format('%a');
+            try {
+                $earlier = new DateTime(\date('Y-m-d', \strtotime($order->dBezahltDatum)));
+            } catch (Exception) {
+                $earlier = new DateTime();
+            }
+            $now  = new DateTime();
+            $diff = $now->diff($earlier)->format('%a');
 
             if ($diff >= \BESTELLUNG_ZAHLUNGSBESTAETIGUNG_MAX_TAGE) {
                 return;
             }
 
             $module = $this->getPaymentMethod($order->kBestellung);
-            if ($module) {
+            if ($module !== null) {
                 $module->sendMail($order->kBestellung, \MAILTEMPLATE_BESTELLUNG_BEZAHLT);
             } else {
                 $updatedOrder = new Bestellung((int)$shopOrder->kBestellung, true);
                 if (($updatedOrder->Zahlungsart->nMailSenden & \ZAHLUNGSART_MAIL_EINGANG)
-                    && \strlen($customer->cMail) > 0
+                    && ($customer->cMail ?? '') !== ''
                 ) {
                     $data              = new stdClass();
                     $data->tkunde      = $customer;
                     $data->tbestellung = $updatedOrder;
 
-                    $mailer = Shop::Container()->get(Mailer::class);
-                    $mail   = new Mail();
-                    $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_BESTELLUNG_BEZAHLT, $data));
+                    try {
+                        $mailer = Shop::Container()->get(Mailer::class);
+                        $mail   = new Mail();
+                        $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_BESTELLUNG_BEZAHLT, $data));
+                    } catch (NotFoundExceptionInterface | ContainerExceptionInterface) {
+                        $this->logger->error('Mailer not available.');
+                    }
                 }
             }
         }

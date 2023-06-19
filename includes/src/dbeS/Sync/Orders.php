@@ -3,6 +3,7 @@
 namespace JTL\dbeS\Sync;
 
 use DateTime;
+use Exception;
 use JTL\Cart\Cart;
 use JTL\Checkout\Adresse;
 use JTL\Checkout\Bestellung;
@@ -17,6 +18,7 @@ use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Plugin\Payment\LegacyMethod;
+use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
 
@@ -29,6 +31,7 @@ final class Orders extends AbstractSync
     /**
      * @param Starter $starter
      * @return mixed|null
+     * @throws Exception
      */
     public function handle(Starter $starter)
     {
@@ -157,7 +160,10 @@ final class Orders extends AbstractSync
             if ($module) {
                 $module->cancelOrder($orderID);
             } else {
-                if (!empty($customer->cMail) && ($tmpOrder->Zahlungsart->nMailSenden & \ZAHLUNGSART_MAIL_STORNO)) {
+                if (!empty($customer->cMail)
+                    && $tmpOrder->Zahlungsart !== null
+                    && ($tmpOrder->Zahlungsart->nMailSenden & \ZAHLUNGSART_MAIL_STORNO)
+                ) {
                     $data              = new stdClass();
                     $data->tkunde      = $customer;
                     $data->tbestellung = $tmpOrder;
@@ -342,6 +348,7 @@ final class Orders extends AbstractSync
     /**
      * @param array $xml
      * @return void
+     * @throws Exception
      */
     private function handleInsert(array $xml): void
     {
@@ -361,17 +368,58 @@ final class Orders extends AbstractSync
             return;
         }
 
+        Frontend::getInstance();
+        Shop::updateLanguage((int)$orderData->kSprache);
+
         $cart                  = new Cart();
         $customer              = $this->validateCustomer($orderData->kKunde);
         $orderData->cBestellNr = $this->validateOrderNr($orderData->cBestellNr ?? '', $customer, $cart);
         $correctionFactor      = $this->applyCorrectionFactor($orderData);
         $billingAddress        = $this->getBillingAddress($orderData, $xml);
+        $deliveryAddress       = $this->getDeliveryAddress($orderData, $xml);
+        $paymentMethod         = $this->getPaymentMethodFromXML($orderData, $xml);
+        $shippingMethod        = $this->getShippingMethod($orderData);
         // Die Wawi schickt in fGesamtsumme die Rechnungssumme (Summe aller Positionen), der Shop erwartet hier
         // aber tatsächlich eine Gesamtsumme oder auch den Zahlungsbetrag (Rechnungssumme abzgl. evtl. Guthaben)
         $orderData->fGesamtsumme     -= $orderData->fGuthaben;
         $orderData->kRechnungsadresse = $billingAddress->insertInDB();
-        $order = new Bestellung();
+        $orderData->kLieferadresse    = $deliveryAddress->insertInDB();
+
+        if ($paymentMethod === null) {
+            $paymentMethod = (object)[
+                'kZahlungsart' => 0,
+                'angezeigterName' => [Shop::getLanguageCode() => $orderData->cZahlungsartName],
+            ];
+        }
+
+        Frontend::set('Zahlungsart', $paymentMethod);
+        Frontend::set('Versandart', $shippingMethod);
+        Frontend::setDeliveryAddress($deliveryAddress);
+
+        $orderHandler = new OrderHandler($this->db, $customer, $cart);
+        $orderHandler->persistOrder(false, $orderData->cBestellNr);
+        $orderData->kBestellung = (int)Frontend::get('kBestellung');
+        $orderData->kWarenkorb  = $cart->kWarenkorb;
+
+        $this->updateCartItems($orderData, $correctionFactor, $xml);
         $this->updateAddresses($orderData, $billingAddress, $xml);
+        $this->updateOrderData($orderData, $orderData, $paymentMethod);
+
+        if (isset($xml['tbestellung']['tbestellattribut'])) {
+            $this->editAttributes(
+                $orderData->kBestellung,
+                $this->mapper->isAssoc($xml['tbestellung']['tbestellattribut'])
+                    ? [$xml['tbestellung']['tbestellattribut']]
+                    : $xml['tbestellung']['tbestellattribut']
+            );
+        }
+
+        $this->sendMail($orderData, $orderData, $customer);
+
+        \executeHook(\HOOK_BESTELLUNGEN_XML_BEARBEITEINSERT, [
+            'oBestellung'    => &$orderData,
+            'oKunde'         => &$customer
+        ]);
     }
 
     /**
@@ -479,6 +527,23 @@ final class Orders extends AbstractSync
     }
 
     /**
+     * @param stdClass $order
+     * @return stdClass
+     */
+    private function getShippingMethod(stdClass $order): stdClass
+    {
+        $shippingMethod = new stdClass();
+
+        $shippingMethod->kVersandart     = 0;
+        $shippingMethod->cName           = $order->cLogistik;
+        $shippingMethod->nMinLiefertage  = $order->nLongestMinDelivery;
+        $shippingMethod->nMaxLiefertage  = $order->nLongestMaxDelivery;
+        $shippingMethod->angezeigterName = [Shop::getLanguageCode() => $order->cLogistik];
+
+        return $shippingMethod;
+    }
+
+    /**
      * @param stdClass $oldOrder
      * @param array    $xml
      * @return Rechnungsadresse
@@ -505,6 +570,31 @@ final class Orders extends AbstractSync
     }
 
     /**
+     * @param stdClass $oldOrder
+     * @param array    $xml
+     * @return Lieferadresse
+     */
+    private function getDeliveryAddress(stdClass $oldOrder, array $xml): Lieferadresse
+    {
+        $deliveryAddress = new Lieferadresse($oldOrder->kLieferadresse ?? 0);
+        $this->mapper->mapObject($deliveryAddress, $xml['tbestellung']['tlieferadresse'], 'mLieferadresse');
+        if (isset($deliveryAddress->cAnrede)) {
+            $deliveryAddress->cAnrede = $this->mapSalutation($deliveryAddress->cAnrede);
+        }
+        $this->extractStreet($deliveryAddress);
+        $deliveryAddress->cLand = Adresse::checkISOCountryCode($deliveryAddress->cLand);
+        if (!$deliveryAddress->cNachname && !$deliveryAddress->cFirma && !$deliveryAddress->cStrasse) {
+            \syncException(
+                'Error Bestellung Update. Lieferadress enthaelt keinen Nachnamen, Firma und Strasse! XML:' .
+                \print_r($xml, true),
+                \FREIDEFINIERBARER_FEHLER
+            );
+        }
+
+        return $deliveryAddress;
+    }
+
+    /**
      * @param stdClass      $oldOrder
      * @param stdClass      $order
      * @param stdClass|null $paymentMethod
@@ -523,11 +613,19 @@ final class Orders extends AbstractSync
             $params['pmnm'] = $paymentMethod->cName;
             $updateSql      = ' , kZahlungsart = :pmid, cZahlungsartName = :pmnm ';
         }
+        if (isset($order->nLongestMinDelivery)) {
+            $updateSql           .= ', nLongestMinDelivery = :longestMin';
+            $params['longestMin'] = (int)$order->nLongestMinDelivery;
+        }
+        if (isset($order->nLongestMaxDelivery)) {
+            $updateSql           .= ', nLongestMaxDelivery = :longestMax';
+            $params['longestMax'] = (int)$order->nLongestMaxDelivery;
+        }
         $this->db->queryPrepared(
             'UPDATE tbestellung SET
-            fGuthaben = :fg,
-            fGesamtsumme = :total,
-            cKommentar = :cmt ' . $updateSql . '
+                fGuthaben = :fg,
+                fGesamtsumme = :total,
+                cKommentar = :cmt ' . $updateSql . '
             WHERE kBestellung = :oid',
             $params
         );

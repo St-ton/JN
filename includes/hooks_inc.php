@@ -1607,6 +1607,14 @@ const HOOK_WARENKORB_CLASS_LOESCHEDEAKTIVIERTEPOS = 230;
 const HOOK_BESTELLABSCHLUSS_INC_BAUEBESTELLNUMMER = 231;
 
 /**
+ * @since 5.3.0
+ * @file Bestellungen_xml.php
+ * @param stdClass              oBestellung
+ * @param JTL\Customer\Customer oKunde
+ */
+const HOOK_BESTELLUNGEN_XML_BEARBEITEINSERT = 232;
+
+/**
  * in ProductFilter::initBaseStates() after initializing the base filters
  *
  * @since 5.0.0

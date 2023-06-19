@@ -32,9 +32,6 @@ class CheckboxFunctionService extends AbstractService
         return $this->repository;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function get(int $ID): ?\stdClass
     {
         return $this->getRepository()->get($ID);

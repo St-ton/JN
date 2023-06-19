@@ -64,7 +64,7 @@
   font-weight: 700;
   src: local('Source Serif Pro Bold'), local('SourceSerifPro-Bold'), url(../fonts/SourceSerifPro-Bold.ttf) format('truetype');
 }
-/* Light mode */
+/* Default theme */
 :root {
   --body-bg: #f5f7fa;
   --body-color: #212529;
@@ -72,6 +72,8 @@
   --card-bg: #ffffff;
   --input-bg: #ffffff;
   --input-border-focus-color: #7dcdfe;
+  --input-group-bg: #e9ecef;
+  --input-group-border-color: #435a6b;
   --card-shadow-color: rgba(0, 0, 0, 0.04);
   --topbar-bg: #ffffff;
   --border-color: #e4e9f2;
@@ -83,11 +85,9 @@
   --link-color: #435a6b;
   --link-hover-color: #324350;
   --daterangepicker-accent-color: #ebf4f8;
-  --input-group-bg: #e9ecef;
-  --input-group-border-color: #435a6b;
   --wizard-bg: #ffffff url("images/setup-assistant-bg.svg") no-repeat left top/auto 43.75rem;
 }
-/* Dark mode */
+/* Dark theme depending on OS and browser settings */
 @media (prefers-color-scheme: dark) {
   :root {
     --body-bg: #212529;
@@ -96,6 +96,8 @@
     --card-bg: #2b3035;
     --input-bg: #2b3035;
     --input-border-focus-color: #7dcdfe;
+    --input-group-bg: #1f2327;
+    --input-group-border-color: #495057;
     --card-shadow-color: rgba(0, 0, 0, 0.25);
     --topbar-bg: #2b3035;
     --border-color: #495057;
@@ -107,11 +109,10 @@
     --link-color: #85adcc;
     --link-hover-color: #739ab6;
     --daterangepicker-accent-color: #1f2327;
-    --input-group-bg: #1f2327;
-    --input-group-border-color: #495057;
     --wizard-bg: #2b3035 url("images/setup-assistant-bg-black.svg") no-repeat left top/auto 43.75rem;
   }
 }
+/* Light theme depending on toggle */
 html.theme-light {
   --body-bg: #f5f7fa;
   --body-color: #212529;
@@ -119,6 +120,8 @@ html.theme-light {
   --card-bg: #ffffff;
   --input-bg: #ffffff;
   --input-border-focus-color: #7dcdfe;
+  --input-group-bg: #e9ecef;
+  --input-group-border-color: #435a6b;
   --card-shadow-color: rgba(0, 0, 0, 0.04);
   --topbar-bg: #ffffff;
   --border-color: #e4e9f2;
@@ -130,10 +133,9 @@ html.theme-light {
   --link-color: #435a6b;
   --link-hover-color: #324350;
   --daterangepicker-accent-color: #ebf4f8;
-  --input-group-bg: #e9ecef;
-  --input-group-border-color: #435a6b;
   --wizard-bg: #ffffff url("images/setup-assistant-bg.svg") no-repeat left top/auto 43.75rem;
 }
+/* DArk theme depending on toggle */
 html.theme-dark {
   --body-bg: #212529;
   --body-color: #dddddd;
@@ -141,6 +143,8 @@ html.theme-dark {
   --card-bg: #2b3035;
   --input-bg: #2b3035;
   --input-border-focus-color: #7dcdfe;
+  --input-group-bg: #1f2327;
+  --input-group-border-color: #495057;
   --card-shadow-color: rgba(0, 0, 0, 0.25);
   --topbar-bg: #2b3035;
   --border-color: #495057;
@@ -152,8 +156,6 @@ html.theme-dark {
   --link-color: #85adcc;
   --link-hover-color: #739ab6;
   --daterangepicker-accent-color: #1f2327;
-  --input-group-bg: #1f2327;
-  --input-group-border-color: #495057;
   --wizard-bg: #2b3035 url("images/setup-assistant-bg-black.svg") no-repeat left top/auto 43.75rem;
 }
 .backend-wrapper {
@@ -2755,7 +2757,6 @@ input[type=number] {
 .card-widget.card .chevronToggle {
   float: right;
 }
-/* DARK MODE */
 body,
 html {
   background-color: var(--body-bg);

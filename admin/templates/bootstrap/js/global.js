@@ -531,7 +531,7 @@ $(document).ready(function () {
                     .addClass('theme-' + data['theme']);
 
                 $('#theme-toggle .toggleIcon')
-                    .removeClass('fa-sun-o')
+                    .removeClass('fa-lightbulb-o')
                     .removeClass('fa-moon-o')
                     .removeClass('fa-adjust')
                     .addClass(btn.data('icon'));

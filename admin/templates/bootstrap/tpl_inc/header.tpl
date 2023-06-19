@@ -127,14 +127,13 @@
                             <a href="#" class="nav-link px-2" data-toggle="dropdown">
                                 <span class="fal
                                     {if $themeMode === 'auto'} fa-adjust
-                                    {elseif $themeMode === 'light'} fa-sun-o
+                                    {elseif $themeMode === 'light'} fa-lightbulb-o
                                     {else} fa-moon-o{/if} fa-fw toggleIcon"></span>
-                                <i class="far fa-chevron-down rotate-180"></i>
                             </a>
                             <div class="dropdown-menu dropdown-menu-right">
                                 <a class="dropdown-item py-3{if $themeMode === 'light'} active{/if}"
-                                   href="#" rel="noopener" data-theme="light" data-icon="fa-sun-o">
-                                    <span class="fal fa-sun-o fa-fw fa-lg"></span> Light
+                                   href="#" rel="noopener" data-theme="light" data-icon="fa-lightbulb-o">
+                                    <span class="fal fa-lightbulb-o fa-fw fa-lg"></span> Light
                                 </a>
                                 <a class="dropdown-item py-3{if $themeMode === 'dark'} active{/if}"
                                    href="#" rel="noopener" data-theme="dark" data-icon="fa-moon-o">

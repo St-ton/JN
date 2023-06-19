@@ -887,6 +887,7 @@ class CheckBox
         $this->dErstellt_DE      = $checkbox->getCreatedDE();
         $this->kKundengruppe_arr = Text::parseSSKint($checkbox->getCustomerGroupsSelected());
         $this->kAnzeigeOrt_arr   = Text::parseSSKint($checkbox->getDisplayAt());
+        $this->nInternal         = (int)$checkbox->getNInternal();
         if ($this->kCheckBoxFunktion > 0) {
             $this->checkAndUpdateFunctionIfNecessary($checkbox);
         }

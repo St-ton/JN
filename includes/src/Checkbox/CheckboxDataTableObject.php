@@ -73,6 +73,11 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
     protected string $created = '';
 
     /**
+     * @var bool
+     */
+    protected bool $nInternal = false;
+
+    /**
      * @var string
      */
     private string $created_DE = '';
@@ -403,6 +408,23 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
 
         return $this;
     }
+
+    /**
+     * @return bool
+     */
+    public function getNInternal(): bool
+    {
+        return $this->nInternal;
+    }
+
+    /**
+     * @param bool $nInternal
+     */
+    public function setNInternal(bool|int|string $nInternal): void
+    {
+        $this->nInternal = $this->checkAndReturnBoolValue($nInternal);
+    }
+
 
     /**
      * @return string

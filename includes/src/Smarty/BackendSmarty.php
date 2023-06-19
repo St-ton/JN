@@ -91,17 +91,24 @@ class BackendSmarty extends JTLSmarty
             ->registerPlugin(self::PLUGIN_FUNCTION, 'captchaMarkup', $plugins->captchaMarkup(...))
             ->registerPlugin(self::PLUGIN_MODIFIER, 'permission', $plugins->permission(...));
 
-        $template           = AdminTemplate::getInstance();
-        $shopURL            = Shop::getURL();
-        $adminURL           = Shop::getAdminURL();
-        $currentTemplateDir = $this->getTemplateUrlPath();
-        $availableLanguages = LanguageHelper::getInstance()->gibInstallierteSprachen();
-        $resourcePaths      = $template->getResources(false);
-        $gettext            = Shop::Container()->getGetText();
-        $langTag            = $_SESSION['AdminAccount']->language ?? $gettext->getLanguage();
-        $faviconUrl         = $adminURL . (\file_exists(\PFAD_ROOT . \PFAD_ADMIN . 'favicon.ico')
+        $template               = AdminTemplate::getInstance();
+        $shopURL                = Shop::getURL();
+        $adminURL               = Shop::getAdminURL();
+        $currentTemplateDir     = $this->getTemplateUrlPath();
+        $availableLanguages     = LanguageHelper::getInstance()->gibInstallierteSprachen();
+        $resourcePaths          = $template->getResources(false);
+        $gettext                = Shop::Container()->getGetText();
+        $langTag                = $_SESSION['AdminAccount']->language ?? $gettext->getLanguage();
+        $faviconUrl             = $adminURL . (\file_exists(\PFAD_ROOT . \PFAD_ADMIN . 'favicon.ico')
                 ? '/favicon.ico'
                 : '/favicon-default.ico');
+
+        $_SESSION['adminTheme'] = $_SESSION['adminTheme'] ?? $this->db->selectSingleRow(
+            'tadminlogin',
+            'kAdminlogin',
+            Shop::Container()->getAdminAccount()->getID() ?? 0
+        )->theme ?? 'auto';
+
         $this->assignDeprecated('URL_SHOP', $shopURL, '5.2.0')
             ->assignDeprecated('PFAD_ADMIN', PFAD_ADMIN, '5.0.0')
             ->assignDeprecated('JTL_CHARSET', JTL_CHARSET, '5.0.0')
@@ -133,7 +140,8 @@ class BackendSmarty extends JTLSmarty
                 (($conf['global']['global_wizard_done'] ?? 'Y') === 'Y'
                     || !\str_contains($_SERVER['REQUEST_URI'], Route::WIZARD))
                 && !Request::getVar('fromWizard')
-            );
+            )
+            ->assign('themeMode', $_SESSION['adminTheme']);
     }
 
     /**

@@ -1,5 +1,5 @@
 {assign var=bForceFluid value=$bForceFluid|default:false}
-{assign var=themeMode value=$config.global.backend_theme|default:'auto'}
+{assign var=themeMode value=$themeMode|default:'auto'}
 <!DOCTYPE html>
 <html lang="de" class="theme-{$themeMode}">
 <head>

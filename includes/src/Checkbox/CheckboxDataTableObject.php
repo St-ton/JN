@@ -118,7 +118,6 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
         'hasLogging'             => 'hasLogging',
         'sort'                   => 'sort',
         'created'                => 'created',
-        'created_DE'             => 'created_DE',
         'nlink'                  => 'hasLink',
         'nFunction'              => 'hasFunction',
         'created_DE'             => 'createdDE',

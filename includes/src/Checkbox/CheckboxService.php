@@ -14,7 +14,7 @@ class CheckboxService extends AbstractService
     /**
      * @var CheckboxRepository
      */
-    private CheckboxRepository $repository;
+    protected CheckboxRepository $repository;
 
     /**
      * @param int $id

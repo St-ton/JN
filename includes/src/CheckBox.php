@@ -179,9 +179,6 @@ class CheckBox
     protected CheckboxLanguageService $languageService;
 
     /**
-     * @var JTLCacheInterface
-     */
-    /**
      * @var CheckboxFunctionService
      */
     protected CheckboxFunctionService $functionService;
@@ -196,9 +193,6 @@ class CheckBox
      */
     protected Logger $logService;
 
-    /**
-     * @var bool
-     */
     /**
      * @var bool
      */

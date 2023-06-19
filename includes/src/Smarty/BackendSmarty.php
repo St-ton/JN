@@ -91,15 +91,15 @@ class BackendSmarty extends JTLSmarty
             ->registerPlugin(self::PLUGIN_FUNCTION, 'captchaMarkup', $plugins->captchaMarkup(...))
             ->registerPlugin(self::PLUGIN_MODIFIER, 'permission', $plugins->permission(...));
 
-        $template           = AdminTemplate::getInstance();
-        $shopURL            = Shop::getURL();
-        $adminURL           = Shop::getAdminURL();
-        $currentTemplateDir = $this->getTemplateUrlPath();
-        $availableLanguages = LanguageHelper::getInstance()->gibInstallierteSprachen();
-        $resourcePaths      = $template->getResources(false);
-        $gettext            = Shop::Container()->getGetText();
-        $langTag            = $_SESSION['AdminAccount']->language ?? $gettext->getLanguage();
-        $faviconUrl         = $adminURL . (\file_exists(\PFAD_ROOT . \PFAD_ADMIN . 'favicon.ico')
+        $template               = AdminTemplate::getInstance();
+        $shopURL                = Shop::getURL();
+        $adminURL               = Shop::getAdminURL();
+        $currentTemplateDir     = $this->getTemplateUrlPath();
+        $availableLanguages     = LanguageHelper::getInstance()->gibInstallierteSprachen();
+        $resourcePaths          = $template->getResources(false);
+        $gettext                = Shop::Container()->getGetText();
+        $langTag                = $_SESSION['AdminAccount']->language ?? $gettext->getLanguage();
+        $faviconUrl             = $adminURL . (\file_exists(\PFAD_ROOT . \PFAD_ADMIN . 'favicon.ico')
                 ? '/favicon.ico'
                 : '/favicon-default.ico');
 

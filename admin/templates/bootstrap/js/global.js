@@ -473,6 +473,37 @@ $(document).ready(function () {
         }
         windowResizeTimeout = setTimeout(windowResized, 500);
     });
+
+    function toggleCardWidget(elem, $widgetContent, widget) {
+        if ($widgetContent.is(':hidden')) {
+            $widgetContent.slideDown('fast');
+            $('i', elem).attr('class', 'fa fa-chevron-up');
+            $(widget).find('.card-header hr').removeClass('d-none');
+        } else {
+            $widgetContent.slideUp('fast');
+            $('i', elem).attr('class', 'fa fa-chevron-down');
+            $(widget).find('.card-header hr').addClass('d-none');
+        }
+    }
+
+    // Add widget functionality to elements with class card-widget
+    $('.card-widget').each(function (i, widget) {
+        let $widgetContent = $('.card-body', widget),
+            $title = $(widget).find('.card-header > *:first-child');
+
+        // add click handler for widgets collapse button
+        if ($(widget).find('.card-header').length && $(widget).find('.card-body').length && $title.length) {
+            let chevron = $title.html('<a href="#" class="text-decoration-none">' + $title.html() + '<span class="btn-sm chevronToggle"><i class="fa fa-chevron-' + 'down' + '"></i></span></a>')
+                .on('click', function (e) {
+                    toggleCardWidget(this, $widgetContent, widget);
+                    e.preventDefault();
+                })
+                .appendTo($(widget).find('.card-header > *:first-child'));
+            if ($('.body-hidden', widget).length > 0) {
+                chevron.trigger('click');
+            }
+        }
+    });
 });
 
 $(window).on('load', () => {

@@ -157,11 +157,15 @@
   border: 1px solid #435A6B;
   border-radius: 5px;
   display: block;
-  height: 38px;
   color: inherit;
   padding: 8px;
   text-align: left;
   font-size: 14px;
+}
+#opc .opc-control:not(textarea),
+#opc .opc-filter-control:not(textarea),
+#opc .form-control:not(textarea) {
+  height: 38px;
 }
 #opc .opc-control:disabled,
 #opc .opc-filter-control:disabled,

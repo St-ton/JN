@@ -13044,6 +13044,9 @@ select.bs-select-hidden, .bootstrap-select > select.bs-select-hidden, select.sel
 .consent-switch .consent-input:checked ~ .consent-label::after {
   left: 1.375rem;
 }
+.consent-switch .consent-input:disabled ~ .consent-label::before {
+  opacity: 0.25;
+}
 .consent-switch .consent-label {
   padding-left: 3.5rem;
   display: inline-block;
@@ -18939,9 +18942,6 @@ table.dataTable td {
 table.dataTable .dt-address {
   cursor: pointer;
 }
-table.dataTable.stripe > tbody > tr.odd > *, table.dataTable.display > tbody > tr.odd > * {
-  box-shadow: inset 0 0 0 9999px rgba(0, 0, 0, 0.023);
-}
 .list-icons > li {
   padding-left: 2em;
 }
@@ -22331,14 +22331,6 @@ div.dataTables_wrapper div.dataTables_filter input[type=search] {
 }
 .shipping-address-standard-active tr:first-child {
   background-color: #fafafa;
-}
-/* RMA */
-.rma-img {
-  width: 100%;
-  height: auto;
-}
-.product-thumbnail {
-  max-width: 100px;
 }
 /* basket */
 /* cart-dropdown */

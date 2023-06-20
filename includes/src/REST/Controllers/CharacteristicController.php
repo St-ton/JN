@@ -158,7 +158,7 @@ class CharacteristicController extends AbstractController
         ServerRequestInterface $request,
         DataModelInterface     $model,
         stdClass               $data
-    ) : stdClass {
+    ): stdClass {
         $data = parent::getCreateBaseData($request, $model, $data);
         if (!isset($data->id)) {
             // tmerkmal has no auto increment ID

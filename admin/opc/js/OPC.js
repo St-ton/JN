@@ -1,4 +1,12 @@
-class OPC extends Emitter
+import {IO} from "./IO.js";
+import {Page} from "./Page.js";
+import {GUI} from "./GUI.js";
+import {Iframe} from "./Iframe.js";
+import {Tutorial} from "./Tutorial.js";
+import {PageTree} from "./PageTree.js";
+import {PreviewFrame} from "./PreviewFrame.js";
+
+export class OPC extends Emitter
 {
     constructor(env)
     {

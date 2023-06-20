@@ -1,4 +1,4 @@
-class Iframe
+export class Iframe
 {
     constructor(io, gui, page, shopUrl, templateUrl)
     {

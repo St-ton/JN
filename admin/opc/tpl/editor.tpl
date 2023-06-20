@@ -31,16 +31,10 @@
     <script src="{$templateUrl}js/fontawesome-iconpicker.min.js"></script>
 
     <script src="{$shopUrl}/admin/opc/js/utils.js"></script>
-    <script src="{$shopUrl}/admin/opc/js/OPC.js"></script>
-    <script src="{$shopUrl}/admin/opc/js/GUI.js"></script>
-    <script src="{$shopUrl}/admin/opc/js/Iframe.js"></script>
-    <script src="{$shopUrl}/admin/opc/js/Page.js"></script>
-    <script src="{$shopUrl}/admin/opc/js/IO.js"></script>
-    <script src="{$shopUrl}/admin/opc/js/Tutorial.js"></script>
-    <script src="{$shopUrl}/admin/opc/js/PageTree.js"></script>
-    <script src="{$shopUrl}/admin/opc/js/PreviewFrame.js"></script>
 
-    <script>
+    <script type="module">
+        import { OPC } from "{$shopUrl}/admin/opc/js/OPC.js";
+
         window.opc = new OPC({
             jtlToken:    '{$smarty.session.jtl_token}',
             shopUrl:     '{$shopUrl}',

@@ -1,4 +1,4 @@
-class PreviewFrame
+export class PreviewFrame
 {
     init()
     {

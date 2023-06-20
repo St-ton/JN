@@ -1,4 +1,4 @@
-class Tutorial
+export class Tutorial
 {
     constructor(iframe)
     {

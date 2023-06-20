@@ -1,4 +1,4 @@
-class Page
+export class Page
 {
     constructor(io, shopUrl, key)
     {

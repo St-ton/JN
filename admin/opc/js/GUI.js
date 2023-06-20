@@ -1,4 +1,4 @@
-class GUI
+export class GUI
 {
     constructor(io, page, messages)
     {

@@ -1,4 +1,4 @@
-class PageTree
+export class PageTree
 {
     constructor(page, iframe, gui)
     {

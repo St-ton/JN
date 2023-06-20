@@ -382,6 +382,7 @@ final class Orders extends AbstractSync
         }
 
         Frontend::getInstance();
+        $savedLang = Shop::getLanguageID();
         Shop::updateLanguage((int)$orderData->kSprache);
 
         $cart                  = new Cart();
@@ -428,6 +429,7 @@ final class Orders extends AbstractSync
         }
 
         $this->sendMail($orderData, $orderData, $customer);
+        Shop::updateLanguage($savedLang);
 
         \executeHook(\HOOK_BESTELLUNGEN_XML_BEARBEITEINSERT, [
             'oBestellung'    => &$orderData,

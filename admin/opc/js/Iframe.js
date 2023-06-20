@@ -19,7 +19,7 @@ export class Iframe
         this.loadedStylesheets  = [];
     }
 
-    init(pagetree)
+    async init(pagetree)
     {
         installGuiElements(this, [
             'iframe',
@@ -36,47 +36,47 @@ export class Iframe
 
         this.pagetree = pagetree;
 
-        return new Promise(res => {
+        await new Promise(res => {
             this.iframe
                 .attr('src', this.getIframePageUrl())
                 .on('load', res);
-        }).then(() => {
-            this.ctx  = this.iframe[0].contentWindow;
-            this.jq   = this.ctx.$;
-            this.head = this.jq('head');
-            this.body = this.jq('body');
+        });
 
-            this.ctx.opc = opc;
+        this.ctx  = this.iframe[0].contentWindow;
+        this.jq   = this.ctx.$;
+        this.head = this.jq('head');
+        this.body = this.jq('body');
 
-            this.jq('[data-opc-portlet-css-link=true]').each((e, elm) => {
-                this.loadedStylesheets.push(elm.href);
-            });
+        this.ctx.opc = opc;
 
-            this.loadStylesheet(this.shopUrl + '/admin/opc/css/iframe.css');
-            this.loadStylesheet(this.shopUrl + '/templates/NOVA/themes/base/fontawesome/css/all.min.css');
+        this.jq('[data-opc-portlet-css-link=true]').each((e, elm) => {
+            this.loadedStylesheets.push(elm.href);
+        });
 
-            this.loadScript(
-                this.shopUrl + '/templates/NOVA/js/popper.min.js',
-                () => {
-                    this.toolbarPopper      = this.makePopper(this.portletToolbar);
-                    this.previewLabelPopper = this.makePopper(this.portletPreviewLabel);
-                }
-            );
+        this.loadStylesheet(this.shopUrl + '/admin/opc/css/iframe.css');
+        this.loadStylesheet(this.shopUrl + '/templates/NOVA/themes/base/fontawesome/css/all.min.css');
 
-            this.disableLinks();
-            this.portletPreviewLabel.appendTo(this.body);
-            this.portletToolbar.appendTo(this.body);
+        this.loadScript(
+            this.shopUrl + '/templates/NOVA/js/popper.min.js',
+            () => {
+                this.toolbarPopper      = this.makePopper(this.portletToolbar);
+                this.previewLabelPopper = this.makePopper(this.portletPreviewLabel);
+            }
+        );
 
-            return this.page.initIframe(this.jq)
-                .catch(er => this.gui.showError('Error while loading draft preview: ' + er.toString()))
-                .then(this.onPageLoad)
-                .then(() => {
-                    this.gui.updatePagetreeBtn();
-                })
-                .then(() => {
-                    opc.emit('iframe.init', this);
-                });
-        })
+        this.disableLinks();
+        this.portletPreviewLabel.appendTo(this.body);
+        this.portletToolbar.appendTo(this.body);
+
+        try {
+            this.page.initIframe(this.jq);
+        } catch (er) {
+            return await this.gui.showError('Error while loading draft preview: ' + er.toString());
+        }
+
+        this.onPageLoad();
+        this.gui.updatePagetreeBtn();
+        opc.emit('iframe.init', this);
     }
 
     disableLinks()
@@ -165,14 +165,14 @@ export class Iframe
         return this.jq('.opc-droptarget');
     }
 
-    loadStylesheet(url)
+    async loadStylesheet(url)
     {
-        return new Promise((resolve, reject) => {
+        await new Promise(resolve => {
             if (this.loadedStylesheets.indexOf(url) === -1) {
                 this.loadedStylesheets.push(url);
                 this
                     .jq('<link rel="stylesheet" href="' + url + '">')
-                    .on('load', () => resolve())
+                    .on('load', resolve)
                     .appendTo(this.head);
             } else {
                 resolve();
@@ -180,7 +180,7 @@ export class Iframe
         })
     }
 
-    loadPortletPreviewCss(portletCls)
+    async loadPortletPreviewCss(portletCls)
     {
         let portletBtn = this.gui.portletButtons.filter("[data-portlet-class='" + portletCls + "']");
 
@@ -188,11 +188,11 @@ export class Iframe
             let css = portletBtn.data('portlet-css');
 
             if (css) {
-                this.loadStylesheet(css).then(() => {
-                    if (portletCls === 'Flipcard') {
-                        this.page.updateFlipcards();
-                    }
-                });
+                await this.loadStylesheet(css);
+
+                if (portletCls === 'Flipcard') {
+                    this.page.updateFlipcards();
+                }
             }
         }
     }
@@ -271,7 +271,7 @@ export class Iframe
         return this.isSelectable(elm) ? elm : undefined;
     }
 
-    onPortletDragEnd(e)
+    onPortletDragEnd()
     {
         this.cleanUpDrag();
     }
@@ -304,7 +304,7 @@ export class Iframe
         e.preventDefault();
     }
 
-    onPortletDrop(e)
+    async onPortletDrop()
     {
         if(this.dropTarget !== null) {
             let oldArea = this.draggedElm.parent();
@@ -316,22 +316,24 @@ export class Iframe
             if(this.dragNewPortletCls) {
                 this.newPortletDropTarget = this.draggedElm;
                 this.setSelected();
-                this.io.createPortlet(this.dragNewPortletCls)
-                    .catch(er => {
-                        this.newPortletDropTarget.remove();
-                        return this.gui.showError(er.error.message);
-                    })
-                    .then(this.onNewPortletCreated)
-                    .then(() => {
-                        if (this.dragNewPortletGroup && this.dragNewPortletGroup === 'content') {
-                            this.gui.openConfigurator(this.selectedElm);
-                        }
-                    });
+                let html = null;
+
+                try {
+                    html = await this.io.createPortlet(this.dragNewPortletCls)
+                } catch(er) {
+                    this.newPortletDropTarget.remove();
+                    return await this.gui.showError(er.error.message);
+                }
+
+                this.onNewPortletCreated(html);
+
+                if (this.dragNewPortletGroup && this.dragNewPortletGroup === 'content') {
+                    this.gui.openConfigurator(this.selectedElm);
+                }
             } else if(this.dragNewBlueprintId > 0) {
                 this.newPortletDropTarget = this.draggedElm;
                 this.setSelected();
-                this.io.getBlueprintPreview(this.dragNewBlueprintId)
-                    .then(this.onNewPortletCreated);
+                this.onNewPortletCreated(await this.io.getBlueprintPreview(this.dragNewBlueprintId));
             } else {
                 this.pagetree.updateArea(oldArea);
                 this.pagetree.updateArea(this.draggedElm.parent());
@@ -496,21 +498,19 @@ export class Iframe
         this.gui.setUnsaved(true, true);
     }
 
-    onBtnClone()
+    async onBtnClone()
     {
         if(this.selectedElm !== null) {
             let data = this.page.portletToJSON(this.selectedElm);
             opc.emit('iframe.clonePortlet', data);
-            this.io.getPortletPreviewHtml(data)
-                .then(html => {
-                    let copiedElm = this.createPortletElm(html);
-                    copiedElm.insertAfter(this.selectedElm);
-                    let area = copiedElm.parent();
-                    this.pagetree.updateArea(area);
-                    this.setSelected(copiedElm);
-                    this.updateDropTargets();
-                    this.gui.setUnsaved(true, true);
-                });
+            let html = await this.io.getPortletPreviewHtml(data);
+            let copiedElm = this.createPortletElm(html);
+            copiedElm.insertAfter(this.selectedElm);
+            let area = copiedElm.parent();
+            this.pagetree.updateArea(area);
+            this.setSelected(copiedElm);
+            this.updateDropTargets();
+            this.gui.setUnsaved(true, true);
         }
     }
 
@@ -535,7 +535,7 @@ export class Iframe
     onBtnTrash()
     {
         if(this.selectedElm !== null) {
-            var area = this.selectedElm.parent();
+            let area = this.selectedElm.parent();
             this.selectedElm.remove();
             this.pagetree.updateArea(area);
             this.setSelected();

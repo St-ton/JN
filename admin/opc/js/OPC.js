@@ -19,7 +19,7 @@ export class OPC extends Emitter
         this.messages     = env.messages;
         this.error        = env.error;
         this.messages     = env.messages;
-        this.io           = new IO();
+        this.io           = new IO(env.jtlToken, env.shopUrl);
         this.page         = new Page(this.io, env.shopUrl, env.pageKey);
         this.gui          = new GUI(this.io, this.page, env.messages);
         this.iframe       = new Iframe(this.io, this.gui, this.page, env.shopUrl, env.templateUrl);
@@ -28,36 +28,34 @@ export class OPC extends Emitter
         this.previewFrame = new PreviewFrame();
     }
 
-    init()
+    async init()
     {
-        this.io.init()
-            .then(() => this.gui.init(this.iframe, this.previewFrame, this.tutorial, this.error))
-            .then(() => {
-                this.tutorial.init();
-                this.pagetree.init();
-                this.previewFrame.init();
-                return this.page.lock(er => {
-                    if(er === 1) {
-                        this.gui.showError(this.messages.opcPageLocked);
-                    } else if(er === 2) {
-                        this.gui.showError(this.messages.dbUpdateNeeded);
-                    }
-                });
-            })
-            .then(() => this.page.loadDraft())
-            .then(() => this.iframe.init(this.pagetree))
-            .then(() => {
-                this.gui.updateRevisionList();
-                this.gui.hideLoader();
-                this.pagetree.render();
+        await this.io.init();
+        this.gui.init(this.iframe, this.previewFrame, this.tutorial, this.error);
+        this.tutorial.init();
+        this.pagetree.init();
+        this.previewFrame.init();
 
-                if(this.page.hasUnsavedContent()) {
-                    this.gui.showRestoreUnsaved();
-                    this.gui.unsavedRevision.show();
-                } else {
-                    this.gui.unsavedRevision.hide();
-                }
-            });
+        await this.page.lock(er => {
+            if(er === 1) {
+                this.gui.showError(this.messages.opcPageLocked);
+            } else if(er === 2) {
+                this.gui.showError(this.messages.dbUpdateNeeded);
+            }
+        });
+
+        await this.page.loadDraft();
+        await this.iframe.init(this.pagetree);
+        this.gui.updateRevisionList();
+        this.gui.hideLoader();
+        this.pagetree.render();
+
+        if(this.page.hasUnsavedContent()) {
+            this.gui.showRestoreUnsaved();
+            this.gui.unsavedRevision.show();
+        } else {
+            this.gui.unsavedRevision.hide();
+        }
     }
 
     selectImageProp(propName)

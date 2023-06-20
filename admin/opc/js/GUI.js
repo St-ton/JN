@@ -167,51 +167,49 @@ export class GUI
         this.messageboxModal.modal('show');
     }
 
-    updateBlueprintList()
+    async updateBlueprintList()
     {
-        this.io.getBlueprints().then(blueprints => {
-            this.blueprintList.empty();
+        let blueprints = await this.io.getBlueprints();
+        this.blueprintList.empty();
 
-            blueprints.forEach(blueprint => {
-                let newBtn = this.blueprintBtnBlueprint.clone()
-                    .attr('id', null)
-                    .attr('data-blueprint-id', blueprint.id)
-                    .show()
-                    .appendTo(this.blueprintList);
+        blueprints.forEach(blueprint => {
+            let newBtn = this.blueprintBtnBlueprint.clone()
+                .attr('id', null)
+                .attr('data-blueprint-id', blueprint.id)
+                .show()
+                .appendTo(this.blueprintList);
 
-                newBtn.find('.blueprintExport').attr('data-blueprint-id', blueprint.id);
-                newBtn.find('.blueprintDelete').attr('data-blueprint-id', blueprint.id);
-                newBtn.find('.blueprintTitle').text(blueprint.name);
-            });
-
-            this.updateDynamicGui();
+            newBtn.find('.blueprintExport').attr('data-blueprint-id', blueprint.id);
+            newBtn.find('.blueprintDelete').attr('data-blueprint-id', blueprint.id);
+            newBtn.find('.blueprintTitle').text(blueprint.name);
         });
+
+        this.updateDynamicGui();
     }
 
-    updateRevisionList()
+    async updateRevisionList()
     {
-        this.page.getRevisionList().then(revisions => {
-            this.revisionList.empty();
+        let revisions = await this.page.getRevisionList();
+        this.revisionList.empty();
 
-            revisions.forEach(rev => {
-                this.revisionBtnBlueprint.clone()
-                    .attr('id', '').css('display', '')
-                    .attr('data-revision-id', rev.id)
-                    .html(
-                        '<div>' + rev.content.cName + '</div>' +
-                        '<div>' + moment(rev.content.dLastModified, internalDateFormat).format(localDateFormat) + '</div>'
-                    )
-                    .appendTo(this.revisionList);
-            });
-
-            $('#currentLastModified').text(
-                moment(this.page.lastModified, internalDateFormat).format(localDateFormat)
-            );
-
-            $('#currentDraftName').text(this.page.name);
-
-            this.updateDynamicGui();
+        revisions.forEach(rev => {
+            this.revisionBtnBlueprint.clone()
+                .attr('id', '').css('display', '')
+                .attr('data-revision-id', rev.id)
+                .html(
+                    '<div>' + rev.content.cName + '</div>' +
+                    '<div>' + moment(rev.content.dLastModified, internalDateFormat).format(localDateFormat) + '</div>'
+                )
+                .appendTo(this.revisionList);
         });
+
+        $('#currentLastModified').text(
+            moment(this.page.lastModified, internalDateFormat).format(localDateFormat)
+        );
+
+        $('#currentDraftName').text(this.page.name);
+
+        this.updateDynamicGui();
     }
 
     updatePagetreeBtn()
@@ -233,38 +231,41 @@ export class GUI
         ]);
     }
 
-    importDraft()
+    async importDraft()
     {
-        this.page.loadFromImport()
-            .catch(er => this.showError('Could not import OPC page JSON: ' + er.error.message))
-            .then(this.iframe.onPageLoad)
-            .then(() => {
-                let unmappedCount = this.page.offscreenAreas.length;
+        try {
+            await this.page.loadFromImport()
+        } catch(er) {
+            return await this.showError('Could not import OPC page JSON: ' + er.error.message);
+        }
 
-                if (unmappedCount === 0) {
-                    this.showMessageBox(
-                        this.messages.opcImportSuccess,
-                        this.messages.opcImportSuccessTitle,
-                    );
-                } else {
-                    if (unmappedCount === 1) {
-                        this.showMessageBox(
-                            this.messages.opcImportSuccess + '<br><br>' + this.messages.opcImportUnmappedS,
-                            this.messages.opcImportSuccessTitle,
-                        );
-                    } else {
-                        this.showMessageBox(
-                            this.messages.opcImportSuccess + '<br><br>' +
-                            this.messages.opcImportUnmappedP.replace('%s', unmappedCount),
-                            this.messages.opcImportSuccessTitle,
-                        );
-                    }
+        this.iframe.onPageLoad();
 
-                    $('[href="#pagetree"]').click();
-                    this.updatePagetreeBtn();
-                    this.setUnsaved(true, true);
-                }
-            });
+        let unmappedCount = this.page.offscreenAreas.length;
+
+        if (unmappedCount === 0) {
+            this.showMessageBox(
+                this.messages.opcImportSuccess,
+                this.messages.opcImportSuccessTitle,
+            );
+        } else {
+            if (unmappedCount === 1) {
+                this.showMessageBox(
+                    this.messages.opcImportSuccess + '<br><br>' + this.messages.opcImportUnmappedS,
+                    this.messages.opcImportSuccessTitle,
+                );
+            } else {
+                this.showMessageBox(
+                    this.messages.opcImportSuccess + '<br><br>' +
+                    this.messages.opcImportUnmappedP.replace('%s', unmappedCount),
+                    this.messages.opcImportSuccessTitle,
+                );
+            }
+
+            $('[href="#pagetree"]').click();
+            this.updatePagetreeBtn();
+            this.setUnsaved(true, true);
+        }
     }
 
     exportDraft()
@@ -292,16 +293,19 @@ export class GUI
         }
     }
 
-    savePage()
+    async savePage()
     {
         this.showLoader();
-        this.page.save()
-            .catch(error => this.showError('Page could not be saved: ' + error.error.message))
-            .then(() => {
-                this.hideLoader();
-                this.updateRevisionList();
-                this.setUnsaved(false, true);
-            });
+
+        try {
+            await this.page.save()
+        } catch(error) {
+            return await this.showError('Page could not be saved: ' + error.error.message);
+        }
+
+        this.hideLoader();
+        this.updateRevisionList();
+        this.setUnsaved(false, true);
     }
 
     setUnsaved(enable, record)
@@ -330,11 +334,10 @@ export class GUI
         return this.unsavedState.css('display') !== 'none';
     }
 
-    closeEditor(e)
+    async closeEditor()
     {
-        this.page.unlock().then(() => {
-            window.location = this.page.fullUrl;
-        });
+        await this.page.unlock();
+        window.location = this.page.fullUrl;
     }
 
     onPortletGroupBtn(e)
@@ -377,25 +380,26 @@ export class GUI
         this.iframe.cleanUpDrag();
     }
 
-    onRevisionBtn(e)
+    async onRevisionBtn(e)
     {
         let elm   = $(e.target).closest('a');
         let revId = elm.data('revision-id');
 
         this.showLoader();
 
-        this.page.loadRev(revId)
-            .catch(er => this.showError('Error while loading draft preview: ' + er.error.message))
-            .then(this.iframe.onPageLoad)
-            .then(() => {
-                this.iframe.loadMissingPortletPreviewStyles();
-                this.updatePagetreeBtn();
-            });
+        try {
+            await this.page.loadRev(revId)
+        } catch(er) {
+            return await this.showError('Error while loading draft preview: ' + er.error.message);
+        }
 
+        this.iframe.onPageLoad();
+        this.iframe.loadMissingPortletPreviewStyles();
+        this.updatePagetreeBtn();
         this.setUnsaved(revId !== 0);
     }
 
-    openConfigurator(portlet)
+    async openConfigurator(portlet)
     {
         let portletData = portlet.data('portlet');
 
@@ -403,29 +407,27 @@ export class GUI
 
         this.curPortlet = portlet;
 
-        this.io.getConfigPanelHtml(
+        let html = await this.io.getConfigPanelHtml(
             portletData.class,
             portletData.missingClass,
             portletData.properties
-        ).then(html => {
-            if (portletData.class === 'MissingPortlet') {
-                this.stdConfigButtons.hide();
-                this.missingConfigButtons.show();
-            } else {
-                this.stdConfigButtons.show();
-                this.missingConfigButtons.hide();
-            }
+        )
 
-            this.configModalBody.html(html);
-            this.configPortletName[0].textContent = portletData.title;
-            this.configModal.modal('show');
-        });
+        if (portletData.class === 'MissingPortlet') {
+            this.stdConfigButtons.hide();
+            this.missingConfigButtons.show();
+        } else {
+            this.stdConfigButtons.show();
+            this.missingConfigButtons.hide();
+        }
 
+        this.configModalBody.html(html);
+        this.configPortletName[0].textContent = portletData.title;
+        this.configModal.modal('show');
     }
 
-    saveConfig()
+    async saveConfig()
     {
-
         opc.emit('save-config');
 
         let portletData  = this.page.portletToJSON(this.curPortlet);
@@ -465,30 +467,29 @@ export class GUI
         }
 
         portletData.properties = configObject;
+        let preview = null;
 
-        this.io.getPortletPreviewHtml(portletData)
-            .catch(er => {
-                this.configModal.modal('hide');
-                return this.showError('Error while saving Portlet configuration: ' + er.error.message);
-            })
-            .then(preview => {
-                this.iframe.replaceSelectedPortletHtml(preview);
-                this.configModal.modal('hide');
-                this.page.updateFlipcards();
-                this.iframe.disableLinks();
-            });
+        try {
+            preview = await this.io.getPortletPreviewHtml(portletData);
+        } catch(er) {
+            this.configModal.modal('hide');
+            return await this.showError('Error while saving Portlet configuration: ' + er.error.message);
+        }
+
+        this.iframe.replaceSelectedPortletHtml(preview);
+        this.configModal.modal('hide');
+        this.page.updateFlipcards();
+        this.iframe.disableLinks();
     }
 
-    createBlueprint()
+    async createBlueprint()
     {
         if(this.selectedElm !== null) {
             let blueprintName = this.blueprintName.val();
             let blueprintData = this.page.portletToJSON(this.iframe.selectedElm);
 
-            this.io.saveBlueprint(blueprintName, blueprintData).then(() => {
-                this.updateBlueprintList();
-            });
-
+            await this.io.saveBlueprint(blueprintName, blueprintData);
+            this.updateBlueprintList();
             this.blueprintModal.modal('hide');
         }
     }
@@ -503,14 +504,12 @@ export class GUI
         this.blueprintDeleteModal.modal('show');
     }
 
-    onBlueprintExport(e)
+    async onBlueprintExport(e)
     {
         let elm         = $(e.target).closest('.blueprintExport');
         let blueprintId = elm.data('blueprint-id');
-
-        this.io.getBlueprint(blueprintId).then(blueprint => {
-            download(JSON.stringify(blueprint), blueprint.name + '.json', 'application/json');
-        });
+        let blueprint   = await this.io.getBlueprint(blueprintId);
+        download(JSON.stringify(blueprint), blueprint.name + '.json', 'application/json');
     }
 
     importBlueprint()
@@ -520,10 +519,10 @@ export class GUI
                 'change',
                 e => {
                     this.importReader = new FileReader();
-                    this.importReader.onload = () => {
+                    this.importReader.onload = async () => {
                         let blueprint = JSON.parse(this.importReader.result);
-                        this.io.saveBlueprint(blueprint.name, blueprint.instance)
-                            .then(() => this.updateBlueprintList());
+                        await this.io.saveBlueprint(blueprint.name, blueprint.instance);
+                        this.updateBlueprintList();
                     };
                     this.importReader.readAsText(e.target.files[0]);
                 }
@@ -531,11 +530,12 @@ export class GUI
             .click();
     }
 
-    deleteBlueprint()
+    async deleteBlueprint()
     {
         let blueprintId = this.blueprintDeleteId.val();
 
-        this.io.deleteBlueprint(blueprintId).then(() => this.updateBlueprintList());
+        await this.io.deleteBlueprint(blueprintId)
+        this.updateBlueprintList();
         this.blueprintDeleteModal.modal('hide');
     }
 
@@ -624,7 +624,7 @@ export class GUI
         this.publishTo.val(moment(this.publishFrom.val(), localDateFormat).add(1, 'M').format(localDateFormat));
     }
 
-    publish()
+    async publish()
     {
         this.page.name = this.draftName.val();
         $('#footerDraftName span').text(this.page.name);
@@ -655,9 +655,13 @@ export class GUI
             this.page.publishTo = this.publishTo.val();
         }
 
-        this.page.publicate()
-            .catch(er => this.showError(er.error.message))
-            .then(() => this.io.getDraftStatusHtml(this.page.key));
+        try {
+            await this.page.publicate();
+        } catch (er) {
+            return await this.showError(er.error.message);
+        }
+
+        this.io.getDraftStatusHtml(this.page.key);
 
         if (this.isPageUnsaved()) {
             this.savePage();
@@ -745,7 +749,7 @@ export class GUI
         $('#footerDraftNameInput').val(this.page.name).show();
     }
 
-    onFinishEditDraftName()
+    async onFinishEditDraftName()
     {
         let draftNameSpan = $('#footerDraftName');
         let draftNameInput = $('#footerDraftNameInput');
@@ -755,10 +759,9 @@ export class GUI
             this.escapedDraftNameInput = false;
             draftNameSpan.show();
         } else {
-            this.io.changeDraftName(this.page.key, draftName).then(() => {
-                this.page.name = draftName;
-                $('#footerDraftName span').text(draftName);
-            });
+            await this.io.changeDraftName(this.page.key, draftName);
+            this.page.name = draftName;
+            $('#footerDraftName span').text(draftName);
         }
 
         draftNameInput.hide();

@@ -11,25 +11,23 @@ export class Page
         this.offscreenAreas = {};
     }
 
-    lock(errorcb)
+    async lock(errorcb)
     {
-        return this.io.lockDraft(this.key).then(state => {
-            if (state === 0) {
-                this.lockTimeout = setTimeout(() => {
-                    this.lock(errorcb);
-                }, 1000 * 60);
+        let state = await this.io.lockDraft(this.key);
 
-                return Promise.resolve();
-            } else {
-                if (this.lockTimeout !== null) {
-                    clearTimeout(this.lockTimeout);
-                    this.lockTimeout = null;
-                }
-
-                errorcb(state);
-                return Promise.reject(state);
+        if (state === 0) {
+            this.lockTimeout = setTimeout(() => {
+                this.lock(errorcb);
+            }, 1000 * 60);
+        } else {
+            if (this.lockTimeout !== null) {
+                clearTimeout(this.lockTimeout);
+                this.lockTimeout = null;
             }
-        });
+
+            errorcb(state);
+            throw state;
+        }
     }
 
     unlock()
@@ -49,85 +47,86 @@ export class Page
         return this.io.getRevisionList(this.key);
     }
 
-    initIframe(jq)
+    async initIframe(jq)
     {
         this.jq        = jq;
         this.rootAreas = this.jq('.opc-rootarea');
 
-        return this.loadDraftPreview();
+        await this.loadDraftPreview();
     }
 
-    loadDraft()
+    async loadDraft()
     {
-        return this.io.getDraft(this.key)
-            .then(pageData => {
-                this.id          = pageData.id;
-                this.name        = pageData.name;
-                this.publishFrom = pageData.publishFrom ? this.decodeDate(pageData.publishFrom) : null;
-                this.publishTo   = pageData.publishTo ? this.decodeDate(pageData.publishTo) : null;
-                this.url         = pageData.url;
-                this.lastModified= pageData.lastModified;
-                this.fullUrl     = this.shopUrl + this.url;
-            });
+        let pageData      = await this.io.getDraft(this.key);
+        this.id           = pageData.id;
+        this.name         = pageData.name;
+        this.publishFrom  = pageData.publishFrom ? this.decodeDate(pageData.publishFrom) : null;
+        this.publishTo    = pageData.publishTo ? this.decodeDate(pageData.publishTo) : null;
+        this.url          = pageData.url;
+        this.lastModified = pageData.lastModified;
+        this.fullUrl      = this.shopUrl + this.url;
     }
 
-    loadDraftPreview()
+    async loadDraftPreview()
     {
-        return this.io.getDraftPreview(this.key).then(this.onLoad)
+        this.onLoad(await this.io.getDraftPreview(this.key));
     }
 
-    loadRev(revId)
+    async loadRev(revId)
     {
         if(revId === -1) {
-            return this.loadPageFromWebStorage();
+            await this.loadPageFromWebStorage();
         } else if(revId === 0) {
-            return this.io.getDraftPreview(this.key).then(this.onLoad);
+            await this.loadDraftPreview();
         } else {
-            return this.io.getRevisionPreview(revId).then(this.onLoad);
+            this.onLoad(await this.io.getRevisionPreview(revId));
         }
     }
 
-    loadFromData(data)
+    async loadFromData(data)
     {
         opc.emit('page.loadFromData', data);
-        return this.io.createPagePreview({areas: data.areas})
-            .then(this.onLoad);
+        this.onLoad(await this.io.createPagePreview({areas: data.areas}));
     }
 
-    loadFromJSON(json)
+    async loadFromJSON(json)
     {
+        let data = null;
+
         try {
-            var data = JSON.parse(json);
+            data = JSON.parse(json);
         } catch (e) {
-            return Promise.reject({error:{message:'JSON data could not be loaded'}});
+            throw {error: {message: 'JSON data could not be loaded'}};
         }
 
-        return this.loadFromData(data);
+        await this.loadFromData(data);
     }
 
-    loadFromImport()
+    async loadFromImport()
     {
-        return new Promise(res => {
+        let changeEvent = await new Promise(res => {
             this.jq('<input type="file" accept=".json">')
                 .on('change', res).click();
-        }).then(e => {
-            return new Promise(res => {
-                this.importReader = new FileReader();
-                this.importReader.onload = res;
-                this.importReader.readAsText(e.target.files[0]);
-            });
-        }).then(() => this.loadFromJSON(this.importReader.result));
+        });
+
+        await new Promise(res => {
+            this.importReader = new FileReader();
+            this.importReader.onload = res;
+            this.importReader.readAsText(changeEvent.target.files[0]);
+        });
+
+        await this.loadFromJSON(this.importReader.result);
     }
 
-    loadPageFromWebStorage()
+    async loadPageFromWebStorage()
     {
         let pageJson = window.localStorage.getItem(this.getStorageId());
 
         if(pageJson !== null) {
             this.clear();
-            return this.loadFromJSON(pageJson);
+            await this.loadFromJSON(pageJson);
         } else {
-            return Promise.reject({error:{message:'could not find locally stored draft data'}});
+            throw {error: {message: 'could not find locally stored draft data'}};
         }
     }
 
@@ -178,11 +177,10 @@ export class Page
         });
     }
 
-    save()
+    async save()
     {
-        return this.io.saveDraft(this.toJSON()).then(() => {
-            this.lastModified = moment().format(internalDateFormat);
-        });
+        await this.io.saveDraft(this.toJSON())
+        this.lastModified = moment().format(internalDateFormat);
     }
 
     savePageToWebStorage()

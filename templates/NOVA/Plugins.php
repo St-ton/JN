@@ -423,6 +423,7 @@ class Plugins
                 : '';
             $error                   = isset($params['cPlausi_arr'][$checkbox->cID]);
             $checkbox->isActive      = isset($params['cPost_arr'][$checkbox->cID]);
+            $checkbox->identifier    = $checkbox->cName;
             $checkbox->cName         = $checkbox->oCheckBoxSprache_arr[$langID]->cText ?? '';
             $checkbox->cLinkURL      = $url;
             $checkbox->cLinkURLFull  = $url;
@@ -814,6 +815,8 @@ class Plugins
     {
         $currSep = Frontend::getCurrency()->getDecimalSeparator();
         $currTho = Frontend::getCurrency()->getThousandsSeparator();
+        $price   = html_entity_decode($price,\ENT_COMPAT,\JTL_CHARSET);
+
         \preg_match('/\d+(?:['.$currTho.']\d{3})*(?:['.$currSep.']\d+)?/', $price, $extractedPrice);
 
         return \sprintf('%.2f', \str_replace($currSep, '.', \str_replace($currTho, '', ($extractedPrice[0]))));

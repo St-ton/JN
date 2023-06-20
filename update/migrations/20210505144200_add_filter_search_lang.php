@@ -14,7 +14,7 @@ class Migration_20210505144200 extends Migration implements IMigration
     protected $description = 'Add filter search lang and setting';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up(): void
     {
@@ -32,7 +32,7 @@ class Migration_20210505144200 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down(): void
     {

@@ -126,6 +126,8 @@ class SearchConfigController extends AbstractBackendController
         }
         $this->getAdminSectionSettings(\CONF_ARTIKELUEBERSICHT);
 
+        $this->assignScrollPosition();
+
         return $smarty->assign('kEinstellungenSektion', $sectionID)
             ->assign('sections', [$section])
             ->assign('cPrefURL', $smarty->getConfigVars('prefURL' . $sectionID))

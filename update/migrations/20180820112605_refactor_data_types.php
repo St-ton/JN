@@ -17,7 +17,7 @@ class Migration_20180820112605 extends Migration implements IMigration
     protected $description = 'Refactor data types for kKundengruppe';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -43,7 +43,7 @@ class Migration_20180820112605 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

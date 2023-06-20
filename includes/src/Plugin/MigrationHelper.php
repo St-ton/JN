@@ -31,7 +31,7 @@ final class MigrationHelper
      * @param string      $path
      * @param DbInterface $db
      */
-    public function __construct(private string $path, private DbInterface $db)
+    public function __construct(private string $path, private readonly DbInterface $db)
     {
     }
 

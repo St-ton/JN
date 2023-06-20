@@ -19,7 +19,7 @@ class Migration_20180124162000 extends Migration implements IMigration
     protected $description = 'Rebuild ttrennzeichen and add unique index';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -28,7 +28,7 @@ class Migration_20180124162000 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

@@ -18,7 +18,7 @@ class Migration_20200923090629 extends Migration implements IMigration
     protected $description = 'Change nSort to INT instead of TINYINT.';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -26,7 +26,7 @@ class Migration_20200923090629 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

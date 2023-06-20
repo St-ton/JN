@@ -209,10 +209,10 @@ class Preise
      * @param DbInterface|null $db
      */
     public function __construct(
-        int $customerGroupID,
-        int $productID,
-        int $customerID = 0,
-        int $taxClassID = 0,
+        int          $customerGroupID,
+        int          $productID,
+        int          $customerID = 0,
+        int          $taxClassID = 0,
         ?DbInterface $db = null
     ) {
         $this->db            = $db ?? Shop::Container()->getDB();
@@ -304,7 +304,7 @@ class Preise
         int $customerID = 0
     ): ?stdClass {
         $params         = [
-            'pid' => $productID,
+            'pid'  => $productID,
             'cgid' => $customerGroupID
         ];
         $customerFilter = ' AND kKundengruppe = :cgid';
@@ -579,7 +579,7 @@ class Preise
      * @return string
      */
     public static function getPriceJoinSql(
-        int $customerGroupID,
+        int    $customerGroupID,
         string $priceAlias = 'tpreis',
         string $detailAlias = 'tpreisdetail',
         string $productAlias = 'tartikel'

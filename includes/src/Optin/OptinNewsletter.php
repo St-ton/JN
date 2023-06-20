@@ -85,7 +85,7 @@ class OptinNewsletter extends OptinBase implements OptinInterface
      */
     public function createOptin(
         OptinRefData $refData,
-        int $location = \CHECKBOX_ORT_NEWSLETTERANMELDUNG
+        int          $location = \CHECKBOX_ORT_NEWSLETTERANMELDUNG
     ): OptinInterface {
         $this->refData = $refData;
         $this->optCode = $this->generateUniqOptinCode();

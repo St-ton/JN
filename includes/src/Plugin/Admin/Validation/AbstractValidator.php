@@ -72,7 +72,7 @@ abstract class AbstractValidator implements ValidatorInterface
     public function validateByPluginID(int $pluginID, bool $forUpdate = false): int
     {
         $plugin = $this->db->select('tplugin', 'kPlugin', $pluginID);
-        if (empty($plugin->kPlugin)) {
+        if ($plugin === null || empty($plugin->kPlugin)) {
             return InstallCode::NO_PLUGIN_FOUND;
         }
         $dir  = self::BASE_DIR . $plugin->cVerzeichnis;

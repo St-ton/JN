@@ -132,11 +132,11 @@ class Starter
      * @param LoggerInterface   $logger
      */
     public function __construct(
-        private Synclogin $auth,
-        private FileHandler $fileHandler,
-        private DbInterface $db,
-        private JTLCacheInterface $cache,
-        private LoggerInterface $logger
+        private readonly Synclogin         $auth,
+        private readonly FileHandler       $fileHandler,
+        private readonly DbInterface       $db,
+        private readonly JTLCacheInterface $cache,
+        private readonly LoggerInterface   $logger
     ) {
         $this->checkPermissions();
     }
@@ -413,7 +413,7 @@ class Starter
     }
 
     /**
-     * @param  string $wawiVersion
+     * @param string $wawiVersion
      */
     public function setWawiVersion(string $wawiVersion): void
     {

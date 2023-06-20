@@ -18,7 +18,7 @@ class Migration_20181211120813 extends Migration implements IMigration
     protected $description = 'Make overlays template specific';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -30,7 +30,7 @@ class Migration_20181211120813 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

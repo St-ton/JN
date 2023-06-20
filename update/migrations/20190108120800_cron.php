@@ -17,7 +17,7 @@ class Migration_20190108120800 extends Migration implements IMigration
     protected $description = 'Cron improvements';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -50,7 +50,7 @@ class Migration_20190108120800 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

@@ -35,11 +35,11 @@ class SearchQueryController extends ProductListController
     public function register(RouteGroup $route, string $dynName): void
     {
         $name = \SLUG_ALLOW_SLASHES ? 'name:.+' : 'name';
-        $route->get('/' . \ROUTE_PREFIX_SEARCHQUERIES . '/{id:\d+}', $this->getResponse(...))
+        $route->get('/' . \ROUTE_PREFIX_SEARCHQUERIES . '/id/{id:\d+}', $this->getResponse(...))
             ->setName('ROUTE_SEARCHQUERY_BY_ID' . $dynName);
         $route->get('/' . \ROUTE_PREFIX_SEARCHQUERIES . '/{' . $name . '}', $this->getResponse(...))
             ->setName('ROUTE_SEARCHQUERY_BY_NAME' . $dynName);
-        $route->post('/' . \ROUTE_PREFIX_SEARCHQUERIES . '/{id:\d+}', $this->getResponse(...))
+        $route->post('/' . \ROUTE_PREFIX_SEARCHQUERIES . '/id/{id:\d+}', $this->getResponse(...))
             ->setName('ROUTE_SEARCHQUERY_BY_ID' . $dynName . 'POST');
         $route->post('/' . \ROUTE_PREFIX_SEARCHQUERIES . '/{' . $name . '}', $this->getResponse(...))
             ->setName('ROUTE_SEARCHQUERY_BY_NAME' . $dynName . 'POST');

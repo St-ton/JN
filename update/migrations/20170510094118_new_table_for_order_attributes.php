@@ -18,7 +18,7 @@ class Migration_20170510094118 extends Migration implements IMigration
     protected $description = 'New Table for order attributes';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -35,7 +35,7 @@ class Migration_20170510094118 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

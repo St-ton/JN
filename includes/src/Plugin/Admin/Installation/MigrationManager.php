@@ -44,10 +44,10 @@ final class MigrationManager
      * @param Version|null $version
      */
     public function __construct(
-        private DbInterface $db,
-        private string $path,
-        private string $pluginID,
-        private ?Version $version = null
+        private DbInterface       $db,
+        private string            $path,
+        private readonly string   $pluginID,
+        private readonly ?Version $version = null
     ) {
         $this->helper = new MigrationHelper($path, $db);
     }
@@ -232,7 +232,6 @@ final class MigrationManager
     {
         return \count($this->getMigrations()) > 0;
     }
-
 
     /**
      * Gets an array of the database migrations.

@@ -18,7 +18,7 @@ class Migration_20171110102354 extends Migration implements IMigration
     protected $description = 'Add vars and settings for the UstID-check via VIES';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -106,7 +106,7 @@ class Migration_20171110102354 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

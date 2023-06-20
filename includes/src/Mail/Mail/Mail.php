@@ -246,7 +246,7 @@ class Mail implements MailInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setLanguage(LanguageModel $language): MailInterface
     {

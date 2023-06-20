@@ -44,7 +44,7 @@ class Manager
      * @param AlertServiceInterface $alertService
      * @param string                $scope
      */
-    public function __construct(private AlertServiceInterface $alertService, private string $scope)
+    public function __construct(private readonly AlertServiceInterface $alertService, private readonly string $scope)
     {
         $this->client          = new Client();
         $this->recommendations = new Collection();

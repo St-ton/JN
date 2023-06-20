@@ -827,15 +827,15 @@ class LanguageHelper
         while (($data = \fgetcsv($handle, 4048, ';')) !== false) {
             if (\count($data) === 4) {
                 // Sektion holen und ggf neu anlegen
-                $cSektion = $data[0];
-                $oSektion = $this->db->select('tsprachsektion', 'cName', $cSektion);
-                if (isset($oSektion->kSprachsektion)) {
-                    $kSprachsektion = $oSektion->kSprachsektion;
+                $sectionName = $data[0];
+                $section     = $this->db->select('tsprachsektion', 'cName', $sectionName);
+                if ($section !== null && isset($section->kSprachsektion)) {
+                    $sectionID = (int)$section->kSprachsektion;
                 } else {
                     // Sektion hinzufügen
-                    $oSektion        = new stdClass();
-                    $oSektion->cName = $cSektion;
-                    $kSprachsektion  = $this->db->insert('tsprachsektion', $oSektion);
+                    $section        = new stdClass();
+                    $section->cName = $sectionName;
+                    $sectionID      = $this->db->insert('tsprachsektion', $section);
                 }
                 $name   = $data[1];
                 $value  = $data[2];
@@ -850,7 +850,7 @@ class LanguageHelper
                         }
                         $val                 = new stdClass();
                         $val->kSprachISO     = $kSprachISO;
-                        $val->kSprachsektion = $kSprachsektion;
+                        $val->kSprachsektion = $sectionID;
                         $val->cName          = $data[1];
                         $val->cWert          = $data[2];
                         $val->cStandard      = $data[2];
@@ -870,7 +870,7 @@ class LanguageHelper
                                     bSystem = :sys',
                             [
                                 'iso'     => $kSprachISO,
-                                'section' => $kSprachsektion,
+                                'section' => $sectionID,
                                 'name'    => $name,
                                 'val'     => $value,
                                 'sys'     => $system
@@ -885,7 +885,7 @@ class LanguageHelper
                             'kSprachISO',
                             $kSprachISO,
                             'kSprachsektion',
-                            $kSprachsektion,
+                            $sectionID,
                             'cName',
                             $name
                         );
@@ -900,7 +900,7 @@ class LanguageHelper
                                         bSystem = :sys',
                                 [
                                     'iso'     => $kSprachISO,
-                                    'section' => $kSprachsektion,
+                                    'section' => $sectionID,
                                     'name'    => $name,
                                     'val'     => $value,
                                     'sys'     => $system
@@ -919,7 +919,7 @@ class LanguageHelper
     /**
      * @return stdClass[]
      */
-    private function mappedGetLangArray()
+    private function mappedGetLangArray(): array
     {
         return $this->availableLanguages;
     }
@@ -986,10 +986,10 @@ class LanguageHelper
         }
 
         return match ($returnType) {
-            2 => reindex($languages, static function (LanguageModel $e): string {
+            2       => reindex($languages, static function (LanguageModel $e): string {
                 return $e->getCode();
             }),
-            1 => reindex($languages, static function (LanguageModel $e): int {
+            1       => reindex($languages, static function (LanguageModel $e): int {
                 return $e->getId();
             }),
             default => $languages,
@@ -1005,6 +1005,9 @@ class LanguageHelper
      */
     public static function isDefaultLanguageActive(bool $shop = false, int $languageID = null): bool
     {
+        if (Shop::$forceHost[0]['id'] > 0) {
+            return false;
+        }
         $languageID = $languageID ?? Shop::getLanguageID();
         if ($languageID <= 0) {
             return true;

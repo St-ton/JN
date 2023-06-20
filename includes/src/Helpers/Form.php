@@ -3,7 +3,6 @@
 namespace JTL\Helpers;
 
 use Exception;
-use JTL\Customer\CustomerGroup;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\RateLimit\Upload;
@@ -204,7 +203,7 @@ class Form
         );
         $data                       = new stdClass();
         $data->tnachricht           = self::baueKontaktFormularVorgaben();
-        $data->tnachricht->cBetreff = $betreffSprache->cName;
+        $data->tnachricht->cBetreff = $betreffSprache->cName ?? '';
 
         $conf     = Shop::getSettings([\CONF_KONTAKTFORMULAR, \CONF_GLOBAL]);
         $from     = new stdClass();

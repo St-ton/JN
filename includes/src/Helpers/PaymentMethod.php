@@ -95,7 +95,6 @@ class PaymentMethod
         return true;
     }
 
-
     /**
      * @param int $minOrders
      * @param int $customerID

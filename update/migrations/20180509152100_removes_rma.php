@@ -18,7 +18,7 @@ class Migration_20180509152100 extends Migration implements IMigration
     protected $description = 'Remove RMA special page';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -26,7 +26,7 @@ class Migration_20180509152100 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

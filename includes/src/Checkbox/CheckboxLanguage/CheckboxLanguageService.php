@@ -14,7 +14,23 @@ class CheckboxLanguageService extends AbstractService
     /**
      * @var CheckboxLanguageRepository
      */
-    private CheckboxLanguageRepository $repository;
+    protected CheckboxLanguageRepository $repository;
+
+    /**
+     * @return void
+     */
+    protected function initDependencies(): void
+    {
+        $this->repository = new CheckboxLanguageRepository();
+    }
+
+    /**
+     * @return CheckboxLanguageRepository
+     */
+    public function getRepository(): CheckboxLanguageRepository
+    {
+        return $this->repository;
+    }
 
     /**
      * @param array $filters
@@ -53,21 +69,5 @@ class CheckboxLanguageService extends AbstractService
         $updateDTO->setCheckboxLanguageID($language->getCheckboxLanguageID());
 
         return $this->getRepository()->update($updateDTO);
-    }
-
-    /**
-     * @return void
-     */
-    protected function initDependencies(): void
-    {
-        $this->repository = new CheckboxLanguageRepository();
-    }
-
-    /**
-     * @return CheckboxLanguageRepository
-     */
-    public function getRepository(): CheckboxLanguageRepository
-    {
-        return $this->repository;
     }
 }

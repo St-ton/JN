@@ -298,7 +298,7 @@ class Pagination
     public function assemble(): self
     {
         $this->loadParameters()
-             ->storeParameters();
+            ->storeParameters();
 
         if ($this->itemsPerPage === -1) {
             // Show all entries on a single page

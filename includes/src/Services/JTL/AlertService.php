@@ -12,8 +12,8 @@ use JTL\Alert\Alert;
 class AlertService implements AlertServiceInterface
 {
     /**
-    * @var Collection
-    */
+     * @var Collection
+     */
     private Collection $alertList;
 
     /**

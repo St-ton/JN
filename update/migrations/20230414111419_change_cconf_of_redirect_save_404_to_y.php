@@ -18,7 +18,7 @@ class Migration_20230414111419 extends Migration implements IMigration
     protected $description = 'Change cConf of redirect_save_404 to Y';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -29,7 +29,7 @@ class Migration_20230414111419 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

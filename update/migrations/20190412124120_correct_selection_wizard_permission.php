@@ -18,7 +18,7 @@ class Migration_20190412124120 extends Migration implements IMigration
     protected $description = 'Correct selection wizard permission';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -35,7 +35,7 @@ class Migration_20190412124120 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

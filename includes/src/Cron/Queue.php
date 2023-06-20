@@ -23,9 +23,9 @@ class Queue
      * @since 5.3.0
      */
     public function __construct(
-        private DbInterface     $db,
-        private LoggerInterface $logger,
-        private JobFactory      $factory,
+        private readonly DbInterface     $db,
+        private readonly LoggerInterface $logger,
+        private readonly JobFactory      $factory,
         private int             $cronStartedAt = 0
     ) {
         if ($this->cronStartedAt === 0) {

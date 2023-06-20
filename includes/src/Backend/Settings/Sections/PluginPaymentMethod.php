@@ -62,7 +62,7 @@ class PluginPaymentMethod extends Base
                 $config->getValueName()
             );
             $config->setName(\__($config->getName()));
-            $config->setSetValue(isset($setValue->cWert)
+            $config->setSetValue($setValue !== null && isset($setValue->cWert)
                 ? Text::htmlentities($setValue->cWert)
                 : null);
 

@@ -18,7 +18,7 @@ class NiceDBHandler extends AbstractProcessingHandler
      * @param int         $level
      * @param bool        $bubble
      */
-    public function __construct(private DbInterface $db, int $level = Logger::DEBUG, bool $bubble = true)
+    public function __construct(private readonly DbInterface $db, int $level = Logger::DEBUG, bool $bubble = true)
     {
         parent::__construct($level, $bubble);
     }

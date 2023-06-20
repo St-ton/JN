@@ -18,7 +18,7 @@ class Migration_20180622122900 extends Migration implements IMigration
     protected $description = 'Remove EOS payment method';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -29,7 +29,7 @@ class Migration_20180622122900 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

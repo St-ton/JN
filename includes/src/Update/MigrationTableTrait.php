@@ -49,7 +49,7 @@ trait MigrationTableTrait
             return;
         }
         try {
-            $this->execute("ALTER TABLE `{$table}` DROP `{$column}`");
+            $this->execute("ALTER TABLE `$table` DROP `$column`");
         } catch (Exception) {
         }
     }
@@ -70,21 +70,21 @@ trait MigrationTableTrait
         $sections = $this->getLocaleSections();
 
         if (!isset($locales[$locale])) {
-            throw new Exception("Locale key '{$locale}' not found");
+            throw new Exception("Locale key '$locale' not found");
         }
 
         if (!isset($sections[$section])) {
-            throw new Exception("section name '{$section}' not found");
+            throw new Exception("section name '$section' not found");
         }
 
         $this->execute(
             "INSERT INTO tsprachwerte SET
-            kSprachISO = '{$locales[$locale]}', 
-            kSprachsektion = '{$sections[$section]}', 
-            cName = '{$key}', 
-            cWert = '{$value}', 
-            cStandard = '{$value}', 
-            bSystem = '{$system}' 
+            kSprachISO = '$locales[$locale]', 
+            kSprachsektion = '$sections[$section]', 
+            cName = '$key', 
+            cWert = '$value', 
+            cStandard = '$value', 
+            bSystem = '$system' 
             ON DUPLICATE KEY UPDATE 
                 cWert = IF(cWert = cStandard, VALUES(cStandard), cWert), cStandard = VALUES(cStandard)"
         );
@@ -137,7 +137,7 @@ trait MigrationTableTrait
      * @param string $column
      * @return int
      */
-    private function getLastId($table, $column)
+    private function getLastId($table, $column): int
     {
         $result = $this->fetchOne(" SELECT `$column` AS last_id FROM `$table` ORDER BY `$column` DESC LIMIT 1");
 
@@ -216,8 +216,8 @@ trait MigrationTableTrait
             $count = $this->fetchOne(
                 "SELECT COUNT(*) AS count 
                     FROM teinstellungenconf 
-                    WHERE cWertName='{$configName}' 
-                        OR kEinstellungenConf={$kEinstellungenConf}"
+                    WHERE cWertName = '$configName' 
+                        OR kEinstellungenConf = $kEinstellungenConf"
             );
             if ((int)$count->count !== 0) {
                 throw new Exception('another entry already present in teinstellungenconf and overwrite is disabled');
@@ -225,7 +225,7 @@ trait MigrationTableTrait
             $count = $this->fetchOne(
                 "SELECT COUNT(*) AS count 
                     FROM teinstellungenconfwerte 
-                    WHERE kEinstellungenConf={$kEinstellungenConf}"
+                    WHERE kEinstellungenConf = $kEinstellungenConf"
             );
             if ((int)$count->count !== 0) {
                 throw new Exception('another entry already present in ' .
@@ -307,18 +307,18 @@ trait MigrationTableTrait
      */
     public function removeConfig(string $key): void
     {
-        $this->execute("DELETE FROM teinstellungen WHERE cName = '{$key}'");
+        $this->execute("DELETE FROM teinstellungen WHERE cName = '$key'");
         if ($this->getDB()->getSingleObject("SHOW TABLES LIKE 'teinstellungen_default'") !== null) {
-            $this->execute("DELETE FROM teinstellungen_default WHERE cName = '{$key}'");
+            $this->execute("DELETE FROM teinstellungen_default WHERE cName = '$key'");
         }
         $this->execute(
             "DELETE FROM teinstellungenconfwerte 
                 WHERE kEinstellungenConf = (
                     SELECT kEinstellungenConf 
                         FROM teinstellungenconf 
-                        WHERE cWertName = '{$key}'
+                        WHERE cWertName = '$key'
                 )"
         );
-        $this->execute("DELETE FROM teinstellungenconf WHERE cWertName = '{$key}'");
+        $this->execute("DELETE FROM teinstellungenconf WHERE cWertName = '$key'");
     }
 }

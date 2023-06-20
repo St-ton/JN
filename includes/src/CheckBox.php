@@ -878,16 +878,16 @@ class CheckBox
         $this->cName             = $checkbox->getName();
         $this->cKundengruppe     = $checkbox->getCustomerGroupsSelected();
         $this->cAnzeigeOrt       = $checkbox->getDisplayAt();
-        $this->nAktiv            = (int)$checkbox->getActive();
-        $this->nPflicht          = (int)$checkbox->getIsMandatory();
-        $this->nLogging          = (int)$checkbox->getHasLogging();
+        $this->nAktiv            = (int)$checkbox->isActive();
+        $this->nPflicht          = (int)$checkbox->isMandatory();
+        $this->nLogging          = (int)$checkbox->isLogging();
         $this->nSort             = $checkbox->getSort();
         $this->cID               = 'CheckBox_' . $this->kCheckBox;
         $this->dErstellt         = $checkbox->getCreated();
         $this->dErstellt_DE      = $checkbox->getCreatedDE();
         $this->kKundengruppe_arr = Text::parseSSKint($checkbox->getCustomerGroupsSelected());
         $this->kAnzeigeOrt_arr   = Text::parseSSKint($checkbox->getDisplayAt());
-        $this->nInternal         = (int)$checkbox->getNInternal();
+        $this->nInternal         = (int)$checkbox->getInternal();
         if ($this->kCheckBoxFunktion > 0) {
             $this->checkAndUpdateFunctionIfNecessary($checkbox);
         }

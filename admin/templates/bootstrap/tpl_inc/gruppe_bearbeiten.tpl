@@ -48,17 +48,17 @@
                                         {if $group->name !== ''}<div class="subheading2">{$group->name}</div>{/if}
                                         {foreach $group->permissions as $permission}
                                             {if isset($permission->cRecht)}
-                                            <div class="custom-control custom-checkbox">
-                                                <input class="custom-control-input" type="checkbox" name="perm[]" value="{$permission->cRecht}" id="{$permission->cRecht}" {if isset($cAdminGroupPermission_arr) && is_array($cAdminGroupPermission_arr)}{if in_array($permission->cRecht, $cAdminGroupPermission_arr)}checked="checked"{/if}{/if} />
-                                                <label class="custom-control-label" for="{$permission->cRecht}" class="perm">
-                                                    {if isset($bDebug) && $bDebug} - {$permission->cRecht}{/if}
-                                                    {if isset($permission->name)}
-                                                        {$permission->name}
-                                                    {else}
-                                                        {__("permission_{$permission->cRecht}")}
-                                                    {/if}
-                                                </label>
-                                            </div>
+                                                <div class="custom-control custom-checkbox">
+                                                    <input class="custom-control-input" type="checkbox" name="perm[]" value="{$permission->cRecht}" id="{$permission->cRecht}" {if isset($cAdminGroupPermission_arr) && is_array($cAdminGroupPermission_arr)}{if in_array($permission->cRecht, $cAdminGroupPermission_arr)}checked="checked"{/if}{/if} />
+                                                    <label class="custom-control-label" for="{$permission->cRecht}" class="perm">
+                                                        {if isset($bDebug) && $bDebug} - {$permission->cRecht}{/if}
+                                                        {if isset($permission->name)}
+                                                            {$permission->name}
+                                                        {else}
+                                                            {__("permission_{$permission->cRecht}")}
+                                                        {/if}
+                                                    </label>
+                                                </div>
                                             {/if}
                                         {/foreach}
                                     </div>

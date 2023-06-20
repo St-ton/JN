@@ -593,9 +593,13 @@ class CustomerGroup
      */
     public static function getNameByID(int $id): ?string
     {
-        $cgroup = new self();
-        $cgroup->loadFromDB($id);
+        try {
+            $cgroup = new self();
+            $cgroup->loadFromDB($id);
 
-        return $cgroup->getName();
+            return $cgroup->getName();
+        } catch (\Exception) {
+            return null;
+        }
     }
 }

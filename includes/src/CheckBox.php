@@ -6,8 +6,10 @@ use Exception;
 use InvalidArgumentException;
 use JTL\Cache\JTLCacheInterface;
 use JTL\Checkbox\CheckboxDataTableObject;
+use JTL\Checkbox\CheckboxFunction\CheckboxFunctionService;
 use JTL\Checkbox\CheckboxLanguage\CheckboxLanguageService;
 use JTL\Checkbox\CheckboxLanguage\CheckboxLanguageDataTableObject;
+use JTL\Checkbox\CheckboxFunction\CheckboxFunctionDataTableObject;
 use JTL\Checkbox\CheckboxService;
 use JTL\DB\DbInterface;
 use JTL\Helpers\GeneralObject;
@@ -167,10 +169,23 @@ class CheckBox
      */
     protected CheckboxLanguageService $languageService;
 
+    /**
+     * @var CheckboxFunctionService
+     */
+    protected CheckboxFunctionService $functionService;
+
+    /**
+     * @var JTLCacheInterface
+     */
     protected JTLCacheInterface $cache;
 
+    /**
+     * @var Logger
+     */
     protected Logger $logService;
-
+    /**
+     * @var bool
+     */
     protected bool $loggerAvailable = true;
 
     /**
@@ -192,6 +207,7 @@ class CheckBox
     {
         $this->service         = new CheckboxService();
         $this->languageService = new CheckboxLanguageService();
+        $this->functionService = new CheckboxFunctionService();
         try {
             $this->logService = Shop::Container()->getLogService();
             $this->cache      = Shop::Container()->getCache();
@@ -218,66 +234,15 @@ class CheckBox
                 $this->$member = $checkbox->$member;
             }
             $this->loadLink();
-
+            $this->checkAndUpdateFunctionIfNecessary($checkbox);
             return $this;
         }
-        $checkbox = $this->db->getSingleObject(
-            "SELECT *, DATE_FORMAT(dErstellt, '%d.%m.%Y %H:%i:%s') AS dErstellt_DE
-                FROM tcheckbox
-                WHERE kCheckBox = :cbid",
-            ['cbid' => $id]
-        );
+        $checkbox = $this->service->get($id);
+
         if ($checkbox === null) {
             return $this;
         }
-        $this->kCheckBox         = (int)$checkbox->kCheckBox;
-        $this->kLink             = (int)$checkbox->kLink;
-        $this->kCheckBoxFunktion = (int)$checkbox->kCheckBoxFunktion;
-        $this->cName             = $checkbox->cName;
-        $this->cKundengruppe     = $checkbox->cKundengruppe;
-        $this->cAnzeigeOrt       = $checkbox->cAnzeigeOrt;
-        $this->nAktiv            = (int)$checkbox->nAktiv;
-        $this->nPflicht          = (int)$checkbox->nPflicht;
-        $this->nLogging          = (int)$checkbox->nLogging;
-        $this->nSort             = (int)$checkbox->nSort;
-        $this->cID               = 'CheckBox_' . $this->kCheckBox;
-        $this->dErstellt         = $checkbox->dErstellt;
-        $this->dErstellt_DE      = $checkbox->dErstellt_DE;
-        $this->kKundengruppe_arr = Text::parseSSKint($checkbox->cKundengruppe);
-        $this->kAnzeigeOrt_arr   = Text::parseSSKint($checkbox->cAnzeigeOrt);
-        // Falls kCheckBoxFunktion gesetzt war aber diese Funktion nicht mehr existiert (deinstallation vom Plugin)
-        // wird kCheckBoxFunktion auf 0 gesetzt
-        if ($this->kCheckBoxFunktion > 0) {
-            $func = $this->db->select(
-                'tcheckboxfunktion',
-                'kCheckBoxFunktion',
-                $this->kCheckBoxFunktion
-            );
-            if ($func !== null && $func->kCheckBoxFunktion > 0) {
-                $func->kCheckBoxFunktion = (int)$func->kCheckBoxFunktion;
-                if (Shop::isAdmin()) {
-                    Shop::Container()->getGetText()->loadAdminLocale('pages/checkbox');
-                    $func->cName = \__($func->cName);
-                }
-                $this->oCheckBoxFunktion = $func;
-            } else {
-                $this->kCheckBoxFunktion = 0;
-                $this->db->update('tcheckbox', 'kCheckBox', $this->kCheckBox, (object)['kCheckBoxFunktion' => 0]);
-            }
-        }
-        $this->loadLink();
-        $localized = $this->db->selectAll(
-            'tcheckboxsprache',
-            'kCheckBox',
-            $this->kCheckBox
-        );
-        foreach ($localized as $translation) {
-            $translation->kCheckBoxSprache = (int)$translation->kCheckBoxSprache;
-            $translation->kCheckBox        = (int)$translation->kCheckBox;
-            $translation->kSprache         = (int)$translation->kSprache;
-
-            $this->oCheckBoxSprache_arr[$translation->kSprache] = $translation;
-        }
+        $this->fillProperties($checkbox);
         $this->saveToCache($cacheID);
 
         return $this;
@@ -644,10 +609,9 @@ class CheckBox
         if (\count($checkboxDTO->getLanguages()) === 0) {
             return $this;
         }
-        if ($checkboxDTO->getID() > 0) {
-            $this->updateDB($checkboxDTO);
-        }
         $this->insertDB(null, null, $checkboxDTO);
+        $this->fillProperties($checkboxDTO);
+        $this->saveToCache('chkbx_' . $checkboxDTO->getID());
 
         return $this;
     }
@@ -720,6 +684,7 @@ class CheckBox
         foreach ($checkboxDTO->getLanguages() as $iso => $texts) {
             $checkboxLanguageDTO = $this->prepareLocalizationObject($checkboxDTO->getID(), $iso, $texts);
             $this->languageService->update($checkboxLanguageDTO);
+            $checkboxDTO->addCheckBoxLanguageArr($checkboxLanguageDTO);
         }
     }
 
@@ -734,6 +699,7 @@ class CheckBox
         foreach ($checkboxDTO->getLanguages() as $iso => $texts) {
             $checkboxLanguageDTO = $this->prepareLocalizationObject($checkboxDTO->getID(), $iso, $texts);
             $this->languageService->update($checkboxLanguageDTO);
+            $checkboxDTO->addCheckBoxLanguageArr($checkboxLanguageDTO);
         }
     }
 
@@ -906,6 +872,63 @@ class CheckBox
                     'descr' => $descriptions[$iso] ?? ''
                 ]
             );
+        }
+    }
+
+    /**
+     * @param CheckboxDataTableObject $checkbox
+     * @return void
+     */
+    public function fillProperties(CheckboxDataTableObject $checkbox): void
+    {
+        $this->kCheckBox         = $checkbox->getID();
+        $this->kLink             = $checkbox->getLinkID();
+        $this->kCheckBoxFunktion = $checkbox->getCheckboxFunctionID();
+        $this->cName             = $checkbox->getName();
+        $this->cKundengruppe     = $checkbox->getCustomerGroupsSelected();
+        $this->cAnzeigeOrt       = $checkbox->getDisplayAt();
+        $this->nAktiv            = (int)$checkbox->getActive();
+        $this->nPflicht          = (int)$checkbox->getIsMandatory();
+        $this->nLogging          = (int)$checkbox->getHasLogging();
+        $this->nSort             = $checkbox->getSort();
+        $this->cID               = 'CheckBox_' . $this->kCheckBox;
+        $this->dErstellt         = $checkbox->getCreated();
+        $this->dErstellt_DE      = $checkbox->getCreatedDE();
+        $this->kKundengruppe_arr = Text::parseSSKint($checkbox->getCustomerGroupsSelected());
+        $this->kAnzeigeOrt_arr   = Text::parseSSKint($checkbox->getDisplayAt());
+        if ($this->kCheckBoxFunktion > 0) {
+            $this->checkAndUpdateFunctionIfNecessary($checkbox);
+        }
+        $this->loadLink();
+        $localized = $this->languageService->getList(['kCheckBox' => $this->kCheckBox]);
+        foreach ($localized as $translation) {
+            $this->oCheckBoxSprache_arr[$translation->getLanguageID()] = $translation->toObject();
+        }
+    }
+
+    /**
+     * @param CheckboxDataTableObject|stdClass $checkbox
+     * @return void
+     */
+    public function checkAndUpdateFunctionIfNecessary(CheckboxDataTableObject|stdClass $checkbox): void
+    {
+        $functionData = $this->functionService->get($this->kCheckBoxFunktion);
+        if ($functionData !== null) {
+            // Falls kCheckBoxFunktion gesetzt war aber diese Funktion nicht mehr existiert (deinstallation vom Plugin)
+            // wird kCheckBoxFunktion auf 0 gesetzt
+            $func = (new CheckboxFunctionDataTableObject())
+                ->hydrateWithObject($functionData);
+            if (Shop::isAdmin()) {
+                Shop::Container()->getGetText()->loadAdminLocale('pages/checkbox');
+                $func->setName(\__($func->getName()));
+            }
+            $this->oCheckBoxFunktion = $func->toObject();
+        } else {
+            $data                    = (new CheckboxFunctionDataTableObject())
+                ->hydrateWithObject($checkbox);
+            $this->kCheckBoxFunktion = 0;
+            $data->setCheckboxFunctionID(0);
+            $this->service->update($data);
         }
     }
 }

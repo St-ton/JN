@@ -12,6 +12,7 @@
         {$licData = $license->getLicense()}
         {$subscription = $licData->getSubscription()}
         {$disabled = $licData->isExpired() || ($subscription->isExpired() && !$subscription->canBeUsed()) || (!$referencedItem->isFilesMissing() && !$referencedItem->canBeUpdated())}
+        {$avail = $license->getReleases()->getAvailable()}
         {if isset($licenseErrorMessage)}
             <div class="alert alert-danger">
                 {__($licenseErrorMessage)}
@@ -19,11 +20,17 @@
         {/if}
         {$installedVersion = $referencedItem->getInstalledVersion()}
         {if $installedVersion === null || $referencedItem->isFilesMissing()}
-            {$avail = $license->getReleases()->getAvailable()}
             {if $avail === null}
                 {$disabled = true}
                 <i class="far fa-circle"></i> <span class="badge badge-danger">{__('No version available')}</span>
             {else}
+                {if $avail->getPhpVersionOK() === \JTL\License\Struct\Release::PHP_VERSION_LOW}
+                    {$disabled = true}
+                    <span class="badge badge-danger">{__('PHP version too low')}</span><br>
+                {elseif $avail->getPhpVersionOK() === \JTL\License\Struct\Release::PHP_VERSION_HIGH}
+                    {$disabled = true}
+                    <span class="badge badge-danger">{__('PHP version too high')}</span><br>
+                {/if}
                 <i class="far fa-circle"></i> <span class="item-available badge badge-info">
                     {__('Version %s available', $avail->getVersion())}
                 </span>
@@ -60,9 +67,9 @@
                 {__('Update to version %s available', $referencedItem->getMaxInstallableVersion())}
             </span>
             {if $referencedItem->canBeUpdated() === false}
-                {if $referencedItem->getPhpVersionOK() === \JTL\License\Struct\ReferencedItem::PHP_VERSION_LOW}
+                {if $avail !== null && $avail->getPhpVersionOK() === \JTL\License\Struct\Release::PHP_VERSION_LOW}
                     <span class="badge badge-danger">{__('PHP version too low')}</span>
-                {elseif $referencedItem->getPhpVersionOK() === \JTL\License\Struct\ReferencedItem::PHP_VERSION_HIGH}
+                {elseif $avail !== null && $avail->getPhpVersionOK() === \JTL\License\Struct\Release::PHP_VERSION_HIGH}
                     <span class="badge badge-danger">{__('PHP version too high')}</span>
                 {/if}
                 {if ($licData->isExpired() || $subscription->isExpired()) && !$referencedItem->isReleaseAvailable()}

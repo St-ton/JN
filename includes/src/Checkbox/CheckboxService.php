@@ -13,11 +13,16 @@ class CheckboxService extends AbstractService
 {
     /**
      * @param int $id
-     * @return CheckboxDataTableObject
+     * @return ?CheckboxDataTableObject
      */
-    public function get(int $id): CheckboxDataTableObject
+    public function get(int $id): ?CheckboxDataTableObject
     {
-        return (new CheckboxDataTableObject())->hydrateWithObject($this->repository->get($id));
+        $data = $this->repository->get($id);
+        if ($data === null) {
+            return null;
+        }
+
+        return (new CheckboxDataTableObject())->hydrateWithObject($data);
     }
 
     /**
@@ -46,6 +51,9 @@ class CheckboxService extends AbstractService
         return false;
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function initRepository(): void
     {
         $this->repository = new CheckboxRepository();

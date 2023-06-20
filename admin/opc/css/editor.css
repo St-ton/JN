@@ -739,6 +739,10 @@
   display: inline-block;
   margin-bottom: 8px;
 }
+.opc .form-group .color-input-wrapper {
+  width: 100%;
+  display: block;
+}
 .opc .form-group input[type=radio],
 .opc .form-group input[type=checkbox] {
   display: none;

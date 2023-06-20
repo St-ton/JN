@@ -17,6 +17,8 @@ html, body {
 }
 
 #opc {
+    display: flex;
+
     select {
         -webkit-appearance: none;
         -moz-appearance: none;
@@ -214,7 +216,7 @@ html, body {
     #opcSidebar {
         width: $sidebar-width;
         height: 100%;
-        float: left;
+        flex: none;
         position: relative;
 
         #opcHeader {
@@ -415,7 +417,7 @@ html, body {
         height: 100%;
         text-align: center;
         background: $iframe-panel-bg;
-        margin-left: $sidebar-width;
+        flex: auto;
 
         iframe {
             border: 0;

@@ -1067,6 +1067,9 @@ html, body {
   line-height: 1.5;
 }
 
+#opc {
+  display: flex;
+}
 #opc select {
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -1224,7 +1227,7 @@ html, body {
 #opc #opcSidebar {
   width: 380px;
   height: 100%;
-  float: left;
+  flex: none;
   position: relative;
 }
 #opc #opcSidebar #opcHeader a {
@@ -1382,7 +1385,7 @@ html, body {
   height: 100%;
   text-align: center;
   background: #ddd;
-  margin-left: 380px;
+  flex: auto;
 }
 #opc #iframePanel iframe,
 #opc #previewPanel iframe {

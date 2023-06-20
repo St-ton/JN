@@ -75,7 +75,7 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
     /**
      * @var bool
      */
-    protected bool $nInternal = false;
+    protected bool $internal = false;
 
     /**
      * @var string
@@ -129,6 +129,7 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
         'oCheckBoxLanguage_arr'  => 'checkBoxLanguage_arr',
         'customerGroup_arr'      => 'customerGroup_arr',
         'displayAt_arr'          => 'displayAt_arr',
+        'internal'               => 'internal',
     ];
 
     /**
@@ -150,6 +151,7 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
         'oCheckBoxSprache_arr' => 'checkBoxLanguage_arr',
         'kKundengruppe_arr'    => 'customerGroup_arr',
         'kAnzeigeOrt_arr'      => 'displayAt_arr',
+        'nInternal'            => 'internal',
     ];
 
     /**
@@ -317,7 +319,7 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
     /**
      * @return bool
      */
-    public function getActive(): bool
+    public function isActive(): bool
     {
         return $this->active;
     }
@@ -336,7 +338,7 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
     /**
      * @return bool
      */
-    public function getIsMandatory(): bool
+    public function isMandatory(): bool
     {
         return $this->isMandatory;
     }
@@ -355,7 +357,7 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
     /**
      * @return bool
      */
-    public function getHasLogging(): bool
+    public function isLogging(): bool
     {
         return $this->hasLogging;
     }
@@ -412,17 +414,17 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
     /**
      * @return bool
      */
-    public function getNInternal(): bool
+    public function getInternal(): bool
     {
-        return $this->nInternal;
+        return $this->internal;
     }
 
     /**
-     * @param bool $nInternal
+     * @param bool $internal
      */
-    public function setNInternal(bool|int|string $nInternal): void
+    public function setInternal(bool|int|string $internal): void
     {
-        $this->nInternal = $this->checkAndReturnBoolValue($nInternal);
+        $this->internal = $this->checkAndReturnBoolValue($internal);
     }
 
 

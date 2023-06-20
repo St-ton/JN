@@ -35,7 +35,7 @@ use League\Route\RouteGroup;
 
 /**
  * @OA\Info(
- *     description="This is the JTL Shop 5 REST API.  You can find
+ *     description="This is the JTL Shop 5 REST API. You can find
 out more about this at
 [https://www.jtl-software.de](https://www.jtl-software.de)",
  *     version="1.0.0",

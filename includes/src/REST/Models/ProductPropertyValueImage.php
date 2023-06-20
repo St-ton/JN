@@ -81,14 +81,6 @@ final class ProductPropertyValueImage extends DataModel
     /**
      * @inheritdoc
      */
-    protected function onRegisterHandlers(): void
-    {
-        parent::onRegisterHandlers();
-    }
-
-    /**
-     * @inheritdoc
-     */
     public function getAttributes(): array
     {
         static $attributes = null;
@@ -107,7 +99,6 @@ final class ProductPropertyValueImage extends DataModel
             'kEigenschaftWert',
             'int',
             self::cast('0', 'int'),
-            false,
             false
         );
         $attributes['path']            = DataAttribute::create('cPfad', 'varchar');

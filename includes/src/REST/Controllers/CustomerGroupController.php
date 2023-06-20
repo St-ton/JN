@@ -66,7 +66,7 @@ class CustomerGroupController extends AbstractController
      *         description="Customer group not found"
      *     )
      * )
-     *  @OA\Delete(
+     * @OA\Delete(
      *     path="/customerGroup/{customerGroupId}",
      *     description="Deletes a single customer group based on the ID supplied",
      *     summary="Delete a single customer group",
@@ -175,8 +175,8 @@ class CustomerGroupController extends AbstractController
      */
     protected function getCreateBaseData(
         ServerRequestInterface $request,
-        DataModelInterface $model,
-        stdClass $data
+        DataModelInterface     $model,
+        stdClass               $data
     ): stdClass {
         $data = parent::getCreateBaseData($request, $model, $data);
         if (!isset($data->id)) {

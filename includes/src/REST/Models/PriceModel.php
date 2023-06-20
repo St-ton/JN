@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Support\Collection;
 use JTL\Model\DataAttribute;
 use JTL\Model\DataModel;
+use JTL\Model\DataModelInterface;
 use JTL\Shop;
 
 /**
@@ -140,6 +141,7 @@ final class PriceModel extends DataModel
                 } catch (Exception) {
                     continue;
                 }
+                /** @var DataModelInterface|null $existing */
                 $existing = $res->first(static function ($e) use ($price): bool {
                     return $e->kPreis > 0
                         && $price->kPreis > 0
@@ -171,11 +173,12 @@ final class PriceModel extends DataModel
         if (!isset($value['kPreis'])) {
             $value['kPreis'] = $model->kPreis ?? 0;
         }
-        $detail   = PriceDetailModel::loadByAttributes(
+        $detail = PriceDetailModel::loadByAttributes(
             $value,
             $this->getDB(),
             ProductLocalizationModel::ON_NOTEXISTS_NEW
         );
+        /** @var DataModelInterface|null $existing */
         $existing = $collection->first(static function ($e) use ($detail) {
             return $e->id === $detail->id && $e->kPreis === $detail->kPreis;
         });

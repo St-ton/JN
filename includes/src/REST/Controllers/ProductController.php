@@ -178,8 +178,8 @@ class ProductController extends AbstractController
      */
     protected function getCreateBaseData(
         ServerRequestInterface $request,
-        DataModelInterface $model,
-        stdClass $data
+        DataModelInterface     $model,
+        stdClass               $data
     ): stdClass {
         $data = parent::getCreateBaseData($request, $model, $data);
         if (!isset($data->id)) {

@@ -69,7 +69,7 @@ class ManufacturerController extends AbstractController
      *         description="Manufacturer not found"
      *     )
      * )
-     *  @OA\Delete(
+     * @OA\Delete(
      *     path="/manufacturer/{manufacturerId}",
      *     description="Deletes a single manufacturer based on the ID supplied",
      *     summary="Delete a single manufacturer",
@@ -187,8 +187,8 @@ class ManufacturerController extends AbstractController
      */
     protected function getCreateBaseData(
         ServerRequestInterface $request,
-        DataModelInterface $model,
-        stdClass $data
+        DataModelInterface     $model,
+        stdClass               $data
     ): stdClass {
         $data = parent::getCreateBaseData($request, $model, $data);
         if (!isset($data->id)) {

@@ -12,7 +12,6 @@ use JTL\Model\DataModel;
  *     title="Characteristic localization model",
  *     description="Characteristic localization model",
  * )
-
  * @property int    $kMerkmal
  * @property int    $characteristicID
  * @property int    $kSprache

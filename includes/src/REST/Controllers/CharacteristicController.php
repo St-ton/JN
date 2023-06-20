@@ -66,7 +66,7 @@ class CharacteristicController extends AbstractController
      *         description="Characteristic not found"
      *     )
      * )
-     *  @OA\Delete(
+     * @OA\Delete(
      *     path="/characteristic/{characteristicId}",
      *     description="Deletes a single characteristic based on the ID supplied",
      *     summary="Delete a single characteristic",
@@ -156,8 +156,8 @@ class CharacteristicController extends AbstractController
      */
     protected function getCreateBaseData(
         ServerRequestInterface $request,
-        DataModelInterface $model,
-        stdClass $data
+        DataModelInterface     $model,
+        stdClass               $data
     ) : stdClass {
         $data = parent::getCreateBaseData($request, $model, $data);
         if (!isset($data->id)) {

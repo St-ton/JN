@@ -64,7 +64,7 @@ class TaxZoneController extends AbstractController
      *         description="Tax zone not found"
      *     )
      * )
-     *  @OA\Delete(
+     * @OA\Delete(
      *     path="/taxzone/{taxzoneId}",
      *     description="Deletes a single tax zone based on the ID supplied",
      *     summary="Delete a single tax zone",

@@ -65,7 +65,7 @@ class CategoryAttributeController extends AbstractController
      *         description="Category attribute not found"
      *     )
      * )
-     *  @OA\Delete(
+     * @OA\Delete(
      *     path="/categoryattribute/{categoryattributeId}",
      *     description="Deletes a single category attribute based on the ID supplied",
      *     summary="Delete a single category attribute",

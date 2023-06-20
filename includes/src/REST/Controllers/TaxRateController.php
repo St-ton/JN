@@ -65,7 +65,7 @@ class TaxRateController extends AbstractController
      *         description="Tax rate not found"
      *     )
      * )
-     *  @OA\Delete(
+     * @OA\Delete(
      *     path="/taxrate/{taxrateId}",
      *     description="Deletes a single tax rate based on the ID supplied",
      *     summary="Delete a single tax rate",

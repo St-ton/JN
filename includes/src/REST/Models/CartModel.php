@@ -15,22 +15,18 @@ use JTL\Model\DataModel;
  * )
  *
  * @package JTL\REST\Models
-
  * @property int $id
  * @property int $kWarenkorb
  * @method int getId()
  * @method void setId(int $value)
-
  * @property int $customerID
  * @property int $kKunde
  * @method int getCustomerId()
  * @method void setCustomerId(int $value)
-
  * @property int $deliveryAddressID
  * @property int $kLieferadresse
  * @method int getDeliveryAddressId()
  * @method void setDeliveryAddressId(int $value)
-
  * @property int $paymentInfoID
  * @property int $kZahlungsInfo
  * @method int getPaymentInfoId()
@@ -89,14 +85,6 @@ final class CartModel extends DataModel
     public function setKeyName($keyName): void
     {
         throw new Exception(__METHOD__ . ': setting of keyname is not supported', self::ERR_DATABASE);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected function onRegisterHandlers(): void
-    {
-        parent::onRegisterHandlers();
     }
 
     /**

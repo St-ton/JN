@@ -87,7 +87,7 @@ export class EditorFrame extends Emitter
 
         if(portlet) {
             let portletData = portlet.data('portlet');
-            this.portletToolbar.popper = this.ctx.Popper.createPopper(portlet[0], this.portletToolbar[0], { });
+            this.portletToolbar.popper = this.ctx.Popper.createPopper(portlet[0], this.portletToolbar[0], {});
             this.portletToolbar.find('#portletLabel').text(portletData.title);
             this.body.append(this.portletToolbar);
             this.selectedPortlet = portlet;

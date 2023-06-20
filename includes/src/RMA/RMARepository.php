@@ -5,6 +5,7 @@ namespace JTL\RMA;
 use JTL\Abstracts\AbstractRepository;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
+use JTL\RMA\PickupAddress\PickupAddressRepository;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
@@ -39,13 +40,45 @@ class RMARepository extends AbstractRepository
      */
     public function getList(array $filters): array
     {
-        $result = [];
-        $data   = parent::getList($filters);
+        $results = [];
+        $data    = parent::getList($filters);
         foreach ($data as $obj) {
+            $obj->id         = (int)$obj->id;
             $obj->status     = \langRMAStatus((int)$obj->status);
             $obj->createDate = date('d.m.Y H:i', \strtotime($obj->createDate));
             $dataTableObject = new RMADataTableObject();
-            $result[]        = $dataTableObject->hydrateWithObject($obj);
+            $rma             = $dataTableObject->hydrateWithObject($obj);
+            $rmaPos          = new RMAPosRepository();
+            $rma->setPositions(
+                $rmaPos->getList(['rmaID' => $rma->getID()])
+            );
+            $rmaPickupAddress = new PickupAddressRepository();
+            $rma->setPickupAddress(
+                $rmaPickupAddress->get($rma->getID()) ?? new \stdClass()
+            );
+
+            $results[] = $rma;
+        }
+        return $results;
+    }
+
+    /**
+     * @param array $values
+     * @return bool
+     */
+    public function delete(array $values): bool
+    {
+        $result     = true;
+        $customerID = Frontend::getCustomer()->getID();
+
+        foreach ($values as $id) {
+            if ($this->getDB()->deleteRow(
+                $this->getTableName(),
+                [$this->getKeyName(), 'customerID', 'wawiID'],
+                [(int)$id, $customerID, null]
+            ) === self::DELETE_FAILED) {
+                $result = false;
+            }
         }
         return $result;
     }

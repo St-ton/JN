@@ -78,6 +78,17 @@ class RMAReasonsLangDataTableObject extends AbstractDataObject implements DataTa
     {
         return $this->{$this->getPrimaryKey()};
     }
+
+    /**
+     * @param int|string $id
+     * @return self
+     */
+    public function setID(int|string $id): self
+    {
+        $this->id = (int)$id;
+
+        return $this;
+    }
     
     /**
      * @return array

@@ -40,7 +40,12 @@ class RMAPosDataTableObject extends AbstractDataObject implements DataTableObjec
     /**
      * @var int|null
      */
-    protected ?int $productID = 0;
+    protected ?int $productID = null;
+
+    /**
+     * @var int|null
+     */
+    protected ?int $reasonID = null;
     
     /**
      * @var string
@@ -58,19 +63,19 @@ class RMAPosDataTableObject extends AbstractDataObject implements DataTableObjec
     protected float $quantity = 0.00;
     
     /**
-     * @var float
+     * @var float|null
      */
-    protected float $vat = 0.00;
+    protected ?float $vat = null;
     
     /**
-     * @var string
+     * @var string|null
      */
-    protected string $unit = '';
+    protected ?string $unit = null;
     
     /**
-     * @var float
+     * @var float|null
      */
-    protected float $stockBeforePurchase = 0.00;
+    protected ?float $stockBeforePurchase = null;
     
     /**
      * @var int
@@ -83,19 +88,24 @@ class RMAPosDataTableObject extends AbstractDataObject implements DataTableObjec
     protected int $longestMaxDelivery = 0;
     
     /**
-     * @var string
+     * @var string|null
      */
-    protected string $comment = '';
+    protected ?string $comment = null;
     
     /**
-     * @var string
+     * @var string|null
      */
-    protected string $status = '';
+    protected ?string $status = null;
     
     /**
      * @var string
      */
     protected string $createDate = '';
+
+    /**
+     * @var array|null
+     */
+    private ?array $history = null;
     
     /**
      * @var string[]
@@ -106,6 +116,7 @@ class RMAPosDataTableObject extends AbstractDataObject implements DataTableObjec
         'shippingNotePosID'   => 'shippingNotePosID',
         'orderPosID'          => 'orderPosID',
         'productID'           => 'productID',
+        'reasonID'            => 'reasonID',
         'name'                => 'name',
         'unitPriceNet'        => 'unitPriceNet',
         'quantity'            => 'quantity',
@@ -142,6 +153,14 @@ class RMAPosDataTableObject extends AbstractDataObject implements DataTableObjec
     {
         return \array_flip($this->columnMapping);
     }
+
+    /**
+     * @return array
+     */
+    public function getColumnMapping(): array
+    {
+        return $this->columnMapping;
+    }
     
     /**
      * @return mixed
@@ -150,13 +169,16 @@ class RMAPosDataTableObject extends AbstractDataObject implements DataTableObjec
     {
         return $this->{$this->getPrimaryKey()};
     }
-    
+
     /**
-     * @return array
+     * @param int|string $id
+     * @return self
      */
-    public function getColumnMapping(): array
+    public function setID(int|string $id): self
     {
-        return $this->columnMapping;
+        $this->id = (int)$id;
+
+        return $this;
     }
 
     /**
@@ -225,12 +247,31 @@ class RMAPosDataTableObject extends AbstractDataObject implements DataTableObjec
     }
 
     /**
-     * @param int|string $productID
+     * @param int|string|null $productID
      * @return $this
      */
-    public function setProductID(int|string $productID): self
+    public function setProductID(int|string|null $productID): self
     {
-        $this->productID = (int)$productID;
+        $this->productID = (int)$productID ?? null;
+
+        return $this;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getReasonID(): ?int
+    {
+        return $this->reasonID;
+    }
+
+    /**
+     * @param int|string|null $reasonID
+     * @return $this
+     */
+    public function setReasonID(int|string|null $reasonID): self
+    {
+        $this->reasonID = (int)$reasonID ?? null;
 
         return $this;
     }
@@ -293,49 +334,49 @@ class RMAPosDataTableObject extends AbstractDataObject implements DataTableObjec
     }
 
     /**
-     * @return float
+     * @return float|null
      */
-    public function getVat(): float
+    public function getVat(): ?float
     {
         return $this->vat;
     }
 
     /**
-     * @param float|string $vat
+     * @param float|string|null $vat
      * @return $this
      */
-    public function setVat(float|string $vat): self
+    public function setVat(float|string|null $vat): self
     {
-        $this->vat = (float)$vat;
+        $this->vat = (float)$vat ?? null;
 
         return $this;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getUnit(): string
+    public function getUnit(): ?string
     {
         return $this->unit;
     }
 
     /**
-     * @param string $unit
+     * @param string|null $unit
      * @return $this
      */
-    public function setUnit(string $unit): self
+    public function setUnit(?string $unit): self
     {
-        $this->unit = $unit;
+        $this->unit = $unit ?? null;
 
         return $this;
     }
 
     /**
-     * @return float
+     * @return float|null
      */
-    public function getStockBeforePurchase(): float
+    public function getStockBeforePurchase(): ?float
     {
-        return $this->stockBeforePurchase;
+        return $this->stockBeforePurchase ?? null;
     }
 
     /**
@@ -388,39 +429,39 @@ class RMAPosDataTableObject extends AbstractDataObject implements DataTableObjec
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getComment(): string
+    public function getComment(): ?string
     {
-        return $this->comment;
+        return $this->comment ?? null;
     }
 
     /**
-     * @param string $comment
+     * @param string|null $comment
      * @return $this
      */
-    public function setComment(string $comment): self
+    public function setComment(?string $comment): self
     {
-        $this->comment = $comment;
+        $this->comment = $comment ?? null;
 
         return $this;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getStatus(): string
+    public function getStatus(): ?string
     {
         return $this->status;
     }
 
     /**
-     * @param string $status
+     * @param string|null $status
      * @return $this
      */
-    public function setStatus(string $status): self
+    public function setStatus(?string $status): self
     {
-        $this->status = $status;
+        $this->status = $status ?? null;
 
         return $this;
     }
@@ -440,6 +481,25 @@ class RMAPosDataTableObject extends AbstractDataObject implements DataTableObjec
     public function setCreateDate(string $createDate): self
     {
         $this->createDate = $createDate;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getHistory(): array
+    {
+        return $this->history;
+    }
+
+    /**
+     * @param array $history
+     * @return $this
+     */
+    public function setHistory(array $history): self
+    {
+        $this->history = $history;
 
         return $this;
     }

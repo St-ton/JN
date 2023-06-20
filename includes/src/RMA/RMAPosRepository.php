@@ -21,22 +21,12 @@ class RMAPosRepository extends AbstractRepository
      */
     public function getList(array $filters): array
     {
-        $filters = ['rmaID' => $filters['rmaID'] ?? 0];
-        $result  = Shop::Container()->getDB()->getObjects(
-            'SELECT ' . $this->getTableName() . '.*, twarenkorbpos.kWarenkorb, tbestellung.cBestellNr
-            FROM ' . $this->getTableName() . '
-            LEFT JOIN twarenkorbpos
-                ON ' . $this->getTableName() . '.orderPosID = twarenkorbpos.kBestellpos
-                AND ' . $this->getTableName() . '.rmaID = twarenkorbpos.kWarenkorb
-            LEFT JOIN tbestellung
-                ON tbestellung.kWarenkorb = twarenkorbpos.kWarenkorb
-            WHERE ' . $this->getTableName() . '.kRetoure = :rmaID',
-            $filters
-        );
-        foreach ($result as &$obj) {
+        $results = parent::getList($filters);
+        foreach ($results as &$obj) {
             $obj->unitPriceNet = Preise::getLocalizedPriceString($obj->unitPriceNet);
+            $obj->history      = (new RMAHistoryRepository())->getList(['rmaPosID' => $obj->id]);
         }
-        return $result;
+        return $results;
     }
     
     /**

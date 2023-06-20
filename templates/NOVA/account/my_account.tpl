@@ -276,16 +276,15 @@
                                         <table class="table table-vertical-middle table-hover">
                                             <tbody>
                                                 {foreach $rmas as $rma}
-                                                    {$rma->fuelleRetoure()}
                                                     <tr>
                                                         <td>
                                                             <div class="d-block font-weight-bold">
-                                                                <span class="far fa-calendar mr-2"></span>{$rma->ErstelltDatum}
+                                                                <span class="far fa-calendar mr-2"></span>{$rma->createDate}
                                                             </div>
                                                             <small class="text-muted-util d-block font-weight-bold">
                                                                 Artikel
                                                                 <span class="badge badge-light">
-                                                                    {$rma->PositionenArr|count|default:0}
+                                                                    {$rma->positions|count|default:0}
                                                                 </span>
                                                             </small>
                                                             {if isset($rma->Lieferadresse)}

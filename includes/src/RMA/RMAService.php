@@ -22,6 +22,11 @@ class RMAService extends AbstractService
      * @var RepositoryInterface[]
      */
     protected array $repositories;
+
+    /**
+     * @var array
+     */
+    private array $reasons;
     
     /**
      * @param int $id
@@ -90,6 +95,7 @@ class RMAService extends AbstractService
     }
     
     /**
+     * @param int $id
      * @return Artikel
      * @since 5.3.0
      */
@@ -178,5 +184,59 @@ class RMAService extends AbstractService
 
             return $product;
         })->keyBy('shippingNotePosID')->all();
+    }
+
+    /**
+     * @param int|null $langID
+     * @return array
+     * @since 5.3.0
+     */
+    public function getReasons(?int $langID = null): array
+    {
+        $result          = [];
+        $langID          = $langID ?? Shop::getLanguageID();
+        $reasonsLangRepo = new RMAReasonsLangRepository();
+        foreach ($reasonsLangRepo->getList(['langID' => $langID]) as $reason) {
+            $result[]        = $reason;
+            $this->reasons[] = $reason;
+        }
+        return $result;
+    }
+
+    /**
+     * @param int|string $reasonID
+     * @return object
+     * @since 5.3.0
+     */
+    public function getReason(int|string $reasonID): object
+    {
+        $reasonID = (int)$reasonID;
+        $result   = new \stdClass();
+        if ($reasonID === 0) {
+            return $result;
+        }
+        $reasons = $this->reasons ?? $this->getReasons();
+        foreach ($reasons as $reason) {
+            if ($reason->reasonID === $reasonID) {
+                $result = $reason;
+                break;
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * @param int $rmaID
+     * @return array
+     * @since 5.3.0
+     */
+    public static function getItems(int $rmaID): array
+    {
+        if ($rmaID === 0) {
+            return [];
+        }
+        $rmaRepo = new RMARepository();
+        $rma     = $rmaRepo->getList(['customerID' => Frontend::getCustomer()->getID(), 'id' => $rmaID]);
+        return $rma->positions ?? [];
     }
 }

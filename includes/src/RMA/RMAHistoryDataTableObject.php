@@ -30,12 +30,12 @@ class RMAHistoryDataTableObject extends AbstractDataObject implements DataTableO
     /**
      * @var string
      */
-    protected string $keyName = '';
+    protected string $title = '';
     
     /**
      * @var string|null
      */
-    protected ?string $oldValue;
+    protected ?string $oldValue = null;
     
     /**
      * @var string
@@ -54,7 +54,7 @@ class RMAHistoryDataTableObject extends AbstractDataObject implements DataTableO
     private array $columnMapping = [
         'id'           => 'id',
         'rmaPosID'     => 'rmaPosID',
-        'keyName'      => 'keyName',
+        'title'        => 'title',
         'oldValue'     => 'oldValue',
         'newValue'     => 'newValue',
         'lastModified' => 'lastModified'
@@ -83,6 +83,14 @@ class RMAHistoryDataTableObject extends AbstractDataObject implements DataTableO
     {
         return \array_flip($this->columnMapping);
     }
+
+    /**
+     * @return array
+     */
+    public function getColumnMapping(): array
+    {
+        return $this->columnMapping;
+    }
     
     /**
      * @return mixed
@@ -91,12 +99,110 @@ class RMAHistoryDataTableObject extends AbstractDataObject implements DataTableO
     {
         return $this->{$this->getPrimaryKey()};
     }
-    
+
     /**
-     * @return array
+     * @param int|string $id
+     * @return self
      */
-    public function getColumnMapping(): array
+    public function setID(int|string $id): self
     {
-        return $this->columnMapping;
+        $this->id = (int)$id;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getRmaPosID(): int
+    {
+        return $this->rmaPosID;
+    }
+
+    /**
+     * @param int|string $rmaPosID
+     * @return $this
+     */
+    public function setRmaPosID(int|string $rmaPosID): self
+    {
+        $this->rmaPosID = (int)$rmaPosID;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTitle(): string
+    {
+        return $this->title;
+    }
+
+    /**
+     * @param string $title
+     * @return $this
+     */
+    public function setTitle(string $title): self
+    {
+        $this->title = $title;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getOldValue(): string|null
+    {
+        return $this->oldValue;
+    }
+
+    /**
+     * @param string|null $oldValue
+     * @return $this
+     */
+    public function setOldValue(string|null $oldValue): self
+    {
+        $this->oldValue = $oldValue ?? null;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNewValue(): string
+    {
+        return $this->newValue;
+    }
+
+    /**
+     * @param string $newValue
+     * @return $this
+     */
+    public function setNewValue(string $newValue): self
+    {
+        $this->newValue = $newValue;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLastModified(): string
+    {
+        return $this->lastModified;
+    }
+
+    /**
+     * @param string $lastModified
+     * @return $this
+     */
+    public function setLastModified(string $lastModified): self
+    {
+        $this->lastModified = $lastModified;
+
+        return $this;
     }
 }

@@ -3,7 +3,7 @@
         {row}
             {col cols=12 md=12 class='rmas-form-wrapper'}
                 {block name='account-my-account-rma'}
-                    {card no-body=true class="rma-positions"}
+                    {card no-body=true id="rma-positions" class="rma-step-1"}
                         {cardheader}
                             {block name='rma-positions-header'}
                                 {row class="align-items-center-util"}
@@ -93,7 +93,10 @@
                                                                 id="qty-{$product->shippingNotePosID}" class="quantity" name="quantity"
                                                                 aria=["label"=>"{lang key='quantity'}"]
                                                                 value=$product->quantity
-                                                                data=["snposid" => {$product->shippingNotePosID}]
+                                                                data=[
+                                                                    "snposid" => {$product->shippingNotePosID},
+                                                                    "decimals" => {$product->Artikel->fAbnahmeintervall}
+                                                                ]
                                                                 }
                                                                 {inputgroupappend}
                                                                 {button variant="" class="btn-increment"
@@ -111,9 +114,9 @@
                                                                 data=["snposid" => "{$product->shippingNotePosID}"]
                                                                 class="custom-select form-control"}
                                                                     <option value="-1" selected>{lang key='rma_comment_choose' section='rma'}</option>
-                                                                    <option value="0">Artikel defekt</option>
-                                                                    <option value="1">Artikel nicht geliefert</option>
-                                                                    <option value="2">Sonstiges</option>
+                                                                    {foreach $reasons as $reason}
+                                                                        <option value="{$reason->reasonID}">{$reason->title}</option>
+                                                                    {/foreach}
                                                                 {/select}
                                                             </div>
 
@@ -135,42 +138,67 @@
                             {/block}
                         {/cardbody}
                     {/card}
+
+                    {card no-body=true id="rma-summary" class="rma-step-2 d-none" data=["rmaID"=>"0"]}
+                        {cardheader}
+                            {block name='rma-summary-header'}
+                                {row class="align-items-center-util"}
+                                    {col}
+                                        <span class="h3">
+                                            {lang key='rma_ruecksenden' section='rma'}
+                                        </span>
+                                    {/col}
+                                {/row}
+                            {/block}
+                        {/cardheader}
+                        {cardbody}
+                            {block name='rma-summary-body'}
+                                {block name='account-rma-form-include-customer-rmas'}
+                                    {block name='checkout-customer-shipping-address'}
+                                        <fieldset>
+                                            {formrow}
+                                                {col cols=12}
+                                                    {block name='checkout-customer-shipping-address-country'}
+                                                        {formgroup label="{lang key='pickupAddress' section='rma'}" label-for="shippingAdress"}
+                                                            {select name="shippingAdress" id="shippingAdress" class="custom-select"
+                                                            autocomplete="shipping Adress"}
+                                                                {foreach $shippingAddresses as $sa}
+                                                                    <option value="{$sa->kLieferadresse}"{if $sa->nIstStandardLieferadresse == 1} selected{/if}>
+                                                                        {if $sa->cFirma}{$sa->cFirma}, {/if}
+                                                                        {$sa->cStrasse} {$sa->cHausnummer},
+                                                                        {$sa->cPLZ} {$sa->cOrt}
+                                                                    </option>
+                                                                {/foreach}
+                                                            {/select}
+                                                        {/formgroup}
+                                                    {/block}
+                                                {/col}
+                                            {/formrow}
+                                        </fieldset>
+                                    {/block}
+                                {/block}
+                                {include file='account/rma_summary.tpl' rmaID=54}
+                            {/block}
+                        {/cardbody}
+                    {/card}
                 {/block}
 
                 {form method="post" id='rma' action="#" class="jtl-validate mt-3" slide=true}
-
-                    {if false}
-                    {block name='account-rma-form-include-customer-rmas'}
-                        {block name='checkout-customer-shipping-address'}
-                            <fieldset>
-                                {formrow}
-                                    {col cols=12}
-                                        {block name='checkout-customer-shipping-address-country'}
-                                            {formgroup label="{lang key='pickupAddress' section='rma'}" label-for="shippingAdress"}
-                                                {select name="shippingAdress" id="shippingAdress" class="custom-select"
-                                                autocomplete="shipping Adress"}
-                                                    {foreach $shippingAddresses as $sa}
-                                                        <option value="{$sa->kLieferadresse}"{if $sa->nIstStandardLieferadresse == 1} selected{/if}>
-                                                            {if $sa->cFirma}{$sa->cFirma}, {/if}
-                                                            {$sa->cStrasse} {$sa->cHausnummer},
-                                                            {$sa->cPLZ} {$sa->cOrt}
-                                                        </option>
-                                                    {/foreach}
-                                                {/select}
-                                            {/formgroup}
-                                        {/block}
-                                    {/col}
-                                {/formrow}
-                            </fieldset>
-                        {/block}
-                    {/block}
-                    {/if}
-
                     {block name='account-rma-form-form-submit'}
                         {row class='btn-row'}
-                            {col md=12 xl=12 class="checkout-button-row-submit mb-3"}
+                            {col md=12 xl=12 class="checkout-button-row-submit mb-3 rma-step-1"}
                                 {button type="submit" value="1" block=true variant="primary"}
                                     {lang key='continueOrder' section='account data'}
+                                {/button}
+                            {/col}
+                            {col md=6 xl=6 class="checkout-button-row-submit mb-3 rma-step-2 d-none"}
+                                {button type="button" block=true variant="secondary" id="backToStep1"}
+                                    {lang key='back' section='global'}
+                                {/button}
+                            {/col}
+                            {col md=6 xl=6 class="checkout-button-row-submit mb-3 rma-step-2 d-none"}
+                                {button type="submit" value="1" block=true variant="primary"}
+                                    {lang key='createRetoure' section='rma'}
                                 {/button}
                             {/col}
                         {/row}
@@ -231,7 +259,7 @@
             function setListenerForQuantities() {
                 $('.qty-wrapper .btn-decrement, .qty-wrapper .btn-increment').off('click').on('click', function () {
                     let input = $(this).closest('.qty-wrapper').find('input.quantity'),
-                        step = parseFloat(input.attr('step')),
+                        step = input.attr('step') > 0 ? parseFloat(input.attr('step')) : 1,
                         min = parseFloat(input.attr('min')),
                         max = parseFloat(input.attr('max')),
                         val = parseFloat(input.val());
@@ -251,7 +279,7 @@
                         val -= step;
                         val = val < min ? min : val;
                     }
-                    input.val(val);
+                    input.val(val.toFixed(input.data('decimals')).replace(',', '.'));
                 });
             }
 
@@ -280,6 +308,32 @@
 
                 setListenerForToggles();
                 setListenerForQuantities();
+
+                $('#backToStep1').on('click', function () {
+                    let rmaID = parseInt($('#rma-summary').attr('data-rmaID')) || 0
+                    if (rmaID === 0) {
+                        return;
+                    }
+                    $.evo.io().call(
+                        'deleteRMA',
+                        [rmaID],
+                        { },
+                        function (error, data) {
+                            if (error) {
+                                return;
+                            }
+                            if (data['response']['result'] === false) {
+                                alert(data['response']['msg']);
+                            } else {
+                                $('.rma-step-1').removeClass('d-none');
+                                $('.rma-step-2').addClass('d-none');
+                            }
+                        }
+                    );
+
+                    $('.rma-step-1').addClass('d-none');
+                    $('.rma-step-2').removeClass('d-none');
+                });
 
                 $('#rma').on('submit', function (e) {
                     let formData = $(this).serializeArray();
@@ -319,10 +373,14 @@
                             if (error) {
                                 return;
                             }
-                            if (!data['response']['result']) {
+                            if (data['response']['result'] === false) {
                                 alert(data['response']['msg']);
                             } else {
-                                console.log(data['response']['data']);
+                                if ('rmaID' in data['response']) {
+                                    $('#rma-summary').attr('data-rmaID', data['response']['rmaID']);
+                                }
+                                $('.rma-step-1').addClass('d-none');
+                                $('.rma-step-2').removeClass('d-none');
                             }
                         }
                     );

@@ -980,11 +980,13 @@ class AccountController
      */
     private function rmaOrder(int $rmaID): string
     {
-        //$this->getDeliveryAddresses(['shippingAddresses', 'shippingCountries']);
+        $this->getDeliveryAddresses(['shippingAddresses', 'shippingCountries']);
         $rmaService         = new RMAService();
         $returnableProducts = $rmaService->getReturnableProducts();
+        $rmaReasons         = $rmaService->getReasons();
         $this->smarty->assign('rma', $rmaService->get($rmaID))
             ->assign('returnableProducts', $returnableProducts)
+            ->assign('reasons', $rmaReasons)
             ->assign('returnableOrders', $rmaService->getOrderIDs($returnableProducts));
         
         return 'rma';

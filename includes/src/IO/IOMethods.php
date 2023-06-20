@@ -89,7 +89,8 @@ class IOMethods
             ->register('updateWishlistItem', $this->updateWishlistItem(...))
             ->register('updateReviewHelpful', $this->updateReviewHelpful(...))
             ->register('setDeliveryaddressDefault', $this->setDeliveryaddressDefault(...))
-            ->register('createRMA', $this->createRMA(...));
+            ->register('createRMA', $this->createRMA(...))
+            ->register('deleteRMA', $this->deleteRMA(...));
     }
 
     /**
@@ -1484,7 +1485,6 @@ class IOMethods
             $data->createDate      = date('Y-m-d H:i:s');
             $rmaTableObject        = new RMADataTableObject();
             $rmaTableObject->hydrateWithObject($data);
-            // Why is wawiID not NULL ? Should be NULL on default in Controller ...
             $rmaID = $RMAService->getRepository()->insert($rmaTableObject);
             if ($rmaID <= 0) {
                 $response->result = false;
@@ -1503,9 +1503,12 @@ class IOMethods
                 $data->shippingNotePosID   = $dbData->shippingNotePosID;
                 $data->orderPosID          = 0;
                 $data->productID           = $dbData->Artikel->kArtikel;
+                $data->reasontID           = $RMAService->getReason(
+                    $param['comment'][$key]['value'] ?? 0
+                );
                 $data->name                = $dbData->name;
                 $data->unitPriceNet        = $dbData->unitPriceNet;
-                $data->quantity            = (int)$quantity['quantity'];
+                $data->quantity            = (float)$quantity['value'];
                 $data->vat                 = $dbData->vat;
                 $data->unit                = $dbData->unit;
                 $data->stockBeforePurchase = 0.00;
@@ -1518,14 +1521,36 @@ class IOMethods
                 $RMAService->getRepository('RMAPosRepository')->insert($rmaPosTableObject);
             }
 
-            // Continue with the reasons
-            // (int)$param['reason'][0]['value']
-
-
             $response->result = true;
+            $response->rmaID  = $rmaID;
+            $response->msg    = Shop::Lang()->get('rma_info_success', 'rma', [$rmaID]);
         }
-        // Sektion rma key: rma_info_success
         $ioResponse->assignVar('response', $response);
+
+        return $ioResponse;
+    }
+
+    /**
+     * @param int $rmaID
+     * @return IOResponse
+     * @since 5.3.0
+     */
+    public function deleteRMA(int $rmaID): IOResponse
+    {
+        $rmaID      = $rmaID ?? 0;
+        $ioResponse = new IOResponse();
+        $response   = new stdClass();
+
+        $RMAService = new RMAService();
+        if ($RMAService->delete([$rmaID]) === true) {
+            $response->result = true;
+            $ioResponse->assignVar('response', $response);
+
+            return $ioResponse;
+        }
+
+        $response->result = false;
+        $response->msg    = Shop::Lang()->get('rma_error', 'rma');
 
         return $ioResponse;
     }

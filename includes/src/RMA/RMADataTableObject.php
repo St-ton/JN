@@ -4,6 +4,7 @@ namespace JTL\RMA;
 
 use JTL\DataObjects\AbstractDataObject;
 use JTL\DataObjects\DataTableObjectInterface;
+use JTL\RMA\PickupAddress\PickupAddressRepository;
 
 /**
  * Class RMADataTableObject
@@ -23,9 +24,9 @@ class RMADataTableObject extends AbstractDataObject implements DataTableObjectIn
     protected int $id = 0;
     
     /**
-     * @var int
+     * @var int|null
      */
-    protected int $wawiID = 0;
+    protected ?int $wawiID = null;
     
     /**
      * @var int
@@ -38,9 +39,9 @@ class RMADataTableObject extends AbstractDataObject implements DataTableObjectIn
     protected int $pickupAddressID = 0;
     
     /**
-     * @var string
+     * @var string|null
      */
-    protected string $status = '';
+    protected ?string $status = null;
     
     /**
      * @var string
@@ -48,9 +49,19 @@ class RMADataTableObject extends AbstractDataObject implements DataTableObjectIn
     protected string $createDate = '';
     
     /**
-     * @var string
+     * @var string|null
      */
-    protected string $lastModified = '';
+    protected ?string $lastModified = null;
+
+    /**
+     * @var array|null
+     */
+    private ?array $positions = null;
+
+    /**
+     * @var object|null
+     */
+    private ?object $pickupAddress = null;
     
     /**
      * @var string[]
@@ -88,6 +99,14 @@ class RMADataTableObject extends AbstractDataObject implements DataTableObjectIn
     {
         return \array_flip($this->columnMapping);
     }
+
+    /**
+     * @return array
+     */
+    public function getColumnMapping(): array
+    {
+        return $this->columnMapping;
+    }
     
     /**
      * @return mixed
@@ -96,13 +115,16 @@ class RMADataTableObject extends AbstractDataObject implements DataTableObjectIn
     {
         return $this->{$this->getPrimaryKey()};
     }
-    
+
     /**
-     * @return array
+     * @param int|string $id
+     * @return self
      */
-    public function getColumnMapping(): array
+    public function setID(int|string $id): self
     {
-        return $this->columnMapping;
+        $this->id = (int)$id;
+
+        return $this;
     }
 
     /**
@@ -114,12 +136,12 @@ class RMADataTableObject extends AbstractDataObject implements DataTableObjectIn
     }
 
     /**
-     * @param int|string $wawiID
+     * @param int|string|null $wawiID
      * @return self
      */
-    public function setWawiID(int|string $wawiID): self
+    public function setWawiID(int|string|null $wawiID): self
     {
-        $this->wawiID = (int)$wawiID;
+        $this->wawiID = (int)$wawiID ?? null;
 
         return $this;
     }
@@ -158,25 +180,29 @@ class RMADataTableObject extends AbstractDataObject implements DataTableObjectIn
     public function setPickupAddressID(int|string $pickupAddressID): self
     {
         $this->pickupAddressID = (int)$pickupAddressID;
+        if ($this->pickupAddressID === 0) {
+            $pickupAddressRepository = new PickupAddressRepository();
+            $this->pickupAddressID   = $pickupAddressRepository->generateID();
+        }
 
         return $this;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getStatus(): string
+    public function getStatus(): string|null
     {
         return $this->status;
     }
 
     /**
-     * @param int|string $status
+     * @param int|string|null $status
      * @return $this
      */
-    public function setStatus(int|string $status): self
+    public function setStatus(int|string|null $status): self
     {
-        $this->status = (string)$status;
+        $this->status = (string)$status ?? null;
 
         return $this;
     }
@@ -201,20 +227,58 @@ class RMADataTableObject extends AbstractDataObject implements DataTableObjectIn
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getLastModified(): string
+    public function getLastModified(): string|null
     {
         return $this->lastModified;
     }
 
     /**
-     * @param string $lastModified
+     * @param string|null $lastModified
      * @return $this
      */
-    public function setLastModified(string $lastModified): self
+    public function setLastModified(string|null $lastModified): self
     {
-        $this->lastModified = $lastModified;
+        $this->lastModified = $lastModified ?? null;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getPositions(): array
+    {
+        return $this->positions;
+    }
+
+    /**
+     * @param array $positions
+     * @return $this
+     */
+    public function setPositions(array $positions): self
+    {
+        $this->positions = $positions;
+
+        return $this;
+    }
+
+    /**
+     * @return object
+     */
+    public function getPickupAddress(): object
+    {
+        return $this->pickupAddress;
+    }
+
+    /**
+     * @param object $pickupAddress
+     * @return $this
+     */
+    public function setPickupAddress(object $pickupAddress): self
+    {
+        $this->pickupAddress = $pickupAddress;
 
         return $this;
     }

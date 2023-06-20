@@ -29,4 +29,22 @@ class RMAReasonsLangRepository extends AbstractRepository
     {
         return 'id';
     }
+
+    /**
+     * @param array $filters
+     * @return array
+     * @since 5.3.0
+     */
+    public function getList(array $filters): array
+    {
+        $result = [];
+        $data   = parent::getList($filters);
+        foreach ($data as $obj) {
+            $reason           = new \stdClass();
+            $reason->reasonID = (int)$obj->reasonID;
+            $reason->title    = $obj->title;
+            $result[]         = $reason;
+        }
+        return $result;
+    }
 }

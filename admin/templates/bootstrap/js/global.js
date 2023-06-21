@@ -296,16 +296,6 @@ function checkSingleSettingCard() {
     }
 }
 
-function toggleTheme() {
-    let theme = $('#theme').val();
-    if (theme === 'dark') {
-        $('#theme').val('light');
-    } else {
-        $('#theme').val('dark');
-    }
-    $('#themeForm').submit();
-}
-
 /**
  * document ready
  */
@@ -535,6 +525,13 @@ $(document).ready(function () {
                     .removeClass('fa-moon-o')
                     .removeClass('fa-adjust')
                     .addClass(btn.data('icon'));
+
+                if (typeof CKEDITOR !== 'undefined') {
+                    for (let instanceName in CKEDITOR.instances) {
+                        CKEDITOR.instances[instanceName].destroy();
+                    }
+                    CKEDITOR.replaceAll('ckeditor');
+                }
             } else {
                 showNotify('danger', 'Theme', 'Theme konnte nicht gesetzt werden.');
             }

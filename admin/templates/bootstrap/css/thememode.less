@@ -60,10 +60,14 @@ hr, .table {
   color: var(--link-color);
 }
 
-.custom-control-input:checked ~ .custom-control-label::before {
+.custom-control-label::before {
   background-color: var(--input-bg);
-  border-color: var(--link-color);
+  border-color: var(--checkbox-border-color);
   color: var(--link-color);
+}
+
+.custom-control-input:checked ~ .custom-control-label::after {
+  background-color: var(--checkbox-checked-bg);
 }
 
 .input-group-text {
@@ -219,7 +223,7 @@ hr, .table {
   color: var(--body-color);
 }
 
-#modal-setup-assistant .modal-content {
+.modal-content {
   background-color: var(--card-bg);
 }
 
@@ -229,6 +233,44 @@ hr, .table {
   }
 }
 
-#modal-setup-assistant .close > span {
+#modal-setup-assistant .close > span, .modal-content .close {
   color: var(--body-color);
+}
+
+#dropdown-search .dropdown-header {
+  color: var(--sidebar-accent-color);
+}
+
+#dropdown-search .icon-wrapper svg {
+  color: var(--card-bg);
+}
+
+.nav-tabs .nav-link:hover, .nav-tabs .nav-link:focus {
+  background-color: var(--card-bg);
+  color: var(--body-color);
+}
+
+.bootstrap-select .dropdown-toggle .filter-option-inner-inner {
+  color: var(--body-color);
+}
+
+.accordion-row.active {
+  background-color: var(--body-bg);
+
+}
+input.file-caption-name::placeholder {
+  color: var(--body-color);
+}
+
+.btn-primary {
+  box-shadow: 0 0.1875rem 0.375rem var(--button-shadow-color);
+}
+
+.CodeMirror {
+  background-color: var(--body-bg) !important;
+  color: var(--body-color) !important;
+}
+
+.CodeMirror-cursor {
+  border-color: var(--body-color) !important;
 }

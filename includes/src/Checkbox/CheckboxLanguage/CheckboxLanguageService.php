@@ -14,7 +14,7 @@ class CheckboxLanguageService extends AbstractService
     /**
      * @var CheckboxLanguageRepository
      */
-    private CheckboxLanguageRepository $repository;
+    protected CheckboxLanguageRepository $repository;
 
     /**
      * @return void

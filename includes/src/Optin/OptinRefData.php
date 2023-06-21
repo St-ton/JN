@@ -95,7 +95,7 @@ class OptinRefData implements \Serializable
             $this->email,
             $this->realIP,
             $this->productID
-        ] = $unser;
+        ]      = $unser;
         // items pre 5.3.0 will not have a serialized customer group id
         $this->customerGroupID = 0;
         if (\count($unser) === 10) {

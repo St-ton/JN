@@ -84,6 +84,7 @@ class OptinRefData implements \Serializable
      */
     public function unserialize(string $data)
     {
+        $unser = \unserialize($data, ['OptinRefData']);
         [
             $this->optinClass,
             $this->languageID,
@@ -93,9 +94,13 @@ class OptinRefData implements \Serializable
             $this->lastName,
             $this->email,
             $this->realIP,
-            $this->productID,
-            $this->customerGroupID
-        ] = \unserialize($data, ['OptinRefData']);
+            $this->productID
+        ] = $unser;
+        // items pre 5.3.0 will not have a serialized customer group id
+        $this->customerGroupID = 0;
+        if (\count($unser) === 10) {
+            $this->customerGroupID = $unser[9];
+        }
     }
 
     /**

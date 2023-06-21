@@ -1,4 +1,6 @@
 #portlets {
+    --portlets-per-row: 3;
+
     hr {
         margin-top: 0;
     }
@@ -22,41 +24,33 @@
     }
 
     .collapse {
-        width: 340px;
-
-        &:after {
-            content: ' ';
-            display: block;
-            clear: both;
-        }
-    }
-
-    .collapsing {
-        width: 340px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 22px;
+        margin-bottom: 22px;
     }
 
     .portletButton {
         display: block;
-        float: left;
-        width: 96px;
-        height: 96px;
-        margin-right: 22px;
-        margin-bottom: 22px;
+        width: calc(100% / var(--portlets-per-row) - 22px + 22px / var(--portlets-per-row));
         background-color: $light-bg;
         border-radius: 5px;
+
+        &:before {
+            content: "";
+            float: left;
+            padding-bottom: 100%;
+            height: 0;
+        }
 
         &:hover {
             box-shadow: 4px 4px 4px rgba(0,0,0,0.125);
         }
 
-        &:nth-child(3n) {
-            margin-right: 0;
-        }
-
         > .portletBtnInner {
             display: block;
-            width: 96px;
-            height: 96px;
+            width: 100%;
+            height: 100%;
             position: relative;
 
             > svg {
@@ -80,7 +74,8 @@
             > span {
                 position: absolute;
                 left: 0;
-                bottom: 8px;
+                bottom: 0;
+                padding: 8px;
                 width: 100%;
                 line-height: 16px;
             }

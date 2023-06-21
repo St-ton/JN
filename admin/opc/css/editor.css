@@ -338,6 +338,9 @@
   border-radius: 100%;
 }
 
+#portlets {
+  --portlets-per-row: 3;
+}
 #portlets hr {
   margin-top: 0;
 }
@@ -357,36 +360,30 @@
   content: "";
 }
 #portlets .collapse {
-  width: 340px;
-}
-#portlets .collapse:after {
-  content: " ";
-  display: block;
-  clear: both;
-}
-#portlets .collapsing {
-  width: 340px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 22px;
+  margin-bottom: 22px;
 }
 #portlets .portletButton {
   display: block;
-  float: left;
-  width: 96px;
-  height: 96px;
-  margin-right: 22px;
-  margin-bottom: 22px;
+  width: calc(100% / var(--portlets-per-row) - 22px + 22px / var(--portlets-per-row));
   background-color: #F5F7FA;
   border-radius: 5px;
+}
+#portlets .portletButton:before {
+  content: "";
+  float: left;
+  padding-bottom: 100%;
+  height: 0;
 }
 #portlets .portletButton:hover {
   box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.125);
 }
-#portlets .portletButton:nth-child(3n) {
-  margin-right: 0;
-}
 #portlets .portletButton > .portletBtnInner {
   display: block;
-  width: 96px;
-  height: 96px;
+  width: 100%;
+  height: 100%;
   position: relative;
 }
 #portlets .portletButton > .portletBtnInner > svg {
@@ -408,7 +405,8 @@
 #portlets .portletButton > .portletBtnInner > span {
   position: absolute;
   left: 0;
-  bottom: 8px;
+  bottom: 0;
+  padding: 8px;
   width: 100%;
   line-height: 16px;
 }

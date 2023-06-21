@@ -276,6 +276,7 @@
   padding: 16px;
   background-color: #5cbcf6;
   color: #fff;
+  flex: none;
 }
 #opc #opcHeader #opc-sidebar-title {
   display: inline-block;

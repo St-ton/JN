@@ -63,6 +63,66 @@ export class GUI
             'disableVeil',
         ]);
 
+        // resizer
+
+        window.resizer.addEventListener('mousedown', e => {
+            let resizerStartWidth = window.opcSidebar.offsetWidth;
+            let resizerStartX = e.clientX;
+
+            window.addEventListener('mousemove', resize);
+            window.addEventListener('mouseup', stopResize);
+            document.body.classList.add('resizing');
+
+            function resize(e)
+            {
+                e.stopPropagation();
+                setSiderbarSize(resizerStartWidth + e.clientX - resizerStartX);
+
+                if (window.opcTabs.scrollWidth > window.opcTabs.offsetWidth) {
+                    window.navScrollRight.classList.remove('d-none');
+                    window.navScrollLeft.classList.remove('d-none');
+                } else {
+                    window.navScrollRight.classList.add('d-none');
+                    window.navScrollLeft.classList.add('d-none');
+                }
+            }
+
+            function setSiderbarSize(width)
+            {
+                window.opcSidebar.style.width = width + 'px';
+                let portletsPerRow = 16;
+
+                while (
+                    portletsPerRow > 1 &&
+                    window.opcSidebar.offsetWidth < portletsPerRow * 96 + (portletsPerRow - 1) * 22 + 24 * 2
+                ) {
+                    portletsPerRow --;
+                }
+
+                window.portlets.style.setProperty('--portlets-per-row', portletsPerRow);
+            }
+
+            function stopResize(e)
+            {
+                e.stopPropagation();
+                window.removeEventListener('mousemove', resize);
+                window.removeEventListener('mouseup', stopResize);
+                document.body.classList.remove('resizing');
+            }
+        });
+
+        $('#navScrollRight').on('click', () => {
+            window.opcTabs.scrollLeft += 64;
+        });
+
+        $('#navScrollLeft').on('click', () => {
+            window.opcTabs.scrollLeft -= 64;
+        });
+
+        $('#opcTabs .nav-link').on('click', e => {
+            e.target.scrollIntoView();
+        })
+
         this.missingConfigButtons.hide();
 
         if(error) {

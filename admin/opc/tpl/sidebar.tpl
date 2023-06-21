@@ -25,20 +25,24 @@
         </button>
     </header>
 
-    <ul class="nav nav-tabs" id="opcTabs">
-        <li class="nav-item">
-            <a class="nav-link active" href="#portlets" data-toggle="tab">{__('Portlets')}</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#blueprints" data-toggle="tab">{__('Blueprints')}</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#revisions" data-toggle="tab">{__('Revisions')}</a>
-        </li>
-        <li class="nav-item" id="btnPagetree">
-            <a class="nav-link" href="#pagetree" data-toggle="tab">{__('Page structure')}</a>
-        </li>
-    </ul>
+    <div id="editorNavbar">
+        <button class="nav-link d-none" id="navScrollLeft"><i class="fas fa-angle-double-left"></i></button>
+        <ul class="nav nav-tabs flex-nowrap" id="opcTabs">
+            <li class="nav-item">
+                <a class="nav-link active" href="#portlets" data-toggle="tab">{__('Portlets')}</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#blueprints" data-toggle="tab">{__('Blueprints')}</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#revisions" data-toggle="tab">{__('Revisions')}</a>
+            </li>
+            <li class="nav-item" id="btnPagetree">
+                <a class="nav-link" href="#pagetree" data-toggle="tab">{__('Page structure')}</a>
+            </li>
+        </ul>
+        <button class="nav-link d-none" id="navScrollRight"><i class="fas fa-angle-double-right"></i></button>
+    </div>
 
     <div id="sidebarInnerPanel">
         <div class="tab-content">

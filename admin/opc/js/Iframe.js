@@ -69,7 +69,7 @@ export class Iframe
         this.portletToolbar.appendTo(this.body);
 
         try {
-            this.page.initIframe(this.jq);
+            await this.page.initIframe(this.jq);
         } catch (er) {
             return await this.gui.showError('Error while loading draft preview: ' + er.toString());
         }

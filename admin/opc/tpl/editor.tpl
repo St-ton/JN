@@ -56,6 +56,8 @@
     <div id="opc">
         {include file="./sidebar.tpl"}
 
+        <div id="resizer"></div>
+
         <div id="iframePanel">
             <iframe id="iframe"></iframe>
         </div>

@@ -16,6 +16,17 @@ html, body {
     line-height: 1.5;
 }
 
+body {
+    &.resizing {
+        cursor: ew-resize;
+
+        #iframePanel ,
+        #previewPanel {
+            pointer-events: none;
+        }
+    }
+}
+
 #opc {
     display: flex;
 
@@ -218,6 +229,9 @@ html, body {
         height: 100%;
         flex: none;
         position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
 
         #opcHeader {
             a {
@@ -244,11 +258,54 @@ html, body {
             }
         }
 
+        #editorNavbar {
+            flex: none;
+            display: flex;
+            border: none;
+            background-color: $light-bg;
+            box-shadow: -4px 3px 6px rgba(0, 0, 0, 0.16);
+            position: relative;
+
+            #navScrollRight ,
+            #navScrollLeft {
+                background-color: $light-bg;
+                color: $muted-text;
+
+                &:hover {
+                    color: $text-color;
+                }
+            }
+
+            #navScrollLeft {
+                margin-left: 8px;
+            }
+
+            #navScrollRight{
+                margin-right: 8px;
+            }
+
+            #navtabs {
+                overflow: hidden;
+            }
+
+            #opcTabs {
+                overflow: hidden;
+                flex: auto;
+                margin: 0 17px;
+                box-shadow: none;
+                gap: 17px;
+
+                .nav-link {
+                    margin: 0;
+                }
+            }
+        }
+
         #sidebarInnerPanel {
-            height: calc(100vh - 288px);
             overflow-y: scroll;
             padding: 24px;
             padding-right: 18px;
+            flex: auto;
 
             .tab-content {
                 overflow: visible;
@@ -279,15 +336,12 @@ html, body {
         }
 
         #sidebarFooter {
-            position: absolute;
-            bottom: 0;
-            height: 185px;
             width: 100%;
             box-shadow: -4px -3px 8px rgba(0, 0, 0, 0.16);
+            flex: none;
 
             #savePublishPanel {
                 padding: 16px;
-                height: 135px;
                 background-color: $bg-color;
 
                 #unsavedState {
@@ -319,24 +373,22 @@ html, body {
 
                 #savePublishButtons {
                     margin-top: 16px;
+                    display: flex;
 
                     .opc-btn-secondary {
                         display: block;
-                        float: left;
                         width: 134px;
                         margin-right: 16px;
                     }
 
                     .opc-btn-primary {
                         display: block;
-                        float: left;
                         width: 194px;
                     }
                 }
             }
 
             #previewToolbar {
-                height: 50px;
                 background-color: $light-bg;
                 padding: 17px 24px;
                 padding-right: 28px;
@@ -412,6 +464,15 @@ html, body {
         }
     }
 
+    #resizer {
+        width: 8px;
+        margin-right: -8px;
+        cursor: ew-resize;
+        user-select: none;
+        -webkit-user-select: none;
+        z-index: 0;
+    }
+
     #iframePanel,
     #previewPanel {
         height: 100%;
@@ -424,6 +485,7 @@ html, body {
             width: 100%;
             height: 100%;
             transition: all .2s ease-in-out;
+            display: block;
         }
     }
 

@@ -1,5 +1,6 @@
 #portlets {
     --portlets-per-row: 3;
+    overflow: hidden;
 
     hr {
         margin-top: 0;
@@ -23,7 +24,7 @@
         }
     }
 
-    .collapse {
+    .portlet-group {
         display: flex;
         flex-wrap: wrap;
         gap: 22px;

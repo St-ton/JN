@@ -78,7 +78,7 @@
   padding: 6px 12px;
 }
 #opc button.opc-small-btn {
-  padding: 8px 10px;
+  padding: 8px 32px;
 }
 #opc button.opc-medium-btn {
   padding: 8px 18px;
@@ -89,6 +89,7 @@
 }
 #opc button, #opc input {
   outline: none;
+  white-space: nowrap;
 }
 #opc input[type=checkbox],
 #opc input[type=radio] {
@@ -183,6 +184,8 @@
 #opc .toggle-switch {
   cursor: pointer;
   background-color: inherit;
+  margin-bottom: 0;
+  white-space: nowrap;
 }
 #opc .toggle-switch input {
   display: none;
@@ -277,12 +280,17 @@
   background-color: #5cbcf6;
   color: #fff;
   flex: none;
+  display: flex;
 }
 #opc #opcHeader #opc-sidebar-title {
   display: inline-block;
   margin: 0;
   font-size: 17px;
   color: inherit;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  flex: auto;
+  white-space: nowrap;
 }
 #opc #opcHeader .opc-header-btn {
   padding: 0 4px;
@@ -292,6 +300,7 @@
 }
 #opc #opcHeader #opcMenuBtnDropdown {
   display: inline;
+  flex: none;
 }
 #opc #opcHeader #opcMenuBtnDropdown .opc-dropdown-menu {
   width: 200px;

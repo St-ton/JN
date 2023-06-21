@@ -90,7 +90,7 @@
         }
 
         &.opc-small-btn {
-            padding: 8px 10px;
+            padding: 8px 32px;
         }
 
         &.opc-medium-btn {
@@ -107,6 +107,7 @@
 
     button, input {
         outline: none;
+        white-space: nowrap;
     }
 
     input[type=checkbox] ,
@@ -211,6 +212,8 @@
     .toggle-switch {
         cursor: pointer;
         background-color: inherit;
+        margin-bottom: 0;
+        white-space: nowrap;
 
         input {
             display: none;
@@ -320,13 +323,17 @@
         background-color: $primary-color;
         color: $bg-color;
         flex: none;
+        display: flex;
 
         #opc-sidebar-title {
             display: inline-block;
             margin: 0;
             font-size: 17px;
             color: inherit;
-            //font-weight: 600;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            flex: auto;
+            white-space: nowrap;
         }
 
         .opc-header-btn {
@@ -339,6 +346,7 @@
 
         #opcMenuBtnDropdown {
             display: inline;
+            flex: none;
 
             .opc-dropdown-menu {
                 width: 200px;

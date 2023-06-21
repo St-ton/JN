@@ -78,7 +78,7 @@
   padding: 6px 12px;
 }
 #opc button.opc-small-btn {
-  padding: 8px 10px;
+  padding: 8px 32px;
 }
 #opc button.opc-medium-btn {
   padding: 8px 18px;
@@ -89,6 +89,7 @@
 }
 #opc button, #opc input {
   outline: none;
+  white-space: nowrap;
 }
 #opc input[type=checkbox],
 #opc input[type=radio] {
@@ -183,6 +184,8 @@
 #opc .toggle-switch {
   cursor: pointer;
   background-color: inherit;
+  margin-bottom: 0;
+  white-space: nowrap;
 }
 #opc .toggle-switch input {
   display: none;
@@ -277,12 +280,17 @@
   background-color: #5cbcf6;
   color: #fff;
   flex: none;
+  display: flex;
 }
 #opc #opcHeader #opc-sidebar-title {
   display: inline-block;
   margin: 0;
   font-size: 17px;
   color: inherit;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  flex: auto;
+  white-space: nowrap;
 }
 #opc #opcHeader .opc-header-btn {
   padding: 0 4px;
@@ -292,6 +300,7 @@
 }
 #opc #opcHeader #opcMenuBtnDropdown {
   display: inline;
+  flex: none;
 }
 #opc #opcHeader #opcMenuBtnDropdown .opc-dropdown-menu {
   width: 200px;
@@ -340,6 +349,7 @@
 
 #portlets {
   --portlets-per-row: 3;
+  overflow: hidden;
 }
 #portlets hr {
   margin-top: 0;
@@ -359,7 +369,7 @@
 #portlets .portletGroupBtn.collapsed .fas::before {
   content: "";
 }
-#portlets .collapse {
+#portlets .portlet-group {
   display: flex;
   flex-wrap: wrap;
   gap: 22px;
@@ -1233,6 +1243,7 @@ body.resizing #previewPanel {
 }
 #opc #opcSidebar {
   width: 380px;
+  min-width: 144px;
   height: 100%;
   flex: none;
   position: relative;
@@ -1337,6 +1348,7 @@ body.resizing #previewPanel {
 #opc #opcSidebar #sidebarFooter #savePublishPanel #footerDraftName {
   cursor: pointer;
   margin-bottom: 8px;
+  white-space: nowrap;
 }
 #opc #opcSidebar #sidebarFooter #savePublishPanel #footerDraftName i {
   margin-left: 8px;
@@ -1356,28 +1368,30 @@ body.resizing #previewPanel {
 }
 #opc #opcSidebar #sidebarFooter #savePublishPanel #savePublishButtons .opc-btn-secondary {
   display: block;
-  width: 134px;
   margin-right: 16px;
+  flex: 2;
 }
 #opc #opcSidebar #sidebarFooter #savePublishPanel #savePublishButtons .opc-btn-primary {
   display: block;
-  width: 194px;
+  flex: 3;
 }
 #opc #opcSidebar #sidebarFooter #previewToolbar {
   background-color: #F5F7FA;
   padding: 17px 24px;
-  padding-right: 28px;
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
 }
 #opc #opcSidebar #sidebarFooter #previewToolbar #displayWidths {
-  float: right;
   padding: 0;
+  margin-bottom: 0;
+  display: flex;
+  gap: 24px;
 }
 #opc #opcSidebar #sidebarFooter #previewToolbar #displayWidths > li {
   list-style: none;
-  display: inline-block;
   width: 16px;
   height: 16px;
-  margin-left: 24px;
 }
 #opc #opcSidebar #sidebarFooter #previewToolbar #displayWidths > li > button {
   color: #BDBDBD;

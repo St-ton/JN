@@ -176,7 +176,6 @@ class Router
             MediaImageController::class          => new MediaImageController($db, $cache, $state, $this->config, $alert)
         ];
         $this->prepare();
-        $this->registerAPI();
     }
 
     public function prepare(): void
@@ -260,7 +259,6 @@ class Router
         $rapi->middleware(new ApiKeyMiddleware($this->db));
         $rapi();
         $this->routes[] = $rapi;
-        $rapi();
     }
 
     /**

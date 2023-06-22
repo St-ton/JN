@@ -16,7 +16,7 @@ class Migration_20190402111900 extends Migration implements IMigration
     protected $description = 'kKampgne default value';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -27,7 +27,7 @@ class Migration_20190402111900 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

@@ -17,7 +17,7 @@ class Migration_20190207074500 extends Migration implements IMigration
     protected $description = 'Increase currency table text fields length';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -27,7 +27,7 @@ class Migration_20190207074500 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

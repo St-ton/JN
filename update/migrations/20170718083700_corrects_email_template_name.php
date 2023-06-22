@@ -18,7 +18,7 @@ class Migration_20170718083700 extends Migration implements IMigration
     protected $description = 'Correct email template name';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -26,7 +26,7 @@ class Migration_20170718083700 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

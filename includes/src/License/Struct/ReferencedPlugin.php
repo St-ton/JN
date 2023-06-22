@@ -31,7 +31,6 @@ class ReferencedPlugin extends ReferencedItem
         $installedVersion = Version::parse($installed->nVersion);
         $availableVersion = $available === null ? Version::parse('0.0.0') : $available->getVersion();
         $latestVersion    = $latest === null ? $availableVersion : $latest->getVersion();
-        $php              = $this->getCurrentPhpVersion();
         $this->setReleaseAvailable($available !== null);
         $this->setHasUpdate(false);
         $this->setCanBeUpdated(false);
@@ -41,11 +40,7 @@ class ReferencedPlugin extends ReferencedItem
             $this->setMaxInstallableVersion($availableVersion);
             $this->setHasUpdate(true);
             $this->setCanBeUpdated(true);
-            if ($available->getPhpMaxVersion() !== null && $php->greaterThan($available->getPhpMaxVersion())) {
-                $this->setPhpVersionOK(self::PHP_VERSION_HIGH);
-                $this->setCanBeUpdated(false);
-            } elseif ($available->getPhpMinVersion() !== null && $php->smallerThan($available->getPhpMinVersion())) {
-                $this->setPhpVersionOK(self::PHP_VERSION_LOW);
+            if ($available->getPhpVersionOK() !== $available::PHP_VERSION_OK) {
                 $this->setCanBeUpdated(false);
             }
         } elseif ($latestVersion->greaterThan($availableVersion) && $latestVersion->greaterThan($installedVersion)) {
@@ -53,11 +48,6 @@ class ReferencedPlugin extends ReferencedItem
             $this->setHasUpdate(true);
             $this->setShopVersionOK(false);
             $this->setCanBeUpdated(false);
-            if ($latest->getPhpMaxVersion() !== null && $php->greaterThan($latest->getPhpMaxVersion())) {
-                $this->setPhpVersionOK(self::PHP_VERSION_HIGH);
-            } elseif ($latest->getPhpMinVersion() !== null && $php->smallerThan($latest->getPhpMinVersion())) {
-                $this->setPhpVersionOK(self::PHP_VERSION_LOW);
-            }
         }
         $this->setInstalled(true);
         $this->setInstalledVersion($installedVersion);

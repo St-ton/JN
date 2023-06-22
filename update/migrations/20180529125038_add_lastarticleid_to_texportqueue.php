@@ -18,7 +18,7 @@ class Migration_20180529125038 extends Migration implements IMigration
     protected $description = 'Add LastArticleID to texportqueue';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -31,7 +31,7 @@ class Migration_20180529125038 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

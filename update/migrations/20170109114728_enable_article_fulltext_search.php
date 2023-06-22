@@ -18,7 +18,7 @@ class Migration_20170109114728 extends Migration implements IMigration
     protected $description = 'Enable article fulltext search';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -53,7 +53,7 @@ class Migration_20170109114728 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

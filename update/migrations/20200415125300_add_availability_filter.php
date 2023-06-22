@@ -20,7 +20,7 @@ class Migration_20200415125300 extends Migration implements IMigration
     protected $description = 'Add availability filter';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -96,7 +96,7 @@ class Migration_20200415125300 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

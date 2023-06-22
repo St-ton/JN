@@ -18,7 +18,7 @@ class Migration_20200901123200 extends Migration implements IMigration
     protected $description = 'Move extension viewer widget to status.php';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -26,7 +26,7 @@ class Migration_20200901123200 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

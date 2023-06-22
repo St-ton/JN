@@ -14,7 +14,7 @@ class Migration_20210621080300 extends Migration implements IMigration
     protected $description = 'Add nova sidebar setting';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up(): void
     {
@@ -29,7 +29,7 @@ class Migration_20210621080300 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down(): void
     {

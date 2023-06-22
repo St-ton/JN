@@ -18,7 +18,7 @@ class Migration_20170704133717 extends Migration implements IMigration
     protected $description = 'Add cUserAgent to tBesucher';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -26,7 +26,7 @@ class Migration_20170704133717 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

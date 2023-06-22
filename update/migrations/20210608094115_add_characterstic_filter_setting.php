@@ -12,7 +12,7 @@ class Migration_20210608094115 extends Migration implements IMigration
     protected $description = 'Add characteristic filter setting';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -35,7 +35,7 @@ class Migration_20210608094115 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

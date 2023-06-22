@@ -15,7 +15,7 @@ class Migration_20190130123800 extends Migration implements IMigration
     protected $description = 'Change List Portlet class name';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -23,7 +23,7 @@ class Migration_20190130123800 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

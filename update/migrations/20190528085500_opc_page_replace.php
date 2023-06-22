@@ -12,7 +12,7 @@ class Migration_20190528085500 extends Migration implements IMigration
     protected $description = 'Remove replace column from topcpage';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -20,7 +20,7 @@ class Migration_20190528085500 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

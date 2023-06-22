@@ -13,7 +13,7 @@ class Migration_20201119133615 extends Migration implements IMigration
     protected $description = 'Recreate missing autoincrement attributes';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -67,7 +67,7 @@ class Migration_20201119133615 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

@@ -18,7 +18,7 @@ class Migration_20180823154832 extends Migration implements IMigration
     protected $description = 'Change database version to semantic versioning';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -26,7 +26,7 @@ class Migration_20180823154832 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

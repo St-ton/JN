@@ -39,9 +39,11 @@ class Migration_20230403084644 extends Migration implements IMigration
         if ((int)$result['countNames'] === 0) {
             $kCheckBox = $this->getDB()->queryPrepared(
                 "INSERT INTO `tcheckbox` 
-                        (cName, cKundengruppe, cAnzeigeOrt, nAktiv, nPflicht, nLogging, nSort, dErstellt, `nInternal`)
+                        (kLink, kCheckBoxFunktion, cName, cKundengruppe, cAnzeigeOrt, nAktiv, nPflicht, nLogging, nSort, dErstellt, `nInternal`)
                       VALUES
                           (
+                               0,
+                               0,
                                'RightOfWithdrawalOfDownloadItems',
                                :customerGroupIDsToInsert,
                                ';2;',

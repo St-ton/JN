@@ -268,51 +268,49 @@
                                 {/row}
                             {/block}
                         {/cardheader}
-                        {cardbody}
-                            {block name='account-my-account-comparelist-body'}
-                                {assign var=rmas value=$RMAService->getRepository()->getList(['customerID' => $Kunde->kKunde])}
-                                {if $rmas|count > 0}
-                                    <div class="table-responsive">
-                                        <table class="table table-vertical-middle table-hover">
-                                            <tbody>
-                                                {foreach $rmas as $rma}
-                                                    <tr>
-                                                        <td>
-                                                            <div class="d-block font-weight-bold">
-                                                                <span class="far fa-calendar mr-2"></span>{$rma->createDate}
-                                                            </div>
-                                                            <small class="text-muted-util d-block font-weight-bold">
-                                                                Artikel
-                                                                <span class="badge badge-light">
-                                                                    {$rma->positions|count|default:0}
-                                                                </span>
+                        {block name='account-my-account-comparelist-body'}
+                            {assign var=rmas value=$RMAService->getRepository()->loadFromDB(null, null, null, null, null)}
+                            {if $rmas|count > 0}
+                                <div class="table-responsive">
+                                    <table class="table table-vertical-middle table-hover">
+                                        <tbody>
+                                            {foreach $rmas as $rma}
+                                                <tr>
+                                                    <td>
+                                                        <div class="d-block font-weight-bold">
+                                                            <span class="far fa-calendar mr-2"></span>{$rma->rmaCreateDate}
+                                                        </div>
+                                                        <small class="text-muted-util d-block font-weight-bold">
+                                                            Artikel
+                                                            <span class="badge badge-light">
+                                                                {$rma->positions|count|default:0}
+                                                            </span>
+                                                        </small>
+                                                        {if isset($rma->pickupAddress)}
+                                                            <small class="text-muted-util d-block">
+                                                                {if $rma->pickupAddress->companyName}{$rma->pickupAddress->companyName}<br />{/if}
+                                                                {$rma->pickupAddress->street} {$rma->pickupAddress->houseNumber}<br />
+                                                                {$rma->pickupAddress->postalCode} {$rma->pickupAddress->city}
                                                             </small>
-                                                            {if isset($rma->Lieferadresse)}
-                                                                <small class="text-muted-util d-block">
-                                                                    {if $rma->Lieferadresse->cFirma}{$rma->Lieferadresse->cFirma}<br />{/if}
-                                                                    {$rma->Lieferadresse->cStrasse} {$rma->Lieferadresse->cHausnummer}<br />
-                                                                    {$rma->Lieferadresse->cPLZ} {$rma->Lieferadresse->cOrt}
-                                                                </small>
-                                                            {/if}
-                                                        </td>
-                                                        <td class="text-right-util">
-                                                            {link class='float-right' href="$cCanonicalURL?rma={$rma->kRetoure}"
-                                                            aria=["label"=>"Retoure bearbeiten"]}
-                                                                <span class="fas fa-pencil-alt"></span>
-                                                            {/link}
-                                                        </td>
-                                                    </tr>
-                                                {/foreach}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                {else}
-                                    <p>
-                                        Sie haben noch keine Warenrücksendungen.
-                                    </p>
-                                {/if}
-                            {/block}
-                        {/cardbody}
+                                                        {/if}
+                                                    </td>
+                                                    <td class="text-right-util">
+                                                        {link class='float-right' href="$cCanonicalURL?rma={$rma->rmaID}"
+                                                        aria=["label"=>"Retoure bearbeiten"]}
+                                                            <span class="fas fa-pencil-alt"></span>
+                                                        {/link}
+                                                    </td>
+                                                </tr>
+                                            {/foreach}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {else}
+                                <p>
+                                    Sie haben noch keine Warenrücksendungen.
+                                </p>
+                            {/if}
+                        {/block}
                     {/card}
                 {/block}
             {/col}

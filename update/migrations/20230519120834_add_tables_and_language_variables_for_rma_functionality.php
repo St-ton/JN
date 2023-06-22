@@ -189,9 +189,8 @@ class Migration_20230519120834 extends Migration implements IMigration
             "CREATE TABLE IF NOT EXISTS `rmahistory` (
                 `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
                 `rmaPosID` INT(10) UNSIGNED NOT NULL,
-                `title` VARCHAR(255) NOT NULL,
-                `oldValue` VARCHAR(255) DEFAULT NULL,
-                `newValue` VARCHAR(255) NOT NULL,
+                `title` VARCHAR(20) NOT NULL,
+                `value` VARCHAR(255) NOT NULL,
                 `lastModified` DATETIME NOT NULL,
                 PRIMARY KEY (`id`),
                 INDEX (`rmaPosID`),
@@ -229,7 +228,7 @@ class Migration_20230519120834 extends Migration implements IMigration
                 `mobilePhone` VARCHAR(255) DEFAULT NULL,
                 `fax` VARCHAR(255) DEFAULT NULL,
                 `mail` VARCHAR(255) DEFAULT NULL,
-                `hash` VARCHAR(255) NOT NULL,
+                `hash` VARCHAR(32) NOT NULL,
                 PRIMARY KEY (`id`),
                 INDEX (`customerID`),
                 CONSTRAINT `fk_pickupaddress_customerID`

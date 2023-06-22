@@ -33,14 +33,9 @@ class RMAHistoryDataTableObject extends AbstractDataObject implements DataTableO
     protected string $title = '';
     
     /**
-     * @var string|null
-     */
-    protected ?string $oldValue = null;
-    
-    /**
      * @var string
      */
-    protected string $newValue = '';
+    protected string $value = '';
     
     /**
      * @var string
@@ -55,8 +50,7 @@ class RMAHistoryDataTableObject extends AbstractDataObject implements DataTableO
         'id'           => 'id',
         'rmaPosID'     => 'rmaPosID',
         'title'        => 'title',
-        'oldValue'     => 'oldValue',
-        'newValue'     => 'newValue',
+        'value'        => 'value',
         'lastModified' => 'lastModified'
     ];
     
@@ -150,39 +144,20 @@ class RMAHistoryDataTableObject extends AbstractDataObject implements DataTableO
     }
 
     /**
-     * @return string|null
-     */
-    public function getOldValue(): string|null
-    {
-        return $this->oldValue;
-    }
-
-    /**
-     * @param string|null $oldValue
-     * @return $this
-     */
-    public function setOldValue(string|null $oldValue): self
-    {
-        $this->oldValue = $oldValue ?? null;
-
-        return $this;
-    }
-
-    /**
      * @return string
      */
-    public function getNewValue(): string
+    public function getValue(): string
     {
-        return $this->newValue;
+        return $this->value;
     }
 
     /**
-     * @param string $newValue
+     * @param string $value
      * @return $this
      */
-    public function setNewValue(string $newValue): self
+    public function setValue(string $value): self
     {
-        $this->newValue = $newValue;
+        $this->value = $value;
 
         return $this;
     }

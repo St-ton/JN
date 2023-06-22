@@ -7,6 +7,9 @@
 			&::before { background-color: $shaftblue-dark; }
 			&::after { left: 1.375rem; }
 		}
+		&:disabled ~ .#{$prefix}-label {
+			&::before { opacity: 0.25; }
+		}
 	}
 
 	.#{$prefix}-label { padding-left: 3.5rem; display: inline-block; position: relative; font-weight: 600; color: $shaftblue; margin-bottom: .25rem;

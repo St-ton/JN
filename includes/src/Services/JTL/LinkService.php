@@ -64,6 +64,20 @@ final class LinkService implements LinkServiceInterface
     /**
      * @inheritdoc
      */
+    public function updateDefaultLanguageData(int $languageID, string $locale): void
+    {
+        /** @var LinkGroupInterface $linkGroup */
+        foreach ($this->linkGroupList->getLinkGroups() as $linkGroup) {
+            /** @var LinkInterface $link */
+            foreach ($linkGroup->getLinks() as $link) {
+                $link->initLanguageID($languageID, $locale);
+            }
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getLinkGroups(): LinkGroupCollection
     {
         return $this->linkGroupList->getLinkGroups();

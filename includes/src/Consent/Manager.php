@@ -99,11 +99,14 @@ class Manager implements ManagerInterface
         $cached  = true;
         $cacheID = 'jtl_consent_models_' . $languageID;
         if (($models = $this->cache->get($cacheID)) === false) {
-            $models = ConsentModel::loadAll($this->db, 'active', 1)->map(
-                static function (ConsentModel $model) use ($languageID) {
+            /** @var Collection $models */
+            $models = ConsentModel::loadAll($this->db, 'active', 1)
+                ->map(static function (ConsentModel $model) use ($languageID) {
                     return (new Item($languageID))->loadFromModel($model);
-                }
-            );
+                })
+                ->sortBy(static function (Item $item) {
+                    return $item->getItemID() !== 'necessary';
+                });
             $this->cache->set($cacheID, $models, [\CACHING_GROUP_CORE]);
             $cached = false;
         }

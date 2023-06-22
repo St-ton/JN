@@ -133,12 +133,14 @@ class CacheSqlite implements ICachingMethod
      */
     public function loadMulti(array $cacheIDs): array
     {
-        $res  = [];
-        $ids  = \implode("','", \array_values($cacheIDs));
-        $stmt = $this->db->prepare('SELECT id, value 
+        $res    = [];
+        $params = \implode(',', \array_fill(0, \count($cacheIDs), '?'));
+        $stmt   = $this->db->prepare('SELECT id, value 
             FROM cache 
-            WHERE id IN (:ids) AND CURRENT_TIMESTAMP < lifetime');
-        $stmt->bindParam(':ids', $ids);
+            WHERE id IN (' . $params . ') AND CURRENT_TIMESTAMP < lifetime');
+        foreach (\array_values($cacheIDs) as $i => $cacheID) {
+            $stmt->bindValue($i + 1, (string)$cacheID);
+        }
         $result = $stmt->execute();
         while ($ary = $result->fetchArray(\SQLITE3_ASSOC)) {
             $res[$ary['id']] = \unserialize($ary['value']);
@@ -225,13 +227,18 @@ class CacheSqlite implements ICachingMethod
      */
     public function flushTags($tags): int
     {
-        $ids  = (\is_string($tags)) ? $tags : \implode("','", \array_values((array)$tags));
-        $stmt = $this->db->prepare('DELETE FROM cache 
-            WHERE id IN (SELECT id FROM cache_tag WHERE group_id IN (:ids))');
-        $stmt->bindParam(':ids', $ids);
+        $tags   = \is_array($tags) ? \array_values($tags) : [$tags];
+        $params = \implode(',', \array_fill(0, \count($tags), '?'));
+        $stmt   = $this->db->prepare('DELETE FROM cache 
+            WHERE id IN (SELECT id FROM cache_tag WHERE group_id IN (' . $params . '))');
+        foreach ($tags as $i => $tag) {
+            $stmt->bindValue($i + 1, $tag);
+        }
         $stmt->execute();
-        $stmt = $this->db->prepare('DELETE FROM cache_tag WHERE group_id IN (:ids)');
-        $stmt->bindParam(':ids', $ids);
+        $stmt = $this->db->prepare('DELETE FROM cache_tag WHERE group_id IN (' . $params . ')');
+        foreach ($tags as $i => $tag) {
+            $stmt->bindValue($i + 1, $tag);
+        }
         $stmt->execute();
 
         return 0;
@@ -242,10 +249,13 @@ class CacheSqlite implements ICachingMethod
      */
     public function getKeysByTag($tags): array
     {
-        $res  = [];
-        $ids  = (\is_string($tags)) ? $tags : \implode("','", \array_values((array)$tags));
-        $stmt = $this->db->prepare('SELECT group_id, id FROM cache_tag WHERE group_id IN (:ids)');
-        $stmt->bindParam(':ids', $ids);
+        $res    = [];
+        $tags   = \is_array($tags) ? \array_values($tags) : [$tags];
+        $params = \implode(',', \array_fill(0, \count($tags), '?'));
+        $stmt   = $this->db->prepare('SELECT group_id, id FROM cache_tag WHERE group_id IN (' . $params . ')');
+        foreach ($tags as $i => $tag) {
+            $stmt->bindValue($i + 1, (string)$tag);
+        }
         $result = $stmt->execute();
         while ($result !== false && $item = $result->fetchArray(\SQLITE3_ASSOC)) {
             $res[] = $item['id'];

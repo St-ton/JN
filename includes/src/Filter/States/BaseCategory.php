@@ -8,7 +8,6 @@ use JTL\Filter\FilterInterface;
 use JTL\Filter\Join;
 use JTL\Filter\ProductFilter;
 use JTL\MagicCompatibilityTrait;
-use JTL\Shop;
 
 /**
  * Class BaseCategory

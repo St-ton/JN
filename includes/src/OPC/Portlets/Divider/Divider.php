@@ -16,17 +16,17 @@ class Divider extends Portlet
     public function getPropertyDesc(): array
     {
         return [
-            'title' => [
-                'label' => \__('dividerTitle'),
+            'title'     => [
+                'label'   => \__('dividerTitle'),
                 'default' => \__('Divider'),
-                'width' => 50,
+                'width'   => 50,
             ],
-            'id' => [
+            'id'        => [
                 'label' => \__('dividerElmID'),
                 'desc'  => \__('dividerIdDesc'),
                 'width' => 50,
             ],
-            'moreLink' => [
+            'moreLink'  => [
                 'label' => \__('dividerMoreLink'),
                 'width' => 50,
             ],

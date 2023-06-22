@@ -313,7 +313,7 @@ class GetText
     }
 
     /**
-     * @param Item $config
+     * @param Item     $config
      * @param stdClass $value
      */
     public function localizeConfigValue(Item $config, stdClass $value): void

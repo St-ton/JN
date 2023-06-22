@@ -18,7 +18,7 @@ class Migration_20170224133710 extends Migration implements IMigration
     protected $description = 'Upgrade sessiondata to MEDIUMTEXT';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -29,7 +29,7 @@ class Migration_20170224133710 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

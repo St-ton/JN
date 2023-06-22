@@ -21,7 +21,7 @@ class Checker
      * @param DbInterface     $db
      * @param LoggerInterface $logger
      */
-    public function __construct(private DbInterface $db, private LoggerInterface $logger)
+    public function __construct(private readonly DbInterface $db, private readonly LoggerInterface $logger)
     {
         if (!\file_exists(\JOBQUEUE_LOCKFILE)) {
             \touch(\JOBQUEUE_LOCKFILE);

@@ -12,7 +12,7 @@ class Migration_20230404172100 extends Migration implements IMigration
     protected $description = 'Remove index.php url from noCookieDesc alert';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -33,7 +33,7 @@ class Migration_20230404172100 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

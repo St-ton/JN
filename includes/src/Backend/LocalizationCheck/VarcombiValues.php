@@ -63,7 +63,7 @@ class VarcombiValues extends AbstractLocalizationCheck
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getLocation(): string
     {

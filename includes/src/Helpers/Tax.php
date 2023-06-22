@@ -41,7 +41,7 @@ class Tax
 
     /**
      * @param string|null $countryCode
-     * @param bool $skipUpdateCart
+     * @param bool        $skipUpdateCart
      * @since 5.0.0
      */
     public static function setTaxRates(?string $countryCode = null, bool $skipUpdateCart = false): void

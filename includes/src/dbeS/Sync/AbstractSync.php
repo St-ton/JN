@@ -42,9 +42,9 @@ abstract class AbstractSync
      * @param LoggerInterface   $logger
      */
     public function __construct(
-        protected DbInterface $db,
+        protected DbInterface       $db,
         protected JTLCacheInterface $cache,
-        protected LoggerInterface $logger
+        protected LoggerInterface   $logger
     ) {
         $this->mapper = new Mapper();
     }
@@ -149,9 +149,9 @@ abstract class AbstractSync
      */
     protected function deleteByKey(
         string $tableName,
-        array $pks,
+        array  $pks,
         string $excludeKey = '',
-        array $excludeValues = []
+        array  $excludeValues = []
     ): void {
         $whereKeys = [];
         $params    = [];
@@ -402,7 +402,6 @@ abstract class AbstractSync
         }
     }
 
-
     /**
      * @param int $productID
      * @param int $customerGroupID
@@ -586,7 +585,7 @@ abstract class AbstractSync
         if ($langID > 0) {
             $seo = $this->db->select('tseo', 'kKey', $keyValue, 'cKey', $keyName, 'kSprache', $langID);
 
-            return isset($seo->kKey) && (int)$seo->kKey > 0 ? $seo : null;
+            return $seo !== null && (int)$seo->kKey > 0 ? $seo : null;
         }
         $seo = $this->db->selectAll('tseo', ['kKey', 'cKey'], [$keyValue, $keyName]);
         if (\count($seo) === 0) {

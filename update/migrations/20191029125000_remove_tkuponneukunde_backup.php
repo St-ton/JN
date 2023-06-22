@@ -12,7 +12,7 @@ class Migration_20191029125000 extends Migration implements IMigration
     protected $description = 'Remove tkuponneukunde_backup';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -39,7 +39,7 @@ class Migration_20191029125000 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

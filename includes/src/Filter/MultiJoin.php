@@ -25,7 +25,7 @@ class MultiJoin extends Join
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getSQL(): string
     {

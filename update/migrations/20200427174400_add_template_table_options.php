@@ -12,7 +12,7 @@ class Migration_20200427174400 extends Migration implements IMigration
     protected $description = 'Add template table rows';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -24,7 +24,7 @@ class Migration_20200427174400 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

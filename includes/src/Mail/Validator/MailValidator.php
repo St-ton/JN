@@ -18,7 +18,7 @@ final class MailValidator implements ValidatorInterface
      * @param DbInterface $db
      * @param array       $config
      */
-    public function __construct(private DbInterface $db, private array $config)
+    public function __construct(private readonly DbInterface $db, private readonly array $config)
     {
     }
 
@@ -53,7 +53,7 @@ final class MailValidator implements ValidatorInterface
             return false;
         }
         $blackList = $this->db->select('temailblacklist', 'cEmail', $email);
-        if (empty($blackList->cEmail)) {
+        if ($blackList === null || empty($blackList->cEmail)) {
             return false;
         }
         $block                = new stdClass();

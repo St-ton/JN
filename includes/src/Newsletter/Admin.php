@@ -28,10 +28,10 @@ final class Admin
 
     /**
      * Admin constructor.
-     * @param DbInterface $db
+     * @param DbInterface           $db
      * @param AlertServiceInterface $alertService
      */
-    public function __construct(private DbInterface $db, private AlertServiceInterface $alertService)
+    public function __construct(private readonly DbInterface $db, private readonly AlertServiceInterface $alertService)
     {
     }
 
@@ -579,7 +579,7 @@ final class Admin
      */
     public function checkTemplate(
         string $name,
-        array $customerGroups,
+        array  $customerGroups,
         string $subject,
         string $type,
         string $html,
@@ -1096,20 +1096,20 @@ final class Admin
             $cgCount[1] = 0;     // Count Kundengruppenkeys
             foreach ($recipient->cKundengruppe_arr as $cKundengruppeTMP) {
                 if (!empty($cKundengruppeTMP)) {
-                    $oKundengruppeTMP = $this->db->select('tkundengruppe', 'kKundengruppe', (int)$cKundengruppeTMP);
-                    if (\mb_strlen($oKundengruppeTMP->cName) > 0) {
+                    $tmpGroup = $this->db->select('tkundengruppe', 'kKundengruppe', (int)$cKundengruppeTMP);
+                    if ($tmpGroup !== null && \mb_strlen($tmpGroup->cName) > 0) {
                         if ($cgCount[0] > 0) {
-                            $groupString .= ', ' . $oKundengruppeTMP->cName;
+                            $groupString .= ', ' . $tmpGroup->cName;
                         } else {
-                            $groupString .= $oKundengruppeTMP->cName;
+                            $groupString .= $tmpGroup->cName;
                         }
                         $cgCount[0]++;
                     }
-                    if ((int)$oKundengruppeTMP->kKundengruppe > 0) {
+                    if ((int)$tmpGroup->kKundengruppe > 0) {
                         if ($cgCount[1] > 0) {
-                            $cgroupKey .= ';' . $oKundengruppeTMP->kKundengruppe;
+                            $cgroupKey .= ';' . $tmpGroup->kKundengruppe;
                         } else {
-                            $cgroupKey .= $oKundengruppeTMP->kKundengruppe;
+                            $cgroupKey .= $tmpGroup->kKundengruppe;
                         }
                         $cgCount[1]++;
                     }

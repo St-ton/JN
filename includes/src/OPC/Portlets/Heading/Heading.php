@@ -26,9 +26,9 @@ class Heading extends Portlet
     {
         return [
             'level' => [
-                'label'      => \__('Level'),
-                'type'       => InputType::SELECT,
-                'options'    => [
+                'label'    => \__('Level'),
+                'type'     => InputType::SELECT,
+                'options'  => [
                     1 => '1',
                     2 => '2',
                     3 => '3',
@@ -36,27 +36,27 @@ class Heading extends Portlet
                     5 => '5',
                     6 => '6',
                 ],
-                'default'    => '1',
-                'required'   => true,
-                'width'      => 17,
+                'default'  => '1',
+                'required' => true,
+                'width'    => 17,
             ],
             'text'  => [
-                'label'      => \__('Text'),
-                'type'       => InputType::TEXT,
-                'default'    => \__('Heading'),
-                'width'      => 58,
+                'label'   => \__('Text'),
+                'type'    => InputType::TEXT,
+                'default' => \__('Heading'),
+                'width'   => 58,
             ],
             'align' => [
-                'label'      => \__('alignment'),
-                'type'       => InputType::SELECT,
-                'default'    => 'left',
-                'options'    => [
+                'label'   => \__('alignment'),
+                'type'    => InputType::SELECT,
+                'default' => 'left',
+                'options' => [
                     'left'   => \__('left'),
                     'center' => \__('centered'),
                     'right'  => \__('right'),
                 ],
-                'desc'       => \__('alignmentDesc'),
-                'width'      => 25,
+                'desc'    => \__('alignmentDesc'),
+                'width'   => 25,
             ],
         ];
     }

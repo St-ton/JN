@@ -12,7 +12,7 @@ class Migration_20210212114600 extends Migration implements IMigration
     protected $description = 'Add system page flag';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -24,7 +24,7 @@ class Migration_20210212114600 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

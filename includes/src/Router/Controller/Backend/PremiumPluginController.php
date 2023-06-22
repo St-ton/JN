@@ -38,6 +38,7 @@ class PremiumPluginController extends AbstractBackendController
         $action           = Request::verifyGPDataString('action');
         if ($action === 'install') {
             $this->getText->loadAdminLocale('pages/pluginverwaltung');
+            $this->getText->loadAdminLocale('pages/licenses');
 
             $installer = new ExtensionInstaller($this->db);
             $installer->setRecommendations($recommendations->getRecommendations());

@@ -15,7 +15,7 @@ class Migration_20220331151300 extends Migration implements IMigration
     protected $description = 'Add review page';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -64,7 +64,7 @@ class Migration_20220331151300 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

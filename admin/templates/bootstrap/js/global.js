@@ -305,6 +305,16 @@ $(document).ready(function () {
 
     $('.accordion-toggle').on('click', function () {
         $(this).find('i').toggleClass('fa-minus fa-plus');
+        let parent = $(this).data("parent");
+        if (parent.length > 0) {
+            let clicked = $(this);
+            $(".accordion-toggle[data-parent='" + parent + "']").each(function() {
+                // Remove minus and add a plus sign for all accordion-toggles with same destination except the clicked one
+                if ($(this).attr("href") !== clicked.attr("href")) {
+                    $(this).find('i').removeClass('fa-minus').addClass('fa-plus');
+                }
+            });
+        }
     });
 
     $('.help').each(function () {
@@ -440,6 +450,60 @@ $(document).ready(function () {
     onChangeFormSubmit();
     getSettingListeners();
     deleteConfirmation();
+
+    // Add top scrollbar to tables when they are scrollable.
+    $('.table-responsive').topScrollbar();
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function () {
+        $(this).closest('.tabs').find('.tab-content .table-responsive').topScrollbar();
+    });
+    $('.collapse').on('shown.bs.collapse', function () {
+        $(this).find('.table-responsive').topScrollbar();
+    });
+    $('img[loading="lazy"]').on('load',function(){
+        $(this).closest('.table-responsive').topScrollbar();
+    });
+    let windowResizeTimeout = null;
+    function windowResized() {
+        $('.table-responsive').topScrollbar();
+    }
+    $(window).on('resize', function () {
+        if (windowResizeTimeout) {
+            $('.jquery-top-scrollbar').remove();
+            clearTimeout(windowResizeTimeout);
+        }
+        windowResizeTimeout = setTimeout(windowResized, 500);
+    });
+
+    function toggleCardWidget(elem, $widgetContent, widget) {
+        if ($widgetContent.is(':hidden')) {
+            $widgetContent.slideDown('fast');
+            $('i', elem).attr('class', 'fa fa-chevron-up');
+            $(widget).find('.card-header hr').removeClass('d-none');
+        } else {
+            $widgetContent.slideUp('fast');
+            $('i', elem).attr('class', 'fa fa-chevron-down');
+            $(widget).find('.card-header hr').addClass('d-none');
+        }
+    }
+
+    // Add widget functionality to elements with class card-widget
+    $('.card-widget').each(function (i, widget) {
+        let $widgetContent = $('.card-body', widget),
+            $title = $(widget).find('.card-header > *:first-child');
+
+        // add click handler for widgets collapse button
+        if ($(widget).find('.card-header').length && $(widget).find('.card-body').length && $title.length) {
+            let chevron = $title.html('<a href="#" class="text-decoration-none">' + $title.html() + '<span class="btn-sm chevronToggle"><i class="fa fa-chevron-' + 'down' + '"></i></span></a>')
+                .on('click', function (e) {
+                    toggleCardWidget(this, $widgetContent, widget);
+                    e.preventDefault();
+                })
+                .appendTo($(widget).find('.card-header > *:first-child'));
+            if ($('.body-hidden', widget).length > 0) {
+                chevron.trigger('click');
+            }
+        }
+    });
 });
 
 $(window).on('load', () => {
@@ -624,32 +688,46 @@ function ioManagedCall(adminPath, funcname, params, callback)
  * @param suggestion (default: null) a callback function to customize the sugesstion entry. Takes the item object and
  *      returns a HTML string
  * @param onSelect
+ * @param spinnerElm
+ * @param delay
+ * @param args
+ * @param noDataAvailable
  */
-function enableTypeahead(selector, funcName, display, suggestion, onSelect, spinnerElm)
+function enableTypeahead(selector, funcName, display, suggestion, onSelect, spinnerElm, delay = 0,
+                         args = [], noDataAvailable = '')
 {
     var pendingRequest = null;
+    var timeout;
+    var templates = noDataAvailable === '' ? {suggestion: suggestion} : {
+        suggestion: suggestion,
+        notFound: '<div class="tt-suggestion">' + noDataAvailable + '</div>'
+    }
 
     $(selector)
         .typeahead(
             {
                 highlight: true,
-                hint: true
+                hint: true,
+                minLength: 1
             },
             {
                 limit: 50,
                 source: function (query, syncResults, asyncResults) {
-                    if (pendingRequest !== null) {
-                        pendingRequest.abort();
+                    if (timeout) {
+                        clearTimeout(timeout);
                     }
-                    pendingRequest = ioCall(funcName, [query, 100], function (data) {
-                        pendingRequest = null;
-                        asyncResults(data);
-                    });
+                    timeout = setTimeout(function () {
+                        if (pendingRequest !== null) {
+                            pendingRequest.abort();
+                        }
+                        pendingRequest = ioCall(funcName, [query, 50].concat(args), function (data) {
+                            pendingRequest = null;
+                            asyncResults(data);
+                        });
+                    }, delay);
                 },
                 display: display,
-                templates: {
-                    suggestion: suggestion
-                }
+                templates: templates
             }
         )
         .on('typeahead:select', onSelect)
@@ -817,63 +895,3 @@ $.fn.isOnScreen = function(){
     return (!(viewport.right < bounds.left || viewport.left > bounds.right || viewport.bottom < bounds.top || viewport.top > bounds.bottom));
 
 };
-
-function tableApplies(elem)
-{
-    if ((elem.nodeName === "TABLE" || elem.firstElementChild.nodeName === "TABLE")
-        && (elem.firstElementChild.firstElementChild.nodeName === "THEAD" || elem.firstElementChild.nodeName === "THEAD")) {
-        if (elem.scrollWidth > elem.offsetWidth) {
-            let trs = elem.getElementsByTagName("tr");
-            let titleCount = trs[0].getElementsByTagName("th").length;
-            for (let i = 1; i < trs.length; i++) {
-                if (trs[i].getElementsByTagName("td").length !== titleCount) {
-                    return false;
-                }
-            }
-            return true;
-        }
-    }
-    return false;
-}
-
-/**
- * Rearranges the content of responsive tables, so it does fit the users view
- */
-function rearrangeResponsiveTables(tables)
-{
-    for (let i = 0; i < tables.length; i++) {
-        let table = tables[i];
-        if (tableApplies(table)) {
-            table.getElementsByTagName("tbody")[0].className = 'd-block';
-            let trs = table.getElementsByTagName("tr");
-            let thead = trs[0].querySelectorAll("th,td");
-            trs[0].remove();
-            for (let e = 0; e < trs.length; e++) {
-                let tds = trs[e].getElementsByTagName("td");
-                let cardViews= document.createElement('div');
-                for (let o = 0; o < thead.length; o++) {
-                    let cardView= document.createElement('div'),
-                        title= document.createElement('span'),
-                        value= document.createElement('span');
-                    cardView.className = 'd-flex align-items-center mb-2';
-                    title.className = 'd-inline-block w-25 me-3 mr-3';
-                    if (thead[o].innerHTML !== '') {
-                        title.innerHTML = '<h6 class="m-0">' + thead[o].innerHTML + ': </h6>';
-                    }
-                    value.className = 'd-inline-block w-75';
-                    value.innerHTML = tds[o].innerHTML;
-                    cardView.appendChild(title);
-                    cardView.appendChild(value);
-                    cardViews.appendChild(cardView);
-                }
-                trs[e].className = 'd-block';
-                let cell = trs[e].insertCell(0);
-                cell.className = 'd-block';
-                cell.appendChild(cardViews);
-                while (trs[e].getElementsByTagName("td").length > 1) {
-                    trs[e].deleteCell(-1);
-                }
-            }
-        }
-    }
-}

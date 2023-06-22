@@ -32,9 +32,9 @@ class Mailer
      * @param ValidatorInterface $validator
      */
     public function __construct(
-        private HydratorInterface $hydrator,
-        private RendererInterface $renderer,
-        Shopsetting $settings,
+        private HydratorInterface  $hydrator,
+        private RendererInterface  $renderer,
+        Shopsetting                $settings,
         private ValidatorInterface $validator
     ) {
         $this->config = $settings->getAll();
@@ -73,11 +73,12 @@ class Mailer
     }
 
     /**
+     * @param string|null $section - since 5.3.0
      * @return array
      */
-    public function getConfig(): array
+    public function getConfig(?string $section = null): array
     {
-        return $this->config;
+        return $section === null ? $this->config : ($this->config[$section] ?? []);
     }
 
     /**
@@ -253,7 +254,9 @@ class Mailer
         $phpmailer->Timeout    = \SOCKET_TIMEOUT;
         $phpmailer->setLanguage($mail->getLanguage()->getIso639());
         $phpmailer->setFrom($mail->getFromMail(), $mail->getFromName());
-        $phpmailer->addAddress($mail->getToMail(), $mail->getToName());
+        foreach ($mail->getRecipients() as $recipient) {
+            $phpmailer->addAddress($recipient['mail'], $recipient['name']);
+        }
         $phpmailer->addReplyTo($mail->getReplyToMail(), $mail->getReplyToName());
         $phpmailer->Subject = $mail->getSubject();
         foreach ($mail->getCopyRecipients() as $recipient) {

@@ -40,6 +40,13 @@ interface LinkServiceInterface
     public function reset(): void;
 
     /**
+     * @param int    $languageID
+     * @param string $locale
+     * @return void
+     */
+    public function updateDefaultLanguageData(int $languageID, string $locale): void;
+
+    /**
      * @param int $id
      * @return LinkInterface|null
      */
@@ -91,7 +98,7 @@ interface LinkServiceInterface
 
     /**
      * @former gibLinkKeySpecialSeite()
-     * @param int $linkType
+     * @param int  $linkType
      * @param bool $fallback
      * @return int|bool
      */
@@ -128,8 +135,8 @@ interface LinkServiceInterface
      */
     public function getStaticRoute(
         string $id = 'kontakt.php',
-        bool $full = true,
-        bool $secure = false,
+        bool   $full = true,
+        bool   $secure = false,
         string $langISO = null
     ): string;
 

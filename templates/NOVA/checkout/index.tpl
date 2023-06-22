@@ -50,6 +50,9 @@
                             eModal.confirm(options).then(
                                 function() {
                                     window.location = "{get_static_route id='bestellvorgang.php'}?basket2Pers=1&token={$smarty.session.jtl_token}"
+                                },
+                                function() {
+                                    window.location = "{get_static_route id='bestellvorgang.php'}?updatePersCart=1&token={$smarty.session.jtl_token}"
                                 }
                             );
                         });

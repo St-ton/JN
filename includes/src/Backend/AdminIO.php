@@ -43,7 +43,7 @@ class AdminIO extends IO
      * @return $this
      * @throws \Exception
      */
-    public function register(string $name, $function = null, $include = null, ?string $permission = null)
+    public function register(string $name, $function = null, $include = null, ?string $permission = null): self
     {
         parent::register($name, $function, $include);
         $this->functions[$name][] = $permission;
@@ -53,7 +53,7 @@ class AdminIO extends IO
 
     /**
      * @param string $name
-     * @param mixed $params
+     * @param mixed  $params
      * @return mixed
      * @throws \Exception
      */

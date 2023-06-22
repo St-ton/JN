@@ -20,7 +20,7 @@ use Throwable;
 class CreateCommandCommand extends Command
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function configure(): void
     {
@@ -32,7 +32,7 @@ class CreateCommandCommand extends Command
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function interact(InputInterface $input, OutputInterface $output): void
     {
@@ -54,7 +54,7 @@ class CreateCommandCommand extends Command
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {

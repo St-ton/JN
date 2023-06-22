@@ -6,7 +6,6 @@ use JTL\Language\LanguageHelper;
 use JTL\Router\ControllerFactory;
 use JTL\Router\DefaultParser;
 use JTL\Router\Middleware\PhpFileCheckMiddleware;
-use JTL\Router\Router;
 use JTL\Router\State;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
@@ -32,7 +31,7 @@ class DefaultController extends AbstractController
             return $this->state;
         }
         $parser = new DefaultParser($this->db, $this->state);
-        $slug   = $parser->parse($slug);
+        $slug   = $parser->parse($slug, $args);
         $seo    = $this->db->getSingleObject(
             'SELECT *
                 FROM tseo

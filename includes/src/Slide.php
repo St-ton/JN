@@ -116,8 +116,7 @@ class Slide
             }
 
             $slide = Shop::Container()->getDB()->select('tslide', 'kSlide', $id);
-
-            if (\is_object($slide)) {
+            if ($slide !== null) {
                 $this->set($slide);
 
                 return true;

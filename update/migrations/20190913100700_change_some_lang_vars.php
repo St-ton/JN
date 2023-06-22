@@ -18,7 +18,7 @@ class Migration_20190913100700 extends Migration implements IMigration
     protected $description = 'Change some frontend language variables (NOVA)';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -37,7 +37,7 @@ class Migration_20190913100700 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

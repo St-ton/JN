@@ -12,7 +12,7 @@ class Migration_20220216175200 extends Migration implements IMigration
     protected $description = 'Add more lang vars';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -164,7 +164,7 @@ class Migration_20220216175200 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

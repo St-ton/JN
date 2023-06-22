@@ -496,7 +496,7 @@ class SimpleMail
                 // Blocked
                 if (isset($hits[0]) && \mb_strlen($mail) === \mb_strlen($hits[0])) {
                     $block = Shop::Container()->getDB()->select('temailblacklistblock', 'cEmail', $mail);
-                    if (!empty($block->cEmail)) {
+                    if ($block !== null && !empty($block->cEmail)) {
                         $_upd                = new stdClass();
                         $_upd->dLetzterBlock = 'NOW()';
                         Shop::Container()->getDB()->update('temailblacklistblock', 'cEmail', $mail, $_upd);

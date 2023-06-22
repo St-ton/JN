@@ -18,7 +18,7 @@ class Migration_20180830145905 extends Migration implements IMigration
     protected $description = 'Update evo template version into semantic version';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -26,7 +26,7 @@ class Migration_20180830145905 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

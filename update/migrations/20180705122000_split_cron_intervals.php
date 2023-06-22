@@ -19,7 +19,7 @@ class Migration_20180705122000 extends Migration implements IMigration
     protected $description = 'Split cron intervals';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -58,7 +58,7 @@ class Migration_20180705122000 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

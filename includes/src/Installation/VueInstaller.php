@@ -42,8 +42,11 @@ class VueInstaller
      * @param array|null $post
      * @param bool       $cli
      */
-    public function __construct(private string $task, private ?array $post = null, private bool $cli = false)
-    {
+    public function __construct(
+        private readonly string $task,
+        private readonly ?array $post = null,
+        private readonly bool   $cli = false
+    ) {
     }
 
     /**

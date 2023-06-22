@@ -18,7 +18,7 @@ class Migration_20180828130542 extends Migration implements IMigration
     protected $description = 'Add lang variable invalidURL';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -27,7 +27,7 @@ class Migration_20180828130542 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

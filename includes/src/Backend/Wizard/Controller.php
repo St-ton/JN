@@ -24,16 +24,16 @@ final class Controller
 
     /**
      * Controller constructor.
-     * @param DefaultFactory $factory
-     * @param DbInterface $db
+     * @param DefaultFactory    $factory
+     * @param DbInterface       $db
      * @param JTLCacheInterface $cache
-     * @param GetText $getText
+     * @param GetText           $getText
      */
     public function __construct(
-        DefaultFactory $factory,
-        private DbInterface $db,
-        private JTLCacheInterface $cache,
-        GetText $getText
+        DefaultFactory                     $factory,
+        private readonly DbInterface       $db,
+        private readonly JTLCacheInterface $cache,
+        GetText                            $getText
     ) {
         $getText->loadAdminLocale('pages/pluginverwaltung');
         $this->steps = $factory->getSteps();
@@ -66,7 +66,7 @@ final class Controller
     private function finish(): array
     {
         $errorMessages = [];
-        /** @var Step $step*/
+        /** @var Step $step */
         foreach ($this->getSteps() as $step) {
             foreach ($step->getQuestions() as $question) {
                 /** @var QuestionInterface $question */
@@ -98,7 +98,7 @@ final class Controller
     {
         $post          = $this->serializeToArray($post);
         $errorMessages = [];
-        /** @var Step $step*/
+        /** @var Step $step */
         foreach ($this->getSteps() as $step) {
             foreach ($step->getQuestions() as $question) {
                 $idx = 'question-' . $question->getID();
@@ -159,7 +159,7 @@ final class Controller
      */
     public function hasCriticalError(): bool
     {
-        /** @var Step $step*/
+        /** @var Step $step */
         foreach ($this->getSteps() as $step) {
             if ($step->hasCriticalError()) {
                 return true;

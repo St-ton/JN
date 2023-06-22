@@ -244,12 +244,23 @@ export class GUI
 
     updateDynamicGui()
     {
-        installGuiElements(this, [
-            'blueprintButton',
-            'blueprintExport',
-            'blueprintDelete',
-            'revisionBtn',
-        ]);
+        $('.blueprintButton')
+            .off('dragstart')
+            .on('dragstart', e => this.onBlueprintButtonDragStart(e))
+            .off('dragend')
+            .on('dragend', e => this.onBlueprintButtonDragEnd(e));
+
+        $('.blueprintExport')
+            .off('click')
+            .on('click', e => this.onBlueprintExport(e));
+
+        $('.blueprintDelete')
+            .off('click')
+            .on('click', e => this.onBlueprintDelete(e));
+
+        $('.revisionBtn')
+            .off('click')
+            .on('click', e => this.onRevisionBtn(e));
     }
 
     async importDraft()

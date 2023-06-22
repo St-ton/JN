@@ -89,6 +89,8 @@
   --checkbox-border-color: #435a6b;
   --checkbox-checked-bg: transparent;
   --button-shadow-color: rgba(0, 0, 0, 0.16);
+  --invert-color: 0;
+  --custom-select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' fill='%23435a6b' x='0px' y='0px' style='enable-background:new 0 0 32 32;' xml:space='preserve'%3E%3Cpolygon  points='16,18.2 11.8,14.6 12.4,13.8 16,16.8 19.6,13.8 20.2,14.6 '/%3E%3C/svg%3E") no-repeat right center/auto 100%;
 }
 .theme-dark {
   --body-bg: #212529;
@@ -115,6 +117,8 @@
   --checkbox-border-color: #5cbcf6;
   --checkbox-checked-bg: #7dcdfe;
   --button-shadow-color: rgba(0, 0, 0, 0.4);
+  --invert-color: 1;
+  --custom-select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' fill='%2385adcc' x='0px' y='0px' style='enable-background:new 0 0 32 32;' xml:space='preserve'%3E%3Cpolygon  points='16,18.2 11.8,14.6 12.4,13.8 16,16.8 19.6,13.8 20.2,14.6 '/%3E%3C/svg%3E") no-repeat right center/auto 100%;
 }
 :root,
 :root.theme-light {
@@ -142,6 +146,8 @@
   --checkbox-border-color: #435a6b;
   --checkbox-checked-bg: transparent;
   --button-shadow-color: rgba(0, 0, 0, 0.16);
+  --invert-color: 0;
+  --custom-select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' fill='%23435a6b' x='0px' y='0px' style='enable-background:new 0 0 32 32;' xml:space='preserve'%3E%3Cpolygon  points='16,18.2 11.8,14.6 12.4,13.8 16,16.8 19.6,13.8 20.2,14.6 '/%3E%3C/svg%3E") no-repeat right center/auto 100%;
 }
 :root.theme-dark {
   --body-bg: #212529;
@@ -168,6 +174,8 @@
   --checkbox-border-color: #5cbcf6;
   --checkbox-checked-bg: #7dcdfe;
   --button-shadow-color: rgba(0, 0, 0, 0.4);
+  --invert-color: 1;
+  --custom-select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' fill='%2385adcc' x='0px' y='0px' style='enable-background:new 0 0 32 32;' xml:space='preserve'%3E%3Cpolygon  points='16,18.2 11.8,14.6 12.4,13.8 16,16.8 19.6,13.8 20.2,14.6 '/%3E%3C/svg%3E") no-repeat right center/auto 100%;
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -195,6 +203,8 @@
     --checkbox-border-color: #5cbcf6;
     --checkbox-checked-bg: #7dcdfe;
     --button-shadow-color: rgba(0, 0, 0, 0.4);
+    --invert-color: 1;
+    --custom-select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' fill='%2385adcc' x='0px' y='0px' style='enable-background:new 0 0 32 32;' xml:space='preserve'%3E%3Cpolygon  points='16,18.2 11.8,14.6 12.4,13.8 16,16.8 19.6,13.8 20.2,14.6 '/%3E%3C/svg%3E") no-repeat right center/auto 100%;
   }
 }
 .backend-wrapper {
@@ -2848,6 +2858,9 @@ hr,
 .table td {
   border-top: 1px solid var(--border-color);
 }
+.custom-select {
+  background: var(--custom-select-arrow);
+}
 .form-control,
 .form-control:focus,
 .form-control:active,
@@ -2888,6 +2901,7 @@ hr,
 .form-counter .btn:hover,
 .form-counter .btn:focus {
   background-color: var(--input-bg);
+  color: var(--link-color);
 }
 .brand-logo {
   display: var(--brand-logo-display);
@@ -2960,9 +2974,14 @@ hr,
   background-color: var(--table-accent-color);
   color: var(--body-color);
 }
+/*
 .input-group:not(.file-caption-main) {
   background-color: var(--input-group-bg);
   border-color: var(--input-group-border-color);
+}
+*/
+::-webkit-calendar-picker-indicator {
+  filter: invert(var(--invert-color));
 }
 .file-caption-name {
   color: var(--body-color);
@@ -3048,5 +3067,8 @@ input.file-caption-name::placeholder {
 }
 .CodeMirror-cursor {
   border-color: var(--body-color) !important;
+}
+.systemcheck .test-name {
+  color: var(--body-color);
 }
 /*# sourceMappingURL=custom.css.map */

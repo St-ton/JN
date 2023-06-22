@@ -54,7 +54,7 @@
 <body>
     <div id="iconpicker" data-placement="inline" style="display: none"></div>
     <div id="opc">
-        {include file="./sidebar.tpl"}
+        {include file="./sidebar.tpl" pageName=$page->getName()}
 
         <div id="resizer"></div>
 

@@ -260,7 +260,7 @@
             </nav>
             <div id="opcSidebar">
                 <header id="opcHeader">
-                    <h1 id="opc-sidebar-title">
+                    <h1 id="opcSidebarTitle">
                         {__('editPage')}
                     </h1>
                     <button onclick="closeOpcStartMenu()" class="opc-float-right opc-header-btn"
@@ -293,7 +293,7 @@
             </nav>
             <div id="opcSidebar">
                 <header id="opcHeader">
-                    <h1 id="opc-sidebar-title">
+                    <h1 id="opcSidebarTitle">
                         {__('editPage')}
                     </h1>
                     <button onclick="closeOpcStartMenu()" class="opc-float-right opc-header-btn" title="{__('Close OnPage-Composer')}">

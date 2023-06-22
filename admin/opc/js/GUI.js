@@ -660,6 +660,7 @@ export class GUI
     {
         this.page.name = window.draftName.value;
         $('#footerDraftName span').text(this.page.name);
+        window.titlePageName.innerText = this.page.name;
 
         if (window.checkPublishNot.checked) {
             this.page.publishFrom = null;
@@ -794,6 +795,7 @@ export class GUI
             await this.io.changeDraftName(this.page.key, draftName);
             this.page.name = draftName;
             $('#footerDraftName span').text(draftName);
+            window.titlePageName.innerText = draftName;
         }
 
         draftNameInput.hide();

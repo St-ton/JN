@@ -16,8 +16,10 @@
                 </button>
             </div>
         </div>
-        <h1 id="opc-sidebar-title">
-            {__('editPage')}
+        <h1 id="opcSidebarTitle">
+            {__('editPortletPrefix')}
+            &bdquo;<span id="titlePageName">{$pageName}</span>&ldquo;
+            {__('editPortletPostfix')}
         </h1>
         <button type="button" onclick="opc.gui.closeEditor()" class="opc-float-right opc-header-btn"
                 data-toggle="tooltip" data-placement="bottom" title="{__('Close OnPage-Composer')}">

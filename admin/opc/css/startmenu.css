@@ -282,7 +282,7 @@
   flex: none;
   display: flex;
 }
-#opc #opcHeader #opc-sidebar-title {
+#opc #opcHeader #opcSidebarTitle {
   display: inline-block;
   margin: 0;
   font-size: 17px;

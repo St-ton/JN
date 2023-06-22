@@ -70,7 +70,10 @@ class ProductListController extends AbstractController
     {
         $this->smarty = $smarty;
         if (!$this->productFilter->getBaseState()->isInitialized()) {
-            $this->updateProductFilter();
+            $state = $this->updateProductFilter();
+            if ($state->is404 === true) {
+                return $this->notFoundResponse($request, $args, $smarty);
+            }
         }
         $this->init();
         Shop::setPageType(\PAGE_ARTIKELLISTE);

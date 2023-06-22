@@ -100,11 +100,7 @@ class BaseSearchSpecial extends AbstractFilter
                 break;
             default:
                 // invalid search special ID
-                $this->notFound                   = true;
-                Shop::$is404                      = true;
-                Shop::$kSuchspecial               = 0;
-                Shop::getState()->is404           = true;
-                Shop::getState()->searchSpecialID = 0;
+                $this->fail();
                 break;
         }
 

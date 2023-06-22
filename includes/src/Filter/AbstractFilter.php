@@ -904,4 +904,20 @@ abstract class AbstractFilter implements FilterInterface
     {
         $this->notFound = $notFound;
     }
+
+    protected function fail(): void
+    {
+        Shop::$is404             = true;
+        Shop::$kKategorie        = 0;
+        Shop::$kSuchspecial      = 0;
+        Shop::$kMerkmalWert      = 0;
+        Shop::$kHersteller       = 0;
+        $this->notFound          = true;
+        $state                   = Shop::getState();
+        $state->is404            = true;
+        $state->categoryID       = 0;
+        $state->searchSpecialID  = 0;
+        $state->characteristicID = 0;
+        $state->manufacturerID   = 0;
+    }
 }

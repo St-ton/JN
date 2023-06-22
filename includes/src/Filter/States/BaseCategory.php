@@ -8,6 +8,7 @@ use JTL\Filter\FilterInterface;
 use JTL\Filter\Join;
 use JTL\Filter\ProductFilter;
 use JTL\MagicCompatibilityTrait;
+use JTL\Shop;
 
 /**
  * Class BaseCategory
@@ -89,7 +90,11 @@ class BaseCategory extends AbstractFilter
         $seoData           = [];
         $currentLanguageID = $this->getLanguageID();
         foreach ((array)$this->getValue() as $id) {
-            $seoData[] = new Kategorie($id, $currentLanguageID);
+            $category = new Kategorie($id, $currentLanguageID);
+            if ($category->getID() === 0) {
+                $this->fail();
+            }
+            $seoData[] = $category;
         }
         foreach ($languages as $language) {
             $id              = $language->getId();

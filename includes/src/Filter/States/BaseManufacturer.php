@@ -95,11 +95,7 @@ class BaseManufacturer extends AbstractFilter
                 $this->setName($seoData[0]->cName);
             } else {
                 // invalid manufacturer ID
-                $this->notFound                  = true;
-                Shop::getState()->manufacturerID = 0;
-                Shop::getState()->is404          = true;
-                Shop::$kHersteller               = 0;
-                Shop::$is404                     = true;
+                $this->fail();
             }
         }
 

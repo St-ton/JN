@@ -7,6 +7,7 @@ use Exception;
 use Illuminate\Support\Collection;
 use JTL\Model\DataAttribute;
 use JTL\Model\DataModel;
+use JTL\Model\DataModelInterface;
 use JTL\Model\ModelHelper;
 
 /**
@@ -200,6 +201,7 @@ final class CategoryModel extends DataModel
                 $existing = $res->first(static function ($e) use ($loc) {
                     return $e->categoryID === $loc->categoryID && $e->languageID === $loc->languageID;
                 });
+                /** @var DataModelInterface|null $existing */
                 if ($existing === null) {
                     $res->push($loc);
                 } else {
@@ -245,6 +247,7 @@ final class CategoryModel extends DataModel
                 $existing = $res->first(static function ($e) use ($item) {
                     return $e->id === $item->id && $e->categoryID === $item->categoryID;
                 });
+                /** @var DataModelInterface|null $existing */
                 if ($existing === null) {
                     $res->push($item);
                 } else {
@@ -280,6 +283,7 @@ final class CategoryModel extends DataModel
                 $existing = $res->first(static function ($e) use ($img) {
                     return $e->categoryID === $img->categoryID;
                 });
+                /** @var DataModelInterface|null $existing */
                 if ($existing === null) {
                     $res->push($img);
                 } else {

@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Support\Collection;
 use JTL\Model\DataAttribute;
 use JTL\Model\DataModel;
+use JTL\Model\DataModelInterface;
 
 /**
  * Class ManufacturerModel
@@ -117,6 +118,7 @@ final class ManufacturerModel extends DataModel
                 } catch (Exception) {
                     continue;
                 }
+                /** @var DataModelInterface|null $existing */
                 $existing = $res->first(static function ($e) use ($loc): bool {
                     return $e->manufacturerID === $loc->manufacturerID && $e->languageID === $loc->languageID;
                 });

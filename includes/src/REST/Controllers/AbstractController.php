@@ -223,7 +223,6 @@ abstract class AbstractController
             $result = $this->createItem($request);
             $this->createdItem($result);
         } catch (Exception $e) {
-            Shop::dbg($e->getMessage(), true, 'EX:');
             return $this->sendCustomResponse(500, 'Error occurred creating item - duplicate ID? ' . $e->getMessage());
         }
 
@@ -291,8 +290,8 @@ abstract class AbstractController
      */
     protected function getCreateBaseData(
         ServerRequestInterface $request,
-        DataModelInterface $model,
-        stdClass $data
+        DataModelInterface     $model,
+        stdClass               $data
     ): stdClass {
         if (\array_key_exists('lastModified', $model->getAttributes())) {
             $data->lastModified = $data->lastModified ?? 'now()';

@@ -64,7 +64,7 @@ class LanguageController extends AbstractController
      *         description="Language not found"
      *     )
      * )
-     *  @OA\Delete(
+     * @OA\Delete(
      *     path="/language/{languageId}",
      *     description="Deletes a single language based on the ID supplied",
      *     summary="Delete a single language",

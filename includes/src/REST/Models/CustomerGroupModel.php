@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Support\Collection;
 use JTL\Model\DataAttribute;
 use JTL\Model\DataModel;
+use JTL\Model\DataModelInterface;
 
 /**
  * Class CustomerGroupModel
@@ -132,6 +133,7 @@ final class CustomerGroupModel extends DataModel
                 } catch (Exception) {
                     continue;
                 }
+                /** @var DataModelInterface|null $existing */
                 $existing = $res->first(static function ($e) use ($loc) {
                     return $e->customerGroupID === $loc->customerGroupID && $e->languageID === $loc->languageID;
                 });

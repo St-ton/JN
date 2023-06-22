@@ -177,6 +177,11 @@ class Kategorie implements RoutableInterface
     private ?string $dLetzteAktualisierung = null;
 
     /**
+     * @var bool
+     */
+    private bool $compressed = false;
+
+    /**
      * @param int              $id
      * @param int              $languageID
      * @param int              $customerGroupID
@@ -224,6 +229,13 @@ class Kategorie implements RoutableInterface
                 $this->$k = $v;
             }
             $this->currentLanguageID = $languageID;
+            if ($this->compressed === true) {
+                foreach ($this->descriptions as &$description) {
+                    $description = \gzuncompress($description);
+                }
+                unset($description);
+                $this->compressed = false;
+            }
             \executeHook(\HOOK_KATEGORIE_CLASS_LOADFROMDB, [
                 'oKategorie' => &$this,
                 'cacheTags'  => [],
@@ -287,7 +299,15 @@ class Kategorie implements RoutableInterface
             'cached'     => false
         ]);
         if (!$noCache) {
-            Shop::Container()->getCache()->set($cacheID, $this, $cacheTags);
+            $toSave = clone $this;
+            if (\COMPRESS_DESCRIPTIONS === true) {
+                foreach ($toSave->descriptions as &$description) {
+                    $description = \gzcompress($description, \COMPRESSION_LEVEL);
+                }
+                unset($description);
+                $toSave->compressed = true;
+            }
+            Shop::Container()->getCache()->set($cacheID, $toSave, $cacheTags);
         }
 
         return $this;

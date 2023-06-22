@@ -64,7 +64,7 @@ class TaxClassController extends AbstractController
      *         description="Tax class not found"
      *     )
      * )
-     *  @OA\Delete(
+     * @OA\Delete(
      *     path="/taxclass/{taxclassId}",
      *     description="Deletes a single tax class based on the ID supplied",
      *     summary="Delete a single tax class",
@@ -155,8 +155,8 @@ class TaxClassController extends AbstractController
     protected function createRequestValidationRules(ServerRequestInterface $request): array
     {
         return [
-            'id'        => 'required|integer',
-            'name'      => 'required|max:255'
+            'id'   => 'required|integer',
+            'name' => 'required|max:255'
         ];
     }
 
@@ -166,8 +166,8 @@ class TaxClassController extends AbstractController
     protected function updateRequestValidationRules(ServerRequestInterface $request): array
     {
         return [
-            'id'        => 'integer',
-            'name'      => 'required|max:255'
+            'id'   => 'integer',
+            'name' => 'required|max:255'
         ];
     }
 }

@@ -177,14 +177,6 @@ class ShippingMethodController extends AbstractController
     /**
      * @inheritdoc
      */
-    protected function deletedItem(DataModelInterface $item): void
-    {
-        parent::deletedItem($item);
-    }
-
-    /**
-     * @inheritdoc
-     */
     protected function createRequestValidationRules(ServerRequestInterface $request): array
     {
         return [

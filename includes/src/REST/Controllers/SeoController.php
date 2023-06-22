@@ -68,9 +68,9 @@ class SeoController extends AbstractController
     protected function createRequestValidationRules(ServerRequestInterface $request): array
     {
         return [
-            'slug'   => 'required|max:255',
-            'type'   => 'required|max:255',
-            'id'     => 'required|integer',
+            'slug'       => 'required|max:255',
+            'type'       => 'required|max:255',
+            'id'         => 'required|integer',
             'languageID' => 'required|integer'
         ];
     }
@@ -81,8 +81,8 @@ class SeoController extends AbstractController
     protected function updateRequestValidationRules(ServerRequestInterface $request): array
     {
         return [
-            'slug'   => 'required|max:255',
-            'type'   => 'required|max:255',
+            'slug'       => 'required|max:255',
+            'type'       => 'required|max:255',
             'languageID' => 'required|integer'
         ];
     }

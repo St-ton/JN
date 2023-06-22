@@ -59,10 +59,10 @@ final class ShippingMethodLocalizationModel extends DataModel
         $attributes                 = [];
         $attributes['id']           = DataAttribute::create('kVersandart', 'int', self::cast('0', 'int'), false, true);
         $attributes['code']         = DataAttribute::create('cISOSprache', 'varchar', null, false, true);
-        $attributes['name']         = DataAttribute::create('cName', 'varchar', null, true, false);
-        $attributes['deliveryTime'] = DataAttribute::create('cLieferdauer', 'varchar', null, true, false);
-        $attributes['notice']       = DataAttribute::create('cHinweistext', 'mediumtext', null, true, false);
-        $attributes['noticeShop']   = DataAttribute::create('cHinweistextShop', 'mediumtext', null, true, false);
+        $attributes['name']         = DataAttribute::create('cName', 'varchar');
+        $attributes['deliveryTime'] = DataAttribute::create('cLieferdauer', 'varchar');
+        $attributes['notice']       = DataAttribute::create('cHinweistext', 'mediumtext');
+        $attributes['noticeShop']   = DataAttribute::create('cHinweistextShop', 'mediumtext');
 
         return $attributes;
     }

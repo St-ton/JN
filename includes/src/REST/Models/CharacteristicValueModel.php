@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Support\Collection;
 use JTL\Model\DataAttribute;
 use JTL\Model\DataModel;
+use JTL\Model\DataModelInterface;
 
 /**
  * Class CharacteristicValueModel
@@ -13,14 +14,14 @@ use JTL\Model\DataModel;
  *     title="Characteristic model",
  *     description="Characteristic model",
  * )
- * @property int                                                $kMerkmalWert
- * @property int                                                $id
- * @property int                                                $kMerkmal
- * @property int                                                $characteristicID
- * @property int                                                $nSort
- * @property int                                                $sort
- * @property string                                             $cBildpfad
- * @property string                                             $imagePath
+ * @property int    $kMerkmalWert
+ * @property int    $id
+ * @property int    $kMerkmal
+ * @property int    $characteristicID
+ * @property int    $nSort
+ * @property int    $sort
+ * @property string $cBildpfad
+ * @property string $imagePath
  */
 final class CharacteristicValueModel extends DataModel
 {
@@ -109,6 +110,7 @@ final class CharacteristicValueModel extends DataModel
                     return $e->characteristicValueID === $loc->characteristicValueID
                         && $e->languageID === $loc->languageID;
                 });
+                /** @var DataModelInterface|null $existing */
                 if ($existing === null) {
                     $res->push($loc);
                 } else {
@@ -145,6 +147,7 @@ final class CharacteristicValueModel extends DataModel
                 } catch (Exception) {
                     continue;
                 }
+                /** @var DataModelInterface|null $existing */
                 $existing = $res->first(static function ($e) use ($item): bool {
                     return $e->characteristicValueID === $item->characteristicValueID;
                 });

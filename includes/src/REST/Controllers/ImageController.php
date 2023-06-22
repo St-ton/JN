@@ -50,8 +50,6 @@ class ImageController extends AbstractController
         };
     }
 
-
-
     /**
      * @inheritdoc
      * @OA\Get(
@@ -233,7 +231,6 @@ class ImageController extends AbstractController
         } catch (UnhandledMatchError) {
             return $this->sendCustomResponse(500, 'Error occurred creating item - unknown type');
         } catch (Exception $e) {
-            Shop::dbg($e->getMessage(), true, 'EX:');
             return $this->sendCustomResponse(500, 'Error occurred creating item - duplicate ID? ' . $e->getMessage());
         }
 
@@ -374,6 +371,7 @@ class ImageController extends AbstractController
         try {
             $class = $this->getModelClass($params['type']);
             /** @var DataModelInterface $result */
+            /** @var DataModelInterface $class */
             $result = $class::load(['id' => $params['id']], $this->db, DataModelInterface::ON_NOTEXISTS_FAIL);
         } catch (UnhandledMatchError | Exception) {
             return $this->sendNotFoundResponse('Item with id ' . $params['id'] . ' does not exist');

@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Support\Collection;
 use JTL\Model\DataAttribute;
 use JTL\Model\DataModel;
+use JTL\Model\DataModelInterface;
 
 /**
  * Class CharacteristicModel
@@ -13,18 +14,18 @@ use JTL\Model\DataModel;
  *     title="Characteristic model",
  *     description="Characteristic model",
  * )
- * @property int                                           $kMerkmal
- * @property int                                           $id
- * @property int                                           $nSort
- * @property int                                           $sort
- * @property string                                        $cName
- * @property string                                        $name
- * @property string                                        $cBildpfad
- * @property string                                        $image
- * @property string                                        $cTyp
- * @property string                                        $type
- * @property int                                           $nMehrfachauswahl
- * @property int                                           $isMulti
+ * @property int                                          $kMerkmal
+ * @property int                                          $id
+ * @property int                                          $nSort
+ * @property int                                          $sort
+ * @property string                                       $cName
+ * @property string                                       $name
+ * @property string                                       $cBildpfad
+ * @property string                                       $image
+ * @property string                                       $cTyp
+ * @property string                                       $type
+ * @property int                                          $nMehrfachauswahl
+ * @property int                                          $isMulti
  * @property Collection|CharacteristicValueModel[]        $value
  * @property Collection|CharacteristicLocalizationModel[] $localization
  */
@@ -131,6 +132,7 @@ final class CharacteristicModel extends DataModel
                 $existing = $res->first(static function ($e) use ($loc) {
                     return $e->characteristicID === $loc->characteristicID && $e->languageID === $loc->languageID;
                 });
+                /** @var DataModelInterface|null $existing */
                 if ($existing === null) {
                     $res->push($loc);
                 } else {

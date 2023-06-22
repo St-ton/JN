@@ -7,6 +7,7 @@ use Exception;
 use Illuminate\Support\Collection;
 use JTL\Model\DataAttribute;
 use JTL\Model\DataModel;
+use JTL\Model\DataModelInterface;
 use JTL\Shop;
 
 /**
@@ -100,7 +101,6 @@ final class ProductModel extends DataModel
      *   example=99,
      *   description="The product id"
      * )
-
      * @OA\Property(
      *   property="manufacturerID",
      *   type="integer",
@@ -620,6 +620,7 @@ final class ProductModel extends DataModel
                 }
                 $res->push($item);
                 continue;
+                /** @var DataModelInterface|null $existing */
                 $existing = $res->first(static function ($e) use ($item): bool {
                     return $e->productID === $item->productID && $e->valueID === $item->valueID;
                 });
@@ -659,6 +660,7 @@ final class ProductModel extends DataModel
                 } catch (Exception) {
                     continue;
                 }
+                /** @var DataModelInterface|null $existing */
                 $existing = $res->first(static function ($e) use ($item): bool {
                     return $e->productID === $item->productID && $e->languageID === $item->languageID;
                 });
@@ -708,6 +710,7 @@ final class ProductModel extends DataModel
                 } catch (Exception) {
                     continue;
                 }
+                /** @var DataModelInterface|null $existing */
                 $existing = $res->first(static function ($e) use ($item): bool {
                     return $e->id === $item->id && $e->id > 0;
                 });
@@ -757,6 +760,7 @@ final class ProductModel extends DataModel
                 } catch (Exception) {
                     continue;
                 }
+                /** @var DataModelInterface|null $existing */
                 $existing = $res->first(static function ($e) use ($item): bool {
                     return $e->id === $item->id && $e->id > 0;
                 });
@@ -806,6 +810,7 @@ final class ProductModel extends DataModel
                 } catch (Exception) {
                     continue;
                 }
+                /** @var DataModelInterface|null $existing */
                 $existing = $res->first(static function ($e) use ($item): bool {
                     return $e->id === $item->id && $e->id > 0;
                 });
@@ -844,6 +849,7 @@ final class ProductModel extends DataModel
                 } catch (Exception) {
                     continue;
                 }
+                /** @var DataModelInterface|null $existing */
                 $existing = $res->first(static function ($e) use ($img) {
                     return $e->productID === $img->productID && $e->id === $img->id;
                 });
@@ -880,6 +886,7 @@ final class ProductModel extends DataModel
                 } catch (Exception) {
                     continue;
                 }
+                /** @var DataModelInterface|null $existing */
                 $existing = $res->first(static function ($e) use ($price): bool {
                     return $e->kPreis === $price->kPreis
                         && $e->customerGroupID === $price->customerGroupID
@@ -922,6 +929,7 @@ final class ProductModel extends DataModel
                 } catch (Exception) {
                     continue;
                 }
+                /** @var DataModelInterface|null $existing */
                 $existing = $res->first(static function ($e) use ($minQty): bool {
                     return $e->productID === $minQty->productID;
                 });
@@ -962,6 +970,7 @@ final class ProductModel extends DataModel
                 } catch (Exception) {
                     continue;
                 }
+                /** @var DataModelInterface|null $existing */
                 $existing = $res->first(static function ($e) use ($discounts): bool {
                     return $e->productID === $discounts->productID;
                 });

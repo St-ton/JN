@@ -7,6 +7,7 @@ use Exception;
 use Illuminate\Support\Collection;
 use JTL\Model\DataAttribute;
 use JTL\Model\DataModel;
+use JTL\Model\DataModelInterface;
 use JTL\Model\ModelHelper;
 
 /**
@@ -134,6 +135,7 @@ final class ProductPropertyModel extends DataModel
                 } catch (Exception) {
                     continue;
                 }
+                /** @var DataModelInterface|null $existing */
                 $existing = $res->first(static function ($e) use ($item): bool {
                     return $e->productID === $item->productID && $e->propertyID === $item->propertyID;
                 });

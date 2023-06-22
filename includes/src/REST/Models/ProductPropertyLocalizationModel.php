@@ -16,10 +16,10 @@ use JTL\Model\ModelHelper;
  * )
  *
  * @package JTL\REST\Models
- * @property int $kEigenschaft
+ * @property int    $kEigenschaft
  * @method int getKEigenschaft()
  * @method void setKEigenschaft(int $value)
- * @property int $kSprache
+ * @property int    $kSprache
  * @method int getKSprache()
  * @method void setKSprache(int $value)
  * @property string $cName
@@ -70,14 +70,6 @@ final class ProductPropertyLocalizationModel extends DataModel
     /**
      * @inheritdoc
      */
-    protected function onRegisterHandlers(): void
-    {
-        parent::onRegisterHandlers();
-    }
-
-    /**
-    * @inheritdoc
-    */
     public function getAttributes(): array
     {
         static $attributes = null;

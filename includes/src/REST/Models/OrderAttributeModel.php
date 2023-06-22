@@ -76,14 +76,6 @@ final class OrderAttributeModel extends DataModel
     /**
      * @inheritdoc
      */
-    protected function onRegisterHandlers(): void
-    {
-        parent::onRegisterHandlers();
-    }
-
-    /**
-     * @inheritdoc
-     */
     public function getAttributes(): array
     {
         static $attributes = null;

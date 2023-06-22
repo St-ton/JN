@@ -52,9 +52,9 @@ export class OPC extends Emitter
 
         if(this.page.hasUnsavedContent()) {
             this.gui.showRestoreUnsaved();
-            this.gui.unsavedRevision.show();
+            $(window.unsavedRevision).show();
         } else {
-            this.gui.unsavedRevision.hide();
+            $(window.unsavedRevision).hide();
         }
     }
 

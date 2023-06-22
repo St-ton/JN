@@ -21,28 +21,20 @@ export class Iframe
 
     async init(pagetree)
     {
-        installGuiElements(this, [
-            'iframe',
-            'portletToolbar',
-            'portletLabel',
-            'portletPreviewLabel',
-            'btnConfig',
-            'btnClone',
-            'btnBlueprint',
-            'btnParent',
-            'btnTrash',
-            'dropTargetBlueprint',
-        ]);
+        $(window.btnConfig).on('click', () => this.onBtnConfig());
+        $(window.btnClone).on('click', () => this.onBtnClone());
+        $(window.btnBlueprint).on('click', () => this.onBtnBlueprint());
+        $(window.btnParent).on('click', () => this.onBtnParent());
+        $(window.btnTrash).on('click', () => this.onBtnTrash());
 
         this.pagetree = pagetree;
 
         await new Promise(res => {
-            this.iframe
-                .attr('src', this.getIframePageUrl())
-                .on('load', res);
+            window.iframe.src = this.getIframePageUrl();
+            window.iframe.onload = res;
         });
 
-        this.ctx  = this.iframe[0].contentWindow;
+        this.ctx  = window.iframe.contentWindow;
         this.jq   = this.ctx.$;
         this.head = this.jq('head');
         this.body = this.jq('body');
@@ -56,17 +48,17 @@ export class Iframe
         this.loadStylesheet(this.shopUrl + '/admin/opc/css/iframe.css');
         this.loadStylesheet(this.shopUrl + '/templates/NOVA/themes/base/fontawesome/css/all.min.css');
 
+        this.disableLinks();
+        $(window.portletPreviewLabel).appendTo(this.body);
+        $(window.portletToolbar).appendTo(this.body);
+
         this.loadScript(
             this.shopUrl + '/templates/NOVA/js/popper.min.js',
             () => {
-                this.toolbarPopper      = this.makePopper(this.portletToolbar);
-                this.previewLabelPopper = this.makePopper(this.portletPreviewLabel);
+                this.toolbarPopper      = this.makePopper($(this.ctx.portletToolbar));
+                this.previewLabelPopper = this.makePopper($(this.ctx.portletPreviewLabel));
             }
         );
-
-        this.disableLinks();
-        this.portletPreviewLabel.appendTo(this.body);
-        this.portletToolbar.appendTo(this.body);
 
         try {
             await this.page.initIframe(this.jq);
@@ -91,7 +83,7 @@ export class Iframe
 
     getIframePageUrl()
     {
-        var pageUrlLink = document.createElement('a');
+        let pageUrlLink = document.createElement('a');
 
         pageUrlLink.href = this.page.fullUrl;
 
@@ -136,7 +128,7 @@ export class Iframe
 
         this.areas().each((i, area) => {
             area = this.jq(area);
-            let droptarget = this.dropTargetBlueprint.clone().attr('id', '').show();
+            let droptarget = $(window.dropTargetBlueprint).clone().attr('id', '').show();
             droptarget.find('.opc-droptarget-info').attr('title', area.data('title') || area.data('area-id'));
             area.append(droptarget.clone());
             area.children('[data-portlet]').before(droptarget.clone());
@@ -391,13 +383,14 @@ export class Iframe
         if(this.hoveredElm !== null) {
             this.hoveredElm.removeClass('opc-hovered');
             this.hoveredElm.attr('draggable', 'false');
-            this.portletPreviewLabel.hide();
+            $(this.ctx.portletPreviewLabel).hide();
         }
 
         if(elm !== null) {
             elm.addClass('opc-hovered');
             elm.attr('draggable', 'true');
-            this.portletPreviewLabel.text(elm.data('portlet').title).show();
+            this.ctx.portletPreviewLabel.innerText = elm.data('portlet').title;
+            $(this.ctx.portletPreviewLabel).show();
             this.previewLabelPopper.reference = elm[0];
             this.previewLabelPopper.update();
         }
@@ -414,14 +407,14 @@ export class Iframe
         if(elm === null || !elm.is(this.selectedElm)) {
             if(this.selectedElm !== null) {
                 this.selectedElm.removeClass('opc-selected');
-                this.portletToolbar.hide();
+                $(this.ctx.portletToolbar).hide();
             }
 
             if(elm !== null) {
                 var portletData = elm.data('portlet');
                 elm.addClass('opc-selected');
-                this.portletLabel.text(portletData ? portletData.title : '');
-                this.portletToolbar.show();
+                this.ctx.portletLabel.innerText = portletData ? portletData.title : '';
+                $(this.ctx.portletToolbar).show();
                 this.toolbarPopper.reference = elm[0];
                 this.toolbarPopper.update();
                 this.scrollIntoView(elm);
@@ -517,7 +510,7 @@ export class Iframe
     onBtnBlueprint()
     {
         if(this.selectedElm !== null) {
-            this.gui.blueprintModal.modal('show');
+            $(window.blueprintModal).modal('show');
         }
     }
 
@@ -548,7 +541,7 @@ export class Iframe
     onKeyDown(e)
     {
         if(e.key === 'Delete' && this.selectedElm !== null) {
-            this.onBtnTrash(e);
+            this.onBtnTrash();
         }
     }
 

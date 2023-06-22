@@ -432,8 +432,16 @@
   padding-bottom: 14px;
 }
 
+#blueprints {
+  min-height: 100%;
+  flex-direction: column;
+}
+#blueprints.active {
+  display: flex;
+}
 #blueprints #blueprintList {
   padding-bottom: 60px;
+  flex: auto;
 }
 #blueprints .blueprintButton {
   cursor: pointer;
@@ -466,9 +474,8 @@
   display: block;
 }
 #blueprints #btnImportBlueprint {
-  position: fixed;
-  bottom: 212px;
-  width: 334px;
+  position: sticky;
+  bottom: 0;
   box-shadow: none;
 }
 
@@ -1431,7 +1438,7 @@ body.resizing #previewPanel {
   position: absolute;
   top: 54px;
   left: 0;
-  width: 380px;
+  right: 0;
   bottom: 50px;
   background-color: rgba(67, 90, 107, 0.66);
 }

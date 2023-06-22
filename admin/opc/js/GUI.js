@@ -15,53 +15,16 @@ export class GUI
 
     init(iframe, previewFrame, tutorial, error)
     {
-        this.iframe       = iframe;
-        this.previewFrame = previewFrame;
-        this.tutorial     = tutorial;
+        this.iframe         = iframe;
+        this.previewFrame   = previewFrame;
+        this.tutorial       = tutorial;
+        this.portletButtons = $('.portletButton');
 
-        installGuiElements(this, [
-            'opcSidebar',
-            'opcHeader',
-            'btnPagetree',
-            'iframePanel',
-            'previewPanel',
-            'loaderModal',
-            'errorModal',
-            'errorAlert',
-            'errorTitle',
-            'messageboxModal',
-            'messageboxAlert',
-            'configModal',
-            'configModalTitle',
-            'configPortletName',
-            'configModalBody',
-            'configForm',
-            'stdConfigButtons',
-            'missingConfigButtons',
-            'blueprintModal',
-            'blueprintName',
-            'blueprintDeleteModal',
-            'blueprintDeleteId',
-            'publishModal',
-            'draftName',
-            'checkPublishNot',
-            'checkPublishNow',
-            'checkPublishSchedule',
-            'checkPublishInfinite',
-            'publishFrom',
-            'publishTo',
-            'revisionList',
-            'revisionBtnBlueprint',
-            'unsavedRevision',
-            'blueprintList',
-            'blueprintBtnBlueprint',
-            'portletButton',
-            'portletGroupBtn',
-            'restoreUnsavedModal',
-            'unsavedState',
-            'iconpicker',
-            'disableVeil',
-        ]);
+        this.portletButtons
+            .on('dragstart', e => this.onPortletButtonDragStart(e))
+            .on('dragend', e => this.onPortletButtonDragEnd(e));
+
+        $('.portletGroupBtn').on('click', e => this.onPortletGroupBtn(e));
 
         // resizer
 
@@ -123,7 +86,7 @@ export class GUI
             e.target.scrollIntoView();
         })
 
-        this.missingConfigButtons.hide();
+        $(window.missingConfigButtons).hide();
 
         if(error) {
             if(typeof error === 'string' && error.length > 0) {
@@ -133,28 +96,28 @@ export class GUI
             }
         } else {
             this.showLoader();
-            this.initDateTimePicker(this.publishFrom);
-            this.initDateTimePicker(this.publishTo);
+            this.initDateTimePicker($(window.publishFrom));
+            this.initDateTimePicker($(window.publishTo));
 
-            this.publishFrom.on("change.datetimepicker", e => {
-                this.publishTo.datetimepicker('minDate', e.date);
+            $(window.publishFrom).on("change.datetimepicker", e => {
+                $(window.publishTo).datetimepicker('minDate', e.date);
             });
 
-            this.publishTo.on("change.datetimepicker", e => {
-                this.publishFrom.datetimepicker('maxDate', e.date);
+            $(window.publishTo).on("change.datetimepicker", e => {
+                $(window.publishFrom).datetimepicker('maxDate', e.date);
             });
 
             this.updateBlueprintList();
             this.updateRevisionList();
 
-            this.iconpicker.iconpicker().on('iconpickerSelected', e => {
+            $(window.iconpicker).iconpicker().on('iconpickerSelected', e => {
                 this.iconPickerCB(e.iconpickerValue);
             });
 
-            this.iconpicker.find('.popover-title').prepend('<i class=""></i>');
+            $(window.iconpicker).find('.popover-title').prepend('<i class=""></i>');
 
-            this.configModal.on('hidden.bs.modal', e => {
-                $('#opc').append(this.iconpicker);
+            $(window.configModal).on('hidden.bs.modal', e => {
+                $('#opc').append(window.iconpicker);
             })
         }
     }
@@ -181,63 +144,60 @@ export class GUI
 
     showLoader()
     {
-        this.loaderModal.one('shown.bs.modal', () => {
-            this.loaderShown = true;
-        });
-
-        this.loaderModal.modal('show');
+        $(window.loaderModal)
+            .one('shown.bs.modal', () => this.loaderShown = true)
+            .modal('show');
     }
 
     hideLoader()
     {
-        this.loaderModal.one('hidden.bs.modal', () => {
-            this.loaderShown = false;
-        });
+        $(window.loaderModal).one('hidden.bs.modal', () => this.loaderShown = false);
 
         if(this.loaderShown) {
-            this.loaderModal.modal('hide');
+            $(window.loaderModal).modal('hide');
         } else {
-            this.loaderModal.one('shown.bs.modal', () => {
-                this.loaderModal.modal('hide');
-            });
+            $(window.loaderModal).one('shown.bs.modal', () => $(window.loaderModal).modal('hide'));
         }
     }
 
     showRestoreUnsaved()
     {
-        this.restoreUnsavedModal.modal('show');
+        $(window.restoreUnsavedModal).modal('show');
     }
 
     showError(msg, heading)
     {
         if(heading) {
-            this.errorTitle.html(heading);
+            $(window.errorTitle).html(heading);
         }
 
-        this.loaderModal.modal('hide');
-        this.errorAlert.html(msg);
-        this.errorModal.modal('show');
+        this.hideLoader();
+        $(window.errorAlert).html(msg);
+        $(window.errorModal).modal('show');
         return Promise.reject(msg);
     }
 
     showMessageBox(msg, title)
     {
-        this.messageboxAlert.html(msg);
-        this.messageboxModal.find('.modal-title').html(title);
-        this.messageboxModal.modal('show');
+        $(window.messageboxAlert).html(msg);
+
+        $(window.messageboxModal)
+            .modal('show')
+            .find('.modal-title').html(title);
     }
 
     async updateBlueprintList()
     {
         let blueprints = await this.io.getBlueprints();
-        this.blueprintList.empty();
+        window.blueprintList.innerHTML = '';
 
         blueprints.forEach(blueprint => {
-            let newBtn = this.blueprintBtnBlueprint.clone()
+            let newBtn = $(window.blueprintBtnBlueprint)
+                .clone()
                 .attr('id', null)
                 .attr('data-blueprint-id', blueprint.id)
                 .show()
-                .appendTo(this.blueprintList);
+                .appendTo(window.blueprintList);
 
             newBtn.find('.blueprintExport').attr('data-blueprint-id', blueprint.id);
             newBtn.find('.blueprintDelete').attr('data-blueprint-id', blueprint.id);
@@ -250,17 +210,18 @@ export class GUI
     async updateRevisionList()
     {
         let revisions = await this.page.getRevisionList();
-        this.revisionList.empty();
+        window.revisionList.innerHTML = '';
 
         revisions.forEach(rev => {
-            this.revisionBtnBlueprint.clone()
+            $(window.revisionBtnBlueprint)
+                .clone()
                 .attr('id', '').css('display', '')
                 .attr('data-revision-id', rev.id)
                 .html(
                     '<div>' + rev.content.cName + '</div>' +
                     '<div>' + moment(rev.content.dLastModified, internalDateFormat).format(localDateFormat) + '</div>'
                 )
-                .appendTo(this.revisionList);
+                .appendTo(window.revisionList);
         });
 
         $('#currentLastModified').text(
@@ -275,9 +236,9 @@ export class GUI
     updatePagetreeBtn()
     {
         if (this.page.offscreenAreas.length) {
-            this.btnPagetree.addClass('has-unmapped');
+            window.btnPagetree.classList.add('has-unmapped');
         } else {
-            this.btnPagetree.removeClass('has-unmapped');
+            window.btnPagetree.classList.remove('has-unmapped');
         }
     }
 
@@ -341,15 +302,15 @@ export class GUI
     onBtnPreview()
     {
         if (this.inPreviewMode) {
-            this.iframePanel.show();
+            $(window.iframePanel).show();
             this.previewFrame.previewPanel.hide();
             this.inPreviewMode = false;
-            this.disableVeil.hide();
+            $(window.disableVeil).hide();
         } else {
-            this.iframePanel.hide();
+            $(window.iframePanel).hide();
             this.previewFrame.showPreview(this.page.fullUrl, JSON.stringify(this.page.toJSON()));
             this.inPreviewMode = true;
-            this.disableVeil.show();
+            $(window.disableVeil).show();
         }
     }
 
@@ -373,25 +334,25 @@ export class GUI
         record = record || false;
 
         if(enable) {
-            this.unsavedState.show();
+            $(window.unsavedState).show();
 
             if(record) {
                 this.page.savePageToWebStorage();
-                this.unsavedRevision.show();
+                $(window.unsavedRevision).show();
             }
         } else {
-            this.unsavedState.hide();
+            $(window.unsavedState).hide();
 
             if(record) {
                 this.page.clearPageWebStorage();
-                this.unsavedRevision.hide();
+                $(window.unsavedRevision).hide();
             }
         }
     }
 
     isPageUnsaved()
     {
-        return this.unsavedState.css('display') !== 'none';
+        return window.unsavedState.style.display !== 'none';
     }
 
     async closeEditor()
@@ -474,16 +435,16 @@ export class GUI
         )
 
         if (portletData.class === 'MissingPortlet') {
-            this.stdConfigButtons.hide();
-            this.missingConfigButtons.show();
+            $(window.stdConfigButtons).hide();
+            $(window.missingConfigButtons).show();
         } else {
-            this.stdConfigButtons.show();
-            this.missingConfigButtons.hide();
+            $(window.stdConfigButtons).show();
+            $(window.missingConfigButtons).hide();
         }
 
-        this.configModalBody.html(html);
-        this.configPortletName[0].textContent = portletData.title;
-        this.configModal.modal('show');
+        $(window.configModalBody).html(html);
+        window.configPortletName.textContent = portletData.title;
+        $(window.configModal).modal('show');
     }
 
     async saveConfig()
@@ -491,7 +452,7 @@ export class GUI
         opc.emit('save-config');
 
         let portletData  = this.page.portletToJSON(this.curPortlet);
-        let configObject = this.configForm.serializeControls();
+        let configObject = $(window.configForm).serializeControls();
 
         for(let propname in configObject) {
             if(configObject.hasOwnProperty(propname)) {
@@ -532,12 +493,12 @@ export class GUI
         try {
             preview = await this.io.getPortletPreviewHtml(portletData);
         } catch(er) {
-            this.configModal.modal('hide');
+            $(window.configModal).modal('hide');
             return await this.showError('Error while saving Portlet configuration: ' + er.error.message);
         }
 
         this.iframe.replaceSelectedPortletHtml(preview);
-        this.configModal.modal('hide');
+        $(window.configModal).modal('hide');
         this.page.updateFlipcards();
         this.iframe.disableLinks();
     }
@@ -545,12 +506,12 @@ export class GUI
     async createBlueprint()
     {
         if(this.selectedElm !== null) {
-            let blueprintName = this.blueprintName.val();
+            let blueprintName = window.blueprintName.value;
             let blueprintData = this.page.portletToJSON(this.iframe.selectedElm);
 
             await this.io.saveBlueprint(blueprintName, blueprintData);
             this.updateBlueprintList();
-            this.blueprintModal.modal('hide');
+            $(window.blueprintModal).modal('hide');
         }
     }
 
@@ -560,8 +521,8 @@ export class GUI
         let title = elm.closest('.blueprintButton').find('.blueprintTitle').text();
 
         $('#blueprintDeleteTitle').text(title);
-        this.blueprintDeleteId.val(elm.data('blueprint-id'));
-        this.blueprintDeleteModal.modal('show');
+        window.blueprintDeleteId.value = elm.data('blueprint-id');
+        $(window.blueprintDeleteModal).modal('show');
     }
 
     async onBlueprintExport(e)
@@ -592,22 +553,22 @@ export class GUI
 
     async deleteBlueprint()
     {
-        let blueprintId = this.blueprintDeleteId.val();
+        let blueprintId = parseInt(window.blueprintDeleteId.value);
 
         await this.io.deleteBlueprint(blueprintId)
         this.updateBlueprintList();
-        this.blueprintDeleteModal.modal('hide');
+        $(window.blueprintDeleteModal).modal('hide');
     }
 
     publishDraft()
     {
         if(typeof this.page.publishFrom === 'string' && this.page.publishFrom.length > 0) {
             this.setPublishSchedule();
-            this.publishFrom.val(this.page.publishFrom);
+            window.publishFrom.value = this.page.publishFrom;
 
             if(typeof this.page.publishTo === 'string' && this.page.publishTo.length > 0) {
                 this.unsetInfiniteSchedule();
-                this.publishTo.val(this.page.publishTo);
+                window.publishTo.value = this.page.publishTo;
             } else {
                 this.setInfiniteSchedule();
             }
@@ -615,15 +576,15 @@ export class GUI
             this.setPublishNow();
         }
 
-        this.draftName.val(this.page.name);
-        this.publishModal.modal('show');
+        window.draftName.value = this.page.name;
+        $(window.publishModal).modal('show');
     }
 
     onChangePublishStrategy()
     {
-        if (this.checkPublishNot.prop('checked')) {
+        if (window.checkPublishNot.checked) {
             this.setUnpublished();
-        } else if (this.checkPublishNow.prop('checked')) {
+        } else if (window.checkPublishNow.checked) {
             this.setPublishNow();
         } else {
             this.setPublishSchedule();
@@ -632,7 +593,7 @@ export class GUI
 
     onChangePublishInfinite()
     {
-        if(this.checkPublishInfinite.prop('checked')) {
+        if(window.checkPublishInfinite.checked) {
             this.setInfiniteSchedule();
         } else {
             this.unsetInfiniteSchedule();
@@ -641,78 +602,78 @@ export class GUI
 
     setUnpublished()
     {
-        this.checkPublishNot.prop('checked', true);
-        this.publishFrom.prop('disabled', true);
-        this.publishFrom.val(opc.messages.notScheduled);
-        this.publishTo.prop('disabled', true);
-        this.publishTo.val(opc.messages.indefinitePeriodOfTime);
-        this.checkPublishInfinite.prop('checked', true);
-        this.checkPublishInfinite.prop('disabled', true);
+        window.checkPublishNot.checked = true;
+        window.publishFrom.disabled = true;
+        window.publishFrom.value = opc.messages.notScheduled;
+        window.publishTo.disabled = true;
+        window.publishTo.value = opc.messages.indefinitePeriodOfTime;
+        window.checkPublishInfinite.checked = true;
+        window.checkPublishInfinite.disabled = true;
     }
 
     setPublishNow()
     {
-        this.checkPublishNow.prop('checked', true);
-        this.publishFrom.prop('disabled', true);
-        this.publishFrom.val(opc.messages.now);
-        this.publishTo.prop('disabled', true);
-        this.publishTo.val(opc.messages.indefinitePeriodOfTime);
-        this.checkPublishInfinite.prop('checked', true);
-        this.checkPublishInfinite.prop('disabled', true);
+        window.checkPublishNow.checked = true;
+        window.publishFrom.disabled = true;
+        window.publishFrom.value = opc.messages.now;
+        window.publishTo.disabled = true;
+        window.publishTo.value = opc.messages.indefinitePeriodOfTime;
+        window.checkPublishInfinite.checked = true;
+        window.checkPublishInfinite.disabled = true;
     }
 
     setPublishSchedule()
     {
-        this.checkPublishSchedule.prop('checked', true);
-        this.publishFrom.prop('disabled', false);
-        this.publishFrom.val(moment().format(localDateFormat));
-        this.checkPublishInfinite.prop('disabled', false);
+        window.checkPublishSchedule.checked = true;
+        window.publishFrom.disabled = false;
+        window.publishFrom.value = moment().format(localDateFormat);
+        window.checkPublishInfinite.disabled = false;
     }
 
     setInfiniteSchedule()
     {
-        this.checkPublishInfinite.prop('checked', true);
-        this.publishTo.prop('disabled', true);
-        this.publishTo.val(opc.messages.indefinitePeriodOfTime);
-        this.publishFrom.datetimepicker('maxDate', false);
+        window.checkPublishInfinite.checked = true;
+        window.publishTo.disabled = true;
+        window.publishTo.value = opc.messages.indefinitePeriodOfTime;
+        $(window.publishFrom).datetimepicker('maxDate', false);
     }
 
     unsetInfiniteSchedule()
     {
-        this.checkPublishInfinite.prop('checked', false);
-        this.publishTo.prop('disabled', false);
-        this.publishTo.val(moment(this.publishFrom.val(), localDateFormat).add(1, 'M').format(localDateFormat));
+        window.checkPublishInfinite.checked = false;
+        window.publishTo.disabled = false;
+        window.publishTo.value = moment(window.publishFrom.value, localDateFormat).add(1, 'M').format(localDateFormat);
     }
 
     async publish()
     {
-        this.page.name = this.draftName.val();
+        this.page.name = window.draftName.value;
         $('#footerDraftName span').text(this.page.name);
 
-        if (this.checkPublishNot.prop('checked')) {
+        if (window.checkPublishNot.checked) {
             this.page.publishFrom = null;
-        } else if (this.checkPublishNow.prop('checked')) {
+        } else if (window.checkPublishNow.checked) {
             this.page.publishFrom = moment().format(localDateFormat);
         } else {
-            let datetime = moment(this.publishFrom.val(), localDateFormat);
+            let datetime = moment(window.publishFrom.value, localDateFormat);
 
             if (datetime.isValid() === false) {
                 throw this.showError('Invalid From Date');
             }
 
-            this.page.publishFrom = this.publishFrom.val();
+            this.page.publishFrom = window.publishFrom.value;
         }
 
-        if (this.checkPublishInfinite.prop('checked')) {
+        if (window.checkPublishInfinite.checked) {
             this.page.publishTo = null;
         } else {
-            let datetime = moment(this.publishTo.val(), localDateFormat);
+            let datetime = moment(window.publishTo.value, localDateFormat);
 
             if (datetime.isValid() === false) {
                 throw this.showError('Invalid To Date');
             }
 
-            this.page.publishTo = this.publishTo.val();
+            this.page.publishTo = window.publishTo.value;
         }
 
         try {
@@ -727,7 +688,7 @@ export class GUI
             this.savePage();
         }
 
-        this.publishModal.modal('hide');
+        $(window.publishModal).modal('hide');
     }
 
     selectImageProp(propName)
@@ -735,17 +696,17 @@ export class GUI
         this.openElFinder((file, mediafilesBaseUrlPath) => {
             let url = file.url.slice(mediafilesBaseUrlPath.length);
             this.imageSelectCB(url, propName, file.url);
-            this.configForm.find('[name="' + propName + '"]').val(url);
-            this.configForm.find('#preview-img-' + propName).attr('src', file.url);
+            window.configForm.querySelector('[name="' + propName + '"]').value = url;
+            window.configForm.querySelector('#preview-img-' + propName).src = file.url;
         }, 'image');
     }
 
     selectVideoProp(propName)
     {
          this.openElFinder(file => {
-             this.configForm.find('[name="' + propName + '"]').val(file.url);
-             this.configForm.find('#preview-vid-' + propName).attr('src', file.url);
-             this.configForm.find('#cont-preview-vid-' + propName)[0].load();
+             window.configForm.querySelector('[name="' + propName + '"]').value = file.url;
+             window.configForm.querySelector('#preview-vid-' + propName).src = file.url;
+             window.configForm.querySelector('#cont-preview-vid-' + propName).load();
          }, 'video');
     }
 
@@ -756,8 +717,8 @@ export class GUI
 
     restoreUnsaved()
     {
-        this.unsavedRevision.click();
-        this.restoreUnsavedModal.modal('hide');
+        window.unsavedRevision.click();
+        $(window.restoreUnsavedModal).modal('hide');
     }
 
     setImageSelectCallback(callback)
@@ -772,7 +733,7 @@ export class GUI
 
     setDisplayFrameWidth(btn, value)
     {
-        this.iframe.iframe.width(value);
+        window.iframe.style.width = value;
         this.previewFrame.previewFrame.width(value);
         $('#displayWidths .active').removeClass('active');
         $(btn).addClass('active');

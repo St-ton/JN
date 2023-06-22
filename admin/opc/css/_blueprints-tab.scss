@@ -1,6 +1,14 @@
 #blueprints {
+    min-height: 100%;
+    flex-direction: column;
+
+    &.active {
+        display: flex;
+    }
+
     #blueprintList {
         padding-bottom: 60px;
+        flex: auto;
     }
 
     .blueprintButton {
@@ -43,9 +51,8 @@
     }
 
     #btnImportBlueprint {
-        position: fixed;
-        bottom: 212px;
-        width: 334px;
+        position: sticky;
+        bottom: 0;
         box-shadow: none;
     }
 }

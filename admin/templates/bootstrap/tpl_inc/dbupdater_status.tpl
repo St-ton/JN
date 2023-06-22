@@ -1,11 +1,12 @@
-{function migration_list manager=null title='' filter=0 plugin=null} {* filter: 0 - All, 1 - Executed, 2 - Pending *}
-    <div class="card">
-        <div class="card-body">
+{function migration_list manager=null title='' filter=0 plugin=null hidden=true hasPendingMigrations=false} {* filter: 0 - All, 1 - Executed, 2 - Pending *}
+    <div class="card card-widget">
+        <div class="card-header">
             {if $title|strlen > 0}
                 <h4>{$title}</h4>
                 <hr class="mb-5">
             {/if}
-
+        </div>
+        <div class="card-body{if $hidden && !$hasPendingMigrations} body-hidden{/if}">
             <div class="table-responsive">
                 <table class="table table-striped table-align-top">
                     <thead>
@@ -95,7 +96,9 @@
         {/if}
     </form>
 {/if}
+
 {if isset($manager) && is_object($manager)}
-    {migration_list manager=$manager filter=2 title=__('openMigrations') url=$migrationURL plugin=$pluginID}
+    {migration_list manager=$manager filter=2 title=__('openMigrations') url=$migrationURL plugin=$pluginID
+        hasPendingMigrations=$updatesAvailable|default:true}
     {migration_list manager=$manager filter=1 title=__('successfullMigrations') url=$migrationURL plugin=$pluginID}
 {/if}

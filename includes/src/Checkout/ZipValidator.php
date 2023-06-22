@@ -206,7 +206,7 @@ class ZipValidator
     /**
      * @param string $iso
      */
-    public function __construct(private string $iso)
+    public function __construct(private readonly string $iso)
     {
     }
 

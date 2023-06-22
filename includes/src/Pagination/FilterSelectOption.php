@@ -26,9 +26,9 @@ class FilterSelectOption
     /**
      * FilterSelectOption constructor.
      *
-     * @param string $title
+     * @param string     $title
      * @param string|int $value
-     * @param int    $testOp
+     * @param int        $testOp
      */
     public function __construct(string $title, $value, int $testOp)
     {

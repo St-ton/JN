@@ -14,7 +14,7 @@ use JTL\Shop;
 final class TopSeller extends Job
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function start(QueueEntry $queueEntry): JobInterface
     {

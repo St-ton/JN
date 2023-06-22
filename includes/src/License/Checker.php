@@ -28,9 +28,9 @@ class Checker
      * @param JTLCacheInterface $cache
      */
     public function __construct(
-        private LoggerInterface $logger,
-        private DbInterface $db,
-        private JTLCacheInterface $cache
+        private readonly LoggerInterface   $logger,
+        private readonly DbInterface       $db,
+        private readonly JTLCacheInterface $cache
     ) {
     }
 

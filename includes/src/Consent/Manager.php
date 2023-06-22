@@ -23,12 +23,12 @@ class Manager implements ManagerInterface
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */
-    public function __construct(private DbInterface $db, private JTLCacheInterface $cache)
+    public function __construct(private readonly DbInterface $db, private readonly JTLCacheInterface $cache)
     {
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getConsents(): array
     {
@@ -36,7 +36,7 @@ class Manager implements ManagerInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function itemRevokeConsent(ItemInterface $item): void
     {
@@ -46,7 +46,7 @@ class Manager implements ManagerInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function itemGiveConsent(ItemInterface $item): void
     {
@@ -56,7 +56,7 @@ class Manager implements ManagerInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function itemHasConsent(ItemInterface $item): bool
     {
@@ -64,7 +64,7 @@ class Manager implements ManagerInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function hasConsent(string $itemID): bool
     {
@@ -72,7 +72,7 @@ class Manager implements ManagerInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function save($data): ?array
     {
@@ -92,18 +92,21 @@ class Manager implements ManagerInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function initActiveItems(int $languageID): Collection
     {
         $cached  = true;
         $cacheID = 'jtl_consent_models_' . $languageID;
         if (($models = $this->cache->get($cacheID)) === false) {
-            $models = ConsentModel::loadAll($this->db, 'active', 1)->map(
-                static function (ConsentModel $model) use ($languageID) {
+            /** @var Collection $models */
+            $models = ConsentModel::loadAll($this->db, 'active', 1)
+                ->map(static function (ConsentModel $model) use ($languageID) {
                     return (new Item($languageID))->loadFromModel($model);
-                }
-            );
+                })
+                ->sortBy(static function (Item $item) {
+                    return $item->getItemID() !== 'necessary';
+                });
             $this->cache->set($cacheID, $models, [\CACHING_GROUP_CORE]);
             $cached = false;
         }
@@ -114,7 +117,7 @@ class Manager implements ManagerInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getActiveItems(int $languageID): Collection
     {

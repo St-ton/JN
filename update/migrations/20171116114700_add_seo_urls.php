@@ -37,7 +37,7 @@ class Migration_20171116114700 extends Migration implements IMigration
     private array $languages = [];
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -134,7 +134,7 @@ class Migration_20171116114700 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

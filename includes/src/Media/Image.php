@@ -9,6 +9,7 @@ use Intervention\Image\Image as InImage;
 use Intervention\Image\ImageManager;
 use JTL\Media\Image\AbstractImage;
 use JTL\Shop;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class Image
@@ -348,6 +349,7 @@ class Image
      * @param MediaImageRequest $req
      * @param bool              $streamOutput
      * @param bool              $sendResponse
+     * @return ResponseInterface|void
      * @throws Exception
      */
     public static function render(MediaImageRequest $req, bool $streamOutput = false, bool $sendResponse = false)

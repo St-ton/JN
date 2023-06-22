@@ -99,7 +99,7 @@ class CreateCommand extends Command
                 'name'         => $attrib['Field'],
                 'dataType'     => $dataType,
                 'phpType'      => \array_reduce($typeMap, static function ($carry, $item) use ($dataType) {
-                    if (!isset($carry) && \preg_match("/{$item}/", $dataType)) {
+                    if (!isset($carry) && \preg_match("/$item/", $dataType)) {
                         $carry = \explode('|', $item, 2)[0];
                     }
 

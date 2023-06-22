@@ -584,8 +584,8 @@ class Warehouse extends MainModel
      * @return array
      */
     public static function getByProduct(
-        int $productID,
-        int $langID = null,
+        int  $productID,
+        int  $langID = null,
         $config = null,
         bool $active = true
     ): array {
@@ -691,7 +691,7 @@ class Warehouse extends MainModel
      * @param Artikel $item
      * @return string
      */
-    public function getBackorderString(Artikel $item):string
+    public function getBackorderString(Artikel $item): string
     {
         $backorder = '';
         if ($item->cLagerBeachten === 'Y'

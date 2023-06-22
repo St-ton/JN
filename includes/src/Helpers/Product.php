@@ -177,8 +177,8 @@ class Product
      * @return array
      */
     public static function getPossibleVariationCombinations(
-        int $parentID,
-        int $customerGroupID = 0,
+        int  $parentID,
+        int  $customerGroupID = 0,
         bool $group = false
     ): array {
         if (!$customerGroupID) {
@@ -590,7 +590,7 @@ class Product
     {
         if ($productID > 0) {
             $data = Shop::Container()->getDB()->select('tstueckliste', 'kArtikel', $productID);
-            if (isset($data->kStueckliste) && $data->kStueckliste > 0) {
+            if ($data !== null && $data->kStueckliste > 0) {
                 return $info ? $data : true;
             }
         }
@@ -967,7 +967,9 @@ class Product
         bool        $isParent,
         array       $conf
     ): void {
-        if ($conf['artikeldetails_xselling_kauf_anzeigen'] !== 'Y' || (int)$conf['artikeldetails_xselling_kauf_anzahl'] === 0) {
+        if ($conf['artikeldetails_xselling_kauf_anzeigen'] !== 'Y'
+            || (int)$conf['artikeldetails_xselling_kauf_anzahl'] === 0
+        ) {
             return;
         }
         $limit = (int)$conf['artikeldetails_xselling_kauf_anzahl'];
@@ -1042,7 +1044,7 @@ class Product
                 'oArtikelArr'            => [],
                 'Standard'               => null,
                 'Kauf'                   => (object)[
-                    'Artikel'    => [],
+                    'Artikel' => [],
                 ],
             ];
         }
@@ -1821,7 +1823,7 @@ class Product
      * @former fasseVariVaterUndKindZusammen()
      * @since 5.0.0
      */
-    public static function combineParentAndChild(Artikel $parent, Artikel $child)
+    public static function combineParentAndChild(Artikel $parent, Artikel $child): Artikel
     {
         $product                              = $child;
         $variChildID                          = (int)$child->kArtikel;
@@ -2197,7 +2199,7 @@ class Product
             [$customerID, $productID, Shop::getLanguageID()]
         );
 
-        return !empty($ratings->kBewertung);
+        return $ratings !== null && !empty($ratings->kBewertung);
     }
 
     /**

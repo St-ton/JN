@@ -31,7 +31,7 @@ class TwoFAEmergency
      * TwoFAEmergency constructor.
      * @param DbInterface $db
      */
-    public function __construct(private DbInterface $db)
+    public function __construct(private readonly DbInterface $db)
     {
     }
 

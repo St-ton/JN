@@ -311,16 +311,16 @@ class VariationValue
      * @param int|float $taxRate
      * @param Currency  $currency
      * @param bool|int  $mayViewPrices
-     * @param int $precision
-     * @param string $per
+     * @param int       $precision
+     * @param string    $per
      */
     public function addPrices(
-        Artikel $product,
+        Artikel  $product,
         $taxRate,
         Currency $currency,
         $mayViewPrices,
-        int $precision,
-        string $per
+        int      $precision,
+        string   $per
     ): void {
         if (!isset($this->fAufpreisNetto) || $this->fAufpreisNetto === 0.0) {
             return;

@@ -12,7 +12,7 @@ class Migration_20220201113000 extends Migration implements IMigration
     protected $description = 'Create sqlite3 caching option';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -22,7 +22,7 @@ class Migration_20220201113000 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

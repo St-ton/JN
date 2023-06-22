@@ -18,7 +18,7 @@ class Migration_20171123110520 extends Migration implements IMigration
     protected $description = 'Add lang key shipping information';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -29,7 +29,7 @@ class Migration_20171123110520 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

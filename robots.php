@@ -7,7 +7,7 @@ require_once __DIR__ . '/includes/globalinclude.php';
 
 $robotsContent = file_get_contents(PFAD_ROOT . 'robots.txt');
 
-if (file_exists(PFAD_ROOT . PFAD_EXPORT  . 'sitemap_index.xml') && !str_contains($robotsContent, 'Sitemap: ')) {
+if (file_exists(PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml') && !str_contains($robotsContent, 'Sitemap: ')) {
     $robotsContent .= PHP_EOL . 'Sitemap: ' . Shop::getURL() . '/sitemap_index.xml';
 }
 

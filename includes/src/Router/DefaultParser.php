@@ -104,10 +104,19 @@ class DefaultParser
             $slug = \mb_substr($slug, 0, $matches[1][1]);
         }
         if ($page === 1 && \mb_strlen($slug) > 0) {
-            $url = Shop::getURL() . '/' . $slug;
+            $url = Shop::getURL() . '/';
             if ($type !== null && isset($replacements['name'])) {
                 $replacements['name'] = \mb_substr($replacements['name'], 0, $matches[1][1]);
                 $url                  = Shop::getRouter()->getURLByType($type, $replacements);
+            } elseif (isset($replacements['lang'])) {
+                $c1 = Shop::getSettingValue(\CONF_GLOBAL, 'routing_default_language');
+                $c2 = Shop::getSettingValue(\CONF_GLOBAL, 'routing_scheme');
+                if ($c1 === 'L' || $c2 === 'L') {
+                    $url .= $replacements['lang'] . '/';
+                }
+                $url .= $slug;
+            } else {
+                $url .= $slug;
             }
             \http_response_code(301);
             \header('Location: ' . $url);

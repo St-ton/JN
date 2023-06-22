@@ -17,36 +17,36 @@ class Revision
      * @var array
      */
     private array $mapping = [
-        'link' => [
+        'link'          => [
             'table'         => 'tlink',
             'id'            => 'kLink',
             'reference'     => 'tlinksprache',
             'reference_id'  => 'kLink',
             'reference_key' => 'cISOSprache'
         ],
-        'export'   => [
+        'export'        => [
             'table' => 'texportformat',
             'id'    => 'kExportformat'
         ],
-        'mail'     => [
+        'mail'          => [
             'table'         => 'temailvorlage',
             'id'            => 'kEmailvorlage',
             'reference'     => 'temailvorlagesprache',
             'reference_id'  => 'kEmailvorlage',
             'reference_key' => 'kSprache'
         ],
-        'opcpage'  => [
+        'opcpage'       => [
             'table' => 'topcpage',
             'id'    => 'kPage'
         ],
-        'news' => [
+        'news'          => [
             'table'         => 'tnews',
             'id'            => 'kNews',
             'reference'     => 'tnewssprache',
             'reference_id'  => 'kNews',
             'reference_key' => 'languageCode'
         ],
-        'box'      => [
+        'box'           => [
             'table'         => 'tboxen',
             'id'            => 'kBox',
             'reference'     => 'tboxsprache',

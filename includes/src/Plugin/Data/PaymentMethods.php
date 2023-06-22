@@ -24,7 +24,7 @@ class PaymentMethods
     private array $classes = [];
 
     /**
-     * @param array $data
+     * @param array           $data
      * @param PluginInterface $plugin
      * @return PaymentMethods
      */

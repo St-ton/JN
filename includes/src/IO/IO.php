@@ -59,7 +59,7 @@ class IO
      * @return $this
      * @throws Exception
      */
-    public function register(string $name, $function = null, $include = null)
+    public function register(string $name, $function = null, $include = null): self
     {
         if ($this->exists($name)) {
             throw new Exception('Function already registered');
@@ -82,7 +82,7 @@ class IO
         try {
             $request = \json_decode($reqString, true, 512, \JSON_THROW_ON_ERROR);
         } catch (JsonException $e) {
-            return new IOError('Error while decoding data: '  . $e->getMessage());
+            return new IOError('Error while decoding data: ' . $e->getMessage());
         }
 
         if (!isset($request['name'], $request['params'])) {

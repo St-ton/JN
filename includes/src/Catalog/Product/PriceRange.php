@@ -501,13 +501,13 @@ class PriceRange
     {
         if ($netto !== null) {
             return $netto === 0
-                ? [ $this->getMinLocalized(0) , $this->getMaxLocalized(0) ]
-                : [ $this->getMinLocalized(1) , $this->getMaxLocalized(1) ];
+                ? [$this->getMinLocalized(0), $this->getMaxLocalized(0)]
+                : [$this->getMinLocalized(1), $this->getMaxLocalized(1)];
         }
 
         return [
-            [ $this->getMinLocalized(0) , $this->getMaxLocalized(0) ],
-            [ $this->getMinLocalized(1) , $this->getMaxLocalized(1) ]
+            [$this->getMinLocalized(0), $this->getMaxLocalized(0)],
+            [$this->getMinLocalized(1), $this->getMaxLocalized(1)]
         ];
     }
 

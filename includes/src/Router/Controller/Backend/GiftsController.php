@@ -67,6 +67,7 @@ class GiftsController extends AbstractBackendController
             )
             ->getResponse('gratisgeschenk.tpl');
     }
+
     /**
      * @param string $sql
      * @return array

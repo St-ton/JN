@@ -17,16 +17,16 @@ class Button extends Portlet
     public function getPropertyDesc(): array
     {
         return [
-            'label' => [
+            'label'      => [
                 'label'   => \__('label'),
                 'default' => \__('defaultText'),
                 'width'   => 50,
             ],
-            'url' => [
+            'url'        => [
                 'label' => \__('url'),
                 'width' => 50,
             ],
-            'style' => [
+            'style'      => [
                 'type'    => InputType::SELECT,
                 'label'   => \__('style'),
                 'default' => 'primary',
@@ -39,45 +39,45 @@ class Button extends Portlet
                 ],
                 'width'   => 50,
             ],
-            'new-tab' => [
-                'type'       => InputType::CHECKBOX,
-                'label'      => \__('openInNewTab'),
-                'width'      => 50,
-                'desc'       => \__('openInNewTabDesc')
+            'new-tab'    => [
+                'type'  => InputType::CHECKBOX,
+                'label' => \__('openInNewTab'),
+                'width' => 50,
+                'desc'  => \__('openInNewTabDesc')
             ],
-            'size' => [
-                'type'       => InputType::SELECT,
-                'label'      => \__('size'),
-                'default'    => 'md',
-                'options'    => [
+            'size'       => [
+                'type'    => InputType::SELECT,
+                'label'   => \__('size'),
+                'default' => 'md',
+                'options' => [
                     'sm' => 'S',
                     'md' => 'M',
                     'lg' => 'L',
                 ],
-                'width' => 50,
+                'width'   => 50,
             ],
             'link-title' => [
-                'label'      => \__('linkTitle'),
-                'width'      => 50,
+                'label' => \__('linkTitle'),
+                'width' => 50,
             ],
-            'align' => [
-                'type'       => InputType::SELECT,
-                'label'      => \__('alignment'),
-                'options'    => [
+            'align'      => [
+                'type'    => InputType::SELECT,
+                'label'   => \__('alignment'),
+                'options' => [
                     'block'  => \__('useFullWidth'),
                     'left'   => \__('left'),
                     'right'  => \__('right'),
                     'center' => \__('centered'),
                 ],
-                'default'    => 'left',
-                'width'      => 50,
-                'desc'       => \__('alignmentDesc')
+                'default' => 'left',
+                'width'   => 50,
+                'desc'    => \__('alignmentDesc')
             ],
-            'use-icon' => [
+            'use-icon'   => [
                 'type'     => InputType::CHECKBOX,
                 'label'    => \__('iconForButton'),
                 'children' => [
-                    'icon-align'    => [
+                    'icon-align' => [
                         'type'    => InputType::SELECT,
                         'label'   => \__('iconAlignment'),
                         'options' => [
@@ -85,7 +85,7 @@ class Button extends Portlet
                             'right' => \__('right')
                         ],
                     ],
-                    'icon' => [
+                    'icon'       => [
                         'type'  => InputType::ICON,
                         'label' => \__('Icon'),
                     ],

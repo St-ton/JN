@@ -18,7 +18,7 @@ class Migration_20190411143955 extends Migration implements IMigration
     protected $description = 'Remove tadminmenu, tadminmenugruppe';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -27,7 +27,7 @@ class Migration_20190411143955 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

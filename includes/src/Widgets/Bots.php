@@ -19,7 +19,7 @@ class Bots extends AbstractWidget
     /**
      *
      */
-    public function init()
+    public function init(): void
     {
         $this->bots = $this->getBotsOfMonth((int)\date('Y'), (int)\date('m'));
         $this->setPermission('STATS_CRAWLER_VIEW');
@@ -39,7 +39,7 @@ class Bots extends AbstractWidget
     /**
      * @return string
      */
-    public function getContent()
+    public function getContent(): string
     {
         return $this->oSmarty->assign('oBots_arr', $this->bots)->fetch('tpl_inc/widgets/bots.tpl');
     }

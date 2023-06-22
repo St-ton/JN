@@ -17,7 +17,7 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
      * @param DbInterface $db
      * @param string      $type
      */
-    public function __construct(private DbInterface $db, private string $type = ContextType::EXPORT)
+    public function __construct(private readonly DbInterface $db, private string $type = ContextType::EXPORT)
     {
     }
 
@@ -42,7 +42,7 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
      * @param string $source
      * @param int    $mtime
      */
-    public function fetch($name, &$source, &$mtime)
+    public function fetch($name, &$source, &$mtime): void
     {
         if ($this->type === ContextType::EXPORT) {
             $source = $this->getExportSource((int)$name);

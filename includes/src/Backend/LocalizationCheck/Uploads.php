@@ -63,7 +63,7 @@ class Uploads extends AbstractLocalizationCheck
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getLocation(): string
     {

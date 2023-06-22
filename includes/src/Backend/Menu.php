@@ -26,8 +26,11 @@ class Menu
      * @param AdminAccount $account
      * @param GetText      $getText
      */
-    public function __construct(private DbInterface $db, private AdminAccount $account, private GetText $getText)
-    {
+    public function __construct(
+        private readonly DbInterface  $db,
+        private readonly AdminAccount $account,
+        private readonly GetText      $getText
+    ) {
         $getText->loadAdminLocale('menu');
         $this->adminURL = Shop::getAdminURL() . '/';
     }

@@ -23,7 +23,7 @@ class MediaImageSize
      * @param string $size
      * @param string $imageType
      */
-    public function __construct(private string $size, private string $imageType = Image::TYPE_PRODUCT)
+    public function __construct(private readonly string $size, private readonly string $imageType = Image::TYPE_PRODUCT)
     {
     }
 

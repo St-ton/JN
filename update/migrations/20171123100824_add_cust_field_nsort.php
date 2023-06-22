@@ -18,7 +18,7 @@ class Migration_20171123100824 extends Migration implements IMigration
     protected $description = 'Add customer-fields nSort';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -31,7 +31,7 @@ class Migration_20171123100824 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

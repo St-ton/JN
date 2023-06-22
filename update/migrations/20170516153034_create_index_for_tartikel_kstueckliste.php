@@ -20,7 +20,7 @@ class Migration_20170516153034 extends Migration implements IMigration
         'Create index for tartikel.kStueckliste';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -28,7 +28,7 @@ class Migration_20170516153034 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

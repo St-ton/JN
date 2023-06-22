@@ -75,7 +75,7 @@ abstract class MainModel
     /**
      * @return string
      */
-    public function toCSV()
+    public function toCSV(): string
     {
         $csv = '';
         foreach (\array_keys(\get_object_vars($this)) as $i => $member) {

@@ -121,14 +121,12 @@
             display: inline-block;
 
             &:before {
-                content: "\f0c8";
                 font-family: $fontawesome-mixed;
                 margin-right: 4px;
             }
         }
 
         &:checked + label:before {
-            content: "\f14a";
             font-weight: 900;
         }
 
@@ -138,6 +136,30 @@
             &:before {
                 color: $muted-text;
             }
+        }
+    }
+
+    input[type=checkbox] {
+        + label {
+            &:before {
+                content: "\f0c8";
+            }
+        }
+
+        &:checked + label:before {
+            content: "\f14a";
+        }
+    }
+
+    input[type=radio] {
+        + label {
+            &:before {
+                content: "\f111";
+            }
+        }
+
+        &:checked + label:before {
+            content: "\f192";
         }
     }
 

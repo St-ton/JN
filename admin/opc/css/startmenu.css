@@ -104,13 +104,11 @@
 }
 #opc input[type=checkbox] + label:before,
 #opc input[type=radio] + label:before {
-  content: "";
   font-family: "Font Awesome 5 Free", FontAwesome, "Open Sans";
   margin-right: 4px;
 }
 #opc input[type=checkbox]:checked + label:before,
 #opc input[type=radio]:checked + label:before {
-  content: "";
   font-weight: 900;
 }
 #opc input[type=checkbox]:disabled + label,
@@ -120,6 +118,18 @@
 #opc input[type=checkbox]:disabled + label:before,
 #opc input[type=radio]:disabled + label:before {
   color: #BDBDBD;
+}
+#opc input[type=checkbox] + label:before {
+  content: "";
+}
+#opc input[type=checkbox]:checked + label:before {
+  content: "";
+}
+#opc input[type=radio] + label:before {
+  content: "";
+}
+#opc input[type=radio]:checked + label:before {
+  content: "";
 }
 #opc .fas, #opc .fa {
   vertical-align: middle;

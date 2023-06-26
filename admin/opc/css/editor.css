@@ -563,8 +563,16 @@
 #opc #configModal .modal-dialog .checkbox-standalone {
   padding: 26px 0 0 2px;
 }
-#opc #configModal .colorpicker-input:placeholder-shown ~ .input-group-append i {
-  visibility: hidden !important;
+#opc #configModal .color-display {
+  left: unset;
+  right: 0;
+  margin: 8px;
+}
+#opc #configModal .color-input-wrapper {
+  margin-bottom: 16px;
+}
+#opc #configModal .color-input-wrapper .form-control {
+  margin-bottom: 0;
 }
 #opc #configModal .product-filter-config label {
   display: block;
@@ -1071,6 +1079,185 @@
 
 .hightlighted-modal {
   z-index: 99999 !important;
+}
+
+.color-input-wrapper {
+  display: inline-block;
+  position: relative;
+  --guide-size: 12px;
+  --half-guide-size: calc(var(--guide-size) / 2);
+}
+
+.color-input {
+  padding-left: 24px;
+}
+
+.color-display {
+  border-radius: 100%;
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  pointer-events: none;
+  aspect-ratio: 1;
+}
+
+.colorpicker {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  display: none;
+  background-color: #fff;
+  z-index: 1;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+  margin: var(--half-guide-size) 0;
+  --sat: 0;
+  --val: 1;
+  --hue: 0;
+  --alpha: 1;
+  --hue-red: calc(
+      min(max(2 - var(--hue) / 60, var(--hue) / 60 - 4, 0), 1)
+  );
+  --hue-green: calc(
+      max(min(var(--hue) / 60, 4 - var(--hue) / 60, 1), 0)
+  );
+  --hue-blue: calc(
+      max(min(var(--hue) / 60 - 2, 6 - var(--hue) / 60, 1), 0)
+  );
+  --red: calc(
+      (1 - var(--sat) + var(--hue-red) * var(--sat)) * var(--val)
+  );
+  --green: calc(
+      (1 - var(--sat) + var(--hue-green) * var(--sat)) * var(--val)
+  );
+  --blue: calc(
+      (1 - var(--sat) + var(--hue-blue) * var(--sat)) * var(--val)
+  );
+  --hue-color: rgb(
+      calc(var(--hue-red) * 255),
+      calc(var(--hue-green) * 255),
+      calc(var(--hue-blue) * 255)
+  );
+  --opaque-color: rgb(
+      calc(var(--red) * 255),
+      calc(var(--green) * 255),
+      calc(var(--blue) * 255)
+  );
+  --full-color: rgba(
+      calc(var(--red) * 255),
+      calc(var(--green) * 255),
+      calc(var(--blue) * 255),
+      var(--alpha)
+  );
+}
+
+.colorpicker.above {
+  bottom: 100%;
+  top: unset;
+}
+
+.color-input-wrapper:focus-within .colorpicker {
+  display: block;
+}
+
+.colorpicker-config {
+  display: block;
+  width: 256px;
+}
+
+.colorpicker-history {
+  display: flex;
+  gap: 8px;
+  margin: 16px;
+}
+
+.colorpicker-preset {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  border-radius: 100%;
+}
+
+.colorpicker-satval,
+.colorpicker-hue,
+.colorpicker-alpha {
+  position: relative;
+}
+
+.colorpicker-range-wrapper {
+  margin: 16px;
+}
+
+.colorpicker-area,
+.colorpicker-range {
+  position: relative;
+}
+
+.colorpicker-area {
+  width: 100%;
+  height: 192px;
+}
+
+.colorpicker-range {
+  height: var(--guide-size);
+  border-radius: calc(var(--guide-size) / 2);
+}
+
+.colorpicker-guide {
+  position: absolute;
+  width: var(--guide-size);
+  height: var(--guide-size);
+  border-radius: 100%;
+  border: 1px solid #fff;
+  outline: 1px solid #ccc;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+}
+
+.colorpicker-range .colorpicker-guide {
+  top: 50%;
+}
+
+.colorpicker-satval .colorpicker-area {
+  background-image: linear-gradient(180deg, transparent, #000), linear-gradient(90deg, #fff, var(--hue-color));
+}
+
+.colorpicker-satval .colorpicker-guide {
+  background-color: var(--opaque-color);
+  left: calc(var(--sat) * 100%);
+  top: calc((1 - var(--val)) * 100%);
+}
+
+.colorpicker-hue .colorpicker-range {
+  background-image: linear-gradient(90deg, red, yellow, lime, cyan, blue, magenta, red);
+}
+
+.colorpicker-hue .colorpicker-guide {
+  background-color: var(--hue-color);
+  left: calc(var(--hue) / 360 * 100%);
+}
+
+.colorpicker-alpha .colorpicker-guide,
+.colorpicker-alpha .colorpicker-range,
+.color-display,
+.colorpicker-preset {
+  background-position: 0 0, 0 0, var(--half-guide-size) var(--half-guide-size);
+  background-size: 100% 100%, var(--guide-size) var(--guide-size), var(--guide-size) var(--guide-size);
+}
+
+.colorpicker-alpha .colorpicker-range {
+  background-image: linear-gradient(90deg, transparent, var(--opaque-color)), linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%), linear-gradient(45deg, #fff 25%, #ccc 25%, #ccc 75%, #fff 75%);
+}
+
+.colorpicker-alpha .colorpicker-guide,
+.color-display,
+.colorpicker-preset {
+  background-image: linear-gradient(90deg, currentColor, currentColor), linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%), linear-gradient(45deg, #fff 25%, #ccc 25%, #ccc 75%, #fff 75%);
+}
+
+.colorpicker-alpha .colorpicker-guide {
+  left: calc(var(--alpha) * 100%);
+  color: var(--full-color);
 }
 
 html, body {

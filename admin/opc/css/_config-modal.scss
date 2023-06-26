@@ -12,8 +12,18 @@
         }
     }
 
-    .colorpicker-input:placeholder-shown ~ .input-group-append i {
-        visibility: hidden !important;
+    .color-display {
+        left: unset;
+        right: 0;
+        margin: 8px;
+    }
+
+    .color-input-wrapper {
+        margin-bottom: 16px;
+
+        .form-control {
+            margin-bottom: 0;
+        }
     }
 
     .product-filter-config {

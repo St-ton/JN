@@ -380,6 +380,7 @@
   width: calc(100% / var(--portlets-per-row) - 22px + 22px / var(--portlets-per-row));
   background-color: #F5F7FA;
   border-radius: 5px;
+  white-space: unset;
 }
 #portlets .portletButton:before {
   content: "";
@@ -1651,6 +1652,7 @@ body.resizing #previewPanel {
   height: 100%;
   transition: all 0.2s ease-in-out;
   display: block;
+  margin: auto;
 }
 #opc #tourModal .card {
   cursor: pointer;

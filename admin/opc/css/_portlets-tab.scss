@@ -36,6 +36,7 @@
         width: calc(100% / var(--portlets-per-row) - 22px + 22px / var(--portlets-per-row));
         background-color: $light-bg;
         border-radius: 5px;
+        white-space: unset;
 
         &:before {
             content: "";

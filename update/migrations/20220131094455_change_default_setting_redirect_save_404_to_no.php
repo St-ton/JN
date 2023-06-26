@@ -18,7 +18,7 @@ class Migration_20220131094455 extends Migration implements IMigration
     protected $description = 'Change default setting redirect_save_404 to No';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -26,7 +26,7 @@ class Migration_20220131094455 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

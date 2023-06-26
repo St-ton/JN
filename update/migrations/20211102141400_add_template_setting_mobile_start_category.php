@@ -14,7 +14,7 @@ class Migration_20211102141400 extends Migration implements IMigration
     protected $description = 'Add template setting mobile start category';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up(): void
     {
@@ -29,7 +29,7 @@ class Migration_20211102141400 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down(): void
     {

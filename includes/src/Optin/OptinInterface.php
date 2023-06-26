@@ -10,7 +10,7 @@ interface OptinInterface
 {
     /**
      * @param OptinRefData $refData
-     * @param int $location
+     * @param int          $location
      * @return OptinInterface
      */
     public function createOptin(OptinRefData $refData, int $location): OptinInterface;

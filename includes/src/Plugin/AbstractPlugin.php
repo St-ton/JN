@@ -425,11 +425,11 @@ abstract class AbstractPlugin implements PluginInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function selfDestruct(
-        int $newState = State::DISABLED,
-        DbInterface $db = null,
+        int               $newState = State::DISABLED,
+        DbInterface       $db = null,
         JTLCacheInterface $cache = null
     ): int {
         $stateChanger = new StateChanger($db ?? Shop::Container()->getDB(), $cache ?? Shop::Container()->getCache());

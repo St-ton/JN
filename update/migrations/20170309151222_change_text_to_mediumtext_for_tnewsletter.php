@@ -18,7 +18,7 @@ class Migration_20170309151222 extends Migration implements IMigration
     protected $description = 'Change text to mediumtext for tnewsletter';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -30,7 +30,7 @@ class Migration_20170309151222 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

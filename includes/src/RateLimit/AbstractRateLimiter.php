@@ -114,7 +114,7 @@ class AbstractRateLimiter implements RateLimiterInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getLimit(): int
     {
@@ -122,14 +122,14 @@ class AbstractRateLimiter implements RateLimiterInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setLimit(int $limit): void
     {
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getCleanupMinutes(): int
     {
@@ -137,14 +137,14 @@ class AbstractRateLimiter implements RateLimiterInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setCleanupMinutes(int $minutes): void
     {
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getFloodMinutes(): int
     {
@@ -152,14 +152,14 @@ class AbstractRateLimiter implements RateLimiterInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setFloodMinutes(int $minutes): void
     {
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getDB(): DbInterface
     {
@@ -167,7 +167,7 @@ class AbstractRateLimiter implements RateLimiterInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setDB(DbInterface $db): void
     {
@@ -175,7 +175,7 @@ class AbstractRateLimiter implements RateLimiterInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getIP(): string
     {
@@ -183,7 +183,7 @@ class AbstractRateLimiter implements RateLimiterInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setIP(string $ip): void
     {
@@ -191,7 +191,7 @@ class AbstractRateLimiter implements RateLimiterInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getKey(): int
     {
@@ -199,7 +199,7 @@ class AbstractRateLimiter implements RateLimiterInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setKey(int $key): void
     {
@@ -207,7 +207,7 @@ class AbstractRateLimiter implements RateLimiterInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getType(): string
     {
@@ -215,7 +215,7 @@ class AbstractRateLimiter implements RateLimiterInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setType(string $type): void
     {

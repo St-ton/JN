@@ -30,7 +30,7 @@ final class JTLApi
      * @param array $session
      * @param Nice  $nice
      */
-    public function __construct(array &$session, private Nice $nice)
+    public function __construct(array &$session, private readonly Nice $nice)
     {
         $this->session = &$session;
     }
@@ -84,11 +84,14 @@ final class JTLApi
         $shopVersion       = \APPLICATION_VERSION;
         $parsedShopVersion = Version::parse($shopVersion);
         $availableVersions = $this->getAvailableVersions();
-
-        $newerVersions = \array_filter((array)$availableVersions, static function ($v) use ($parsedShopVersion) {
-            return Version::parse($v->reference)->greaterThan($parsedShopVersion);
+        $newerVersions     = \array_filter((array)$availableVersions, static function ($v) use ($parsedShopVersion) {
+            try {
+                return Version::parse($v->reference)->greaterThan($parsedShopVersion);
+            } catch (Exception) {
+                return false;
+            }
         });
-        $version       = \count($newerVersions) > 0 ? last($newerVersions) : \end($availableVersions);
+        $version           = \count($newerVersions) > 0 ? last($newerVersions) : \end($availableVersions);
 
         return Version::parse($version->reference);
     }

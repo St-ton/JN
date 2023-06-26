@@ -35,7 +35,7 @@ interface CaptchaServiceInterface
     public function getBodyMarkup($smarty): string;
 
     /**
-     * @param  array $requestData
+     * @param array $requestData
      * @return bool
      */
     public function validate(array $requestData): bool;

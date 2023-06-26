@@ -99,7 +99,7 @@ class AdminAccountController extends AbstractBackendController
                     }
 
                     $permMainTMP[] = (object)[
-                        'name'       => $secondName,
+                        'name'        => $secondName,
                         'permissions' => [$perms[$secondEntry->permissions]]
                     ];
                     unset($perms[$secondEntry->permissions]);
@@ -118,7 +118,7 @@ class AdminAccountController extends AbstractBackendController
                         unset($perms[$thirdEntry->permissions]);
                     }
                     $permMainTMP[] = (object)[
-                        'name'       => $secondName,
+                        'name'        => $secondName,
                         'permissions' => $permSecondTMP
                     ];
                 }
@@ -132,7 +132,7 @@ class AdminAccountController extends AbstractBackendController
             $permissionsOrdered[] = (object)[
                 'name'     => \__('noMenuItem'),
                 'children' => [(object)[
-                    'name'       => '',
+                    'name'        => '',
                     'permissions' => $perms
                 ]]
             ];
@@ -208,8 +208,8 @@ class AdminAccountController extends AbstractBackendController
 
     /**
      * @param stdClass $account
-     * @param array $extAttribs
-     * @param array $errorMap
+     * @param array    $extAttribs
+     * @param array    $errorMap
      * @return bool
      */
     public function saveAttributes(stdClass $account, array $extAttribs, array &$errorMap): bool

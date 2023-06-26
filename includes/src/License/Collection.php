@@ -102,7 +102,7 @@ class Collection extends \Illuminate\Support\Collection
      */
     public function getActiveExpired(): self
     {
-        return $this->getBoundExpired()->filter(static function (ExsLicense  $e): bool {
+        return $this->getBoundExpired()->filter(static function (ExsLicense $e): bool {
             $ref = $e->getReferencedItem();
 
             return $ref !== null && $ref->isActive();

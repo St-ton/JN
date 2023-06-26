@@ -57,8 +57,8 @@ class NotificationEntry
      * @param string|null $hash
      */
     public function __construct(
-        int $type,
-        string $title,
+        int     $type,
+        string  $title,
         ?string $description = null,
         ?string $url = null,
         ?string $hash = null

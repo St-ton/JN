@@ -103,17 +103,14 @@ class Method implements MethodInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function init(int $nAgainCheckout = 0)
     {
         $this->name           = '';
         $result               = $this->db->select('tzahlungsart', 'cModulId', $this->moduleID);
         $this->caption        = $result->cName ?? null;
-        $this->duringCheckout = isset($result->nWaehrendBestellung)
-            ? (int)$result->nWaehrendBestellung
-            : 0;
-
+        $this->duringCheckout = (int)($result->nWaehrendBestellung ?? 0);
         if ($nAgainCheckout === 1) {
             $this->duringCheckout = 0;
         }
@@ -125,7 +122,7 @@ class Method implements MethodInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getOrderHash(Bestellung $order): ?string
     {
@@ -140,7 +137,7 @@ class Method implements MethodInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getReturnURL(Bestellung $order): string
     {
@@ -167,7 +164,7 @@ class Method implements MethodInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getNotificationURL(string $hash): string
     {
@@ -177,7 +174,7 @@ class Method implements MethodInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function updateNotificationID(int $orderID, string $cNotifyID)
     {
@@ -192,7 +189,7 @@ class Method implements MethodInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getShopTitle(): string
     {
@@ -200,7 +197,7 @@ class Method implements MethodInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function preparePaymentProcess(Bestellung $order): void
     {
@@ -208,7 +205,7 @@ class Method implements MethodInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function sendErrorMail(string $body)
     {
@@ -229,7 +226,7 @@ class Method implements MethodInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function generateHash(Bestellung $order): string
     {
@@ -270,7 +267,7 @@ class Method implements MethodInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function deletePaymentHash(string $paymentHash)
     {
@@ -280,7 +277,7 @@ class Method implements MethodInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function addIncomingPayment(Bestellung $order, object $payment)
     {
@@ -304,7 +301,7 @@ class Method implements MethodInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setOrderStatusToPaid(Bestellung $order)
     {
@@ -317,7 +314,7 @@ class Method implements MethodInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function sendConfirmationMail(Bestellung $order)
     {
@@ -327,7 +324,7 @@ class Method implements MethodInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function handleNotification(Bestellung $order, string $hash, array $args): void
     {
@@ -335,7 +332,7 @@ class Method implements MethodInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function finalizeOrder(Bestellung $order, string $hash, array $args): bool
     {
@@ -344,7 +341,7 @@ class Method implements MethodInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function redirectOnCancel(): bool
     {
@@ -353,7 +350,7 @@ class Method implements MethodInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function redirectOnPaymentSuccess(): bool
     {
@@ -362,7 +359,7 @@ class Method implements MethodInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function doLog(string $msg, int $level = \LOGLEVEL_NOTICE)
     {
@@ -372,7 +369,7 @@ class Method implements MethodInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getCustomerOrderCount(int $customerID): int
     {
@@ -390,7 +387,7 @@ class Method implements MethodInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function loadSettings()
     {
@@ -400,7 +397,7 @@ class Method implements MethodInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getSetting(string $key)
     {
@@ -412,7 +409,7 @@ class Method implements MethodInterface
 
     /**
      *
-     * @inheritDoc
+     * @inheritdoc
      */
     public function isValid(object $customer, Cart $cart): bool
     {
@@ -487,7 +484,7 @@ class Method implements MethodInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function isValidIntern(array $args_arr = []): bool
     {
@@ -496,7 +493,7 @@ class Method implements MethodInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function isSelectable(): bool
     {
@@ -505,7 +502,7 @@ class Method implements MethodInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function handleAdditional(array $post): bool
     {
@@ -513,7 +510,7 @@ class Method implements MethodInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function validateAdditional(): bool
     {
@@ -522,7 +519,7 @@ class Method implements MethodInterface
 
     /**
      *
-     * @inheritDoc
+     * @inheritdoc
      */
     public function addCache(string $cKey, string $cValue)
     {
@@ -532,7 +529,7 @@ class Method implements MethodInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function unsetCache(?string $cKey = null)
     {
@@ -546,7 +543,7 @@ class Method implements MethodInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getCache(?string $cKey = null)
     {
@@ -558,7 +555,7 @@ class Method implements MethodInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function createInvoice(int $orderID, int $languageID): object
     {
@@ -569,7 +566,7 @@ class Method implements MethodInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function reactivateOrder(int $orderID)
     {
@@ -583,7 +580,7 @@ class Method implements MethodInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function cancelOrder(int $orderID, bool $delete = false)
     {
@@ -599,7 +596,7 @@ class Method implements MethodInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function canPayAgain(): bool
     {
@@ -608,7 +605,7 @@ class Method implements MethodInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function sendMail(int $orderID, string $type, $additional = null)
     {

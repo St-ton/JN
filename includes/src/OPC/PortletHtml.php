@@ -126,8 +126,8 @@ trait PortletHtml
      */
     final protected function getHtmlFromTpl(
         PortletInstance $instance,
-        bool $isPreview,
-        bool $inContainer = true
+        bool            $isPreview,
+        bool            $inContainer = true
     ): string {
         $tplPath = $this->getBasePath() . $this->getClass() . '.tpl';
         if (\file_exists($tplPath) === false) {
@@ -197,8 +197,8 @@ trait PortletHtml
      */
     final protected function getPreviewRootHtml(
         PortletInstance $instance,
-        string $tag = 'div',
-        string $innerHtml = ''
+        string          $tag = 'div',
+        string          $innerHtml = ''
     ): string {
         $attributes    = $instance->getAttributeString();
         $dataAttribute = $instance->getDataAttributeString();
@@ -214,8 +214,8 @@ trait PortletHtml
      */
     final protected function getFinalRootHtml(
         PortletInstance $instance,
-        string $tag = 'div',
-        string $innerHtml = ''
+        string          $tag = 'div',
+        string          $innerHtml = ''
     ): string {
         $attributes = $instance->getAttributeString();
 

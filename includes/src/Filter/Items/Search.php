@@ -197,11 +197,11 @@ class Search extends AbstractFilter
      * @former suchanfragenSpeichern
      */
     public function saveQuery(
-        int $hits,
+        int    $hits,
         string $query = '',
-        bool $real = false,
-        int $languageID = 0,
-        bool $filterSpam = true
+        bool   $real = false,
+        int    $languageID = 0,
+        bool   $filterSpam = true
     ): bool {
         if ($query === '') {
             $query = $this->getName();
@@ -404,7 +404,7 @@ class Search extends AbstractFilter
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getOptions($mixed = null): array
     {

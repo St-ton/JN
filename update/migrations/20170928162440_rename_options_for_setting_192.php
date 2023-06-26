@@ -18,7 +18,7 @@ class Migration_20170928162440 extends Migration implements IMigration
     protected $description = 'Rename options for setting 192';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -27,7 +27,7 @@ class Migration_20170928162440 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

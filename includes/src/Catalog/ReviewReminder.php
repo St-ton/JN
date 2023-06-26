@@ -208,7 +208,7 @@ class ReviewReminder
         } else {
             // Hole standard Kundengruppe
             $defaultGroup = Shop::Container()->getDB()->select('tkundengruppe', 'cStandard', 'Y');
-            if (isset($defaultGroup->kKundengruppe) && $defaultGroup->kKundengruppe > 0) {
+            if ($defaultGroup !== null && $defaultGroup->kKundengruppe > 0) {
                 $this->sqlPartCustomerGroups = ' tkunde.kKundengruppe = ' . (int)$defaultGroup->kKundengruppe;
             }
         }

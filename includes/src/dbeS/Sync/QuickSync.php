@@ -99,7 +99,7 @@ final class QuickSync extends AbstractSync
                 false,
                 'kVaterArtikel'
             );
-            if (!empty($parentProduct->kVaterArtikel)) {
+            if ($parentProduct !== null && !empty($parentProduct->kVaterArtikel)) {
                 $clearTags[] = (int)$parentProduct->kVaterArtikel;
             }
             $clearTags[] = $id;

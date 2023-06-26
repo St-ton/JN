@@ -31,9 +31,9 @@ final class SyntaxChecker
      * @param HydratorInterface $hydrator
      */
     public function __construct(
-        private TemplateFactory $factory,
-        private RendererInterface $renderer,
-        private HydratorInterface $hydrator
+        private readonly TemplateFactory   $factory,
+        private readonly RendererInterface $renderer,
+        private readonly HydratorInterface $hydrator
     ) {
     }
 
@@ -145,8 +145,8 @@ final class SyntaxChecker
 
         Shop::Container()->getGetText()->loadAdminLocale('pages/emailvorlagen');
         $res = (object)[
-            'result'  => [],
-            'state'   => '<span class="label text-warning">' . \__('untested') . '</span>',
+            'result' => [],
+            'state'  => '<span class="label text-warning">' . \__('untested') . '</span>',
         ];
 
         $db    = Shop::Container()->getDB();
@@ -216,8 +216,8 @@ final class SyntaxChecker
 
     /**
      * @param LanguageModel $lang
-     * @param string $templateID
-     * @param string $moduleID
+     * @param string        $templateID
+     * @param string        $moduleID
      * @return string
      * @deprecated since 5.0.1 - do syntax check only with io-method because smarty syntax check can throw fatal error
      * @noinspection PhpUnusedParameterInspection

@@ -12,7 +12,7 @@ class Migration_20200416093800 extends Migration implements IMigration
     protected $description = 'Add license cron';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -26,7 +26,7 @@ class Migration_20200416093800 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

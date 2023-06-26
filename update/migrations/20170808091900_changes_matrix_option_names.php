@@ -18,7 +18,7 @@ class Migration_20170808091900 extends Migration implements IMigration
     protected $description = 'Change matrix option names in configuration';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -27,7 +27,7 @@ class Migration_20170808091900 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

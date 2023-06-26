@@ -18,7 +18,7 @@ class Migration_20180615100733 extends Migration implements IMigration
     protected $description = 'Translate validUntil global english';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -26,7 +26,7 @@ class Migration_20180615100733 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

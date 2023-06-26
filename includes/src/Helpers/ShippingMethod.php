@@ -70,8 +70,8 @@ class ShippingMethod
     }
 
     /**
-     * @param int $minDelivery
-     * @param int $maxDelivery
+     * @param int    $minDelivery
+     * @param int    $maxDelivery
      * @param string $languageVar
      * @return string
      */
@@ -113,8 +113,8 @@ class ShippingMethod
 
     /**
      * @param array $prices
-     * @param int $cgroupID
-     * @param int $shippingClassID
+     * @param int   $cgroupID
+     * @param int   $shippingClassID
      * @return string
      */
     public function getFreeShippingCountries(array $prices, int $cgroupID, int $shippingClassID = 0): string
@@ -1323,7 +1323,7 @@ class ShippingMethod
                 'cISOSprache',
                 Shop::getLanguageCode()
             );
-            $name      = !empty($localized->cName)
+            $name      = $localized !== null && !empty($localized->cName)
                 ? $localized->cName
                 : $method->cName;
         }
@@ -1403,8 +1403,10 @@ class ShippingMethod
         $db              = Shop::Container()->getDB();
         $shippingClasses = self::getShippingClasses(Frontend::getCart());
         $defaultShipping = self::normalerArtikelversand($country);
-        $cacheID         = 'vkfrei_' . $customerGroupID . '_'
-            . $country . '_' . $shippingClasses . '_' . Shop::getLanguageCode();
+        $cacheID         = 'vkfrei_' . $customerGroupID
+            . '_' . $country
+            . '_' . $shippingClasses
+            . '_' . Shop::getLanguageCode();
         if (($shippingMethod = $cache->get($cacheID)) === false) {
             $iso = 'DE';
             if (\mb_strlen($country) > 0) {
@@ -1424,6 +1426,8 @@ class ShippingMethod
                 return $e->kVersandart;
             });
             if (\count($shippingMethods) === 0) {
+                $cache->set($cacheID, null, [\CACHING_GROUP_OPTION]);
+
                 return 0;
             }
 
@@ -1567,7 +1571,7 @@ class ShippingMethod
 
     /**
      * @param object[]|null $shippingMethods
-     * @param int $paymentMethodID
+     * @param int           $paymentMethodID
      * @return object|null
      */
     public static function getFirstShippingMethod(?array $shippingMethods = null, int $paymentMethodID = 0): ?object

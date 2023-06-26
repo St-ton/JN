@@ -19,7 +19,7 @@ class Migration_20190305095116 extends Migration implements IMigration
         'Create index for tzahlungslog';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -30,7 +30,7 @@ class Migration_20190305095116 extends Migration implements IMigration
 
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

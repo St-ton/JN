@@ -21,9 +21,9 @@ interface JobInterface
      * @param JTLCacheInterface $cache
      */
     public function __construct(
-        DbInterface $db,
-        LoggerInterface $logger,
-        JobHydrator $hydrator,
+        DbInterface       $db,
+        LoggerInterface   $logger,
+        JobHydrator       $hydrator,
         JTLCacheInterface $cache
     );
 

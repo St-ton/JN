@@ -115,7 +115,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function answerFromPost(array $post)
     {
@@ -141,7 +141,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function save(): int
     {
@@ -157,7 +157,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function loadAnswer(array $data): void
     {
@@ -168,7 +168,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getID(): int
     {
@@ -176,7 +176,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setID(int $id): void
     {
@@ -184,7 +184,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getText(): ?string
     {
@@ -192,7 +192,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setText(string $text): void
     {
@@ -200,7 +200,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getDescription(): ?string
     {
@@ -208,7 +208,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setDescription(string $description): void
     {
@@ -216,7 +216,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getSubheading(): ?string
     {
@@ -224,7 +224,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setSubheading(string $subheading): void
     {
@@ -232,7 +232,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getSubheadingDescription(): ?string
     {
@@ -240,7 +240,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setSubheadingDescription(string $subheadingDescription): void
     {
@@ -248,7 +248,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getSummaryText(): ?string
     {
@@ -256,7 +256,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setSummaryText(string $summaryText): void
     {
@@ -264,7 +264,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getLabel(): ?string
     {
@@ -272,7 +272,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setLabel(string $label): void
     {
@@ -280,7 +280,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getType(): int
     {
@@ -288,7 +288,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setType(int $type): void
     {
@@ -296,7 +296,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getValue()
     {
@@ -304,7 +304,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setValue($value, bool $sessionFirst = true): void
     {
@@ -318,7 +318,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getDependency(): ?int
     {
@@ -326,7 +326,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setDependency(int $dependency): void
     {
@@ -334,7 +334,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getOnSave(): ?callable
     {
@@ -342,7 +342,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setOnSave(callable $onSave): void
     {
@@ -350,7 +350,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getOptions(): array
     {
@@ -358,7 +358,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setOptions(array $options): void
     {
@@ -366,7 +366,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function addOption(SelectOption $option): void
     {
@@ -374,7 +374,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function isMultiSelect(): bool
     {
@@ -382,7 +382,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setIsMultiSelect(bool $multi): void
     {
@@ -390,7 +390,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function isRequired(): bool
     {
@@ -398,7 +398,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setIsRequired(bool $required): void
     {
@@ -406,7 +406,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function isFullWidth(): bool
     {
@@ -414,7 +414,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setIsFullWidth(bool $fullWidth): void
     {
@@ -422,17 +422,17 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setValidation(?callable $validation = null): void
     {
         $this->validation = $validation ?? static function (QuestionInterface $question) {
-                return (new QuestionValidation($question))->getValidationError();
+            return (new QuestionValidation($question))->getValidationError();
         };
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getValidation(): callable
     {
@@ -440,7 +440,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function validate(): int
     {
@@ -453,7 +453,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function jsonSerialize(): stdClass
     {

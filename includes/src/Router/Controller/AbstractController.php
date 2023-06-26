@@ -129,10 +129,10 @@ abstract class AbstractController implements ControllerInterface
      * @param AlertServiceInterface $alertService
      */
     public function __construct(
-        protected DbInterface $db,
-        protected JTLCacheInterface $cache,
-        protected State $state,
-        protected array $config,
+        protected DbInterface           $db,
+        protected JTLCacheInterface     $cache,
+        protected State                 $state,
+        protected array                 $config,
         protected AlertServiceInterface $alertService
     ) {
         $this->searchResults      = new SearchResults();
@@ -301,8 +301,8 @@ abstract class AbstractController implements ControllerInterface
      */
     public function notFoundResponse(
         ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty
+        array                  $args,
+        JTLSmarty              $smarty
     ): ResponseInterface {
         if ($this->state->languageID === 0) {
             $this->state->languageID = Shop::getLanguageID();

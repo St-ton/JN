@@ -19,7 +19,7 @@ class Migration_20190312155100 extends Migration implements IMigration
     protected $description = 'Add lang var for sort';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -28,7 +28,7 @@ class Migration_20190312155100 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

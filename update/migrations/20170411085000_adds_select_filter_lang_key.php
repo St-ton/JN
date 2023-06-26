@@ -18,7 +18,7 @@ class Migration_20170411085000 extends Migration implements IMigration
     protected $description = 'Add lang key select filter';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -27,7 +27,7 @@ class Migration_20170411085000 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

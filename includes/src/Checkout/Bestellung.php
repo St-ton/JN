@@ -531,7 +531,7 @@ class Bestellung
             $this->dErstelldatum_en = $date->dErstelldatum_en;
         }
         // Hole Netto- oder Bruttoeinstellung der Kundengruppe
-        $nNettoPreis = 0;
+        $nNettoPreis = false;
         if ($this->kBestellung > 0) {
             $netOrderData = $db->getSingleObject(
                 'SELECT tkundengruppe.nNettoPreise
@@ -544,7 +544,7 @@ class Bestellung
                 ['oid' => (int)$this->kBestellung]
             );
             if ($netOrderData !== null && $netOrderData->nNettoPreise > 0) {
-                $nNettoPreis = 1;
+                $nNettoPreis = true;
             }
         }
         if ($this->kWaehrung > 0) {
@@ -1028,7 +1028,9 @@ class Bestellung
             'cBestellNr'
         );
 
-        return isset($data->cBestellNr) && \mb_strlen($data->cBestellNr) > 0 ? $data->cBestellNr : false;
+        return $data !== null && isset($data->cBestellNr) && \mb_strlen($data->cBestellNr) > 0
+            ? $data->cBestellNr
+            : false;
     }
 
     /**

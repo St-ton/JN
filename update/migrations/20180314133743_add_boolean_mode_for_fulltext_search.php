@@ -18,7 +18,7 @@ class Migration_20180314133743 extends Migration implements IMigration
     protected $description = 'Add boolean mode for fulltext search';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -32,7 +32,7 @@ class Migration_20180314133743 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

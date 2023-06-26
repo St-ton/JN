@@ -4,12 +4,12 @@ namespace JTL\Widgets;
 
 /**
  * Class LastSearch
- * @package Plugin\jtl_widgets
+ * @package JTL\Widgets
  */
 class LastSearch extends AbstractWidget
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function init(): void
     {

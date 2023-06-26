@@ -6,17 +6,16 @@ use JTL\Helpers\Request;
 use JTL\Router\Controller\Backend\AbstractBackendController;
 use JTL\Router\Controller\Backend\CampaignController;
 use JTL\Shop;
-use JTL\Widgets\AbstractWidget;
 use stdClass;
 
 /**
  * Class Campaigns
- * @package Plugin\jtl_widgets
+ * @package JTL\Widgets
  */
 class Campaigns extends AbstractWidget
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function init(): void
     {
@@ -69,7 +68,7 @@ class Campaigns extends AbstractWidget
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getContent(): string
     {

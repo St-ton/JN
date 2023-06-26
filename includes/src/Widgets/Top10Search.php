@@ -2,16 +2,14 @@
 
 namespace JTL\Widgets;
 
-use JTL\Widgets\AbstractWidget;
-
 /**
  * Class Top10Search
- * @package Plugin\jtl_widgets
+ * @package JTL\Widgets
  */
 class Top10Search extends AbstractWidget
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function init(): void
     {
@@ -29,7 +27,7 @@ class Top10Search extends AbstractWidget
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getContent(): string
     {

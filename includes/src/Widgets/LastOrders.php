@@ -7,12 +7,12 @@ use JTL\Shop;
 
 /**
  * Class LastOrders
- * @package Plugin\jtl_widgets
+ * @package JTL\Widgets
  */
 class LastOrders extends AbstractWidget
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      * @throws \SmartyException
      */
     public function getContent(): string
@@ -36,7 +36,7 @@ class LastOrders extends AbstractWidget
                 'cDetailPosition',
                 'tpl_inc/widgets/lastOrdersDetailPosition.tpl'
             )
-            ->assign('cAdminmenuPfadURL', Shop::getURL(true) . '/'. PFAD_ADMIN .  '/')
+            ->assign('cAdminmenuPfadURL', Shop::getURL(true) . '/'. \PFAD_ADMIN .  '/')
             ->fetch('tpl_inc/widgets/widgetLastOrders.tpl');
     }
 }

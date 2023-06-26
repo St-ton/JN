@@ -5,17 +5,16 @@ namespace JTL\Widgets;
 use JTL\DB\SqlObject;
 use JTL\Router\Controller\Backend\ActivationController;
 use JTL\Shop;
-use JTL\Widgets\AbstractWidget;
 use stdClass;
 
 /**
  * Class UnlockRequestNotifier
- * @package Plugin\jtl_widgets
+ * @package JTL\Widgets
  */
 class UnlockRequestNotifier extends AbstractWidget
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function init(): void
     {
@@ -65,7 +64,7 @@ class UnlockRequestNotifier extends AbstractWidget
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getContent(): string
     {

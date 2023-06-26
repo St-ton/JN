@@ -3,17 +3,16 @@
 namespace JTL\Widgets;
 
 use JTL\Catalog\Product\Preise;
-use JTL\Widgets\AbstractWidget;
 use stdClass;
 
 /**
  * Class ShopStats
- * @package Plugin\jtl_widgets
+ * @package JTL\Widgets
  */
 class ShopStats extends AbstractWidget
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function init(): void
     {
@@ -39,7 +38,7 @@ class ShopStats extends AbstractWidget
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getContent(): string
     {

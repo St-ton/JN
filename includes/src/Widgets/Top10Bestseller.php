@@ -4,12 +4,12 @@ namespace JTL\Widgets;
 
 /**
  * Class Top10Bestseller
- * @package Plugin\jtl_widgets
+ * @package JTL\Widgets
  */
 class Top10Bestseller extends AbstractWidget
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function init(): void
     {
@@ -35,7 +35,7 @@ class Top10Bestseller extends AbstractWidget
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getContent(): string
     {

@@ -150,25 +150,11 @@ class Router
         protected DbInterface $db,
         protected JTLCacheInterface $cache,
         protected State $state,
-        AlertServiceInterface $alert,
-        private array $config
+        protected AlertServiceInterface $alert,
+        private readonly array $config
     ) {
-        $this->router            = new BaseRouter();
         $this->defaultController = new DefaultController($db, $cache, $state, $this->config, $alert);
-        $registeredDefault       = false;
-        $middlewares             = [
-            new MaintenanceModeMiddleware($this->config['global']),
-            new SSLRedirectMiddleware($this->config['global']),
-            new WishlistCheckMiddleware(),
-            new CartcheckMiddleware(),
-            new LocaleCheckMiddleware(),
-            new CurrencyCheckMiddleware(),
-            new OptinMiddleware(),
-        ];
 
-        $root              = new RootController($db, $cache, $state, $this->config, $alert);
-        $consent           = new ConsentController();
-        $io                = new IOController($db, $cache, $state, $this->config, $alert);
         $this->controllers = [
             ProductController::class             => new ProductController($db, $cache, $state, $this->config, $alert),
             CharacteristicValueController::class =>
@@ -185,6 +171,28 @@ class Router
             PageController::class                => new PageController($db, $cache, $state, $this->config, $alert),
             MediaImageController::class          => new MediaImageController($db, $cache, $state, $this->config, $alert)
         ];
+
+        $this->prepare();
+    }
+
+    public function prepare(): void
+    {
+        $this->router = new BaseRouter();
+        $this->routes = [];
+
+        $registeredDefault = false;
+        $middlewares       = [
+            new MaintenanceModeMiddleware($this->config['global']),
+            new SSLRedirectMiddleware($this->config['global']),
+            new WishlistCheckMiddleware(),
+            new CartcheckMiddleware(),
+            new LocaleCheckMiddleware(),
+            new CurrencyCheckMiddleware(),
+            new OptinMiddleware(),
+        ];
+        $root              = new RootController($this->db, $this->cache, $this->state, $this->config, $this->alert);
+        $consent           = new ConsentController();
+        $io                = new IOController($this->db, $this->cache, $this->state, $this->config, $this->alert);
         foreach ($this->collectHosts() as $data) {
             $host         = $data['host'];
             $locale       = $data['locale'];
@@ -225,9 +233,11 @@ class Router
             $this->routes[] = $group;
         }
         if ($this->isMultiDomain === false) {
-            $path = \parse_url(\URL_SHOP, \PHP_URL_PATH);
-            if ($path !== null && $path !== '/') {
+            if (($path = \parse_url(\URL_SHOP, \PHP_URL_PATH)) !== null && $path !== '/') {
                 $this->path = $path;
+            }
+            if (($port = \parse_url(\URL_SHOP, \PHP_URL_PORT)) !== null) {
+                $this->router->setPort($port);
             }
         }
         $this->collectGroupRoutes();
@@ -288,7 +298,6 @@ class Router
                 $routes[] = $route;
             }
         }
-
 
         return $routes;
     }
@@ -351,7 +360,7 @@ class Router
         $scheme = $isDefaultLocale
             ? ($this->config['global']['routing_default_language'] ?? 'F')
             : ($this->config['global']['routing_scheme'] ?? 'F');
-        if (ENABLE_EXPERIMENTAL_ROUTING_SCHEMES === false) {
+        if (\ENABLE_EXPERIMENTAL_ROUTING_SCHEMES === false) {
             $scheme = 'F';
         }
         if ($scheme !== 'F' && $byName === true && empty($replacements['name'])) {
@@ -373,11 +382,11 @@ class Router
                     $named = ($replacements['name'] ?? $replacements['id']);
                 }
 
-                return '/' . $named
+                return $this->path . '/' . $named
                     . (isset($replacements['currency']) ? '?curr=' . $replacements['currency'] : '');
             }
             if ($scheme === 'L') {
-                return '/' . $replacements['lang'] . '/'
+                return $this->path . '/' . $replacements['lang'] . '/'
                     . ($replacements['name'] ?? $replacements['id'] ?? '')
                     . (isset($replacements['currency']) ? '?curr=' . $replacements['currency'] : '');
             }
@@ -396,8 +405,8 @@ class Router
     public function getURLByType(
         string $type,
         ?array $replacements = null,
-        bool $byName = true,
-        bool $forceDynamic = false
+        bool   $byName = true,
+        bool   $forceDynamic = false
     ): string {
         if (isset($replacements['name']) && $replacements['name'] === '') {
             unset($replacements['name']);
@@ -420,7 +429,7 @@ class Router
         $scheme = $isDefaultLocale
             ? ($this->config['global']['routing_default_language'] ?? 'F')
             : ($this->config['global']['routing_scheme'] ?? 'F');
-        if (ENABLE_EXPERIMENTAL_ROUTING_SCHEMES === false) {
+        if (\ENABLE_EXPERIMENTAL_ROUTING_SCHEMES === false) {
             $scheme = 'F';
         }
         if ($scheme !== 'F' && $byName === true && empty($replacements['name'])) {
@@ -461,12 +470,18 @@ class Router
      */
     private function getPrefix(?string $routeHost): string
     {
-        if ($routeHost !== null) {
-            foreach ($this->hosts as $host) {
-                if ($host['host'] === $routeHost) {
-                    return $host['scheme'] . '://' . $routeHost;
-                }
+        if ($routeHost === null) {
+            return Shop::getURL();
+        }
+        foreach ($this->hosts as $host) {
+            if ($host['host'] !== $routeHost) {
+                continue;
             }
+            $port = $host['port'] > 0
+                ? ':' . $host['port']
+                : '';
+
+            return $host['scheme'] . '://' . $routeHost . $port;
         }
 
         return Shop::getURL();
@@ -522,7 +537,7 @@ class Router
             $isDefaultLocale = ($replacements['lang'] ?? '') === $this->defaultLocale;
             $defaultScheme   = $this->config['global']['routing_default_language'] ?? 'F';
             $scheme          = $this->config['global']['routing_scheme'] ?? 'F';
-            if (ENABLE_EXPERIMENTAL_ROUTING_SCHEMES === false) {
+            if (\ENABLE_EXPERIMENTAL_ROUTING_SCHEMES === false) {
                 $scheme = 'F';
             }
             if (!$isDefaultLocale && ($scheme === 'LP' || $scheme === 'L')) {
@@ -628,7 +643,7 @@ class Router
             \parse_str(\file_get_contents('php://input'), $body);
         }
         $request = ServerRequestFactory::fromGlobals($_SERVER, $_GET, $body, $_COOKIE, $_FILES);
-        if (\EXPERIMENTAL_MULTILANG_SHOP === true && \count($this->hosts) > 0) {
+        if ((\EXPERIMENTAL_MULTILANG_SHOP === true || Shop::$forceHost[0]['host'] !== '') && \count($this->hosts) > 0) {
             $requestedHost = $request->getUri()->getHost();
             foreach ($this->hosts as $host) {
                 if ($host['host'] === $requestedHost) {
@@ -662,7 +677,7 @@ class Router
         } catch (NotFoundException) {
             $response = $this->defaultController->getResponse($request, [], $smarty);
         } catch (Exception $e) {
-            Shop::Container()->getLogService()->error('Routing error: ' . $e->getMessage());
+            Shop::Container()->getLogService()->error('Routing error: {err}', ['err' => $e->getMessage()]);
             $response = $this->defaultController->getResponse($request, [], $smarty);
         }
         CoreDispatcher::getInstance()->fire(Event::EMIT);
@@ -702,53 +717,79 @@ class Router
      */
     private function collectHosts(): array
     {
-        $hosts   = [];
-        $locales = [];
-        foreach (LanguageHelper::getAllLanguages() as $language) {
-            $default   = $language->isShopDefault();
-            $code      = $language->getCode();
-            $locales[] = $language->getIso639();
-
-            $this->languages[$language->getIso639()] = $code;
-            if (\EXPERIMENTAL_MULTILANG_SHOP === false && $default) {
-                $url     = \URL_SHOP;
-                $host    = \parse_url($url);
+        $hosts     = [];
+        $locales   = [];
+        $forceHost = false;
+        if (Shop::$forceHost[0]['host'] !== '') {
+            $this->isMultiDomain = true;
+            foreach (Shop::$forceHost as $hostData) {
                 $hosts[] = [
-                    'host'      => $host['host'],
-                    'scheme'    => $host['scheme'],
-                    'locale'    => $language->getIso639(),
-                    'iso'       => $code,
-                    'id'        => $language->getId(),
+                    'host'      => $hostData['host'],
+                    'scheme'    => $hostData['scheme'],
+                    'port'      => $hostData['port'] ?? null,
+                    'locale'    => $hostData['locale'],
+                    'iso'       => $hostData['iso'],
+                    'id'        => $hostData['id'],
                     'default'   => true,
                     'prefix'    => '/',
                     'currency'  => false,
                     'localized' => false
                 ];
-            } elseif (\defined('URL_SHOP_' . \mb_convert_case($code, \MB_CASE_UPPER))) {
-                $this->isMultiDomain = true;
-                $url                 = \constant('URL_SHOP_' . \mb_convert_case($code, \MB_CASE_UPPER));
-                $host                = \parse_url($url);
-                $hosts[]             = [
-                    'host'      => $host['host'],
-                    'scheme'    => $host['scheme'],
-                    'locale'    => $language->getIso639(),
-                    'iso'       => $code,
-                    'id'        => $language->getId(),
-                    'default'   => $default,
-                    'prefix'    => '/',
-                    'currency'  => false,
-                    'localized' => false
-                ];
-            }
-            if ($default) {
-                $this->defaultLocale = $language->getIso639();
+                if ($hostData['host'] === $_SERVER['HTTP_HOST']) {
+                    $this->defaultLocale = $hostData['locale'];
+                    $forceHost           = true;
+                }
             }
         }
-        $defaultScheme = $this->config['global']['routing_default_language'] ?? 'xF';
-        $otherSchemes  = $this->config['global']['routing_scheme'] ?? 'xF';
-        if (ENABLE_EXPERIMENTAL_ROUTING_SCHEMES === false) {
-            $defaultScheme = 'xF';
-            $otherSchemes  = 'xF';
+        if (!$forceHost) {
+            foreach (LanguageHelper::getAllLanguages() as $language) {
+                $default   = $language->isShopDefault();
+                $code      = $language->getCode();
+                $locales[] = $language->getIso639();
+
+                $this->languages[$language->getIso639()] = $code;
+                if (\EXPERIMENTAL_MULTILANG_SHOP === false && $default) {
+                    $url     = \URL_SHOP;
+                    $host    = \parse_url($url);
+                    $hosts[] = [
+                        'host'      => $host['host'],
+                        'scheme'    => $host['scheme'],
+                        'port'      => $host['port'] ?? null,
+                        'locale'    => $language->getIso639(),
+                        'iso'       => $code,
+                        'id'        => $language->getId(),
+                        'default'   => true,
+                        'prefix'    => '/',
+                        'currency'  => false,
+                        'localized' => false
+                    ];
+                } elseif (\defined('URL_SHOP_' . \mb_convert_case($code, \MB_CASE_UPPER))) {
+                    $this->isMultiDomain = true;
+                    $url                 = \constant('URL_SHOP_' . \mb_convert_case($code, \MB_CASE_UPPER));
+                    $host                = \parse_url($url);
+                    $hosts[]             = [
+                        'host'      => $host['host'],
+                        'scheme'    => $host['scheme'],
+                        'port'      => $host['port'] ?? null,
+                        'locale'    => $language->getIso639(),
+                        'iso'       => $code,
+                        'id'        => $language->getId(),
+                        'default'   => $default,
+                        'prefix'    => '/',
+                        'currency'  => false,
+                        'localized' => false
+                    ];
+                }
+                if ($default) {
+                    $this->defaultLocale = $language->getIso639();
+                }
+            }
+        }
+        $defaultScheme = $this->config['global']['routing_default_language'] ?? 'F';
+        $otherSchemes  = $this->config['global']['routing_scheme'] ?? 'F';
+        if (\ENABLE_EXPERIMENTAL_ROUTING_SCHEMES === false) {
+            $defaultScheme = 'F';
+            $otherSchemes  = 'F';
         }
         if ($defaultScheme !== 'F' || $otherSchemes !== 'F') {
             if ($this->isMultiDomain === false && \count($locales) > 1) {

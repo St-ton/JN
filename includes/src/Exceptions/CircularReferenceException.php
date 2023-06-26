@@ -16,6 +16,6 @@ class CircularReferenceException extends \Exception implements ContainerExceptio
      */
     public function __construct(protected $interface)
     {
-        parent::__construct('Circular reference for "' . $interface .'" detected.');
+        parent::__construct('Circular reference for "' . $interface . '" detected.');
     }
 }

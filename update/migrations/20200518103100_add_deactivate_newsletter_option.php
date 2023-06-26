@@ -18,7 +18,7 @@ class Migration_20200518103100 extends Migration implements IMigration
     protected $description = 'Add newsletter active option';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -42,7 +42,7 @@ class Migration_20200518103100 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

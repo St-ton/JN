@@ -18,7 +18,7 @@ class Migration_20220718121311 extends Migration implements IMigration
     protected $description = 'Add text field to ttemplateeinstellungen';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -28,7 +28,7 @@ class Migration_20220718121311 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

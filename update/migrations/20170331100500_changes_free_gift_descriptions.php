@@ -18,7 +18,7 @@ class Migration_20170331100500 extends Migration implements IMigration
     protected $description = 'Change free gift descriptions to clarify free gifts are based on the value of goods';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -54,7 +54,7 @@ class Migration_20170331100500 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

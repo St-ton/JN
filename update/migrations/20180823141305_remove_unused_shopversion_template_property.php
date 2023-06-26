@@ -18,7 +18,7 @@ class Migration_20180823141305 extends Migration implements IMigration
     protected $description = "Remove unused template property 'shopversion'";
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -26,7 +26,7 @@ class Migration_20180823141305 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

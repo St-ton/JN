@@ -35,9 +35,9 @@ class TableCleaner
     private DbInterface $db;
 
     /**
-     * @var boolean
+     * @var bool
      */
-    private $isFinished = true;
+    private bool $isFinished = true;
 
     /**
      * @var int
@@ -89,13 +89,13 @@ class TableCleaner
      */
     public function getMethodCount(): int
     {
-        return count($this->methods);
+        return \count($this->methods);
     }
 
     /**
      * tells upper processes "this task is unfinished"
      *
-     * @return boolean
+     * @return bool
      */
     public function getIsFinished(): bool
     {
@@ -126,16 +126,15 @@ class TableCleaner
      * execute one single job by its index number
      *
      * @param int $taskIdx
+     * @param int $taskRepetitions
+     * @param int $lastProductID
      * @return void
      */
     public function executeByStep(int $taskIdx, int $taskRepetitions, int $lastProductID): void
     {
         $this->lastProductID = $lastProductID;
-        if ($taskIdx < 0 || $taskIdx > count($this->methods)) {
-            ($this->logger === null) ?: $this->logger->log(
-                \JTLLOG_LEVEL_NOTICE,
-                'GeneralDataProtection: No Task-ID given.'
-            );
+        if ($taskIdx < 0 || $taskIdx > \count($this->methods)) {
+            $this->logger?->notice('GeneralDataProtection: No task ID given.');
             return;
         }
         $methodName = __NAMESPACE__ . '\\' . $this->methods[$taskIdx]['name'];
@@ -154,10 +153,9 @@ class TableCleaner
         $this->taskRepetitions = $instance->getTaskRepetitions();
         $this->lastProductID   = $instance->getLastProductID();
         $this->isFinished      = $instance->getIsFinished();
-        ($this->logger === null) ?: $this->logger->log(
-            \JTLLOG_LEVEL_NOTICE,
-            'Anonymize method executed: ' . $this->methods[$taskIdx]['name'] . ', ' .
-            $instance->getWorkSum() . ' entities processed.'
+        $this->logger?->notice(
+            'Anonymize method executed: {name}, {cnt} entities processed.',
+            ['name' => $this->methods[$taskIdx]['name'], 'cnt' => $instance->getWorkSum()]
         );
     }
 
@@ -174,15 +172,9 @@ class TableCleaner
             /** @var MethodInterface $instance */
             $instance = new $methodName($this->now, $method['intervalDays'], $this->db);
             $instance->execute();
-            ($this->logger === null) ?: $this->logger->log(
-                \JTLLOG_LEVEL_NOTICE,
-                'Anonymize method executed: ' . $method['name']
-            );
+            $this->logger?->notice('Anonymize method executed: {method}', ['method' => $method['name']]);
         }
-        ($this->logger === null) ?: $this->logger->log(
-            \JTLLOG_LEVEL_NOTICE,
-            'Anonymizing finished in: ' . \sprintf('%01.4fs', \microtime(true) - $timeStart)
-        );
+        $this->logger?->notice('Anonymizing finished in: ' . \sprintf('%01.4fs', \microtime(true) - $timeStart));
     }
 
     /**

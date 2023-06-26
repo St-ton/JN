@@ -32,6 +32,7 @@ use JTL\Link\LinkInterface;
 use JTL\Link\SpecialPageNotFoundException;
 use JTL\Minify\MinifyService;
 use JTL\Router\DefaultParser;
+use JTL\Router\Router;
 use JTL\Router\State;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Session\Frontend;
@@ -128,10 +129,10 @@ abstract class AbstractController implements ControllerInterface
      * @param AlertServiceInterface $alertService
      */
     public function __construct(
-        protected DbInterface $db,
-        protected JTLCacheInterface $cache,
-        protected State $state,
-        protected array $config,
+        protected DbInterface           $db,
+        protected JTLCacheInterface     $cache,
+        protected State                 $state,
+        protected array                 $config,
         protected AlertServiceInterface $alertService
     ) {
         $this->searchResults      = new SearchResults();
@@ -237,6 +238,24 @@ abstract class AbstractController implements ControllerInterface
     }
 
     /**
+     * @param string $className
+     * @return string
+     */
+    protected function getRouteTypeByClassName(string $className): string
+    {
+        return match ($className) {
+            CategoryController::class            => Router::TYPE_CATEGORY,
+            CharacteristicValueController::class => Router::TYPE_CHARACTERISTIC_VALUE,
+            ManufacturerController::class        => Router::TYPE_MANUFACTURER,
+            NewsController::class                => Router::TYPE_NEWS,
+            ProductController::class             => Router::TYPE_PRODUCT,
+            SearchSpecialController::class       => Router::TYPE_SEARCH_SPECIAL,
+            SearchQueryController::class         => Router::TYPE_SEARCH_QUERY,
+            default                              => Router::TYPE_PAGE
+        };
+    }
+
+    /**
      * @param array $args
      * @return State
      */
@@ -248,8 +267,9 @@ abstract class AbstractController implements ControllerInterface
             return $this->state;
         }
         if ($name !== null) {
-            $parser = new DefaultParser($this->db, $this->state);
-            $name   = $parser->parse($name);
+            $parser    = new DefaultParser($this->db, $this->state);
+            $routeType = $this->getRouteTypeByClassName(\get_class($this));
+            $name      = $parser->parse($name, $args, $routeType);
         }
         $seo = $id > 0
             ? $this->db->getSingleObject(
@@ -281,8 +301,8 @@ abstract class AbstractController implements ControllerInterface
      */
     public function notFoundResponse(
         ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty
+        array                  $args,
+        JTLSmarty              $smarty
     ): ResponseInterface {
         if ($this->state->languageID === 0) {
             $this->state->languageID = Shop::getLanguageID();

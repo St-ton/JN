@@ -32,9 +32,9 @@ class ItemPrice
     protected int $kSteuerklasse = 0;
 
     /**
-     * @var float
+     * @var float|null
      */
-    protected $fPreis;
+    protected ?float $fPreis = null;
 
     /**
      * @var int|null
@@ -80,7 +80,7 @@ class ItemPrice
             $this->kKundengruppe = (int)$item->kKundengruppe;
             $this->kSteuerklasse = (int)$item->kSteuerklasse;
             $this->nTyp          = (int)$item->nTyp;
-            $this->fPreis        = $item->fPreis;
+            $this->fPreis        = (float)$item->fPreis;
         }
     }
 
@@ -99,7 +99,7 @@ class ItemPrice
      * @param int $customerGroupID
      * @return $this
      */
-    public function setKundengruppe(int $customerGroupID):self
+    public function setKundengruppe(int $customerGroupID): self
     {
         $this->kKundengruppe = $customerGroupID;
 

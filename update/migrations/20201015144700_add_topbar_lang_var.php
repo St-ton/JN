@@ -12,7 +12,7 @@ class Migration_20201015144700 extends Migration implements IMigration
     protected $description = 'Add topbar lang var';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -21,7 +21,7 @@ class Migration_20201015144700 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

@@ -30,12 +30,15 @@ class AdminAccountManager
     /**
      * AdminAccountManager constructor.
      *
-     * @param JTLSmarty $smarty
-     * @param DbInterface $db
+     * @param JTLSmarty             $smarty
+     * @param DbInterface           $db
      * @param AlertServiceInterface $alertService
      */
-    public function __construct(private JTLSmarty $smarty, private DbInterface $db, AlertServiceInterface $alertService)
-    {
+    public function __construct(
+        private readonly JTLSmarty   $smarty,
+        private readonly DbInterface $db,
+        AlertServiceInterface        $alertService
+    ) {
         \trigger_error(__CLASS__ . ' is deprecated and should not be used anymore.', \E_USER_DEPRECATED);
     }
 
@@ -118,8 +121,8 @@ class AdminAccountManager
 
     /**
      * @param stdClass $account
-     * @param array $extAttribs
-     * @param array $errorMap
+     * @param array    $extAttribs
+     * @param array    $errorMap
      * @return bool
      */
     public function saveAttributes(stdClass $account, array $extAttribs, array &$errorMap): bool

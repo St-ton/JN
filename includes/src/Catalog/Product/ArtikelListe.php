@@ -103,12 +103,12 @@ class ArtikelListe
      * @return Artikel[]
      */
     public function getArtikelFromKategorie(
-        int $categoryID,
-        int $limitStart,
-        int $limitAnzahl,
+        int    $categoryID,
+        int    $limitStart,
+        int    $limitAnzahl,
         string $order,
-        int $customerGroupID = 0,
-        int $languageID = 0
+        int    $customerGroupID = 0,
+        int    $languageID = 0
     ): array {
         $this->elemente = [];
         if (!$categoryID || !Frontend::getCustomerGroup()->mayViewCategories()) {
@@ -340,7 +340,8 @@ class ArtikelListe
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL' . $excludes . '
                         AND tartikel.kArtikel = tkategorieartikel.kArtikel
                         AND tartikel.kArtikel = tbestseller.kArtikel
-                        AND (tkategorieartikel.kKategorie IN (' . \implode(', ', $categoryIDs) . ')) ' .
+                        AND (tkategorieartikel.kKategorie IN (' . \implode(', ', $categoryIDs) . '))
+                        AND tbestseller.isBestseller = 1 ' .
                         $stockFilterSQL . '
                     ORDER BY tbestseller.fAnzahl DESC ' . $limitSQL,
                 ['cgid' => $customerGroupID]

@@ -36,6 +36,7 @@
 /media/image/product/*
 /media/image/storage/*
 /media/image/avatare/*
+/media/image/configgroup/*
 /media/image/category/*
 /media/image/characteristic/*
 /media/image/characteristicvalue/*

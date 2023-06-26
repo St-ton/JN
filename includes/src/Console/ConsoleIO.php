@@ -29,7 +29,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @var int
      */
-    protected $lastMessagesLength = 0;
+    protected int $lastMessagesLength = 0;
 
     /**
      * @var bool
@@ -39,12 +39,12 @@ class ConsoleIO extends OutputStyle
     /**
      * @var SymfonyQuestionHelper|null
      */
-    private $questionHelper;
+    private ?SymfonyQuestionHelper $questionHelper = null;
 
     /**
      * @var ProgressBar|null
      */
-    private $progressBar;
+    private ?ProgressBar $progressBar = null;
 
     /**
      * @var int
@@ -63,9 +63,9 @@ class ConsoleIO extends OutputStyle
      * @param HelperSet|null  $helperSet
      */
     public function __construct(
-        private InputInterface $input,
-        private OutputInterface $output,
-        private ?HelperSet $helperSet = null
+        private readonly InputInterface  $input,
+        private readonly OutputInterface $output,
+        private readonly ?HelperSet      $helperSet = null
     ) {
         $formatter = null;
         if ($output->getFormatter() !== null) {
@@ -102,7 +102,7 @@ class ConsoleIO extends OutputStyle
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function isQuiet(): bool
     {
@@ -118,7 +118,7 @@ class ConsoleIO extends OutputStyle
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function isVerbose(): bool
     {
@@ -126,7 +126,7 @@ class ConsoleIO extends OutputStyle
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function isVeryVerbose(): bool
     {
@@ -134,7 +134,7 @@ class ConsoleIO extends OutputStyle
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function isDebug(): bool
     {
@@ -145,10 +145,10 @@ class ConsoleIO extends OutputStyle
      * @param string $message
      * @return $this
      */
-    public function overwrite(string $message)
+    public function overwrite(string $message): self
     {
         $lines = \explode("\n", $message);
-        if ($this->lastMessagesLength !== null) {
+        if ($this->lastMessagesLength !== 0) {
             foreach ($lines as $i => $line) {
                 $len = Helper::width(Helper::removeDecoration($this->bufferedOutput->getFormatter(), $line));
                 if ($this->lastMessagesLength > $len) {
@@ -183,7 +183,7 @@ class ConsoleIO extends OutputStyle
      * @param bool        $clearMessage
      * @return $this
      */
-    public function progress($process, $format = null, bool $clearMessage = true)
+    public function progress($process, $format = null, bool $clearMessage = true): self
     {
         $progress = parent::createProgressBar();
 
@@ -248,7 +248,7 @@ class ConsoleIO extends OutputStyle
      * @param string $step
      * @return $this
      */
-    public function setStep($current, $limit, $step)
+    public function setStep($current, $limit, $step): self
     {
         $this->setLabel('Step ' . $current . ' of ' . $limit, $step);
 
@@ -260,7 +260,7 @@ class ConsoleIO extends OutputStyle
      * @param string|null $sub
      * @return $this
      */
-    public function setLabel($title, $sub = null)
+    public function setLabel($title, $sub = null): self
     {
         $this->writeln('');
         $this->writeln('<comment>' . $title . '</comment> ' . ($sub !== null ? '<info>' . $sub . '</info>' : ''));
@@ -288,8 +288,13 @@ class ConsoleIO extends OutputStyle
      *
      * @return $this
      */
-    public function block($messages, $type = null, $style = null, $prefix = ' ', $padding = false)
-    {
+    public function block(
+        string|array $messages,
+        ?string      $type = null,
+        ?string      $style = null,
+        string       $prefix = ' ',
+        bool         $padding = false
+    ): self {
         $this->autoPrependBlock();
 
         $messages = \is_array($messages) ? \array_values($messages) : [$messages];
@@ -350,10 +355,9 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritdoc
      */
-    public function title(string $message)
+    public function title(string $message): self
     {
         $this->autoPrependBlock();
-
         $this->writeln(
             [
                 \sprintf('<comment>%s</comment>', $message),
@@ -371,10 +375,9 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritdoc
      */
-    public function section(string $message)
+    public function section(string $message): self
     {
         $this->autoPrependBlock();
-
         $this->writeln(
             [
                 \sprintf('<comment>%s</comment>', $message),
@@ -392,17 +395,15 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritdoc
      */
-    public function listing(array $elements)
+    public function listing(array $elements): self
     {
         $this->autoPrependText();
-
         $elements = \array_map(
             static function ($element): string {
                 return \sprintf(' * %s', $element);
             },
             $elements
         );
-
         $this->writeln($elements);
         $this->newLine();
 
@@ -412,7 +413,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritdoc
      */
-    public function text($message)
+    public function text(string|array $message): self
     {
         $this->autoPrependText();
 
@@ -428,7 +429,7 @@ class ConsoleIO extends OutputStyle
      * @param string|array $message
      * @return $this
      */
-    public function comment($message)
+    public function comment(string|array $message): self
     {
         $this->autoPrependText();
 
@@ -441,10 +442,10 @@ class ConsoleIO extends OutputStyle
     }
 
     /**
-     * @param string|array $message
+     * @param array|string $message
      * @return $this
      */
-    public function verbose($message)
+    public function verbose(array|string $message): self
     {
         return $this->block($message, null, 'fg=black;bg=cyan', ' ', true);
     }
@@ -452,7 +453,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritdoc
      */
-    public function success($message)
+    public function success(string|array $message): self
     {
         return $this->block($message, null, 'fg=black;bg=green', ' ', true);
     }
@@ -460,7 +461,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritdoc
      */
-    public function error($message)
+    public function error(string|array $message): self
     {
         return $this->block($message, null, 'fg=white;bg=red', ' ', true);
     }
@@ -468,7 +469,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritdoc
      */
-    public function warning($message)
+    public function warning(string|array $message): self
     {
         return $this->block($message, null, 'fg=black;bg=yellow', ' ', true);
     }
@@ -476,7 +477,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritdoc
      */
-    public function note($message)
+    public function note(string|array $message): self
     {
         return $this->block($message, null, 'fg=white;bg=blue', ' ', true);
     }
@@ -484,7 +485,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritdoc
      */
-    public function caution($message)
+    public function caution(string|array $message): self
     {
         return $this->block($message, null, 'fg=white;bg=red', ' ', true);
     }
@@ -492,7 +493,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritdoc
      */
-    public function table(array $headers, array $rows, array $options = [])
+    public function table(array $headers, array $rows, array $options = []): self
     {
         $options = \array_merge([
             'style' => 'symfony-style-guide'
@@ -508,11 +509,9 @@ class ConsoleIO extends OutputStyle
         $table->setHeaders($headers);
         $table->setRows($rows);
         $table->setStyle($options['style']);
-
         if (isset($options['columnWidth']) && \count($options['columnWidth']) > 0) {
             $table->setColumnWidths($options['columnWidth']);
         }
-
         $table->render();
         $this->newLine();
 
@@ -567,7 +566,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritdoc
      */
-    public function progressStart(int $max = 0)
+    public function progressStart(int $max = 0): self
     {
         $this->progressBar = $this->createProgressBar($max);
         $this->progressBar->start();
@@ -578,7 +577,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritdoc
      */
-    public function progressAdvance(int $step = 1)
+    public function progressAdvance(int $step = 1): self
     {
         $this->getProgressBar()->advance($step);
 
@@ -588,7 +587,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritdoc
      */
-    public function progressFinish()
+    public function progressFinish(): self
     {
         $this->getProgressBar()->finish();
         $this->newLine(2);
@@ -640,7 +639,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritdoc
      */
-    public function writeln($messages, int $type = self::OUTPUT_NORMAL)
+    public function writeln($messages, int $type = self::OUTPUT_NORMAL): self
     {
         parent::writeln($messages, $type);
         $this->bufferedOutput->writeln($this->reduceBuffer($messages), $type);
@@ -651,7 +650,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritdoc
      */
-    public function write($messages, bool $newline = false, int $type = self::OUTPUT_NORMAL)
+    public function write($messages, bool $newline = false, int $type = self::OUTPUT_NORMAL): self
     {
         parent::write($messages, $newline, $type);
         $this->bufferedOutput->write($this->reduceBuffer($messages), $newline, $type);
@@ -662,7 +661,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritdoc
      */
-    public function newLine(int $count = 1)
+    public function newLine(int $count = 1): self
     {
         parent::newLine($count);
         $this->bufferedOutput->write(\str_repeat("\n", $count));
@@ -694,16 +693,16 @@ class ConsoleIO extends OutputStyle
     }
 
     /**
-     * @return $this|ConsoleIO|void
+     * @return $this
      */
-    private function autoPrependBlock()
+    private function autoPrependBlock(): self
     {
         $chars = \substr(\str_replace(\PHP_EOL, "\n", $this->bufferedOutput->fetch()), -2);
 
         if (!isset($chars[0])) {
             return $this->newLine(); //empty history, so we should start with a new line.
         }
-        //Prepend new line for each non LF chars (This means no blank line was output before)
+        // Prepend new line for each non LF chars (This means no blank line was output before)
         $this->newLine(2 - \substr_count($chars, "\n"));
 
         return $this;
@@ -712,11 +711,10 @@ class ConsoleIO extends OutputStyle
     /**
      * @return $this
      */
-    private function autoPrependText()
+    private function autoPrependText(): self
     {
         $fetched = $this->bufferedOutput->fetch();
-
-        //Prepend new line if last char isn't EOL:
+        // Prepend new line if last char isn't EOL:
         if (!\str_ends_with($fetched, "\n")) {
             $this->newLine();
         }

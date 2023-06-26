@@ -16,7 +16,7 @@ use stdClass;
 class ReferencedPlugin extends ReferencedItem
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function initByExsID(DbInterface $db, stdClass $license, Releases $releases): void
     {
@@ -31,6 +31,7 @@ class ReferencedPlugin extends ReferencedItem
         $installedVersion = Version::parse($installed->nVersion);
         $availableVersion = $available === null ? Version::parse('0.0.0') : $available->getVersion();
         $latestVersion    = $latest === null ? $availableVersion : $latest->getVersion();
+        $this->setReleaseAvailable($available !== null);
         $this->setHasUpdate(false);
         $this->setCanBeUpdated(false);
         $this->setID($installed->cPluginID);
@@ -39,9 +40,13 @@ class ReferencedPlugin extends ReferencedItem
             $this->setMaxInstallableVersion($availableVersion);
             $this->setHasUpdate(true);
             $this->setCanBeUpdated(true);
+            if ($available->getPhpVersionOK() !== $available::PHP_VERSION_OK) {
+                $this->setCanBeUpdated(false);
+            }
         } elseif ($latestVersion->greaterThan($availableVersion) && $latestVersion->greaterThan($installedVersion)) {
             $this->setMaxInstallableVersion($latestVersion);
             $this->setHasUpdate(true);
+            $this->setShopVersionOK(false);
             $this->setCanBeUpdated(false);
         }
         $this->setInstalled(true);
@@ -50,8 +55,7 @@ class ReferencedPlugin extends ReferencedItem
         $this->setInternalID((int)$installed->kPlugin);
         $this->setFilesMissing($filesMissing);
         try {
-            $carbon        = new Carbon($installed->dInstalliert);
-            $dateInstalled = $carbon->toIso8601ZuluString();
+            $dateInstalled = (new Carbon($installed->dInstalliert))->toIso8601ZuluString();
         } catch (Exception) {
             $dateInstalled = null;
         }

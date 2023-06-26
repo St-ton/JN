@@ -33,8 +33,8 @@ class ContactController extends AbstractController
      */
     public function getResponse(
         ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty
+        array                  $args,
+        JTLSmarty              $smarty
     ): ResponseInterface {
         $this->smarty = $smarty;
         Shop::setPageType(\PAGE_KONTAKT);
@@ -45,8 +45,10 @@ class ContactController extends AbstractController
         if (Form::checkSubject()) {
             $this->assignForms();
         } else {
-            Shop::Container()->getLogService()->error('Kein Kontaktbetreff vorhanden! Bitte im Backend unter '
-                . 'Einstellungen -> Kontaktformular -> Betreffs einen Betreff hinzuf&uuml;gen.');
+            Shop::Container()->getLogService()->error(
+                'Kein Kontaktbetreff vorhanden! Bitte im Backend unter '
+                . 'Einstellungen -> Kontaktformular -> Betreffs einen Betreff hinzufügen.'
+            );
             $this->alertService->addNotice(Shop::Lang()->get('noSubjectAvailable', 'contact'), 'noSubjectAvailable');
             $this->smarty->assign('Spezialcontent', new stdClass());
         }

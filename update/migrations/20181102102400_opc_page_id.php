@@ -12,7 +12,7 @@ class Migration_20181102102400 extends Migration implements IMigration
     protected $description = 'Change OPC page id type';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -22,7 +22,7 @@ class Migration_20181102102400 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

@@ -10,6 +10,7 @@ use JTL\Filter\Items\Rating;
 use JTL\Filter\Items\Search;
 use JTL\Filter\Items\SearchSpecial;
 use JTL\Filter\States\BaseSearchQuery;
+use JTL\Helpers\URL;
 use JTL\Language\LanguageModel;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -26,7 +27,7 @@ class ProductFilterURL
      * ProductFilterURL constructor.
      * @param ProductFilter $productFilter
      */
-    public function __construct(private ProductFilter $productFilter)
+    public function __construct(private readonly ProductFilter $productFilter)
     {
     }
 
@@ -39,12 +40,15 @@ class ProductFilterURL
     public function getURL($extraFilter = null, bool $canonical = false, array $additional = []): string
     {
         $isSearchQuery      = false;
-        $languageID         = $this->productFilter->getFilterConfig()->getLanguageID();
+        $productFilter      = $this->productFilter;
+        $filterConfig       = $productFilter->getFilterConfig();
+        $languageID         = $filterConfig->getLanguageID();
         $extraFilter        = $this->convertExtraFilter($extraFilter);
-        $base               = $this->productFilter->getBaseState();
+        $base               = $productFilter->getBaseState();
         $nonSeoFilterParams = [];
         $seoFilterParams    = [];
-        $urlParams          = [
+
+        $urlParams = [
             'kf'     => [],
             'hf'     => [],
             'mm'     => [],
@@ -55,6 +59,11 @@ class ProductFilterURL
             'custom' => [],
             'misc'   => []
         ];
+
+        $baseUrl = new URL($filterConfig->getBaseURL());
+        $baseUrl->setPath('');
+        $baseUrl = $baseUrl->normalize() . '/';
+
         if ($base->isInitialized()) {
             $filterSeoUrl = \count($additional) > 0
                 ? $base->getRoute($additional)
@@ -76,14 +85,9 @@ class ProductFilterURL
             }
         }
         if ($canonical === true) {
-            return $this->productFilter->getFilterConfig()->getBaseURL()
-                . $this->buildURLString(
-                    $seoFilterParams,
-                    $nonSeoFilterParams
-                );
+            return $baseUrl . $this->buildURLString($seoFilterParams, $nonSeoFilterParams);
         }
-        $url    = $this->productFilter->getFilterConfig()->getBaseURL();
-        $active = $this->productFilter->getActiveFilters();
+        $active = $productFilter->getActiveFilters();
         // we need the base state + all active filters + optionally the additional filter to generate the correct url
         if ($extraFilter !== null && !$extraFilter->getDoUnset()) {
             $active[] = $extraFilter;
@@ -103,7 +107,7 @@ class ProductFilterURL
                 unset($active[$i]);
                 foreach ($filterValue as $singleValue) {
                     $class    = $filter->getClassName();
-                    $instance = new $class($this->productFilter);
+                    $instance = new $class($productFilter);
                     /** @var FilterInterface $instance */
                     $instance->init($singleValue);
                     $active[] = $instance;
@@ -221,7 +225,7 @@ class ProductFilterURL
             }
         }
 
-        return $url . $this->buildURLString($seoFilterParams, $this->collapse($nonSeoFilterParams));
+        return $baseUrl . $this->buildURLString($seoFilterParams, $this->collapse($nonSeoFilterParams));
     }
 
     /**
@@ -264,8 +268,8 @@ class ProductFilterURL
     /**
      * URLs generieren, die Filter lösen
      *
-     * @param NavigationURLsInterface      $url
-     * @param SearchResultsInterface|null  $searchResults
+     * @param NavigationURLsInterface     $url
+     * @param SearchResultsInterface|null $searchResults
      * @return NavigationURLsInterface
      */
     public function createUnsetFilterURLs($url, $searchResults = null): NavigationURLsInterface
@@ -314,7 +318,7 @@ class ProductFilterURL
                     $filter->getID(),
                     $this->getURL(
                         $additionalFilter->init($filter->getID())
-                                         ->setSeo($this->productFilter->getFilterConfig()->getLanguages())
+                            ->setSeo($this->productFilter->getFilterConfig()->getLanguages())
                     )
                 );
                 $filter->setUnsetFilterURL($url->getCharacteristics());
@@ -342,7 +346,7 @@ class ProductFilterURL
             // the url should be <shop>/<merkmalwert-url>__<merkmalfilter>[__<merkmalfilter>]
             $charValSeo = \str_replace(
                 $this->productFilter->getCharacteristicValue()
-                                    ->getSeo($this->productFilter->getFilterConfig()->getLanguageID()) . \SEP_MERKMAL,
+                    ->getSeo($this->productFilter->getFilterConfig()->getLanguageID()) . \SEP_MERKMAL,
                 '',
                 $url->getCategories()
             );

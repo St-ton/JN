@@ -247,8 +247,8 @@ class ProductFilter
      * @param JTLCacheInterface $cache
      */
     public function __construct(
-        private ConfigInterface $filterConfig,
-        private DbInterface $db,
+        private ConfigInterface   $filterConfig,
+        private DbInterface       $db,
         private JTLCacheInterface $cache
     ) {
         $this->showChildProducts = \defined('SHOW_CHILD_PRODUCTS')
@@ -673,7 +673,7 @@ class ProductFilter
                 'kSuchanfrage',
                 $params['kSuchanfrage']
             );
-            if (isset($queryData->cSuche) && \mb_strlen($queryData->cSuche) > 0) {
+            if ($queryData !== null && isset($queryData->cSuche) && \mb_strlen($queryData->cSuche) > 0) {
                 $this->search->setName($queryData->cSuche);
             }
             // Suchcache beachten / erstellen
@@ -874,8 +874,8 @@ class ProductFilter
             static function ($carry, $item) use ($filterClassName) {
                 /** @var FilterInterface $item */
                 return $carry ?? ($item->getClassName() === $filterClassName
-                        ? $item->getValue()
-                        : null);
+                    ? $item->getValue()
+                    : null);
             }
         );
     }
@@ -1584,12 +1584,8 @@ class ProductFilter
             if ($value === $filterValue) {
                 return true;
             }
-            if (\is_array($filterValue)) {
-                foreach ($filterValue as $val) {
-                    if ($val === $value) {
-                        return true;
-                    }
-                }
+            if (\is_array($filterValue) && \in_array($value, $filterValue, true)) {
+                return true;
             }
         }
 
@@ -1604,24 +1600,21 @@ class ProductFilter
      */
     public function generateSearchResults(
         Kategorie $category = null,
-        bool $fill = true,
-        int $limit = null
+        bool      $fill = true,
+        int       $limit = null
     ): SearchResultsInterface {
-        $productsPerPage        = $limit ?? $this->limits->getProductsPerPageLimit();
-        $nLimitN                = $productsPerPage * ($this->nSeite - 1);
-        $maxPaginationPageCount = (int)$this->getFilterConfig()->getConfig('artikeluebersicht')
-        ['artikeluebersicht_max_seitenzahl'];
-        $error                  = false;
+        $error = false;
         if ($this->searchResults === null) {
+            $this->searchResults = new SearchResults();
             $productList         = new Collection();
             $productKeys         = $this->getProductKeys();
-            $productCount        = $productKeys->count();
-            $this->searchResults = (new SearchResults())
-                ->setProductCount($productCount)
-                ->setProductKeys($productKeys);
             if (!empty($this->search->getName())) {
                 if ($this->searchQuery->getError() === null) {
-                    $this->search->saveQuery($productCount, $this->search->getName(), !$this->bExtendedJTLSearch);
+                    $this->search->saveQuery(
+                        $productKeys->count(),
+                        $this->search->getName(),
+                        !$this->bExtendedJTLSearch
+                    );
                     $this->search->setQueryID(
                         $this->search->getName() ?? '',
                         $this->getFilterConfig()->getLanguageID()
@@ -1632,26 +1625,8 @@ class ProductFilter
                     $error = $this->searchQuery->getError();
                 }
             }
-            $end = \min($nLimitN + $productsPerPage, $productCount);
-            $this->searchResults->setOffsetStart($nLimitN + 1)
-                ->setOffsetEnd($end > 0 ? $end : $productCount);
-            $total   = $productsPerPage > 0 ? (int)\ceil($productCount / $productsPerPage) : \min($productCount, 1);
-            $minPage = (int)\max($this->nSeite - \floor($maxPaginationPageCount / 2), 1);
-            $maxPage = $minPage + $maxPaginationPageCount - 1;
-            if ($maxPage > $total) {
-                $diff     = $total - $maxPage;
-                $maxPage  = $total;
-                $minPage += $diff;
-                $minPage  = (int)\max($minPage, 1);
-            }
-            $pages = new Info();
-            $pages->setMinPage($minPage);
-            $pages->setMaxPage($maxPage);
-            $pages->setTotalPages($total);
-            $pages->setCurrentPage($this->nSeite);
 
-            $this->searchResults->setPages($pages)
-                ->setFilterOptions($this, $category)
+            $this->searchResults->setFilterOptions($this, $category)
                 ->setSearchTerm($this->search->getName())
                 ->setSearchTermWrite($this->metaData->getHeader());
         } else {
@@ -1659,50 +1634,112 @@ class ProductFilter
             $productKeys = $this->searchResults->getProductKeys();
         }
         if ($error !== false) {
-            $pages = new Info();
-            $pages->setMinPage(0);
-            $pages->setMaxPage(0);
-            $pages->setTotalPages(0);
-            $pages->setCurrentPage(0);
-
-            return $this->searchResults
-                ->setPages($pages)
-                ->setProductCount(0)
-                ->setVisibleProductCount(0)
-                ->setProducts($productList)
-                ->setSearchUnsuccessful(true)
-                ->setSearchTerm(\strip_tags(\trim($this->params['cSuche'])))
-                ->setError($error);
+            return $this->showErrorPage($productList, $error);
         }
         if ($fill === true) { // @todo: slice list of IDs when not filling?
-            $opt                        = Artikel::getDefaultOptions();
-            $opt->nKategorie            = 1;
-            $opt->nVariationen          = 1;
-            $opt->nWarenlager           = 1;
-            $opt->nRatings              = \PRODUCT_LIST_SHOW_RATINGS === true ? 1 : 0;
-            $opt->nVariationDetailPreis = (int)$this->getFilterConfig()->getConfig('artikeldetails')
-            ['artikel_variationspreisanzeige'] !== 0
-                ? 1
-                : 0;
-            if ($productsPerPage < 0) {
-                $productsPerPage = null;
-            }
-            $currency      = Frontend::getCurrency();
-            $customerGroup = Frontend::getCustomerGroup();
-            $languageID    = Shop::getLanguageID();
-            foreach ($productKeys->forPage($this->nSeite, $productsPerPage) as $id) {
-                $productList->push((new Artikel($this->db, $customerGroup, $currency))
-                    ->fuelleArtikel($id, $opt, $customerGroup->getID(), $languageID));
-            }
-            $productList = $productList->filter();
-            $this->searchResults->setVisibleProductCount($productList->count());
+            $this->fillProducts($limit, $productKeys, $productList);
         }
         $this->url                             = $this->filterURL->createUnsetFilterURLs($this->url);
         $_SESSION['oArtikelUebersichtKey_arr'] = $productKeys;
-
         $this->searchResults->setProducts($productList);
+        $this->updateSearchResultsMeta($limit, $productKeys);
 
         return $this->searchResults;
+    }
+
+    /**
+     * @param int|null   $limit
+     * @param Collection $productKeys
+     * @return void
+     */
+    protected function updateSearchResultsMeta(?int $limit, Collection $productKeys): void
+    {
+        $maxPaginationPageCount = (int)$this->getFilterConfig()->getConfig('artikeluebersicht')
+        ['artikeluebersicht_max_seitenzahl'];
+        $productCount           = $productKeys->count();
+        $productsPerPage        = $limit ?? $this->limits->getProductsPerPageLimit();
+        $nLimitN                = $productsPerPage * ($this->nSeite - 1);
+        $end                    = \min($nLimitN + $productsPerPage, $productCount);
+        $this->searchResults->setOffsetStart($nLimitN + 1)
+            ->setOffsetEnd($end > 0 ? $end : $productCount);
+        $total   = $productsPerPage > 0 ? (int)\ceil($productCount / $productsPerPage) : \min($productCount, 1);
+        $minPage = (int)\max($this->nSeite - \floor($maxPaginationPageCount / 2), 1);
+        $maxPage = $minPage + $maxPaginationPageCount - 1;
+        if ($maxPage > $total) {
+            $diff     = $total - $maxPage;
+            $maxPage  = $total;
+            $minPage += $diff;
+            $minPage  = (int)\max($minPage, 1);
+        }
+        $pages = new Info();
+        $pages->setMinPage($minPage);
+        $pages->setMaxPage($maxPage);
+        $pages->setTotalPages($total);
+        $pages->setCurrentPage($this->nSeite);
+
+        $this->searchResults->setProductCount($productCount)
+            ->setProductKeys($productKeys)
+            ->setPages($pages);
+    }
+
+    /**
+     * @param int|null   $limit
+     * @param Collection $productKeys
+     * @param Collection $productList
+     * @return void
+     */
+    protected function fillProducts(?int $limit, Collection $productKeys, Collection $productList): void
+    {
+        $opt                        = Artikel::getDefaultOptions();
+        $opt->nKategorie            = 1;
+        $opt->nVariationen          = 1;
+        $opt->nWarenlager           = 1;
+        $opt->nRatings              = \PRODUCT_LIST_SHOW_RATINGS === true ? 1 : 0;
+        $opt->nVariationDetailPreis = (int)$this->getFilterConfig()->getConfig('artikeldetails')
+        ['artikel_variationspreisanzeige'] !== 0
+            ? 1
+            : 0;
+        $productsPerPage            = $limit ?? $this->limits->getProductsPerPageLimit();
+        if ($productsPerPage < 0) {
+            $productsPerPage = null;
+        }
+        $currency      = Frontend::getCurrency();
+        $customerGroup = Frontend::getCustomerGroup();
+        $languageID    = Shop::getLanguageID();
+        foreach ($productKeys->forPage($this->nSeite, $productsPerPage) as $idx => $id) {
+            $product = (new Artikel($this->db, $customerGroup, $currency))
+                ->fuelleArtikel($id, $opt, $customerGroup->getID(), $languageID);
+            if ($product !== null && $product->getID() > 0) {
+                $productList->push($product);
+            } else {
+                $productKeys->forget($idx);
+            }
+        }
+        $productList = $productList->filter();
+        $this->searchResults->setVisibleProductCount($productList->count());
+    }
+
+    /**
+     * @param Collection $productList
+     * @param string     $error
+     * @return SearchResultsInterface
+     */
+    protected function showErrorPage(Collection $productList, $error): SearchResultsInterface
+    {
+        $pages = new Info();
+        $pages->setMinPage(0);
+        $pages->setMaxPage(0);
+        $pages->setTotalPages(0);
+        $pages->setCurrentPage(0);
+
+        return $this->searchResults
+            ->setPages($pages)
+            ->setProductCount(0)
+            ->setVisibleProductCount(0)
+            ->setProducts($productList)
+            ->setSearchUnsuccessful(true)
+            ->setSearchTerm(\strip_tags(\trim($this->params['cSuche'])))
+            ->setError($error);
     }
 
     /**
@@ -1809,7 +1846,7 @@ class ProductFilter
                 ? $f->getID()
                 : $f->getPrimaryKeyRow();
         });
-        foreach ($groupedOrFilters as $idx => $orFilters) {
+        foreach ($groupedOrFilters as $orFilters) {
             /** @var FilterInterface[] $orFilters */
             $values        = \implode(
                 ',',

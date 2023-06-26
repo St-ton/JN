@@ -31,10 +31,10 @@ final class DefaultFactory
      * @param AdminAccount          $adminAccount
      */
     public function __construct(
-        DbInterface $db,
-        GetText $getText,
+        DbInterface           $db,
+        GetText               $getText,
         AlertServiceInterface $alertService,
-        AdminAccount $adminAccount
+        AdminAccount          $adminAccount
     ) {
         $getText->loadConfigLocales();
         $getText->loadAdminLocale('pages/wizard');

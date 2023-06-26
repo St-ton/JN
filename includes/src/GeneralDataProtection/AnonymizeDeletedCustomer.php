@@ -24,7 +24,6 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
      */
     public $taskRepetitions = 0;
 
-
     /**
      * runs all anonymize-routines
      *
@@ -110,8 +109,8 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
             ORDER BY z.dZeit ASC
             LIMIT :workLimit",
             [
-                'dateLimit' => $this->dateLimit,
-                'workLimit' => $this->workLimit,
+                'dateLimit'  => $this->dateLimit,
+                'workLimit'  => $this->workLimit,
                 'anonString' => Customer::CUSTOMER_ANONYM
             ],
             ReturnType::AFFECTED_ROWS

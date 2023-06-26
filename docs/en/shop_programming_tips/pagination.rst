@@ -163,8 +163,8 @@ Front end
 +======================================================+================================================================+
 | ``setRange($nRange)``                                | Since with long lists, page numbers                            |
 | can be quite large,  |br|                            |                                                                |
-|                                                      |which would make navigation too long,                           |
-|                                                      | an ellipsis is simply inserted (``...``)...``) eingefügt. |br| |
+|                                                      | which would make navigation too long,                          |
+|                                                      | an ellipsis is simply inserted (``...``)                  |br| |
 |                                                      | To both the left and the right of the active page link         |
 |                                                      | is a maximal ``$nRange`` |br|                                  |
 |                                                      | of neighbouring page links displayed.                          |

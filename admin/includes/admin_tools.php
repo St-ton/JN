@@ -82,7 +82,7 @@ function setzeSprache(): void
     if (Form::validateToken() && Request::verifyGPCDataInt('sprachwechsel') === 1) {
         // Wähle explizit gesetzte Sprache als aktuelle Sprache
         $language = Shop::Container()->getDB()->select('tsprache', 'kSprache', Request::postInt('kSprache'));
-        if ((int)$language->kSprache > 0) {
+        if ($language !== null && (int)$language->kSprache > 0) {
             $_SESSION['editLanguageID']   = (int)$language->kSprache;
             $_SESSION['editLanguageCode'] = $language->cISO;
         }
@@ -99,7 +99,7 @@ function setzeSprache(): void
     if (isset($_SESSION['editLanguageID']) && empty($_SESSION['editLanguageCode'])) {
         // Fehlendes cISO ergänzen
         $language = Shop::Container()->getDB()->select('tsprache', 'kSprache', (int)$_SESSION['editLanguageID']);
-        if ((int)$language->kSprache > 0) {
+        if ($language !== null && (int)$language->kSprache > 0) {
             $_SESSION['editLanguageCode'] = $language->cISO;
         }
     }
@@ -188,7 +188,7 @@ function bearbeiteListBox($listBoxes, string $valueName, int $configSectionID): 
 
 /**
  * @param bool $date
- * @return int|string
+ * @return int
  * @deprecated since 5.2.0
  */
 function getJTLVersionDB(bool $date = false)
@@ -199,7 +199,7 @@ function getJTLVersionDB(bool $date = false)
 
 /**
  * @param string $size
- * @return mixed
+ * @return string|int
  * @deprecated since 5.2.0
  */
 function getMaxFileSize($size)
@@ -209,7 +209,7 @@ function getMaxFileSize($size)
         'M', 'm' => (int)$size * 1048576,
         'K', 'k' => (int)$size * 1024,
         'G', 'g' => (int)$size * 1073741824,
-        default => $size,
+        default  => $size,
     };
 }
 

@@ -26,17 +26,8 @@ JTL-Plugin ":doc:`JTL Debug </shop_programming_tips/debug>`".
     Einfache Anpassungen von Farben und Abstände mittels Theme-Anpassungen |br|
     Hier werden die verschiedenen Methoden erklärt.
 
-:doc:`/shop_templates/primary_color`
-    Einstellen der primären Farbe des JTL-Shops
-
 :doc:`/shop_templates/overlays`
     Artikel-Overlays (wie z.B. "Bestseller") selbst erstellen
-
-:doc:`/shop_templates/short_checkout`
-    Änderungen im Zusammenhang mit dem "*verkürzten Checkout*" ab Version 4.06
-
-:doc:`/shop_templates/jquery_update`
-    Hinweise zur neuen jQuery-Version 3.x ab Shop Version 5.0
 
 :doc:`/shop_templates/tipps_tricks`
     Template How-To's und Best Practices

@@ -78,7 +78,7 @@
                         step="{if $oItem->getArtikel()->cTeilbar === 'Y' && $oItem->getArtikel()->fAbnahmeintervall == 0}any{elseif $oItem->getArtikel()->fAbnahmeintervall > 0}{$oItem->getArtikel()->fAbnahmeintervall}{else}1{/if}"
                         id="quantity{$oItem->getKonfigitem()}"
                         class="quantity"
-                        name="item_quantity[{$kKonfigitem}]"
+                        name="item_quantity[{$oItem->getKonfigitem()}]"
                         autocomplete="off"
                         value="{if !empty($nKonfigitemAnzahl_arr[$kKonfigitem])}{$nKonfigitemAnzahl_arr[$kKonfigitem]}{else}{if $oItem->getArtikel()->fAbnahmeintervall > 0}{if $oItem->getArtikel()->fMindestbestellmenge > $oItem->getArtikel()->fAbnahmeintervall}{$oItem->getArtikel()->fMindestbestellmenge}{else}{$oItem->getArtikel()->fAbnahmeintervall}{/if}{else}{if ($oItem->getInitial()>0)}{$oItem->getInitial()}{else}{$oItem->getMin()}{/if}{/if}{/if}"
                         disabled=empty($bSelectable)

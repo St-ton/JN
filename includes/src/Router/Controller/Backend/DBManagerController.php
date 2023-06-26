@@ -184,6 +184,22 @@ class DBManagerController extends AbstractBackendController
                     if ($op === 'LIKE %%') {
                         $op  = 'LIKE';
                         $val = \sprintf('%%%s%%', \trim($val, '%'));
+                    } elseif ($op === 'IS NULL' || $op === 'IS NOT NULL') {
+                        $whereParts[] = \sprintf('`%s` %s', $col, $op);
+                        continue;
+                    }
+                    if ($op === 'IN' || $op === 'NOT IN') {
+                        $values   = \explode(',', \trim($val, '() '));
+                        $part     = \sprintf('`%s` %s (', $col, $op);
+                        $prepared = [];
+                        foreach ($values as $j => $value) {
+                            $prepared[] = \sprintf(':where_%d_%d_val', $i, $j);
+
+                            $queryParams['where_' . $i . '_' . $j . '_val'] = $value;
+                        }
+                        $part        .= \implode(',', $prepared) . ')';
+                        $whereParts[] = $part;
+                        continue;
                     }
                     $whereParts[] = \sprintf('`%s` %s :where_%d_val', $col, $op, $i);
                     /** @var string[] $queryParams */
@@ -199,7 +215,7 @@ class DBManagerController extends AbstractBackendController
         $count = $this->db->getSingleArray(
             'SELECT COUNT(*) as allRowsFound' . $fromWhere,
             $queryParams
-        )['allRowsFound'];
+        )['allRowsFound'] ?? 0;
         $pages = (int)\ceil($count / $filter['limit']);
         // limit
         $queryParams['limit_count']  = $filter['limit'];

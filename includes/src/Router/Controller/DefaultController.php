@@ -6,7 +6,6 @@ use JTL\Language\LanguageHelper;
 use JTL\Router\ControllerFactory;
 use JTL\Router\DefaultParser;
 use JTL\Router\Middleware\PhpFileCheckMiddleware;
-use JTL\Router\Router;
 use JTL\Router\State;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
@@ -32,7 +31,7 @@ class DefaultController extends AbstractController
             return $this->state;
         }
         $parser = new DefaultParser($this->db, $this->state);
-        $slug   = $parser->parse($slug);
+        $slug   = $parser->parse($slug, $args);
         $seo    = $this->db->getSingleObject(
             'SELECT *
                 FROM tseo
@@ -70,10 +69,10 @@ class DefaultController extends AbstractController
     public function register(RouteGroup $route, string $dynName): void
     {
         $phpFileCheckMiddleware = new PhpFileCheckMiddleware();
-        $route->get('/{slug:.+}', [$this, 'getResponse'])
+        $route->get('/{slug:.+}', $this->getResponse(...))
             ->setName('catchall' . $dynName)
             ->middleware($phpFileCheckMiddleware);
-        $route->post('/{slug:.+}', [$this, 'getResponse'])
+        $route->post('/{slug:.+}', $this->getResponse(...))
             ->setName('catchallPOST' . $dynName)
             ->middleware($phpFileCheckMiddleware);
     }
@@ -123,21 +122,12 @@ class DefaultController extends AbstractController
             $className = $controller instanceof PageController
                 ? PageController::class
                 : \get_class($controller);
-            $type      = match ($className) {
-                CategoryController::class            => Router::TYPE_CATEGORY,
-                CharacteristicValueController::class => Router::TYPE_CHARACTERISTIC_VALUE,
-                ManufacturerController::class        => Router::TYPE_MANUFACTURER,
-                NewsController::class                => Router::TYPE_NEWS,
-                ProductController::class             => Router::TYPE_PRODUCT,
-                SearchSpecialController::class       => Router::TYPE_SEARCH_SPECIAL,
-                SearchQueryController::class         => Router::TYPE_SEARCH_QUERY,
-                default                              => Router::TYPE_PAGE
-            };
-            $test  = Shop::getRouter()->getURLByType($type, [
+            $type      = $this->getRouteTypeByClassName($className);
+            $test      = Shop::getRouter()->getURLByType($type, [
                 'name' => $args['slug'],
                 'lang' => $locale
             ]);
-            $query = $request->getUri()->getQuery();
+            $query     = $request->getUri()->getQuery();
             if (\mb_strlen($query) > 0) {
                 $test .= '?' . $query;
             }

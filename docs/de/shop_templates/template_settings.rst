@@ -41,67 +41,15 @@ Komprimierung von Inline-CSS-Code
 Komprimierung von Inline-JavaScript-Code
     JavaScript-Code, der sich innerhalb des HTML und nicht in einer separaten Datei befindet, wird komprimiert.
 
-Benutzerdefinierte Template-Dateien verwenden?
-    Wird diese Einstellung aktiviert, können im Template für jede Template-Datei (.tpl) benutzerdefinierte Dateien
-    erstellt werden. Kopieren Sie dafür die jeweilige Datei und hängen Sie an den Dateinamen ``_custom`` an. |br|
-    Beispiel: Kopieren Sie die Datei ``header.tpl`` und benennen Sie die kopierte Datei
-    in ``header_custom.tpl`` um. |br|
-    Diese Dateien werden beim Update des Templates nicht überschrieben und sind deshalb,
-    nach :doc:`Child-Template </shop_templates/eigenes_template>`, das bevorzugte Mittel um minimale Änderungen am
-    Template vorzunehmen.
-
-.. caution::
-
-    Diese Einstellung gilt nur für das EVO-Template und nicht für EVO-Child-Templates, da dort alle vorhandenen
-    Dateien die äquivalente Original-Datei überschreiben. |br|
-    Die Funktion ist veraltet und im NOVA-Template bereits nicht mehr vorhanden.
-
-Cron aktivieren?
-    Der Cron übernimmt die Aufgabe, sich ständig wiederholende Aufgaben abzuschließen, z. B.: Aktualisierung der
-    Statistiken etc. (Empfohlene Einstellung: an)
-
-.. attention::
-
-    Diese Funktion ist nur noch in Shop 4.x vorhanden!
-
 Theme
 """""
 
 Theme
-    Hier wird das Theme ausgewählt, das für das Template verwendet werden soll. |br|
-    Im EVO-Template kann aus 16 Themes ausgewählt werden. Aktuell ist für das NOVA-Template nur das Standard-Theme
-    verfügbar, weitere Themes werden jedoch folgen.
-
-Hintergrundbild
-    Das Evo-Template wird mit 13 Hintergrundbildern ausgeliefert. Diese befinden sich im
-    Ordner ``<Shop-Root>/templates/Evo/themes/base/images/backgrounds``.
-
-    Falls Sie ein eigenes Theme erstellt haben und ein eigenes Hintergrundbild verwenden möchten, legen Sie dieses
-    bitte in den Ordner ``<Shop-Root>/templates/Evo/themes/ihrTheme``. Geben Sie dem Hintergrundbild den
-    Dateinamen ``background.jpg``. Wählen Sie es anschließend in den *Theme-Einstellungen* unter *Hintergrundbild* aus,
-    indem Sie in der Selectbox den Eintrag *Custom* selktieren.
-    Verfahren Sie genauso, wenn Sie das EVO-Child-Template verwenden.
-
-.. hint::
-
-    Diese Einstellung gilt nur für das EVO-Template.
-
-Boxed Layout
-    Hier wird festgelegt, ob für die Darstellung CSS-Boxes verwendet werden oder ob ein strikte Trennung der
-    Elemente erfolgen soll.
-
-.. hint::
-
-    Diese Einstellung gilt nur für das EVO-Template.
+    Für das NOVA-Template gibt es aktuell die Themes clear (Standard), midnight und blackline.
 
 Sliderposition / Full-Width Slider |br| Bannerposition / Full-Width Banner
     Diese beiden Optionen entscheiden, ob Slider und Banner über die gesamte Bildschirmbreite hinweg dargestellt
     werden oder nur über dem Content-Bereich.
-
-.. important::
-
-    Für das EVO-Template gilt hier die Ausschlussregel, dass diese Option nur greift, wenn
-    die "*Boxed Layout*"-Darstellung **aktiv** ist.
 
 Mitlaufendes Megameü im Header
     Das Megamenü wird bim Scrollen permanent angezeigt.
@@ -111,9 +59,8 @@ Favicon
     wird.
 
 Warenkorb-Mengen-Optionen in Dropdown anzeigen?
-    Beim EVO-Template wird im Warenkorb die Menge der Warenkorbposition als Dropdown angezeigt. |br|
-    Im NOVA-Template gibt es hingegen eine Plus- und eine Minus-Schaltfläche neben der Menge. |br|
-    Wird diese Option deaktiviert, kann in beiden Templates die Artikelmenge als Ziffer eingegeben werden.
+    Im NOVA-Template gibt es eine Plus- und eine Minus-Schaltfläche neben der Menge. |br|
+    Wird diese Option deaktiviert, kann im Template die Artikelmenge als Ziffer eingegeben werden.
 
 Megamenü
 """"""""
@@ -163,7 +110,8 @@ Social-Media-Buttons im Footer
     Vimeo-Link      :
     Instagram-Link  :
     Pinterest-Link  :
-    Skype-Link      :*
+    Skype-Link      :
+    TicToc-Link     :*
 
 Listen- und Galerieansicht
 """""""""""""""""""""""""""
@@ -197,24 +145,6 @@ Anzahl der möglichen Variationswerte für Radio und Swatches
 
     Die Option funktioniert nur, wenn "*Variationsauswahl anzeigen*" aktiviert ist.
 
-Quickview für Artikeldetails
-    Mit dieser Option legen Sie fest, ob die wichtigsten Artikeldetails bereits in der Listen- bzw. Galerieansicht
-    angezeigt werden können. |br|
-    Bei aktivierter Option wird über dem Artikelbild die Schaltfläche "Vorschau" angezeigt, wenn Ihre Kunden mit der
-    Maus über das Bild fahren.
-
-.. hint::
-
-    Diese Einstellung gilt nur für das EVO-Template.
-
-Filteroptionen bei Seitenaufruf anzeigen?
-    Im EVO-Template wird hiermit entschieden, ob die Filteroptionen beim Aufruf einer Artikellistenansicht
-    ausgeklappt dargestellt werden oder zusammengeklappt.
-
-.. hint::
-
-    Diese Einstellung gilt nur für das EVO-Template.
-
 Anzahl der sichtbaren Filteroptionen in Boxen
     Dieser Wert bestimmt, wie viele Filter maximal in den jeweiligen Filterboxen angezeigt werden.
 
@@ -227,16 +157,3 @@ Position des Overlays
 
     Diese Einstellung gilt nur für das NOVA-Template.
 
-Entwickler-Einstellungen
-""""""""""""""""""""""""
-
-LiveStyler aktivieren
-    Diese Option aktiviert den "*EVO-LiveStyler*". Er wird vorwiegend für Theme-Anpassungen eingesetzt.
-
-.. hint::
-
-    Diese Einstellung gilt nur für das EVO-Template. |br|
-    Wenn Sie die Möglichkeiten des EVO-LiveStylers nutzen wollen, installieren Sie bitte ebenfalls das
-    Plugin "*Theme-Editor*"!
-
-Eine ausführlichere Beschreibung zu diesem Thema finden Sie im Abschnitt :doc:`hier </shop_templates/theme_edit>`.

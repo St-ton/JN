@@ -15,7 +15,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class CreateCommand extends Command
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function configure(): void
     {
@@ -26,7 +26,7 @@ class CreateCommand extends Command
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function interact(InputInterface $input, OutputInterface $output): void
     {
@@ -43,7 +43,7 @@ class CreateCommand extends Command
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {

@@ -29,7 +29,7 @@ class ProductStream extends Portlet
     public function getPropertyDesc(): array
     {
         return [
-            'listStyle'    => [
+            'listStyle'   => [
                 'type'    => InputType::SELECT,
                 'label'   => \__('presentation'),
                 'width'   => 33,
@@ -49,23 +49,23 @@ class ProductStream extends Portlet
                 'default'  => 15,
                 'required' => true,
             ],
-            'source' => [
-                'type'     => InputType::SELECT,
-                'label'    => \__('productSource'),
-                'width'    => 33,
-                'options'  => [
-                    'filter'    => \__('productSourceFiltering'),
-                    'explicit'  => \__('productSourceExplicit'),
+            'source'      => [
+                'type'        => InputType::SELECT,
+                'label'       => \__('productSource'),
+                'width'       => 33,
+                'options'     => [
+                    'filter'   => \__('productSourceFiltering'),
+                    'explicit' => \__('productSourceExplicit'),
                 ],
                 'childrenFor' => [
-                    'filter' => [
-                        'search' => [
+                    'filter'   => [
+                        'search'  => [
                             'type'        => InputType::SEARCH,
                             'label'       => '',
                             'placeholder' => \__('search'),
                             'width'       => 100,
                         ],
-                        'filters'      => [
+                        'filters' => [
                             'type'     => InputType::FILTER,
                             'label'    => \__('itemFilter'),
                             'default'  => [],
@@ -79,7 +79,7 @@ class ProductStream extends Portlet
                             'placeholder' => \__('search'),
                             'width'       => 100,
                         ],
-                        'productIds' => [
+                        'productIds'     => [
                             'type'           => InputType::SEARCHPICKER,
                             'searcher'       => 'searchExplicit',
                             'dataIoFuncName' => 'getProducts',
@@ -87,8 +87,8 @@ class ProductStream extends Portlet
                         ],
                     ],
                 ],
-                'default'  => 'filter',
-                'required' => true,
+                'default'     => 'filter',
+                'required'    => true,
             ],
         ];
     }
@@ -107,7 +107,7 @@ class ProductStream extends Portlet
      * @param PortletInstance $instance
      * @return int[]
      */
-    public function getExplicitProductIds(PortletInstance $instance)
+    public function getExplicitProductIds(PortletInstance $instance): array
     {
         return Text::parseSSKint($instance->getProperty('productIds'));
     }

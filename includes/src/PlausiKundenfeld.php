@@ -56,7 +56,7 @@ class PlausiKundenfeld extends Plausi
                 'cName',
                 $this->xPostVar_arr['cName']
             );
-            if (isset($field->kKundenfeld) && $field->kKundenfeld > 0) {
+            if ($field !== null && $field->kKundenfeld > 0) {
                 $this->xPlausiVar_arr['cName'] = 2;
             }
         }

@@ -19,7 +19,7 @@ class Migration_20170511153400 extends Migration implements IMigration
         'Create column nMehrfachauswahl in tmerkmal';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -29,7 +29,7 @@ class Migration_20170511153400 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

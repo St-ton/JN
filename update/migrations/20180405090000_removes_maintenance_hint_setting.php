@@ -18,7 +18,7 @@ class Migration_20180405090000 extends Migration implements IMigration
     protected $description = 'Remove maintenance hint setting';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -26,7 +26,7 @@ class Migration_20180405090000 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

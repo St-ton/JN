@@ -41,10 +41,10 @@ final class Listing
      * @param ValidatorInterface $validator
      */
     public function __construct(
-        private DbInterface $db,
-        private JTLCacheInterface $cache,
-        private ValidatorInterface $legacyValidator,
-        private ValidatorInterface $validator
+        private readonly DbInterface        $db,
+        private readonly JTLCacheInterface  $cache,
+        private readonly ValidatorInterface $legacyValidator,
+        private readonly ValidatorInterface $validator
     ) {
         $this->items = new Collection();
         $this->init();
@@ -308,7 +308,7 @@ final class Listing
      */
     public function getErroneous(): Collection
     {
-        return  $this->items->filter(static function (ListingItem $item): bool {
+        return $this->items->filter(static function (ListingItem $item): bool {
             return $item->isHasError() === true && $item->isInstalled() === false;
         });
     }

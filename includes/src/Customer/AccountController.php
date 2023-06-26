@@ -60,10 +60,10 @@ class AccountController
      * @param JTLSmarty             $smarty
      */
     public function __construct(
-        private DbInterface           $db,
-        private AlertServiceInterface $alertService,
-        private LinkServiceInterface  $linkService,
-        private JTLSmarty             $smarty
+        private readonly DbInterface           $db,
+        private readonly AlertServiceInterface $alertService,
+        private readonly LinkServiceInterface  $linkService,
+        private readonly JTLSmarty             $smarty
     ) {
         $this->config = Shopsetting::getInstance()->getAll();
     }
@@ -173,6 +173,13 @@ class AccountController
         }
         if (Request::verifyGPCDataInt('basket2Pers') === 1) {
             $this->setzeWarenkorbPersInWarenkorb($customerID);
+            \header('Location: ' . $this->linkService->getStaticRoute('jtl.php'), true, 303);
+            exit();
+        }
+        if (Request::verifyGPCDataInt('updatePersCart') === 1) {
+            $pers = PersistentCart::getInstance($customerID, false, $this->db);
+            $pers->entferneAlles();
+            $pers->bauePersVonSession();
             \header('Location: ' . $this->linkService->getStaticRoute('jtl.php'), true, 303);
             exit();
         }
@@ -307,7 +314,7 @@ class AccountController
         $customer = new Customer();
         if (Form::validateToken() === false) {
             $this->alertService->addNotice(Shop::Lang()->get('csrfValidationFailed'), 'csrfValidationFailed');
-            Shop::Container()->getLogService()->warning('CSRF-Warnung für Login: ' . $_POST['login']);
+            Shop::Container()->getLogService()->warning('CSRF-Warnung für Login: {name}', ['name' => $_POST['login']]);
 
             return $customer;
         }
@@ -908,7 +915,7 @@ class AccountController
                 false,
                 'cPasswort, cMail'
             );
-            if (isset($user->cPasswort, $user->cMail)) {
+            if ($user !== null && isset($user->cPasswort, $user->cMail)) {
                 $ok = $customer->checkCredentials($user->cMail, $_POST['altesPasswort'] ?? '');
                 if ($ok !== false) {
                     $customer->updatePassword($_POST['neuesPasswort1']);
@@ -1065,7 +1072,10 @@ class AccountController
             exit;
         }
         $this->alertService->addNotice(Shop::Lang()->get('csrfValidationFailed'), 'csrfValidationFailed');
-        Shop::Container()->getLogService()->error('CSRF-Warnung fuer Account-Loeschung und kKunde ' . $customerID);
+        Shop::Container()->getLogService()->error(
+            'CSRF-Warnung für Accountlöschung und kKunde {id}',
+            ['id' => $customerID]
+        );
     }
 
     /**

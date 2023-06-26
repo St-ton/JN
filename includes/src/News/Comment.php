@@ -118,7 +118,7 @@ class Comment implements CommentInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function loadByParentCommentID(int $parentID): ?CommentInterface
     {
@@ -323,7 +323,7 @@ class Comment implements CommentInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getIsAdmin(): int
     {
@@ -331,7 +331,7 @@ class Comment implements CommentInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setIsAdmin(int $isAdmin): void
     {
@@ -339,7 +339,7 @@ class Comment implements CommentInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getParentCommentID(): int
     {
@@ -347,7 +347,7 @@ class Comment implements CommentInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setParentCommentID(int $parentCommentID): void
     {
@@ -355,7 +355,7 @@ class Comment implements CommentInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getChildComments(): array
     {
@@ -363,7 +363,7 @@ class Comment implements CommentInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setChildComments(array $childComments): void
     {
@@ -371,7 +371,7 @@ class Comment implements CommentInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setChildComment(Comment $childComment): void
     {

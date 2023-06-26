@@ -13044,6 +13044,9 @@ select.bs-select-hidden, .bootstrap-select > select.bs-select-hidden, select.sel
 .consent-switch .consent-input:checked ~ .consent-label::after {
   left: 1.375rem;
 }
+.consent-switch .consent-input:disabled ~ .consent-label::before {
+  opacity: 0.25;
+}
 .consent-switch .consent-label {
   padding-left: 3.5rem;
   display: inline-block;
@@ -16853,6 +16856,15 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
 .btn {
   text-decoration: none;
 }
+.btn-hidden-default {
+  overflow: visible !important;
+  height: 0 !important;
+  width: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  padding: 0 !important;
+  display: block !important;
+}
 .btn-primary {
   overflow: hidden;
   position: relative;
@@ -17720,6 +17732,9 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
 .box .dropdown-menu, .productlist-filter-wrapper .dropdown-menu {
   max-height: 50vh;
   overflow-y: auto;
+}
+.modal-backdrop.zindex-dropdown {
+  z-index: 1020;
 }
 .slick-slide .square, .slick-slide .productbox-image-wrapper {
   display: flex !important;

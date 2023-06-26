@@ -114,13 +114,13 @@ class Location
                     'kLink',
                     $this->kKey,
                     'cISOSprache',
-                    $language->cISO,
+                    $language->cISO ?? '',
                     null,
                     null,
                     false,
                     'cName'
                 );
-                $this->cOrt = isset($link->cName) ? ($link->cName . ' (CMS)') : null;
+                $this->cOrt = $link !== null && isset($link->cName) ? ($link->cName . ' (CMS)') : null;
                 break;
 
             case \AUSWAHLASSISTENT_ORT_STARTSEITE:

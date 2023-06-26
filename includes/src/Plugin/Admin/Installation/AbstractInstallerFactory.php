@@ -46,9 +46,9 @@ abstract class AbstractInstallerFactory
      * @param PluginInterface|null $oldPlugin
      */
     public function __construct(
-        protected DbInterface $db,
-        array $xml,
-        protected ?stdClass $plugin,
+        protected DbInterface      $db,
+        array                      $xml,
+        protected ?stdClass        $plugin,
         protected ?PluginInterface $oldPlugin = null
     ) {
         $this->baseNode = $xml['jtlshopplugin'][0] ?? $xml['jtlshop3plugin'][0] ?? null;

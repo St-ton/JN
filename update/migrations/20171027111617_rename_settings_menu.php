@@ -18,7 +18,7 @@ class Migration_20171027111617 extends Migration implements IMigration
     protected $description = 'Rename the settings-menu entries "Einstellungen" into proper names';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -27,7 +27,7 @@ class Migration_20171027111617 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

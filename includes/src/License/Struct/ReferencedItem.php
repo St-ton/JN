@@ -43,6 +43,11 @@ abstract class ReferencedItem implements ReferencedItemInterface
     /**
      * @var bool
      */
+    private bool $shopVersionOK = true;
+
+    /**
+     * @var bool
+     */
     private bool $active = false;
 
     /**
@@ -66,7 +71,12 @@ abstract class ReferencedItem implements ReferencedItemInterface
     private bool $filesMissing = false;
 
     /**
-     * @inheritDoc
+     * @var bool
+     */
+    private bool $releaseAvailable = false;
+
+    /**
+     * @inheritdoc
      */
     public function getID(): string
     {
@@ -74,7 +84,7 @@ abstract class ReferencedItem implements ReferencedItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setID(string $id): void
     {
@@ -82,7 +92,7 @@ abstract class ReferencedItem implements ReferencedItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function isInstalled(): bool
     {
@@ -90,7 +100,7 @@ abstract class ReferencedItem implements ReferencedItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setInstalled(bool $installed): void
     {
@@ -98,7 +108,7 @@ abstract class ReferencedItem implements ReferencedItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getInstalledVersion(): ?Version
     {
@@ -106,7 +116,7 @@ abstract class ReferencedItem implements ReferencedItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setInstalledVersion(?Version $installedVersion): void
     {
@@ -114,7 +124,7 @@ abstract class ReferencedItem implements ReferencedItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getMaxInstallableVersion(): ?Version
     {
@@ -122,7 +132,7 @@ abstract class ReferencedItem implements ReferencedItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setMaxInstallableVersion(?Version $maxInstallableVersion): void
     {
@@ -130,7 +140,7 @@ abstract class ReferencedItem implements ReferencedItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function hasUpdate(): bool
     {
@@ -138,7 +148,7 @@ abstract class ReferencedItem implements ReferencedItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setHasUpdate(bool $hasUpdate): void
     {
@@ -162,7 +172,7 @@ abstract class ReferencedItem implements ReferencedItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function isActive(): bool
     {
@@ -170,7 +180,7 @@ abstract class ReferencedItem implements ReferencedItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setActive(bool $active): void
     {
@@ -178,7 +188,7 @@ abstract class ReferencedItem implements ReferencedItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getInternalID(): int
     {
@@ -186,7 +196,7 @@ abstract class ReferencedItem implements ReferencedItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setInternalID(int $internalID): void
     {
@@ -194,7 +204,7 @@ abstract class ReferencedItem implements ReferencedItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getDateInstalled(): ?string
     {
@@ -202,7 +212,7 @@ abstract class ReferencedItem implements ReferencedItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setDateInstalled(?string $dateInstalled): void
     {
@@ -210,7 +220,7 @@ abstract class ReferencedItem implements ReferencedItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function isInitialized(): bool
     {
@@ -218,7 +228,7 @@ abstract class ReferencedItem implements ReferencedItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setInitialized(bool $initialized): void
     {
@@ -239,5 +249,37 @@ abstract class ReferencedItem implements ReferencedItemInterface
     public function setFilesMissing(bool $filesMissing): void
     {
         $this->filesMissing = $filesMissing;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isShopVersionOK(): bool
+    {
+        return $this->shopVersionOK;
+    }
+
+    /**
+     * @param bool $shopVersionOK
+     */
+    public function setShopVersionOK(bool $shopVersionOK): void
+    {
+        $this->shopVersionOK = $shopVersionOK;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isReleaseAvailable(): bool
+    {
+        return $this->releaseAvailable;
+    }
+
+    /**
+     * @param bool $releaseAvailable
+     */
+    public function setReleaseAvailable(bool $releaseAvailable): void
+    {
+        $this->releaseAvailable = $releaseAvailable;
     }
 }

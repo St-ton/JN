@@ -18,7 +18,7 @@ class Migration_20180326111843 extends Migration implements IMigration
     protected $description = 'Add new field for responsibility of cart position.';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -31,7 +31,7 @@ class Migration_20180326111843 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

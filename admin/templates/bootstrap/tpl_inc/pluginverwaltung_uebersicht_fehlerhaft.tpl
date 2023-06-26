@@ -24,6 +24,7 @@
                                 <td class="check">
                                     <div class="custom-control custom-checkbox">
                                         <input type="hidden" id="plugin-ext-{$listingItem->getDir()}" name="isExtension[]" value="{if $listingItem->isLegacy()}0{else}1{/if}">
+                                        <input type="hidden" name="kPlugin[]" value="{$listingItem->getID()}">
                                         <input class="custom-control-input" type="checkbox" name="cVerzeichnis[]" id="plugin-err-check-{$listingItem->getDir()}" value="{$listingItem->getDir()}" />
                                         <label class="custom-control-label" for="plugin-err-check-{$listingItem->getDir()}"></label>
                                     </div>

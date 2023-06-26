@@ -186,7 +186,7 @@ class WishlistItem
     }
 
     /**
-     * @param int $propertyID
+     * @param int      $propertyID
      * @param null|int $propertyValueID
      * @return bool
      */

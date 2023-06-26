@@ -15,7 +15,7 @@ class Migration_20190227140600 extends Migration implements IMigration
     protected $description = 'Add default value for topcblueprint.kPlugin';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -23,7 +23,7 @@ class Migration_20190227140600 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

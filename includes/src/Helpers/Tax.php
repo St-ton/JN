@@ -41,7 +41,7 @@ class Tax
 
     /**
      * @param string|null $countryCode
-     * @param bool $skipUpdateCart
+     * @param bool        $skipUpdateCart
      * @since 5.0.0
      */
     public static function setTaxRates(?string $countryCode = null, bool $skipUpdateCart = false): void
@@ -118,7 +118,7 @@ class Tax
             $currentURL  = (new URL(Shop::getURL() . $_SERVER['REQUEST_URI']))->normalize();
             $country     = LanguageHelper::getCountryCodeByCountryName($deliveryCountryCode);
 
-            Shop::Container()->getLogService()->error('Keine Steuerzone für "' . $country . '" hinterlegt!');
+            Shop::Container()->getLogService()->error('Keine Steuerzone für "{cny}" hinterlegt!', ['cny' => $country]);
 
             if (Request::isAjaxRequest()) {
                 $link = new Link($db);

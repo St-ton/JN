@@ -531,7 +531,7 @@ class Item implements JsonSerializable
     /**
      * @param bool $forceNet
      * @param bool $convertCurrency
-     * @param int $totalAmount
+     * @param int  $totalAmount
      * @return float|int
      */
     public function getFullPrice(bool $forceNet = false, bool $convertCurrency = false, $totalAmount = 1)
@@ -565,7 +565,9 @@ class Item implements JsonSerializable
             $tmp = $this->oPreis->getPreis();
             if ($tmp < 0) {
                 $discount = $tmp * -1;
-                if ($this->oPreis->getTyp() === 0 && !Frontend::getCustomerGroup()->isMerchant()) {
+                if ($this->oPreis->getTyp() === ItemPrice::PRICE_TYPE_SUM
+                    && !Frontend::getCustomerGroup()->isMerchant()
+                ) {
                     $discount = Tax::getGross($discount, Tax::getSalesTax($this->getSteuerklasse()));
                 }
             }
@@ -592,7 +594,9 @@ class Item implements JsonSerializable
             $tmp = $this->oPreis->getPreis();
             if ($tmp > 0) {
                 $fee = $tmp;
-                if ($this->oPreis->getTyp() == 0 && !Frontend::getCustomerGroup()->isMerchant()) {
+                if ($this->oPreis->getTyp() === ItemPrice::PRICE_TYPE_SUM
+                    && !Frontend::getCustomerGroup()->isMerchant()
+                ) {
                     $fee = Tax::getGross($fee, Tax::getSalesTax($this->getSteuerklasse()));
                 }
             }
@@ -607,7 +611,7 @@ class Item implements JsonSerializable
      */
     public function getRabattLocalized(bool $html = true): string
     {
-        return $this->oPreis->getTyp() === 0
+        return $this->oPreis->getTyp() === ItemPrice::PRICE_TYPE_SUM
             ? Preise::getLocalizedPriceString($this->getRabatt(), null, $html)
             : $this->getRabatt() . '%';
     }
@@ -618,7 +622,7 @@ class Item implements JsonSerializable
      */
     public function getZuschlagLocalized(bool $html = true): string
     {
-        return $this->oPreis->getTyp() === 0
+        return $this->oPreis->getTyp() === ItemPrice::PRICE_TYPE_SUM
             ? Preise::getLocalizedPriceString($this->getZuschlag(), null, $html)
             : $this->getZuschlag() . '%';
     }

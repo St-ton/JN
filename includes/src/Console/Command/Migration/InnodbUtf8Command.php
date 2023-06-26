@@ -23,7 +23,7 @@ class InnodbUtf8Command extends Command
     private $errCounter = 0;
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function configure(): void
     {
@@ -32,7 +32,7 @@ class InnodbUtf8Command extends Command
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -134,10 +134,10 @@ class InnodbUtf8Command extends Command
      */
     private function nextWithFailure(
         OutputInterface $output,
-        DbInterface $db,
-        stdClass $table,
-        bool $releaseTable = true,
-        string $msg = 'failure!'
+        DbInterface     $db,
+        stdClass        $table,
+        bool            $releaseTable = true,
+        string          $msg = 'failure!'
     ): ?stdClass {
         $this->errCounter++;
         $output->writeln('<error>' . $msg . '</error>');

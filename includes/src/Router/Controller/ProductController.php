@@ -70,6 +70,26 @@ class ProductController extends AbstractController
     }
 
     /**
+     * @param array $messages
+     * @return array
+     */
+    public function checkAndSendAvailabilityMessage(array $messages): array
+    {
+        if (Frontend::get('lastAvailabilityMessage') === null ||
+            (int)\date_diff(\date_create(), Frontend::get('lastAvailabilityMessage'))->format('%i') >=
+            $this->config['artikeldetails']['benachrichtigung_sperre_minuten']) {
+            $messages = ProductHelper::checkAvailabilityMessage($messages, $this->config['artikeldetails']);
+            Frontend::set('lastAvailabilityMessage', \date_create());
+
+            return $messages;
+        }
+
+        $messages[] = Shop::Lang()->get('notificationNotPossible', 'messages');
+
+        return $messages;
+    }
+
+    /**
      * @inheritdoc
      */
     protected function handleSeoError(int $id, int $languageID): State
@@ -104,16 +124,16 @@ class ProductController extends AbstractController
     {
         $name                 = \SLUG_ALLOW_SLASHES ? 'name:.+' : 'name';
         $visibilityMiddleware = new VisibilityMiddleware();
-        $route->get('/' . \ROUTE_PREFIX_PRODUCTS . '/{id:\d+}', [$this, 'getResponse'])
+        $route->get('/' . \ROUTE_PREFIX_PRODUCTS . '/id/{id:\d+}', $this->getResponse(...))
             ->setName('ROUTE_PRODUCT_BY_ID' . $dynName)
             ->middleware($visibilityMiddleware);
-        $route->get('/' . \ROUTE_PREFIX_PRODUCTS . '/{' . $name . '}', [$this, 'getResponse'])
+        $route->get('/' . \ROUTE_PREFIX_PRODUCTS . '/{' . $name . '}', $this->getResponse(...))
             ->setName('ROUTE_PRODUCT_BY_NAME' . $dynName)
             ->middleware($visibilityMiddleware);
-        $route->post('/' . \ROUTE_PREFIX_PRODUCTS . '/{id:\d+}', [$this, 'getResponse'])
+        $route->post('/' . \ROUTE_PREFIX_PRODUCTS . '/id/{id:\d+}', $this->getResponse(...))
             ->setName('ROUTE_PRODUCT_BY_ID' . $dynName . 'POST')
             ->middleware($visibilityMiddleware);
-        $route->post('/' . \ROUTE_PREFIX_PRODUCTS . '/{' . $name . '}', [$this, 'getResponse'])
+        $route->post('/' . \ROUTE_PREFIX_PRODUCTS . '/{' . $name . '}', $this->getResponse(...))
             ->setName('ROUTE_PRODUCT_BY_NAME' . $dynName . 'POST')
             ->middleware($visibilityMiddleware);
     }
@@ -204,7 +224,7 @@ class ProductController extends AbstractController
         }
         // Canonical bei non SEO Shops oder wenn SEO kein Ergebnis geliefert hat
         if (empty($this->canonicalURL)) {
-            $this->canonicalURL = $shopURL . $this->currentProduct->cSeo;
+            $this->canonicalURL = $this->currentProduct->cURLFull;
         }
         $this->currentProduct->berechneSieSparenX((int)$this->config['artikeldetails']['sie_sparen_x_anzeigen']);
 
@@ -222,7 +242,7 @@ class ProductController extends AbstractController
                 $this->currentProduct
             );
         } elseif ($valid && Request::postInt('benachrichtigung_verfuegbarkeit') === 1) {
-            $messages = ProductHelper::checkAvailabilityMessage($messages, $this->config['artikeldetails']);
+            $messages = $this->checkAndSendAvailabilityMessage($messages);
         }
         foreach ($messages as $productNoticeKey => $productNotice) {
             $this->alertService->addDanger($productNotice, 'productNotice' . $productNoticeKey);

@@ -18,7 +18,7 @@ class Migration_20170801131013 extends Migration implements IMigration
     protected $description = 'Add language variable one-off';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -27,7 +27,7 @@ class Migration_20170801131013 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

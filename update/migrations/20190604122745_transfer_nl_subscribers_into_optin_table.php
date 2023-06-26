@@ -21,7 +21,7 @@ class Migration_20190604122745 extends Migration implements IMigration
     protected $description = 'Transfer NL subscribers into optin table';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -76,7 +76,7 @@ class Migration_20190604122745 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

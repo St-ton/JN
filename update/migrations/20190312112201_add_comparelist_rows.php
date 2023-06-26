@@ -18,7 +18,7 @@ class Migration_20190312112201 extends Migration implements IMigration
     protected $description = 'Add comparelist rows';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -34,7 +34,7 @@ class Migration_20190312112201 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

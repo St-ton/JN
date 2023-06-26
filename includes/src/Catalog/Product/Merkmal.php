@@ -121,9 +121,9 @@ class Merkmal
      * @param DbInterface|null $db
      */
     public function __construct(
-        int $id = 0,
-        bool $getValues = false,
-        int $languageID = 0,
+        int                  $id = 0,
+        bool                 $getValues = false,
+        int                  $languageID = 0,
         private ?DbInterface $db = null
     ) {
         $this->db = $db ?? Shop::Container()->getDB();

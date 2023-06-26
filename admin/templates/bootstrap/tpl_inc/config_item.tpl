@@ -56,7 +56,7 @@
             cpValue=$cnf->getSetValue()}
         {elseif $cnf->getInputType() === 'pass'}
             <input class="form-control" autocomplete="off" type="password" name="{$cnf->getValueName()}"
-                   id="{$cnf->getValueName()}" value="{$cnf->getSetValue()}" tabindex="1" />
+                   id="{$cnf->getValueName()}" placeholder="****" tabindex="1" />
         {elseif $cnf->getInputType() === 'number'}
             <div class="input-group form-counter">
                 <div class="input-group-prepend">

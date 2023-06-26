@@ -26,10 +26,10 @@ final class DefaultConfig implements ConfigInterface
      * @param string      $baseImageURL
      */
     public function __construct(
-        private DbInterface $db,
-        private array $config,
-        private string $baseURL,
-        private string $baseImageURL
+        private readonly DbInterface $db,
+        private readonly array       $config,
+        private readonly string      $baseURL,
+        private readonly string      $baseImageURL
     ) {
     }
 

@@ -110,6 +110,12 @@ class CheckoutController extends RegistrationController
 
             return new RedirectResponse($linkService->getStaticRoute('bestellvorgang.php') . '?wk=1');
         }
+        if (Request::verifyGPCDataInt('updatePersCart') === 1) {
+            $pers = PersistentCart::getInstance($this->customer->getID(), false, $this->db);
+            $pers->entferneAlles();
+            $pers->bauePersVonSession();
+            return new RedirectResponse($linkService->getStaticRoute('bestellvorgang.php') . '?wk=1');
+        }
         if ($this->cart->istBestellungMoeglich() !== 10) {
             return new RedirectResponse(
                 $linkService->getStaticRoute('warenkorb.php')
@@ -120,7 +126,10 @@ class CheckoutController extends RegistrationController
         if (!Upload::pruefeWarenkorbUploads($this->cart)) {
             Upload::redirectWarenkorb(\UPLOAD_ERROR_NEED_UPLOAD);
         }
+        // SHOP-4236 Checkbox zum Widerrufsrecht bei Downloadartikeln im Checkout
+        $hasDownloads = false;
         if (Download::hasDownloads($this->cart)) {
+            $hasDownloads = true;
             // Nur registrierte Benutzer
             $this->config['kaufabwicklung']['bestellvorgang_unregistriert'] = 'N';
         }
@@ -177,7 +186,6 @@ class CheckoutController extends RegistrationController
         //autom. step ermitteln
         if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
             if (!isset($_SESSION['Lieferadresse'])) {
-                $shippingID = 0;
                 if ($this->config['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] === 'N') {
                     $shippingID = $this->db->getSingleInt(
                         'SELECT DISTINCT(kLieferadresse) AS id
@@ -187,11 +195,11 @@ class CheckoutController extends RegistrationController
                         'id',
                         ['cid' => $this->customer->getID()]
                     );
+                } else {
+                    $shippingID = Order::getLastOrderRefIDs($this->customer->getID())->kLieferadresse;
                 }
                 $form->pruefeLieferdaten([
-                    'kLieferadresse' => $shippingID > 0
-                        ? $shippingID
-                        : Order::getLastOrderRefIDs($this->customer->getID())->kLieferadresse
+                    'kLieferadresse' => max($shippingID, 0)
                 ]);
                 if (isset($_SESSION['Lieferadresse']) && $_SESSION['Lieferadresse']->kLieferadresse > 0) {
                     $_GET['editLieferadresse'] = 1;
@@ -324,6 +332,7 @@ class CheckoutController extends RegistrationController
             ->assign('Steuerpositionen', $this->cart->gibSteuerpositionen())
             ->assign('bestellschritt', $this->getNextOrderStep($this->step))
             ->assign('unregForm', Request::verifyGPCDataInt('unreg_form'))
+            ->assign('hasDownloads', $hasDownloads)
             ->assignDeprecated('C_WARENKORBPOS_TYP_ARTIKEL', \C_WARENKORBPOS_TYP_ARTIKEL, '5.0.0')
             ->assignDeprecated('C_WARENKORBPOS_TYP_GRATISGESCHENK', \C_WARENKORBPOS_TYP_GRATISGESCHENK, '5.0.0');
 
@@ -808,7 +817,10 @@ class CheckoutController extends RegistrationController
      */
     public function getPaymentMethod(int $paymentMethodID): ?stdClass
     {
-        $method    = $this->db->select('tzahlungsart', 'kZahlungsart', $paymentMethodID);
+        $method = $this->db->select('tzahlungsart', 'kZahlungsart', $paymentMethodID);
+        if ($method === null) {
+            return null;
+        }
         $localized = $this->db->getObjects(
             'SELECT cISOSprache, cName
                 FROM tzahlungsartsprache
@@ -899,32 +911,30 @@ class CheckoutController extends RegistrationController
             return false;
         }
         $accountData = $this->db->select('tkundenkontodaten', 'kKunde', $customerID);
-
-        if (isset($accountData->kKunde) && $accountData->kKunde > 0) {
-            $cryptoService = Shop::Container()->getCryptoService();
-            if (\mb_strlen($accountData->cBLZ) > 0) {
-                $accountData->cBLZ = (int)$cryptoService->decryptXTEA($accountData->cBLZ);
-            }
-            if (\mb_strlen($accountData->cInhaber) > 0) {
-                $accountData->cInhaber = \trim($cryptoService->decryptXTEA($accountData->cInhaber));
-            }
-            if (\mb_strlen($accountData->cBankName) > 0) {
-                $accountData->cBankName = \trim($cryptoService->decryptXTEA($accountData->cBankName));
-            }
-            if (\mb_strlen($accountData->nKonto) > 0) {
-                $accountData->nKonto = \trim($cryptoService->decryptXTEA($accountData->nKonto));
-            }
-            if (\mb_strlen($accountData->cIBAN) > 0) {
-                $accountData->cIBAN = \trim($cryptoService->decryptXTEA($accountData->cIBAN));
-            }
-            if (\mb_strlen($accountData->cBIC) > 0) {
-                $accountData->cBIC = \trim($cryptoService->decryptXTEA($accountData->cBIC));
-            }
-
-            return $accountData;
+        if ($accountData === null || $accountData->kKunde <= 0) {
+            return false;
+        }
+        $cryptoService = Shop::Container()->getCryptoService();
+        if (\mb_strlen($accountData->cBLZ) > 0) {
+            $accountData->cBLZ = (int)$cryptoService->decryptXTEA($accountData->cBLZ);
+        }
+        if (\mb_strlen($accountData->cInhaber) > 0) {
+            $accountData->cInhaber = \trim($cryptoService->decryptXTEA($accountData->cInhaber));
+        }
+        if (\mb_strlen($accountData->cBankName) > 0) {
+            $accountData->cBankName = \trim($cryptoService->decryptXTEA($accountData->cBankName));
+        }
+        if (\mb_strlen($accountData->nKonto) > 0) {
+            $accountData->nKonto = \trim($cryptoService->decryptXTEA($accountData->nKonto));
+        }
+        if (\mb_strlen($accountData->cIBAN) > 0) {
+            $accountData->cIBAN = \trim($cryptoService->decryptXTEA($accountData->cIBAN));
+        }
+        if (\mb_strlen($accountData->cBIC) > 0) {
+            $accountData->cBIC = \trim($cryptoService->decryptXTEA($accountData->cBIC));
         }
 
-        return false;
+        return $accountData;
     }
 
     /**
@@ -1446,9 +1456,14 @@ class CheckoutController extends RegistrationController
             $this->checkShippingSelection($shippingMethods[0]->kVersandart);
         } elseif (!\is_array($shippingMethods) || \count($shippingMethods) === 0) {
             Shop::Container()->getLogService()->error(
-                'Es konnte keine Versandart für folgende Daten gefunden werden: Lieferland: ' . $deliveryCountry .
-                ', PLZ: ' . $poCode . ', Versandklasse: ' . ShippingMethod::getShippingClasses($this->cart) .
-                ', Kundengruppe: ' . $this->customerGroupID
+                'Es konnte keine Versandart für folgende Daten gefunden werden: Lieferland: {cny}'
+                . ', PLZ: {zip}, Versandklasse: {sclass}, Kundengruppe: {cgid}',
+                [
+                    'cny'    => $deliveryCountry,
+                    'zip'    => $poCode,
+                    'sclass' => ShippingMethod::getShippingClasses($this->cart),
+                    'cgid'   => $this->customerGroupID
+                ]
             );
         }
         $this->smarty->assign('Kunde', $this->customer)
@@ -1496,8 +1511,9 @@ class CheckoutController extends RegistrationController
             $paymentMethods = $this->getPaymentMethods($shippingMethod, $this->customerGroupID);
             if (!\is_array($paymentMethods) || \count($paymentMethods) === 0) {
                 Shop::Container()->getLogService()->error(
-                    'Es konnte keine Zahlungsart für folgende Daten gefunden werden: Versandart: ' .
-                    $shippingMethod . ', Kundengruppe: ' . $this->customerGroupID
+                    'Es konnte keine Zahlungsart für folgende Daten gefunden werden: Versandart: {name},'
+                    . ' Kundengruppe: {cgid}',
+                    ['name' => $shippingMethod, 'cgid' => $this->customerGroupID]
                 );
                 $paymentMethod  = null;
                 $paymentMethods = [];
@@ -1839,7 +1855,7 @@ class CheckoutController extends RegistrationController
                     $localizedNames,
                     1,
                     $fBrutto,
-                    (int)$packagings->kSteuerklasse,
+                    $packagings->kSteuerklasse,
                     \C_WARENKORBPOS_TYP_VERPACKUNG,
                     false
                 );
@@ -1912,7 +1928,7 @@ class CheckoutController extends RegistrationController
                 false,
                 'cName, cHinweisTextShop'
             );
-            if (isset($loc->cName)) {
+            if ($loc !== null && isset($loc->cName)) {
                 $specialItem->cName[$lang->cISO]                     = $loc->cName;
                 $shippingMethod->angezeigterName[$lang->cISO]        = $loc->cName;
                 $shippingMethod->angezeigterHinweistext[$lang->cISO] = $loc->cHinweisTextShop;
@@ -1955,7 +1971,7 @@ class CheckoutController extends RegistrationController
                     false,
                     'cName'
                 );
-                $specialItem->cName[$lang->cISO] = $loc->cName;
+                $specialItem->cName[$lang->cISO] = $loc->cName ?? '';
             }
             $this->cart->erstelleSpezialPos(
                 $specialItem->cName,

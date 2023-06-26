@@ -18,7 +18,7 @@ class Migration_20190605081705 extends Migration implements IMigration
     protected $description = 'Add NL cron setting';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -38,7 +38,7 @@ class Migration_20190605081705 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

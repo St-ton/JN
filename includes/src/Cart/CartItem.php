@@ -263,7 +263,7 @@ class CartItem
             'kKundengruppe',
             Frontend::getCustomerGroup()->getID()
         );
-        if (!empty($surcharge->fAufpreisNetto)) {
+        if ($surcharge !== null && !empty($surcharge->fAufpreisNetto)) {
             if ($this->Artikel->Preise->rabatt > 0) {
                 $newAttributes->fAufpreis  = $surcharge->fAufpreisNetto -
                     (($this->Artikel->Preise->rabatt / 100) * $surcharge->fAufpreisNetto);
@@ -290,18 +290,18 @@ class CartItem
                     'kSprache',
                     $language->getId()
                 );
-                if (!empty($localized->cName)) {
+                if ($localized !== null && !empty($localized->cName)) {
                     $newAttributes->cEigenschaftName[$code] = $localized->cName;
                 }
-                $eigenschaftwert_spr = $db->select(
+                $localizedValue = $db->select(
                     'teigenschaftwertsprache',
                     'kEigenschaftWert',
                     $newAttributes->kEigenschaftWert,
                     'kSprache',
                     $language->getId()
                 );
-                if (!empty($eigenschaftwert_spr->cName)) {
-                    $newAttributes->cEigenschaftWertName[$code] = $eigenschaftwert_spr->cName;
+                if ($localizedValue !== null && !empty($localizedValue->cName)) {
+                    $newAttributes->cEigenschaftWertName[$code] = $localizedValue->cName;
                 }
             }
             if ($freeText || \mb_strlen(\trim($freeText)) > 0) {
@@ -491,14 +491,13 @@ class CartItem
     }
 
     /**
-     * @param int $kWarenkorbPos
+     * @param int $id
      * @return $this
      */
-    public function loadFromDB(int $kWarenkorbPos): self
+    public function loadFromDB(int $id): self
     {
-        $obj     = Shop::Container()->getDB()->select('twarenkorbpos', 'kWarenkorbPos', $kWarenkorbPos);
-        $members = \array_keys(\get_object_vars($obj));
-        foreach ($members as $member) {
+        $obj = Shop::Container()->getDB()->select('twarenkorbpos', 'kWarenkorbPos', $id) ?? new stdClass();
+        foreach (\array_keys(\get_object_vars($obj)) as $member) {
             $this->$member = $obj->$member;
         }
         $this->kSteuerklasse = 0;

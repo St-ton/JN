@@ -5,38 +5,38 @@ Portlets
 
    <br />
 
-Mit JTL-Shop 5.0 wurde eine neue Möglichkeit geschaffen, Seiten des Onlineshops "live im Frontend" mit diversen
-Inhaltselementen anzureichern. |br|
-Diese Inhaltselemente sind die sogenannten "Portlets". Sie können dem Onlineshop auch via Plugins hinzugefügt werden
-und im Anschluss über den "*OnPage Composer*" ("OPC") auf einer beliebigen Seite des Onlineshops platziert werden.
+As of JTL-Shop 5.0 you now have the option to enrich "live on the front end" pages of the online shop with various
+content elements. |br|
+These content elements are called "portlets". They can also be added to the online shop via plug-ins
+and subsequently placed on any page of the shop via the "*OnPage Composer*" ("OPC").
 
-In einem Plugin kann sich ein :ref:`Portlet-Verzeichnis <label_aufbau_portlets>` befinden, welches folgende Dateien
-enthalten kann:
+In a plug-in there may be a :ref:`Portlet Directory <label_aufbau_portlets>` which can contain any of the
+following files:
 
 +------------------------------+---------------+---------------------------------------------------------------------+
-| Dateiname                    | Notwendigkeit | Inhalt                                                              |
+| File name                    | Need          | Content                                                             |
 +==============================+===============+=====================================================================+
-| ``[Portlet-Class-Name].php`` | oblig.        | Die PHP-Klasse des Portlets                                         |
+| ``[Portlet-Class-Name].php`` | obligatory    | The PHP class of the portlet                                        |
 +------------------------------+---------------+---------------------------------------------------------------------+
-| ``[Portlet-Class-Name].tpl`` | optional      | Template für die Darstellung des Portlets                           |
+| ``[Portlet-Class-Name].tpl`` | optional      | Template for the portlet’s appearance                               |
 +------------------------------+---------------+---------------------------------------------------------------------+
-| ``[Portlet-Class-Name].css`` | optional      | Stylesheet des Portlets in der finalen Ansicht                      |
+| ``[Portlet-Class-Name].css`` | optional      | Stylesheet of the portlet in the final view                         |
 +------------------------------+---------------+---------------------------------------------------------------------+
-| ``preview.css``              | optional      | Stylesheet für die Anzeige des Portlets im Editor                   |
+| ``preview.css``              | optional      | Stylesheet for displaying the portlet in the editor                 |
 +------------------------------+---------------+---------------------------------------------------------------------+
-| ``icon.svg``                 | optional      | Icon für die Portlet-Palette im Editor                              |
+| ``icon.svg``                 | optional      | Icon for the portlet palette in the editor                          |
 +------------------------------+---------------+---------------------------------------------------------------------+
-| ``editor_init.js``           | optional      | Javascript, welches beim Initialisieren des Editors ausgeführt wird |
+| ``editor_init.js``           | optional      | Javascript file, which is executed when the editor is initialised   |
 +------------------------------+---------------+---------------------------------------------------------------------+
-| ``configpanel.tpl``          | optional      | Template für ein benutzerdefiniertes Einstellungs-Modal             |
+| ``configpanel.tpl``          | optional      | Template for a user-defined settings modal                          |
 +------------------------------+---------------+---------------------------------------------------------------------+
 
-Die Datei ``[Portlet-Class-Name].php`` beinhaltet die Portlet-Klasse und bildet somit das Herzstück des Portlets. |br|
-Der Klassenname und der Name der Datei müssen selbstverständlich gleich lauten und die Klasse muss sich zudem im
-Namensraum ``Plugin\[Plugin-ID]\Portlets\[Portlet-Class-Name]`` befinden. |br|
-Weiterhin wird diese Klasse von ``JTL\OPC\Portlet`` abgeleitet.
+The file ``[Portlet-Class-Name].php`` contains the portlet class and therefore forms the portlet's core. |br|
+The class name and file name must be identical, and the class must also be in the
+namespace ``Plugin\[Plugin-ID]\Portlets\[Portlet-Class-Name]``. |br|
+Additionally, this class is derived from ``JTL\OPC\Portlet``.
 
-**Beispiel:**
+**Example:**
 
 .. code-block:: php
    :caption: MyPortlet.php
@@ -53,51 +53,51 @@ Weiterhin wird diese Klasse von ``JTL\OPC\Portlet`` abgeleitet.
         // ...
     }
 
-Die Portlet-Klasse
-------------------
+The portlet class
+-----------------
 
-Durch das Überschreiben von Methoden der Elternklasse ist es möglich, ein eigenes Portlet zu definieren. |br|
-Folgende Methoden sind hierfür prädestiniert:
+By overriding methods of the parent class, it is possible to define a custom portlet. |br|
+The following methods are made for this purpose:
 
 +------------------------------------------------------------------------------------------------+----------------------------------------------------+
-| Methode                                                                                        | Verwendung                                         |
+| Method                                                                                         | Application                                        |
 +================================================================================================+====================================================+
-| ``getPropertyDesc(): array`` :ref:`»» <label_getPropertyDesc>`                                 | Definieren der Portlet-Einstellungen               |
+| ``getPropertyDesc(): array`` :ref:`»» <label_getPropertyDesc>`                                 | To define the portlet settings                     |
 +------------------------------------------------------------------------------------------------+----------------------------------------------------+
-| ``getPropertyTabs(): array`` :ref:`»» <label_getPropertyTabs>`                                 | Definieren der Reiter im Config-Modal des Portlets |
+| ``getPropertyTabs(): array`` :ref:`»» <label_getPropertyTabs>`                                 | To define the tabs in the portlet’s config modal   |
 +------------------------------------------------------------------------------------------------+----------------------------------------------------+
-| ``getButtonHtml(): string`` :ref:`»» <label_getButtonHtml>`                                    | Festlegen der Darstellung des Portlet-Buttons      |
+| ``getButtonHtml(): string`` :ref:`»» <label_getButtonHtml>`                                    | To set the appearance of the portlet button        |
 +------------------------------------------------------------------------------------------------+----------------------------------------------------+
-| ``getPreviewHtml(PortletInstance $instance): string`` :ref:`»» <label_getPreviewHtml>`         | Festlegen des Vorschau-Markups im *OPC-Editor*     |
+| ``getPreviewHtml(PortletInstance $instance): string`` :ref:`»» <label_getPreviewHtml>`         | To set the preview markup in the *OPC Editor*      |
 +------------------------------------------------------------------------------------------------+----------------------------------------------------+
-| ``getFinalHtml(PortletInstance $instance): string`` :ref:`»» <label_getFinalHtml>`             | Festlegen der finalen Darstellung des Portlets     |
+| ``getFinalHtml(PortletInstance $instance): string`` :ref:`»» <label_getFinalHtml>`             | To set the final appearance of the portlet         |
 +------------------------------------------------------------------------------------------------+----------------------------------------------------+
-| ``getConfigPanelHtml(PortletInstance $instance): string`` :ref:`»» <label_getConfigPanelHtml>` | Ändern der Darstellung der Portlet-Konfiguration   |
+| ``getConfigPanelHtml(PortletInstance $instance): string`` :ref:`»» <label_getConfigPanelHtml>` | To change the portlet configuration display        |
 +------------------------------------------------------------------------------------------------+----------------------------------------------------+
 
-Überschreibbare Methoden
-""""""""""""""""""""""""
+Overridable methods
+"""""""""""""""""""
 
 .. _label_getPropertyDesc:
 
 ``getPropertyDesc()``
 """""""""""""""""""""
 
-Diese Methode definiert die einstellbaren Eigenschaften des Portlets und wie sie im Einstellungs-Dialog dargestellt
-werden.
+This method defines the adjustable properties of the portlet and how they are displayed
+in the settings dialog.
 
-Jede Einstellung ("*Property*") wird durch den Schlüssel (*Property-ID*) des assoziativen Arrays dargestellt, welches
-diese Methode zurückgibt.
+Each setting ("*property*") is represented by the key (*property ID*) of the associative array returned by
+this method.
 
-Jede Property wird wiederum durch ein assoziatives Array beschrieben. |br|
-Folgende Felder sind für alle Typen verfügbar:
+Each property is in turn declared by an associative array. |br|
+The following fields are available for all property types:
 
-:label: Bezeichnung im Config-Modal
+:label: Name in the config modal
 :type:  :ref:`Property-Typ <label_PropertyTyp>`
-:default: Vorbelegungs-Wert
-:width: Breite, die das Input-Felds im Config-Modal einnimmt in % (default: 100)
+:default: Default values
+:width: Width that the input field occupies in the config modal in %. (default: 100)
 
-**Beispiel:**
+**Example:**
 
 .. code-block:: php
 
@@ -129,38 +129,38 @@ Folgende Felder sind für alle Typen verfügbar:
 
 .. _label_PropertyTyp:
 
-Property-Typen
+Property types
 """"""""""""""
 
 +---------------------------------------------------+----------------------------------------------------------------------+
-| Typ                                               | Bedeutung |br|                                                       |
-|                                                   | ggf. Optionen für diesen Property-Type                               |
+| Type                                              | Meaning |br|                                                         |
+|                                                   | or options for this property type                                    |
 +===================================================+======================================================================+
-|  InputType::SELECT                                | Eine Select-Box mit verschiedenen Optionen |br|                      |
-|                                                   | "options" - Auswahlmöglichkeiten, assoz. Array (Wert => Anzeigename) |
+|  InputType::SELECT                                | A select box with various options |br|                               |
+|                                                   | "options" - selection options, assoc. array (value => display name)  |
 +---------------------------------------------------+----------------------------------------------------------------------+
-| InputType::RADIO                                  | Eine Radio-Button Gruppe mit verschiedenen Optionen |br|             |
-|                                                   | "options" - Auswahlmöglichkeiten, assoz. Array (Wert => Anzeigename) |
+| InputType::RADIO                                  | A radio button group with various options |br|                       |
+|                                                   | "options" - selection options, assoc. array (value => display name)  |
 +---------------------------------------------------+----------------------------------------------------------------------+
-| InputType::[TEXT|EMAIL|PASSWORD|NUMBER|DATE|TIME] | Einfache Eigenschaften diverser Typen                                |
+| InputType::[TEXT|EMAIL|PASSWORD|NUMBER|DATE|TIME] | Simple properties of different types                                 |
 +---------------------------------------------------+----------------------------------------------------------------------+
-| InputType::CHECKBOX                               | Checkbox, setzt ein boolesches Flag                                  |
+| InputType::CHECKBOX                               | Check box, sets a boolean flag                                       |
 +---------------------------------------------------+----------------------------------------------------------------------+
-| InputType::COLOR                                  | Ein RGB-Farbwert, konfigurierbar mit Color-Picker                    |
+| InputType::COLOR                                  | A RGB colour value, configurable with colour picker                  |
 +---------------------------------------------------+----------------------------------------------------------------------+
-| InputType::IMAGE                                  | Stellt einen Bild-Uploader zur Verfügung und gibt die Bild-URL       |
+| InputType::IMAGE                                  | Provides an image uploader and gives the image URL                   |
 +---------------------------------------------------+----------------------------------------------------------------------+
-| InputType::VIDEO                                  | Stellt einen Video-Uploader zur Verfügung und wählt eine URL         |
+| InputType::VIDEO                                  | Provides a video uploader and chooses a URL                          |
 +---------------------------------------------------+----------------------------------------------------------------------+
-| InputType::TEXT_LIST                              | Liste von Strings                                                    |
+| InputType::TEXT_LIST                              | List of strings                                                      |
 +---------------------------------------------------+----------------------------------------------------------------------+
-| InputType::IMAGE_SET                              | Liste von Bildern (z. B. für Galerie oder Slider Portlets)           |
+| InputType::IMAGE_SET                              | List of images (e.g. for gallery or slider portlets)                 |
 +---------------------------------------------------+----------------------------------------------------------------------+
-| InputType::ICON                                   | Auswahl eines FontAwesome Icons                                      |
+| InputType::ICON                                   | Font Awesome icon selection                                          |
 +---------------------------------------------------+----------------------------------------------------------------------+
-| InputType::HIDDEN                                 | Verstecktes Input                                                    |
+| InputType::HIDDEN                                 | Hidden input                                                         |
 +---------------------------------------------------+----------------------------------------------------------------------+
-| InputType::HINT                                   | Hinweis                                                              |
+| InputType::HINT                                   | Hint                                                                 |
 +---------------------------------------------------+----------------------------------------------------------------------+
 
 
@@ -169,28 +169,28 @@ Property-Typen
 ``getPropertyTabs()``
 """""""""""""""""""""
 
-Standardmäßig werden alle Properties des Portlets in einem einzelnen Tab dargestellt. |br|
-Möchte man die Properties stattdessen in mehrere separate Tabs aufteilen, kann diese Methode überschrieben werden.
+By default, all properties of the portlets are displayed in a single tab. |br|
+This method can be overridden if you want to display them in various tabs instead.
 
-Die Methode gibt ein assoziatives Array zurück, mit dem die Properties des *Config-Modals* in verschiedene Reiter
-einsortiert werden. |br|
-Die gewünschte Reiterbeschriftung legt man über die Array-Schlüssel fest.
+The method returns an associative array that is used to sort the properties of the *config modal* into
+different tabs. |br|
+The desired tab label is defined in the array keys.
 
-Neben einer expliziten Aufzählung benutzerdefinierter Properties können mit den Strings ``'styles'`` oder
-``'animations'`` auch die mitgelieferten Eigenschaften in jeweils einem dedizierten Reiter bereitgestellt werden.
+In addition to an explicit enumeration of user-defined properties, the ``'styles'`` or
+``'animations'`` strings can also be used to provide the included properties each in a dedicated tab.
 
-Mögliche Werte für die Reiter sind:
+Possible tab values are:
 
     * ``[<Property-ID 1>, <Property-ID 2>, ...]`` - ein Array von **Property-IDs**, die diesem Reiter angehören
-    * ``'styles'`` - fügt dem Portlet die mitgelieferten Eigenschaften für **Styling** hinzu und zeigt sie in diesem
-      Reiter an
-    * ``'animations'`` - fügt dem Portlet die mitgelieferten Eigenschaften für **Animationen** hinzu und zeigt sie in
-      diesem Reiter an
+    * ``'styles'`` - adds the properties included for **styling** to the portlet and displays them in this
+      tab.
+    * ``animations'`` - adds the properties included for **animations** to the portlet and displays them in
+      this tab
 
-In ``getPropertyDesc()`` aufgeführte, aber nicht zugeordnete Properties werden automatisch dem
-Standard-Reiter "Allgemein" zugewiesen.
+Properties listed in ``getPropertyDesc()``, but not assigned, are automatically assigned to the
+default "General" tab.
 
-**Beispiel:**
+**Example:**
 
 .. code-block:: php
 
@@ -214,9 +214,9 @@ Standard-Reiter "Allgemein" zugewiesen.
 ``getButtonHtml()``
 """""""""""""""""""
 
-Diese Methode verändert die Darstellung des in der Palette gezeigten Portlet-Buttons.
+This method alters the display of the portlet buttons in the palette.
 
-**Beispiel:**
+**Example:**
 
 .. code-block:: php
 
@@ -228,18 +228,18 @@ Diese Methode verändert die Darstellung des in der Palette gezeigten Portlet-Bu
         return $this->getFontAwesomeButtonHtml('fas fa-film');
     }
 
-Im o. g. Beispiel wird ein Icon aus der *FontAwesome*-Familie gerendert anstatt der ``icon.svg``.
+In the above example, an icon from the *Font Awesome* family is rendered instead of ``icon.svg``.
 
 .. _label_getPreviewHtml:
 
 ``getPreviewHtml(PortletInstance $instance)``
 """""""""""""""""""""""""""""""""""""""""""""
 
-Diese Methode bestimmt die Darstellung des Portlets im OPC. |br|
-Es handelt sich hierbei noch nicht um die fertige Darstellung auf der Seite des Onlineshops!
-Siehe dazu: ``getFinalHtml(PortletInstance $instance)``.
+This method determines the representation of the portlet in the OPC. |br|
+This is not the finished appearance on the page of the online shop!
+See also: ``getFinalHtml(PortletInstance $instance)``.
 
-**Beispiel:**
+**Example:**
 
 .. code-block:: php
 
@@ -258,9 +258,9 @@ Siehe dazu: ``getFinalHtml(PortletInstance $instance)``.
 ``getFinalHtml(PortletInstance $instance)``
 """""""""""""""""""""""""""""""""""""""""""
 
-Diese Methode legt die Ausgabe für die finale Darstellung des Portlets fest.
+This method sets the output for the final appearance of the portlet.
 
-**Beispiel:**
+**Example:**
 
 .. code-block:: php
 
@@ -279,13 +279,13 @@ Diese Methode legt die Ausgabe für die finale Darstellung des Portlets fest.
 ``getConfigPanelHtml(PortletInstance $instance)``
 """""""""""""""""""""""""""""""""""""""""""""""""
 
-Die Konfiguration eines Portlets erfolgt im *Portlet-Config-Modal*. |br|
-Die Darstellung dieses Modals wird vom Inhalt der Datei ``configpanel.tpl`` bestimmt, welche sich im Portlet-Verzeichnis
-befinden kann.
+The configuration of a portlet is done in the *Portlet-Config-Modal*. |br|
+The appearance of this modal is determined by the contents of the file ``configpanel.tpl``, which may be located in the
+portlet directory.
 
-Diese Methode liefert diesen Inhalt aus und kann ihn durch Überschreiben natürlich modifizieren. |br|
+This method returns this content and can, of course, modify it by overriding. |br|
 
-**Beispiel:**
+**Example:**
 
 .. code-block:: php
 
@@ -299,27 +299,27 @@ Diese Methode liefert diesen Inhalt aus und kann ihn durch Überschreiben natür
         return $this->getConfigPanelHtmlFromTpl($instance);
     }
 
-Portlet-Templates schreiben
----------------------------
+Writing portlet templates
+-------------------------
 
-Portlet-Templates sind für die Darstellung eines Portlets verantwortlich. |br|
-Standardmäßig wird die Smarty-Templatedatei ``<Portlet-Class>.tpl`` aus dem Portlet-Ordner geladen und gerendert,
-und zwar sowohl für die OPC-Editor-Ansicht als auch für die finale Ansicht.
+Portlet templates are responsible for the appearance of a portlet. |br|
+By default, the Smarty template file ``<Portlet-Class>.tpl`` will be loaded from the portlet folder and rendered,
+both for the OPC editor view and for the final view.
 
-Im Template-Kontext sind folgende Smarty-Variablen definiert:
+In the template context the following smarty variables are defined:
 
-    * ``$instance`` - Die PortletInstance
-    * ``$portlet`` - Das Portlet
-    * ``$isPreview`` - Ein Flag für: ``true`` = "aktuell in Editor-Ansicht", ``false`` = "aktuell in finaler Ansicht"
+    * ``$instance`` - The portlet instance
+    * ``$portlet`` - The portlet
+    * ``$isPreview`` - A flag for: ``true`` = "currently in editor view", ``false`` = "currently in final view"
 
-Das gerenderte Markup sollte nur ein einziges DOM-Element ergeben.
+The rendered markup should only result in a single DOM element.
 
-Im *Editor-Modus* muss das Element das Attribut ``data-portlet="..."`` aufweisen. Hierin stehen alle Daten, die für
-die Verarbeitung im Editor notwendig sind. |br|
-Den Wert kann mit Hilfe der Methode ``{$instance->getDataAttribute()}`` bezogen werden. Mit
-``{$instance->getProperty('<property-name>')}`` können Property-Werte der Portlet-Instanz abgefragt werden.
+In editor mode, the element must have the attribute ``data-portlet="..."``...."`` aufweisen. Hierin stehen alle Daten, die für
+This contains all the data necessary for processing in the editor. |br|
+The value can be obtained using the ``{$instance->getDataAttribute()}`` method. With
+``{$instance->getProperty('<property-name>')}`` property values of the portlet instance can be queried.
 
-**Beispiel:**
+**Example:**
 
 .. code-block:: html+smarty
    :linenos:
@@ -334,9 +334,9 @@ Den Wert kann mit Hilfe der Methode ``{$instance->getDataAttribute()}`` bezogen 
 Extras
 """"""
 
-Damit ein Portlet **Animationen** übernimmt (falls konfiguriert), fügt man dem Portlet-Element
-folgenden Code hinzu: |br|
-(siehe Zeilen 3 und 4 im obigen Beispiel)
+In order for a portlet to inherit **animations** (if configured), add the following code
+to the portlet element: |br|
+(See rows 3 and 4 in the above example)
 
 .. code-block:: html+smarty
    :linenos:
@@ -346,40 +346,40 @@ folgenden Code hinzu: |br|
             class="{$instance->getAnimationClass()}"
             {$instance->getAnimationDataAttributeString()}
 
-Dies setzt die eingestellte Animations-CSS-Klasse und die Animations-Parameter über ``data-*``-Attribute.
+This sets the set animation CSS class and animation parameters via ``data-*`` attributes.
 
-Damit ein Portlet auch benutzerdefinierte **Style-Eigenschaften** übernimmt, fügt man dem Portlet-Element ebenfalls
-noch folgendes Attribut hinzu:
+In order for a portlet to also take on user-defined **style properties**, add the following attribute to the portlet
+element as well:
 
 .. code-block:: html+smarty
 
     style="{$instance->getStyleString()}"
 
-Jede Portlet-Instanz hat eine nicht persistente, aber einheitliche ID und kann mit ``{$instance->getUid()}`` abgerufen
-werden. Dies ist zum Beispiel für *Bootstrap-Tabs* nützlich.
+Each portlet instance has a non-persistent but uniform ID and can be retrieved
+with ``{$instance->getUid()}``. This is useful for *bootstrap tabs*, for example.
 
-Portlets mit Sub-Areas
+Portlets with subareas
 ----------------------
 
-Portlets können Bereiche definieren, in denen weitere Portlets platziert werden.
+Portlets can define areas where additional portlets are placed.
 
-Ein solcher Bereich ist ein Element mit der CSS-Klasse ``opc-area``. |br|
-Das Area-Element muss für die Editor-Ansicht eine ID mittels ``data-area-id="{$areaId}"``-Attribut definieren,
-wobei ``$areaId`` ein für das Portlet einheitlicher Bezeichner ist.
+This type of area is an element with the CSS class ``opc-area``. |br|
+The area element must define an ID for the editor view using the ``data-area-id="{$areaId}"`` attribute,
+where ``$areaId`` is a standard identifier for the portlet.
 
-Für die **Editor-Ansicht** muss der Inhalt des Elements wie folgt gerendert werden:
+For the **editor view**, the content of the element must be rendered as follows:
 
 .. code-block:: smarty
 
     {$instance->getSubareaPreviewHtml($areaId)}
 
-Für die **finale Ansicht** muss der Inhalt des Elements wie folgt gerendert werden:
+For the **final view**, the content of the element must be rendered as follows:
 
 .. code-block:: smarty
 
     {$instance->getSubareaFinalHtml($areaId)}
 
-**Beispiel:**
+**Example:**
 
 .. code-block:: html+smarty
 
@@ -391,34 +391,34 @@ Für die **finale Ansicht** muss der Inhalt des Elements wie folgt gerendert wer
         {/if}
     </div>
 
-Portlet-Übersetzung
+Portlet translation
 -------------------
 
-In Portlet-Klasse und Templates können Sprachvariablen abgerufen werden. |br|
-Dies geschieht mittels:
+Language variables can be called up in portlet classes and templates. |br|
+This is done using:
 
 .. code-block:: smarty
 
     {__("Text-ID")}
 
 
-Übersetzungen können im ``.mo``-Dateiformat im Language-Verzeichnis des Plugins unter ``portlets/`` abgelegt
-werden. |br|
-Konkret wäre das dann:
+Translations can be put in the ``.mo`` file format in the plug-in's language directory
+under ``portlets/``. |br|
+Here, specifically:
 
 .. code-block:: console
 
     plugins/[plugin-id]/locale/[language-tag]/portlets/[Portlet-Class].mo
 
-Wird eine Übersetzung nicht gefunden, wird deren *Text-ID* unverändert ausgegeben.
+If a translation is not found, its *text ID* is output unchanged.
 
-Portlet-Vorlagen - Blueprints
------------------------------
+Portlet templates - blueprints
+------------------------------
 
-*Blueprints* sind wiederverwendbare Portlet-Kompositionen bzw. -Vorlagen.
+*Blueprints* are portlet compositions or templates that can be used over and over.
 
-Diese Vorlagen können im *OPC-Editor* erstellt und exportiert werden. |br|
-Sie finden *Blueprints* im Reiter "Vorlagen", wo sie auch importiert werden können.
+These templates can be created and exported from the *OPC editor*. |br|
+*Blueprints* can be found in the "Templates" tab, where they can also be imported.
 
-Ebenso können Sie natürlich auch mit einem Plugin *Blueprints* ausliefern. |br|
-Nähere Informationen dazu finden Sie im Abschnitt ":ref:`label_infoxml_blueprints`".
+Similarly, you can of course distribute *blueprints* with a plug-in. |br|
+You can find more information on this in the ":ref:`label_infoxml_blueprints`" section.

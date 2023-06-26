@@ -22,15 +22,15 @@ class Errors extends DataCollector implements Renderable
      */
     public function __construct()
     {
-        \set_error_handler([$this, 'handleError']);
+        \set_error_handler($this->handleError(...));
     }
 
     /**
-     * @param  int    $level
-     * @param  string $message
-     * @param  string $file
-     * @param  int    $line
-     * @param  array  $context
+     * @param int    $level
+     * @param string $message
+     * @param string $file
+     * @param int    $line
+     * @param array  $context
      */
     public function handleError($level, $message, $file = '', $line = 0, $context = []): void
     {

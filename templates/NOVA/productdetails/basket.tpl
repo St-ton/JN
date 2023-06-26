@@ -166,16 +166,12 @@
         </div>
     {/if}
     <script>(function(){
-
             var element = document.getElementById('{$smarty.const.FKT_ATTRIBUT_VOUCHER_FLEX}');
             element.addEventListener('focus', function() {
                 element.setAttribute('placeholder', '')
-
             });
-
             element.addEventListener('blur', function() {
                 element.setAttribute('placeholder', '{lang key='voucherFlexPlaceholder' section='productDetails' printf=$smarty.session.Waehrung->getName()}')
-
             });
         })()
     </script>

@@ -76,6 +76,7 @@ hr, .table {
 
 .input-group-text {
   background-color: var(--input-color);
+  color: var(--link-color);
 }
 
 .table-striped tbody tr:nth-of-type(even) {
@@ -139,7 +140,7 @@ hr, .table {
 }
 
 .alert .fa-info-circle {
-  color: var(--body-color);
+  color: var(--icon-color);
 }
 
 .daterangepicker, .daterangepicker .calendar-table {
@@ -184,6 +185,12 @@ hr, .table {
 
 .list-group-item:nth-of-type(odd) {
   background-color: var(--body-bg);
+}
+
+.list-group-item.active {
+  color: var(--icon-color);
+  background-color: var(--list-group-color);
+  border-color: var(--list-group-color);
 }
 
 .close.fileinput-remove {
@@ -287,4 +294,12 @@ input.file-caption-name::placeholder {
 
 .systemcheck .test-name {
   color: var(--body-color);
+}
+
+#area_container {
+  background-color: var(--body-bg) !important;
+}
+
+#area_editor {
+  background-color: var(--card-bg) !important;
 }

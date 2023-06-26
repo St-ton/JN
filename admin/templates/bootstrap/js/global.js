@@ -520,11 +520,10 @@ $(document).ready(function () {
                     .removeClass('theme-dark')
                     .addClass('theme-' + data['theme']);
 
-                $('#theme-toggle .toggleIcon')
-                    .removeClass('fa-lightbulb-o')
-                    .removeClass('fa-moon-o')
-                    .removeClass('fa-adjust')
-                    .addClass(btn.data('icon'));
+                $('#theme-toggle .theme-toggle-auto').addClass('d-none');
+                $('#theme-toggle .theme-toggle-light').addClass('d-none');
+                $('#theme-toggle .theme-toggle-dark').addClass('d-none');
+                $('#theme-toggle .theme-toggle-' + theme).removeClass('d-none');
 
                 if (typeof CKEDITOR !== 'undefined') {
                     for (let instanceName in CKEDITOR.instances) {

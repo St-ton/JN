@@ -567,6 +567,20 @@ $(document).ready(function () {
     $('textarea.auto-expand').on('input click', function (event) {
         autoExpand(event.target);
     });
+
+    $('input[maxlength][data-chars-left-msg]').keyup(function (event) {
+        let maxLength = $(this).attr('maxlength'),
+            limit     = .75 * maxLength,
+            remaining  = maxLength - $(this).val().length;
+
+        $(this).closest('.form-group').find('.char-left').remove();
+
+        if (remaining <= limit) {
+            $(this).closest('.form-group').append(
+                '<div class="text-warning char-left"><b>' + remaining + '</b> ' + $(this).data('chars-left-msg') + '</div>'
+            );
+        }
+    });
 });
 
 function setClickableRow()

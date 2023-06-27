@@ -30,16 +30,16 @@
                             {if $Artikel->Preise->fVKNetto == 0 && isset($Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_VOUCHER_FLEX])}
                                 {block name='productdetails-basket-voucher-flex'}
                                     {col cols=12 sm=$basketColWidth}
-                                        {inputgroup class="form-counter"}
+                                        {inputgroup}
                                             {input type="number"
                                                 step=".01"
                                                 value="{if isset($voucherPrice)}{$voucherPrice}{/if}"
                                                 name="{$smarty.const.FKT_ATTRIBUT_VOUCHER_FLEX}Value"
                                                 required=true
-                                                id="{$smarty.const.FKT_ATTRIBUT_VOUCHER_FLEX}"
-                                                placeholder="{lang key='voucherFlexPlaceholder' section='productDetails' printf=$smarty.session.Waehrung->getName()}"}
+                                                placeholder="{lang key='voucherFlexPlaceholder' section='productDetails' printf=$smarty.session.Waehrung->getName()}"
+                                                class="font-weight-bolder border-right-0"}
                                             {inputgroupappend}
-                                                {inputgrouptext class="form-control"}
+                                                {inputgrouptext class="form-control font-weight-bolder bg-transparent"}
                                                     {JTL\Session\Frontend::getCurrency()->getName()}
                                                 {/inputgrouptext}
                                             {/inputgroupappend}
@@ -165,14 +165,4 @@
             {/if}
         </div>
     {/if}
-    <script>(function(){
-            var element = document.getElementById('{$smarty.const.FKT_ATTRIBUT_VOUCHER_FLEX}');
-            element.addEventListener('focus', function() {
-                element.setAttribute('placeholder', '')
-            });
-            element.addEventListener('blur', function() {
-                element.setAttribute('placeholder', '{lang key='voucherFlexPlaceholder' section='productDetails' printf=$smarty.session.Waehrung->getName()}')
-            });
-        })()
-    </script>
 {/block}

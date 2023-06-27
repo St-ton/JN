@@ -22496,6 +22496,9 @@ div.dataTables_wrapper div.dataTables_filter input[type=search] {
 .item-overflow-notice a {
   text-decoration: underline;
 }
+.form-control:focus + .input-group-append .input-group-text {
+  border-color: #F8BF00;
+}
 /* contact */
 .contact-form legend {
   border: 0;

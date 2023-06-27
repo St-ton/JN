@@ -163,3 +163,7 @@
     text-decoration: underline;
   }
 }
+
+.form-control:focus + .input-group-append .input-group-text {
+  border-color: $input-focus-border-color;
+}

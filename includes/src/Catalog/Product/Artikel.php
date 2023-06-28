@@ -1109,6 +1109,11 @@ class Artikel implements RoutableInterface
     private static $products = [];
 
     /**
+     * @var bool
+     */
+    private bool $compressed = false;
+
+    /**
      *
      */
     public function __wakeup()
@@ -1121,6 +1126,11 @@ class Artikel implements RoutableInterface
         }
         $this->conf    = $this->getConfig();
         $this->taxData = $this->getShippingAndTaxData();
+        if ($this->compressed === true) {
+            $this->cBeschreibung    = \gzuncompress($this->cBeschreibung);
+            $this->cKurzbezeichnung = \gzuncompress($this->cKurzbezeichnung);
+            $this->compressed       = false;
+        }
         if ($this->favourableShippingID > 0) {
             $this->oFavourableShipping = new Versandart($this->favourableShippingID);
         }
@@ -3497,6 +3507,11 @@ class Artikel implements RoutableInterface
             $toSave                                 = clone $this;
             $toSave->oVariationKombiKinderAssoc_arr = null;
             $toSave->Preise                         = $basePrice;
+            if (\COMPRESS_DESCRIPTIONS === true) {
+                $toSave->cBeschreibung    = \gzcompress($toSave->cBeschreibung, \COMPRESSION_LEVEL);
+                $toSave->cKurzbezeichnung = \gzcompress($toSave->cKurzbezeichnung, \COMPRESSION_LEVEL);
+                $toSave->compressed       = true;
+            }
             Shop::Container()->getCache()->set($this->cacheID, $toSave, $cacheTags);
             self::$products[$this->cacheID] = $toSave;
         }

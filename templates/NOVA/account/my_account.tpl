@@ -269,7 +269,7 @@
                             {/block}
                         {/cardheader}
                         {block name='account-my-account-comparelist-body'}
-                            {assign var=rmas value=$RMAService->getRepository()->loadFromDB(null, null, null, null, null)}
+                            {assign var=rmas value=$RMAService->getRMAs()}
                             {if $rmas|count > 0}
                                 <div class="table-responsive">
                                     <table class="table table-vertical-middle table-hover">
@@ -278,24 +278,25 @@
                                                 <tr>
                                                     <td>
                                                         <div class="d-block font-weight-bold">
-                                                            <span class="far fa-calendar mr-2"></span>{$rma->rmaCreateDate}
+                                                            <span class="far fa-calendar mr-2"></span>{$rma->getCreateDate()}
                                                         </div>
                                                         <small class="text-muted-util d-block font-weight-bold">
                                                             Artikel
                                                             <span class="badge badge-light">
-                                                                {$rma->positions|count|default:0}
+                                                                {$rma->getPositions()|count|default:0}
                                                             </span>
                                                         </small>
-                                                        {if isset($rma->pickupAddress)}
+                                                        {assign var=pkAddress value=$rma->getPickupAddress()}
+                                                        {if $pkAddress !== null}
                                                             <small class="text-muted-util d-block">
-                                                                {if $rma->pickupAddress->companyName}{$rma->pickupAddress->companyName}<br />{/if}
-                                                                {$rma->pickupAddress->street} {$rma->pickupAddress->houseNumber}<br />
-                                                                {$rma->pickupAddress->postalCode} {$rma->pickupAddress->city}
+                                                                {if $pkAddress->getCompanyName()}{$pkAddress->getCompanyName()}<br />{/if}
+                                                                {$pkAddress->getStreet()} {$pkAddress->getHouseNumber()}<br />
+                                                                {$pkAddress->getPostalCode()} {$pkAddress->getCity()}
                                                             </small>
                                                         {/if}
                                                     </td>
                                                     <td class="text-right-util">
-                                                        {link class='float-right' href="$cCanonicalURL?rma={$rma->rmaID}"
+                                                        {link class='float-right' href="$cCanonicalURL?editRMA={$rma->getID()}"
                                                         aria=["label"=>"Retoure bearbeiten"]}
                                                             <span class="fas fa-pencil-alt"></span>
                                                         {/link}

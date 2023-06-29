@@ -211,11 +211,11 @@ class AccountController
         if (Request::verifyGPCDataInt('editLieferadresse') > 0 || Request::getInt('editAddress') > 0) {
             $step = 'lieferadressen';
         }
-        $rmaID = Request::verifyGPCDataInt('rma');
-        if ($rmaID > 0) {
+        $rmaID = Request::verifyGPCDataInt('editRMA');
+        if ($rmaID > 0 || Request::verifyGPCDataInt('newRMA') > 0) {
             $step = $this->rmaOrder($rmaID);
         }
-        if (Request::verifyGPCDataInt('rmas') > 0) {
+        if (Request::verifyGPCDataInt('RMAs') > 0) {
             $step = $this->rmaOrders($customerID);
         }
         if (Request::verifyGPCDataInt('editLieferadresse') > 0
@@ -984,7 +984,8 @@ class AccountController
         $rmaService         = new RMAService();
         $returnableProducts = $rmaService->getReturnableProducts();
         $rmaReasons         = $rmaService->getReasons();
-        $this->smarty->assign('rma', $rmaService->get($rmaID))
+
+        $this->smarty->assign('rma', $rmaService->getRMA($rmaID))
             ->assign('returnableProducts', $returnableProducts)
             ->assign('reasons', $rmaReasons)
             ->assign('returnableOrders', $rmaService->getOrderIDs($returnableProducts));

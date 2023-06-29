@@ -222,7 +222,7 @@ class Migration_20230519120834 extends Migration implements IMigration
                 `addressAdditional` VARCHAR(255) DEFAULT NULL,
                 `postalCode` VARCHAR(20) NOT NULL,
                 `city` VARCHAR(255) NOT NULL,
-                `state` VARCHAR(255) NOT NULL,
+                `state` VARCHAR(255) DEFAULT NULL,
                 `country` VARCHAR(255) NOT NULL,
                 `phone` VARCHAR(255) DEFAULT NULL,
                 `mobilePhone` VARCHAR(255) DEFAULT NULL,

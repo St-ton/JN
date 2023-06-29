@@ -5,6 +5,8 @@ namespace JTL\RMA;
 use JTL\Abstracts\AbstractRepository;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
+use JTL\DB\ReturnType;
+use JTL\RMA\PickupAddress\PickupAddressDataTableObject;
 use JTL\RMA\PickupAddress\PickupAddressRepository;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -13,6 +15,7 @@ use JTL\Shopsetting;
 /**
  * Class RMARepository
  * @package JTL\RMA
+ * @since 5.3.0
  */
 class RMARepository extends AbstractRepository
 {
@@ -32,65 +35,43 @@ class RMARepository extends AbstractRepository
     {
         return 'id';
     }
-    
-    /**
-     * @param array $filters
-     * @return array
-     * @since 5.3.0
-     */
-    public function getList(array $filters): array
-    {
-        $results = [];
-
-        $data = parent::getList($filters);
-        foreach ($data as $obj) {
-            $obj->id         = (int)$obj->id;
-            $obj->status     = \langRMAStatus((int)$obj->status);
-            $obj->createDate = date('d.m.Y H:i', \strtotime($obj->createDate));
-            $dataTableObject = new RMADataTableObject();
-            $rma             = $dataTableObject->hydrateWithObject($obj);
-            $rmaPos          = new RMAPosRepository();
-            $rma->setPositions(
-                $rmaPos->getList(['rmaID' => $rma->getID()])
-            );
-            $rmaPickupAddress = new PickupAddressRepository();
-            $rma->setPickupAddress(
-                $rmaPickupAddress->get($rma->getID()) ?? new \stdClass()
-            );
-
-            $results[] = $rma;
-        }
-        return $results;
-    }
 
     /**
+     * @param int $customerID
+     * @param int $langID
      * @param string|null $status
      * @param string|null $createdBeforeDate
      * @param int|null $pickupAddressID
      * @param int|null $productID
      * @param int|null $shippingNoteID
-     * @return array
-     * @since 5.3.0
+     * @return string
      */
-    public function loadFromDB(
+    private function buildQuery(
+        int $customerID,
+        int $langID,
+        ?int $id,
         ?string $status,
         ?string $createdBeforeDate,
         ?int $pickupAddressID,
         ?int $productID,
         ?int $shippingNoteID
-    ): array {
-        $result  = [];
+    ): string {
         $filter  = [
-            'customerID' => Frontend::getCustomer()->getID(),
-            'langID' => Shop::getLanguageID(),
+            'customerID' => $customerID,
+            'langID' => $langID,
         ];
         $queries = [
+            'id' => '',
             'status' => '',
             'beforeDate' => '',
             'pickupAddress' => '',
             'product' => '',
             'shippingNote' => '',
         ];
+        if ($id !== null) {
+            $filter['id']  = $id;
+            $queries['id'] = ' AND rma.id = :id';
+        }
         if ($status !== null) {
             $filter['status']  = $status;
             $queries['status'] = ' AND rma.status = :status';
@@ -112,7 +93,7 @@ class RMARepository extends AbstractRepository
             $queries['shippingNote'] = ' AND shippingNote.kLieferschein = :sID';
         }
 
-        $this->getDB()->getCollection(
+        return $this->getDB()->readableQuery(
             'SELECT
                 rma.id AS rmaID,
                 rma.wawiID,
@@ -122,6 +103,7 @@ class RMARepository extends AbstractRepository
                 rma.createDate AS rmaCreateDate,
                 rma.lastModified AS rmaLastModified,
                 
+                positions.id AS rmaPosID,
                 positions.orderPosID,
                 positions.productID,
                 positions.reasonID,
@@ -133,34 +115,30 @@ class RMARepository extends AbstractRepository
                 positions.stockBeforePurchase,
                 positions.longestMaxDelivery,
                 positions.longestMinDelivery,
+                positions.shippingNotePosID,
                 positions.comment AS rmaPosComment,
                 positions.status AS rmaPosStatus,
                 positions.createDate AS rmaPosCreateDate,
-                
-                GROUP_CONCAT(
-                    CONCAT(history.title, \';;;\', history.lastModified, \';;;\', history.value)
-                    ORDER BY history.lastModified ASC SEPARATOR \'|||\'
-                ) AS rmaPosHistory,
     
-                pickupaddress.id AS pkAddressID,
-                pickupaddress.salutation AS pkAddressSalutation,
-                pickupaddress.firstName AS pkAddressFirstName,
-                pickupaddress.lastName AS pkAddressLastName,
-                pickupaddress.academicTitle AS pkAddressAcademicTitle,
-                pickupaddress.companyName AS pkAddressCompanyName,
-                pickupaddress.companyAdditional AS pkAddressCompanyAdditional,
-                pickupaddress.street AS pkAddressStreet,
-                pickupaddress.houseNumber AS pkAddressHouseNumber,
-                pickupaddress.addressAdditional AS pkAddressAddressAdditional,
-                pickupaddress.postalCode AS pkAddressPostalCode,
-                pickupaddress.city AS pkAddressCity,
-                pickupaddress.state AS pkAddressState,
-                pickupaddress.country AS pkAddressCountry,
-                pickupaddress.phone AS pkAddressPhone,
-                pickupaddress.mobilePhone AS pkAddressMobilePhone,
-                pickupaddress.fax AS pkAddressFax,
-                pickupaddress.mail AS pkAddressMail,
-                pickupaddress.hash AS pkAddressHash,
+                pickupaddress.id AS addressID,
+                pickupaddress.salutation AS addressSalutation,
+                pickupaddress.firstName AS addressFirstName,
+                pickupaddress.lastName AS addressLastName,
+                pickupaddress.academicTitle AS addressAcademicTitle,
+                pickupaddress.companyName AS addressCompanyName,
+                pickupaddress.companyAdditional AS addressCompanyAdditional,
+                pickupaddress.street AS addressStreet,
+                pickupaddress.houseNumber AS addressHouseNumber,
+                pickupaddress.addressAdditional AS addressAddressAdditional,
+                pickupaddress.postalCode AS addressPostalCode,
+                pickupaddress.city AS addressCity,
+                pickupaddress.state AS addressState,
+                pickupaddress.country AS addressCountry,
+                pickupaddress.phone AS addressPhone,
+                pickupaddress.mobilePhone AS addressMobilePhone,
+                pickupaddress.fax AS addressFax,
+                pickupaddress.mail AS addressMail,
+                pickupaddress.hash AS addressHash,
                 
                 rmareasons.wawiID AS reasonWawiID,
                 
@@ -184,108 +162,56 @@ class RMARepository extends AbstractRepository
             JOIN pickupaddress
             ON
                 rma.pickupAddressID = pickupaddress.id
-            RIGHT JOIN rmahistory AS history
-            ON
-                positions.id = history.rmaPosID
-            WHERE rma.customerID = :customerID
-            GROUP BY positions.id'
+            WHERE rma.customerID = :customerID'
+            . $queries['id']
             . $queries['status']
             . $queries['beforeDate']
-            . $queries['pickupAddress'],
+            . $queries['pickupAddress']
+            . ' GROUP BY positions.id',
             $filter
-        )->each(
-            static function (\stdClass $rmaPos) use (&$result) {
-                $rmaPos->rmaID = (int)$rmaPos->rmaID;
-                if (!isset($result[$rmaPos->rmaID])) {
-                    $result[$rmaPos->rmaID]                  = new \stdClass();
-                    $result[$rmaPos->rmaID]->positions       = [];
-                    $result[$rmaPos->rmaID]->pickupAddress   = new \stdClass();
-                    $result[$rmaPos->rmaID]->rmaID           = $rmaPos->rmaID;
-                    $result[$rmaPos->rmaID]->wawiID          = (int)$rmaPos->wawiID;
-                    $result[$rmaPos->rmaID]->pickupAddressID = (int)$rmaPos->pickupAddressID;
-                    $result[$rmaPos->rmaID]->customerID      = (int)$rmaPos->customerID;
-                    $result[$rmaPos->rmaID]->shippingNoteID  = (int)$rmaPos->kLieferschein;
-                    $result[$rmaPos->rmaID]->rmaCreateDate   =
-                        \date('d-m-Y H:i', \strtotime($rmaPos->rmaCreateDate ?? '1970-01-01'));
-                    $result[$rmaPos->rmaID]->rmaLastModified =
-                        \date('d-m-Y H:i', \strtotime($rmaPos->rmaLastModified ?? '1970-01-01'));
-                    $result[$rmaPos->rmaID]->rmaStatus       = $rmaPos->rmaStatus;
-                }
-
-                $position                        = new \stdClass();
-                $position->orderPosID            = (int)$rmaPos->orderPosID;
-                $position->productID             = (int)$rmaPos->productID;
-                $position->reasonID              = (int)$rmaPos->reasonID;
-                $position->reasonWawiID          = (int)$rmaPos->reasonWawiID;
-                $position->reason                = $rmaPos->reasonLocalized;
-                $position->name                  = $rmaPos->name;
-                $position->unitPriceNet          = (float)$rmaPos->unitPriceNet;
-                $position->unitPriceNetLocalized = Preise::getLocalizedPriceString($rmaPos->unitPriceNet);
-                $position->quantity              = (float)$rmaPos->quantity;
-                $position->vat                   = (float)$rmaPos->vat;
-                $position->unit                  = $rmaPos->unit;
-                $position->stockBeforePurchase   = (float)$rmaPos->stockBeforePurchase;
-                $position->longestMaxDelivery    = (int)$rmaPos->longestMaxDelivery;
-                $position->longestMinDelivery    = (int)$rmaPos->longestMinDelivery;
-                $position->comment               = $rmaPos->rmaPosComment;
-                $position->status                = $rmaPos->rmaPosStatus;
-                $position->createDate            = $rmaPos->rmaPosCreateDate;
-                $position->history               = \explode('|||', $rmaPos->rmaPosHistory);
-                if ($position->history) {
-                    foreach ($position->history as &$history) {
-                        $historyArr        = \explode(';;;', $history);
-                        $tmp               = new \stdClass();
-                        $tmp->title        = $historyArr[0];
-                        $tmp->lastModified = \date('d-m-Y H:i', \strtotime($historyArr[1] ?? '1970-01-01'));
-                        $tmp->value        = $historyArr[2];
-                        $history           = $tmp;
-                    }
-                }
-
-                $result[$rmaPos->rmaID]->positions[] = $position;
-
-                $result[$rmaPos->rmaID]->pickupAddress->id                = (int)$rmaPos->pkAddressID;
-                $result[$rmaPos->rmaID]->pickupAddress->salutation        = $rmaPos->pkAddressSalutation;
-                $result[$rmaPos->rmaID]->pickupAddress->firstName         = $rmaPos->pkAddressFirstName;
-                $result[$rmaPos->rmaID]->pickupAddress->lastName          = $rmaPos->pkAddressLastName;
-                $result[$rmaPos->rmaID]->pickupAddress->academicTitle     = $rmaPos->pkAddressAcademicTitle;
-                $result[$rmaPos->rmaID]->pickupAddress->companyName       = $rmaPos->pkAddressCompanyName;
-                $result[$rmaPos->rmaID]->pickupAddress->companyAdditional = $rmaPos->pkAddressCompanyAdditional;
-                $result[$rmaPos->rmaID]->pickupAddress->street            = $rmaPos->pkAddressStreet;
-                $result[$rmaPos->rmaID]->pickupAddress->houseNumber       = $rmaPos->pkAddressHouseNumber;
-                $result[$rmaPos->rmaID]->pickupAddress->addressAdditional = $rmaPos->pkAddressAddressAdditional;
-                $result[$rmaPos->rmaID]->pickupAddress->postalCode        = $rmaPos->pkAddressPostalCode;
-                $result[$rmaPos->rmaID]->pickupAddress->city              = $rmaPos->pkAddressCity;
-                $result[$rmaPos->rmaID]->pickupAddress->state             = $rmaPos->pkAddressState;
-                $result[$rmaPos->rmaID]->pickupAddress->country           = $rmaPos->pkAddressCountry;
-                $result[$rmaPos->rmaID]->pickupAddress->phone             = $rmaPos->pkAddressPhone;
-                $result[$rmaPos->rmaID]->pickupAddress->mobilePhone       = $rmaPos->pkAddressMobilePhone;
-                $result[$rmaPos->rmaID]->pickupAddress->fax               = $rmaPos->pkAddressFax;
-                $result[$rmaPos->rmaID]->pickupAddress->mail              = $rmaPos->pkAddressMail;
-                $result[$rmaPos->rmaID]->pickupAddress->hash              = $rmaPos->pkAddressHash;
-            }
         );
-        return $result;
     }
-
+    
     /**
-     * @param array $values
-     * @return bool
+     * @param array $filters
+     * @return array
+     * @since 5.3.0
      */
-    public function delete(array $values): bool
+    public function getList(array $filters): array
     {
-        $result     = true;
-        $customerID = Frontend::getCustomer()->getID();
+        $results = [];
 
-        foreach ($values as $id) {
-            if ($this->getDB()->deleteRow(
-                $this->getTableName(),
-                [$this->getKeyName(), 'customerID', 'wawiID'],
-                [(int)$id, $customerID, null]
-            ) === self::DELETE_FAILED) {
-                $result = false;
-            }
+        if ($filters['customerID'] === null || $filters['langID'] === null) {
+            return $results;
         }
-        return $result;
+
+        $data = $this->getDB()->executeQuery(
+            $this->buildQuery(
+                $filters['customerID'],
+                $filters['langID'],
+                $filters['id'] ?? null,
+                $filters['status'] ?? null,
+                $filters['createdBeforeDate'] ?? null,
+                $filters['pickupAddressID'] ?? null,
+                $filters['productID'] ?? null,
+                $filters['shippingNoteID'] ?? null
+            ),
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+
+        $positions = [];
+        foreach ($data as $obj) {
+            if (!isset($results[$obj->rmaID])) {
+                $results[$obj->rmaID] = (new RMADataTableObject())->hydrateWithObject($obj);
+                $results[$obj->rmaID]->setPickupAddress(
+                    (new PickupAddressDataTableObject())->hydrateWithObject($obj)
+                );
+            }
+            $results[$obj->rmaID]->addPosition(
+                (new RMAPosDataTableObject())->hydrateWithObject($obj)
+            );
+        }
+
+        return $results;
     }
 }

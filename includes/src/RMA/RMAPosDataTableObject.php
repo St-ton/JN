@@ -4,6 +4,7 @@ namespace JTL\RMA;
 
 use JTL\DataObjects\AbstractDataObject;
 use JTL\DataObjects\DataTableObjectInterface;
+use JTL\Helpers\Date;
 
 /**
  * Class RMAPosDataTableObject
@@ -111,7 +112,7 @@ class RMAPosDataTableObject extends AbstractDataObject implements DataTableObjec
      * @var string[]
      */
     private array $columnMapping = [
-        'id'                  => 'id',
+        'rmaPosID'            => 'id',
         'rmaID'               => 'rmaID',
         'shippingNotePosID'   => 'shippingNotePosID',
         'orderPosID'          => 'orderPosID',
@@ -125,9 +126,9 @@ class RMAPosDataTableObject extends AbstractDataObject implements DataTableObjec
         'stockBeforePurchase' => 'stockBeforePurchase',
         'longestMinDelivery'  => 'longestMinDelivery',
         'longestMaxDelivery'  => 'longestMaxDelivery',
-        'comment'             => 'comment',
-        'status'              => 'status',
-        'createDate'          => 'createDate'
+        'rmaPosComment'       => 'comment',
+        'rmaPosStatus'        => 'status',
+        'rmaPosCreateDate'    => 'createDate'
     ];
     
     /**
@@ -176,7 +177,7 @@ class RMAPosDataTableObject extends AbstractDataObject implements DataTableObjec
      */
     public function setID(int|string $id): self
     {
-        $this->id = (int)$id;
+        $this->{$this->getPrimaryKey()} = (int)$id;
 
         return $this;
     }
@@ -467,11 +468,12 @@ class RMAPosDataTableObject extends AbstractDataObject implements DataTableObjec
     }
 
     /**
+     * @param bool $localize
      * @return string
      */
-    public function getCreateDate(): string
+    public function getCreateDate(bool $localize = true): string
     {
-        return $this->createDate;
+        return ($localize) ? Date::localize($this->createDate) : $this->createDate;
     }
 
     /**

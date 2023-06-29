@@ -1537,6 +1537,7 @@ class IOMethods
      */
     public function deleteRMA(int $rmaID): IOResponse
     {
+        //Delete only positions. Deleting the whole RMA causes problems while editing an RMA request
         $rmaID      = $rmaID ?? 0;
         $ioResponse = new IOResponse();
         $response   = new stdClass();

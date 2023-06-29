@@ -4,6 +4,7 @@ namespace JTL\RMA;
 
 use JTL\DataObjects\AbstractDataObject;
 use JTL\DataObjects\DataTableObjectInterface;
+use JTL\Helpers\Date;
 
 /**
  * Class RMAHistoryDataTableObject
@@ -163,11 +164,12 @@ class RMAHistoryDataTableObject extends AbstractDataObject implements DataTableO
     }
 
     /**
+     * @param bool $localize
      * @return string
      */
-    public function getLastModified(): string
+    public function getLastModified(bool $localize = true): string
     {
-        return $this->lastModified;
+        return ($localize) ? Date::localize($this->lastModified) : $this->lastModified;
     }
 
     /**

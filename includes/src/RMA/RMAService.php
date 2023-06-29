@@ -5,6 +5,7 @@ namespace JTL\RMA;
 use JTL\Abstracts\AbstractService;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
+use JTL\Helpers\Product;
 use JTL\Interfaces\RepositoryInterface;
 use JTL\RMA\PickupAddress\PickupAddressRepository;
 use JTL\Session\Frontend;
@@ -34,7 +35,10 @@ class RMAService extends AbstractService
      */
     public function get(int $id): RMADataTableObject
     {
-        return (new RMADataTableObject())->hydrateWithObject($this->getRepository()->get($id) ?? new stdClass());
+        if ($id === 0) {
+            return new RMADataTableObject();
+        }
+        return (new RMADataTableObject())->hydrateWithObject($this->getRepository()->get($id) ?? new \stdClass());
     }
     
     /**
@@ -43,7 +47,19 @@ class RMAService extends AbstractService
      */
     public function delete(array $ids): bool
     {
-        return $this->getRepository()->delete($ids);
+        $repo        = $this->getRepository();
+        $deleteItems = Shop::Container()->getDB()->getInts(
+            'SELECT ' . $repo->getTableName() . '.' . $repo->getKeyName()
+            . ' FROM ' . $repo->getTableName()
+            . ' WHERE ' . $repo->getTableName() . '.' . $repo->getKeyName() . ' IN (:' . $repo->getKeyName() . ')'
+            . ' AND ' . $repo->getTableName() . '.customerID = :customerID',
+            $repo->getKeyName(),
+            [
+                $repo->getKeyName() => \implode(',', $ids),
+                'customerID' => Frontend::getCustomer()->getID()
+            ]
+        );
+        return $this->getRepository()->delete($deleteItems);
     }
     
     /**
@@ -131,6 +147,7 @@ class RMAService extends AbstractService
      */
     public function getReturnableProducts(int $customerID = 0): array
     {
+        //ToDo: Test if product has already been requested for an RMA
         $customerID       = ($customerID === 0) ? Frontend::getCustomer()->getID() : $customerID;
         $cancellationTime = Shopsetting::getInstance()->getValue(\CONF_GLOBAL, 'global_cancellation_time');
         return Shop::Container()->getDB()->getCollection(
@@ -140,7 +157,10 @@ class RMAService extends AbstractService
        tbestellung.kLieferadresse AS shippingAddressID, tbestellung.cStatus AS status,
        tbestellung.cBestellNr AS orderID, tlieferscheinpos.kLieferscheinPos AS shippingNotePosID,
        tlieferscheinpos.kLieferschein AS shippingNoteID, tlieferscheinpos.fAnzahl AS quantity,
-       tartikel.cSeo AS seo, DATE_FORMAT(FROM_UNIXTIME(tversand.dErstellt), '%d-%m-%Y') AS createDate
+       tartikel.cSeo AS seo, DATE_FORMAT(FROM_UNIXTIME(tversand.dErstellt), '%d-%m-%Y') AS createDate,
+       twarenkorbposeigenschaft.cEigenschaftName AS propertyName,
+       twarenkorbposeigenschaft.cEigenschaftWertName AS propertyValue,
+       teigenschaftsprache.cName AS propertyNameLocalized, teigenschaftwertsprache.cName AS propertyValueLocalized
             FROM tbestellung
             JOIN twarenkorbpos
                 ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
@@ -155,6 +175,14 @@ class RMAService extends AbstractService
                 AND tartikelattribut.cName = :notReturnable
             LEFT JOIN tartikeldownload
                 ON tartikeldownload.kArtikel = twarenkorbpos.kArtikel
+            LEFT JOIN twarenkorbposeigenschaft
+                ON twarenkorbposeigenschaft.kWarenkorbPos = twarenkorbpos.kWarenkorbPos
+            LEFT JOIN teigenschaftsprache
+                ON teigenschaftsprache.kEigenschaft = twarenkorbposeigenschaft.kEigenschaft
+                AND teigenschaftsprache.kSprache = :langID
+            LEFT JOIN teigenschaftwertsprache
+                ON teigenschaftwertsprache.kEigenschaftWert = twarenkorbposeigenschaft.kEigenschaftWert
+                AND teigenschaftwertsprache.kSprache = :langID
             JOIN tartikel
                 ON tartikel.kArtikel = twarenkorbpos.kArtikel
             WHERE tbestellung.kKunde = :customerID
@@ -163,6 +191,7 @@ class RMAService extends AbstractService
                 AND tartikeldownload.kArtikel IS NULL",
             [
                 'customerID' => $customerID,
+                'langID' => Shop::getLanguageID(),
                 'status_versandt' => \BESTELLUNG_STATUS_VERSANDT,
                 'status_teilversandt' => \BESTELLUNG_STATUS_TEILVERSANDT,
                 'cancellationTime' => $cancellationTime,
@@ -180,6 +209,11 @@ class RMAService extends AbstractService
             $product->unitPriceNetLocalized = Preise::getLocalizedPriceString($product->unitPriceNet);
             $product->Artikel               = new Artikel();
             // Set ID and do "$product->Artikel->holBilder();" to get only images
+            $property          = new \stdClass();
+            $property->name    = $product->propertyNameLocalized ?? $product->propertyName ?? '';
+            $property->value   = $product->propertyValueLocalized ?? $product->propertyValue ?? '';
+            $product->property = $property;
+
             $product->Artikel->fuelleArtikel((int)$product->id);
 
             return $product;
@@ -223,6 +257,31 @@ class RMAService extends AbstractService
             }
         }
         return $result;
+    }
+
+    /**
+     * @return RMADataTableObject
+     * @since 5.3.0
+     */
+    public function getRMA(int $id): RMADataTableObject
+    {
+        return \array_values((new RMARepository())->getList([
+            'id'         => $id,
+            'customerID' => Frontend::getCustomer()->getID(),
+            'langID'     => Shop::getLanguageID()
+        ]))[0] ?? new RMADataTableObject();
+    }
+
+    /**
+     * @return array
+     * @since 5.3.0
+     */
+    public function getRMAs(): array
+    {
+        return \array_values((new RMARepository())->getList([
+            'customerID' => Frontend::getCustomer()->getID(),
+            'langID' => Shop::getLanguageID()
+        ]));
     }
 
     /**

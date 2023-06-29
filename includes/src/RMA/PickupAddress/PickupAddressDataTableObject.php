@@ -124,26 +124,26 @@ class PickupAddressDataTableObject extends AbstractDataObject implements DataTab
      * @var string[]
      */
     private array $columnMapping = [
-        'id'                => 'id',
-        'customerID'        => 'customerID',
-        'salutation'        => 'salutation',
-        'firstName'         => 'firstName',
-        'lastName'          => 'lastName',
-        'academicTitle'     => 'academicTitle',
-        'companyName'       => 'companyName',
-        'companyAdditional' => 'companyAdditional',
-        'street'            => 'street',
-        'houseNumber'       => 'houseNumber',
-        'addressAdditional' => 'addressAdditional',
-        'postalCode'        => 'postalCode',
-        'city'              => 'city',
-        'state'             => 'state',
-        'country'           => 'country',
-        'phone'             => 'phone',
-        'mobilePhone'       => 'mobilePhone',
-        'fax'               => 'fax',
-        'mail'              => 'mail',
-        'hash'              => 'hash'
+        'addressID'                => 'id',
+        'customerID'               => 'customerID',
+        'addressSalutation'        => 'salutation',
+        'addressFirstName'         => 'firstName',
+        'addressLastName'          => 'lastName',
+        'addressAcademicTitle'     => 'academicTitle',
+        'addressCompanyName'       => 'companyName',
+        'addressCompanyAdditional' => 'companyAdditional',
+        'addressStreet'            => 'street',
+        'addressHouseNumber'       => 'houseNumber',
+        'addressAddressAdditional' => 'addressAdditional',
+        'addressPostalCode'        => 'postalCode',
+        'addressCity'              => 'city',
+        'addressState'             => 'state',
+        'addressCountry'           => 'country',
+        'addressPhone'             => 'phone',
+        'addressMobilePhone'       => 'mobilePhone',
+        'addressFax'               => 'fax',
+        'addressMail'              => 'mail',
+        'addressHash'              => 'hash'
     ];
     
     /**
@@ -274,18 +274,18 @@ class PickupAddressDataTableObject extends AbstractDataObject implements DataTab
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getAcademicTitle(): string
+    public function getAcademicTitle(): ?string
     {
         return $this->academicTitle;
     }
 
     /**
-     * @param string $academicTitle
+     * @param string|null $academicTitle
      * @return $this
      */
-    public function setAcademicTitle(string $academicTitle): self
+    public function setAcademicTitle(?string $academicTitle): self
     {
         $this->academicTitle = $academicTitle;
 
@@ -293,18 +293,18 @@ class PickupAddressDataTableObject extends AbstractDataObject implements DataTab
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getCompanyName(): string
+    public function getCompanyName(): ?string
     {
         return $this->companyName;
     }
 
     /**
-     * @param string $companyName
+     * @param string|null $companyName
      * @return $this
      */
-    public function setCompanyName(string $companyName): self
+    public function setCompanyName(?string $companyName): self
     {
         $this->companyName = $companyName;
 
@@ -312,18 +312,18 @@ class PickupAddressDataTableObject extends AbstractDataObject implements DataTab
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getCompanyAdditional(): string
+    public function getCompanyAdditional(): ?string
     {
         return $this->companyAdditional;
     }
 
     /**
-     * @param string $companyAdditional
+     * @param string|null $companyAdditional
      * @return $this
      */
-    public function setCompanyAdditional(string $companyAdditional): self
+    public function setCompanyAdditional(?string $companyAdditional): self
     {
         $this->companyAdditional = $companyAdditional;
 
@@ -369,18 +369,18 @@ class PickupAddressDataTableObject extends AbstractDataObject implements DataTab
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getAddressAdditional(): string
+    public function getAddressAdditional(): ?string
     {
         return $this->addressAdditional;
     }
 
     /**
-     * @param string $addressAdditional
+     * @param string|null $addressAdditional
      * @return $this
      */
-    public function setAddressAdditional(string $addressAdditional): self
+    public function setAddressAdditional(?string $addressAdditional): self
     {
         $this->addressAdditional = $addressAdditional;
 
@@ -426,18 +426,18 @@ class PickupAddressDataTableObject extends AbstractDataObject implements DataTab
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getState(): string
+    public function getState(): ?string
     {
         return $this->state;
     }
 
     /**
-     * @param string $state
+     * @param string|null $state
      * @return $this
      */
-    public function setState(string $state): self
+    public function setState(?string $state): self
     {
         $this->state = $state;
 
@@ -464,18 +464,18 @@ class PickupAddressDataTableObject extends AbstractDataObject implements DataTab
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getPhone(): string
+    public function getPhone(): ?string
     {
         return $this->phone;
     }
 
     /**
-     * @param string $phone
+     * @param string|null $phone
      * @return $this
      */
-    public function setPhone(string $phone): self
+    public function setPhone(?string $phone): self
     {
         $this->phone = $phone;
 
@@ -483,18 +483,18 @@ class PickupAddressDataTableObject extends AbstractDataObject implements DataTab
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getMobilePhone(): string
+    public function getMobilePhone(): ?string
     {
         return $this->mobilePhone;
     }
 
     /**
-     * @param string $mobilePhone
+     * @param string|null $mobilePhone
      * @return $this
      */
-    public function setMobilePhone(string $mobilePhone): self
+    public function setMobilePhone(?string $mobilePhone): self
     {
         $this->mobilePhone = $mobilePhone;
 
@@ -502,18 +502,18 @@ class PickupAddressDataTableObject extends AbstractDataObject implements DataTab
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getFax(): string
+    public function getFax(): ?string
     {
         return $this->fax;
     }
 
     /**
-     * @param string $fax
+     * @param string|null $fax
      * @return $this
      */
-    public function setFax(string $fax): self
+    public function setFax(?string $fax): self
     {
         $this->fax = $fax;
 
@@ -521,18 +521,18 @@ class PickupAddressDataTableObject extends AbstractDataObject implements DataTab
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getMail(): string
+    public function getMail(): ?string
     {
         return $this->mail;
     }
 
     /**
-     * @param string $mail
+     * @param string|null $mail
      * @return $this
      */
-    public function setMail(string $mail): self
+    public function setMail(?string $mail): self
     {
         $this->mail = $mail;
 

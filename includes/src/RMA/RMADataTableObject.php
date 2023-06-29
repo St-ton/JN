@@ -4,6 +4,8 @@ namespace JTL\RMA;
 
 use JTL\DataObjects\AbstractDataObject;
 use JTL\DataObjects\DataTableObjectInterface;
+use JTL\Helpers\Date;
+use JTL\RMA\PickupAddress\PickupAddressDataTableObject;
 use JTL\RMA\PickupAddress\PickupAddressRepository;
 
 /**
@@ -54,26 +56,26 @@ class RMADataTableObject extends AbstractDataObject implements DataTableObjectIn
     protected ?string $lastModified = null;
 
     /**
-     * @var array|null
+     * @var RMAPosDataTableObject[]|null
      */
     private ?array $positions = null;
 
     /**
-     * @var object|null
+     * @var PickupAddressDataTableObject|null
      */
-    private ?object $pickupAddress = null;
+    private ?PickupAddressDataTableObject $pickupAddress = null;
     
     /**
      * @var string[]
      */
     private array $columnMapping = [
-        'id'                => 'id',
-        'wawiID'            => 'wawiID',
-        'customerID'        => 'customerID',
-        'pickupAddressID'   => 'pickupAddressID',
-        'status'            => 'status',
-        'createDate'        => 'createDate',
-        'lastModified'      => 'lastModified'
+        'rmaID'           => 'id',
+        'wawiID'          => 'wawiID',
+        'customerID'      => 'customerID',
+        'pickupAddressID' => 'pickupAddressID',
+        'rmaStatus'       => 'status',
+        'rmaCreateDate'   => 'createDate',
+        'rmaLastModified' => 'lastModified'
     ];
     
     /**
@@ -122,7 +124,7 @@ class RMADataTableObject extends AbstractDataObject implements DataTableObjectIn
      */
     public function setID(int|string $id): self
     {
-        $this->id = (int)$id;
+        $this->{$this->getPrimaryKey()} = (int)$id;
 
         return $this;
     }
@@ -181,8 +183,7 @@ class RMADataTableObject extends AbstractDataObject implements DataTableObjectIn
     {
         $this->pickupAddressID = (int)$pickupAddressID;
         if ($this->pickupAddressID === 0) {
-            $pickupAddressRepository = new PickupAddressRepository();
-            $this->pickupAddressID   = $pickupAddressRepository->generateID();
+            $this->pickupAddressID = (new PickupAddressRepository())->generateID();
         }
 
         return $this;
@@ -202,17 +203,18 @@ class RMADataTableObject extends AbstractDataObject implements DataTableObjectIn
      */
     public function setStatus(int|string|null $status): self
     {
-        $this->status = (string)$status ?? null;
+        $this->status = ($status !== null) ? \langRMAStatus((int)$status) : null;
 
         return $this;
     }
 
     /**
+     * @param bool $localize
      * @return string
      */
-    public function getCreateDate(): string
+    public function getCreateDate(bool $localize = true): string
     {
-        return $this->createDate;
+        return ($localize) ? Date::localize($this->createDate) : $this->createDate;
     }
 
     /**
@@ -246,7 +248,7 @@ class RMADataTableObject extends AbstractDataObject implements DataTableObjectIn
     }
 
     /**
-     * @return array
+     * @return AbstractDataObject[]
      */
     public function getPositions(): array
     {
@@ -254,7 +256,7 @@ class RMADataTableObject extends AbstractDataObject implements DataTableObjectIn
     }
 
     /**
-     * @param array $positions
+     * @param RMAPosDataTableObject[] $positions
      * @return $this
      */
     public function setPositions(array $positions): self
@@ -265,21 +267,49 @@ class RMADataTableObject extends AbstractDataObject implements DataTableObjectIn
     }
 
     /**
-     * @return object
+     * @param RMAPosDataTableObject $position
+     * @return $this
      */
-    public function getPickupAddress(): object
+    public function addPosition(RMAPosDataTableObject $position): self
+    {
+        $this->positions[$position->getID()] = $position;
+
+        return $this;
+    }
+
+    /**
+     * @return PickupAddressDataTableObject|null
+     */
+    public function getPickupAddress(): ?PickupAddressDataTableObject
     {
         return $this->pickupAddress;
     }
 
     /**
-     * @param object $pickupAddress
+     * @param PickupAddressDataTableObject $pickupAddress
      * @return $this
      */
-    public function setPickupAddress(object $pickupAddress): self
+    public function setPickupAddress(PickupAddressDataTableObject $pickupAddress): self
     {
         $this->pickupAddress = $pickupAddress;
 
         return $this;
+    }
+
+    /**
+     * @param int $shippingNotePosID
+     * @return RMAPosDataTableObject
+     */
+    public function getPos(int $shippingNotePosID): RMAPosDataTableObject
+    {
+        if ($shippingNotePosID === 0 || $this->positions === null) {
+            return new RMAPosDataTableObject();
+        }
+        foreach ($this->positions as $position) {
+            if ($position->getShippingNotePosID() === $shippingNotePosID) {
+                return $position;
+            }
+        }
+        return new RMAPosDataTableObject();
     }
 }

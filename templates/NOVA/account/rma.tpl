@@ -38,6 +38,7 @@
                                     <tbody>
                                     {block name='account-rmas-returnable-items'}
                                         {foreach $returnableProducts as $product}
+                                            {assign var=rmaPos value=$rma->getPos($product->shippingNotePosID)}
                                             <tr>
                                                 <td class="d-none">{$product->orderID}</td>
                                                 <td class="product">
@@ -58,7 +59,7 @@
                                                                                class='custom-control-input ra-switch'
                                                                                id="switch-{$product->shippingNotePosID}"
                                                                                name="returnItem"
-                                                                               {if false}checked{/if}
+                                                                               {if $rmaPos->getID() > 0}checked{/if}
                                                                                aria-label="Lorem ipsum">
                                                                         <label class="custom-control-label"
                                                                                for="switch-{$product->shippingNotePosID}">
@@ -67,15 +68,20 @@
                                                                 </div>
                                                                 <small class="text-muted-util d-block">
                                                                     {lang key='orderNo' section='login'}: {$product->orderID}<br>
-                                                                    {lang key='productNo'}: {link href=$product->orderID}
+                                                                    {lang key='productNo'}: {link
+                                                                        href=$product->Artikel->cURLFull target="_blank"}
                                                                         {$product->productNR}
                                                                     {/link}<br>
+                                                                    {if $product->property->name !== ''
+                                                                        && $product->property->value !== ''}
+                                                                        {$product->property->name}: {$product->property->value}<br>
+                                                                    {/if}
                                                                     {$product->quantity} {$product->unit|default:''} x {$product->unitPriceNetLocalized}
                                                                 </small>
                                                             </div>
                                                         </div>
 
-                                                        <div class="d-none rmaFormPositions flex-wrap mt-2 w-100">
+                                                        <div class="{if $rmaPos->getID() > 0}d-flex {else}d-none {/if}rmaFormPositions flex-wrap mt-2 w-100">
                                                             <div class="qty-wrapper max-w-sm mr-2 mb-2">
                                                                 {inputgroup id="quantity-grp{$product->shippingNotePosID}" class="form-counter choose_quantity"}
                                                                 {inputgroupprepend}
@@ -92,7 +98,7 @@
                                                                 max="{$product->quantity}"
                                                                 id="qty-{$product->shippingNotePosID}" class="quantity" name="quantity"
                                                                 aria=["label"=>"{lang key='quantity'}"]
-                                                                value=$product->quantity
+                                                                value="{if $rmaPos->getID() > 0}{$rmaPos->getQuantity()}{else}{$product->quantity}{/if}"
                                                                 data=[
                                                                     "snposid" => {$product->shippingNotePosID},
                                                                     "decimals" => {$product->Artikel->fAbnahmeintervall}
@@ -113,9 +119,9 @@
                                                                 name="reason"
                                                                 data=["snposid" => "{$product->shippingNotePosID}"]
                                                                 class="custom-select form-control"}
-                                                                    <option value="-1" selected>{lang key='rma_comment_choose' section='rma'}</option>
+                                                                    <option value="-1"{if $rmaPos->getID() === 0} selected{/if}>{lang key='rma_comment_choose' section='rma'}</option>
                                                                     {foreach $reasons as $reason}
-                                                                        <option value="{$reason->reasonID}">{$reason->title}</option>
+                                                                        <option value="{$reason->reasonID}"{if $rmaPos->getReasonID() === $reason->reasonID} selected{/if}>{$reason->title}</option>
                                                                     {/foreach}
                                                                 {/select}
                                                             </div>
@@ -125,7 +131,11 @@
                                                                 data=["snposid" => "{$product->shippingNotePosID}"]
                                                                 rows=1
                                                                 maxlength="255"
-                                                                placeholder="{lang key='comment' section='productDetails'}"}{/textarea}
+                                                                placeholder="{lang key='comment' section='productDetails'}"}
+                                                                    {if $rmaPos->getComment() !== null}
+                                                                        {$rmaPos->getComment()}
+                                                                    {/if}
+                                                                {/textarea}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -209,6 +219,8 @@
     {/block}
     {block name='account-rma-form-script'}
         {inline_script}<script>
+            var rmaID = parseInt("{$rma->getID()}");
+
             function initDataTable(tableID, rows = 5) {
                 let table = $(tableID);
                 return table.DataTable( {
@@ -310,10 +322,12 @@
                 setListenerForQuantities();
 
                 $('#backToStep1').on('click', function () {
+                    /*
                     let rmaID = parseInt($('#rma-summary').attr('data-rmaID')) || 0
                     if (rmaID === 0) {
                         return;
                     }
+
                     $.evo.io().call(
                         'deleteRMA',
                         [rmaID],
@@ -330,12 +344,14 @@
                             }
                         }
                     );
+                     */
 
-                    $('.rma-step-1').addClass('d-none');
-                    $('.rma-step-2').removeClass('d-none');
+                    $('.rma-step-1').removeClass('d-none');
+                    $('.rma-step-2').addClass('d-none');
                 });
 
                 $('#rma').on('submit', function (e) {
+                    e.preventDefault();
                     let formData = $(this).serializeArray();
                     let inputs = [];
                     table.rows().every(function () {
@@ -365,6 +381,7 @@
                     }
                     formData = formData.concat(inputs);
 
+                    /*
                     $.evo.io().call(
                         'createRMA',
                         [formData],
@@ -384,7 +401,9 @@
                             }
                         }
                     );
-                    e.preventDefault();
+                     */
+                    $('.rma-step-1').addClass('d-none');
+                    $('.rma-step-2').removeClass('d-none');
                 });
             });
         </script>{/inline_script}

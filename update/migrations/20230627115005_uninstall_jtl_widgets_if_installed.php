@@ -10,7 +10,9 @@
 use JTL\Minify\MinifyService;
 use JTL\Plugin\Admin\Installation\Uninstaller;
 use JTL\Cache\JTLCache;
+use JTL\Plugin\Helper;
 use JTL\Plugin\InstallCode;
+use JTL\Plugin\State;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
 
@@ -20,49 +22,17 @@ use JTL\Update\Migration;
 class Migration_20230627115005 extends Migration implements IMigration
 {
     protected $author = 'sl';
-    protected $description = 'Uninstall jtl widgets if installed';
+    protected $description = 'deactivate jtl widgets plugin if installed';
 
     /**
      * @inheritdoc
      */
     public function up()
     {
-        /** @var JTL\Cache\JTLCache $cache */
-        $cache       = new JTLCache([]);
-        $uninstaller = new Uninstaller($this->db, $cache);
-        $plugin      = $this->db->select('tplugin', 'cPluginID', 'jtl_widgets');
-        $ok          = false;
-        if ($plugin !== null && $plugin->kPlugin > 0) {
-            switch ($uninstaller->uninstall((int)$plugin->kPlugin, false, null, true, true)) {
-                case InstallCode::WRONG_PARAM:
-                    $this->errorMessage = \__('errorAtLeastOnePlugin');
-                    break;
-                case InstallCode::SQL_ERROR:
-                    $this->errorMessage = \__('errorPluginDeleteSQL');
-                    break;
-                case InstallCode::NO_PLUGIN_FOUND:
-                    $this->errorMessage = \__('errorPluginNotFound');
-                    break;
-                case InstallCode::OK:
-                default:
-                    $minifyService = new MinifyService();
-                    $minifyService->flushCache();
-                break;
-            }
+        $widgetPlugin = Helper::getPluginById('jtl_widgets');
+        if ($widgetPlugin !== null) {
+            $widgetPlugin->selfDestruct(State::DISABLED, $this->getDB());
         }
-        //stackoverflow
-        $dir   = PFAD_ROOT . 'plugins/jtl_widgets';
-        $it    = new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS);
-        $files = new RecursiveIteratorIterator($it,
-            RecursiveIteratorIterator::CHILD_FIRST);
-        foreach ($files as $file) {
-            if ($file->isDir()) {
-                rmdir($file->getRealPath());
-            } else {
-                unlink($file->getRealPath());
-            }
-        }
-        rmdir($dir);
     }
 
     /**

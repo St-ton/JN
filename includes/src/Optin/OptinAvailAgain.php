@@ -102,7 +102,7 @@ class OptinAvailAgain extends OptinBase implements OptinInterface
     public function activateOptin(): void
     {
         $data                  = new stdClass();
-        $data->kSprache        = Shop::getLanguageID();
+        $data->kSprache        = $this->refData->getLanguageID();
         $data->cIP             = Request::getRealIP();
         $data->dErstellt       = 'NOW()';
         $data->nStatus         = 0;

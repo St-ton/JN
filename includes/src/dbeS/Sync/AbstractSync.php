@@ -18,6 +18,7 @@ use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
+use JTL\Mail\Template\TemplateFactory;
 use JTL\Optin\Optin;
 use JTL\Optin\OptinAvailAgain;
 use JTL\Redirect;
@@ -220,8 +221,9 @@ abstract class AbstractSync
             $sep            = !\str_contains($product->cURL, '.php') ? '?' : '&';
             $product->cURL .= $sep . $campaign->cParameter . '=' . $campaign->cWert;
         }
-        $mailer = Shop::Container()->get(Mailer::class);
-        $upd    = (object)[
+        $factory = new TemplateFactory($this->db);
+        $mailer  = Shop::Container()->get(Mailer::class);
+        $upd     = (object)[
             'nStatus'           => 1,
             'dBenachrichtigtAm' => 'NOW()',
             'cAbgeholt'         => 'N'
@@ -260,10 +262,12 @@ abstract class AbstractSync
                     $tplData->mail                             = $tplMail;
 
                     $mail = new Mail();
+                    $mail = $mail->createFromTemplateID(\MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR, $tplData, $factory);
                     $mail->setLanguage($language);
+                    $mail->setCustomerGroupID($customerGroupID);
                     $mail->setToMail($tplMail->toEmail);
                     $mail->setToName($tplMail->toName);
-                    $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR, $tplData));
+                    $mailer->send($mail);
                     $this->db->update(
                         'tverfuegbarkeitsbenachrichtigung',
                         'kVerfuegbarkeitsbenachrichtigung',

@@ -130,6 +130,10 @@ class OptinRefData implements \Serializable
         foreach ($data as $key => $value) {
             $this->$key = $value;
         }
+        // items pre 5.3.0 will not have a serialized customer group id
+        if ($this->customerGroupID === null) {
+            $this->customerGroupID = 0;
+        }
     }
 
     /**

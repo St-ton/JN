@@ -133,6 +133,23 @@ final class Shop extends ShopBC
     ];
 
     /**
+     * @var array
+     */
+    public static array $forceHost = [
+        [
+            'host'      => '',
+            'scheme'    => '',
+            'locale'    => '',
+            'iso'       => '',
+            'id'        => 0,
+            'default'   => 'N',
+            'prefix'    => '/',
+            'currency'  => false,
+            'localized' => false
+        ]
+    ];
+
+    /**
      *
      */
     private function __construct()
@@ -611,6 +628,9 @@ final class Shop extends ShopBC
         if ($customerLang > 0 && $customerLang !== $languageID) {
             $customer->setLanguageID($languageID);
             $customer->updateInDB();
+        }
+        if ($languageID !== self::$kSprache) {
+            self::Container()->getLinkService()->updateDefaultLanguageData($languageID, $iso);
         }
         self::setLanguage($languageID, $iso);
     }

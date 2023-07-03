@@ -65,7 +65,7 @@ class CouponsController extends AbstractBackendController
                             WHERE `table_schema` = :sma
                                 AND `table_name` = :tn',
                         ['sma' => DB_NAME, 'tn' => 'tkupon']
-                    )->map(static function (stdClass $e): stdClass {
+                    )->map(static function (stdClass $e): string {
                         return $e->name;
                     })->toArray();
 

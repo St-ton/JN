@@ -542,6 +542,7 @@ class DemoDataInstaller
             'SELECT MAX(kEigenschaftKombi) AS cnt FROM teigenschaftkombiwert',
             'cnt'
         );
+
         if ($categories === 0) {
             return $this;
         }
@@ -557,12 +558,17 @@ class DemoDataInstaller
         $limit      = $this->config['products'];
         $index      = 0;
         $taxRate    = 19.00;
-        $variations = [$this->faker->unique()->colorName];
+        $variations = [];
         $colorLimit = rand(1, 10);
 
-        for ($i = 0; $i <= $colorLimit; ++$index) {
-            $variations[] = $this->faker->unique()->colorName;
+        for ($i = 0; $i <= $colorLimit; ++$i) {
+            try {
+                $variations[] = $this->faker->unique()->colorName;
+            } catch (OverflowException) {
+                $variations[] = $this->faker->unique(true)->colorName . '_' . $i;
+            }
         }
+
         $variation             = (\count($variations) > 0 && $limit > count($variations))
             ? $limit - count($variations) : 0;
         $propertyID            = 0;
@@ -587,13 +593,13 @@ class DemoDataInstaller
                 $propertyValue->nSort            = $i - $variation;
                 $propertyValue->fLagerbestand    = 0;
                 $propertyValue->fPackeinheit     = 0.0000;
-                $propertyValueID                 = $this->db->insert('teigenschaftwert', $propertyValue);
+                $this->db->insert('teigenschaftwert', $propertyValue);
 
-                $propertyValueLang = new stdClass();
+                $propertyValueLang                   = new stdClass();
+                $propertyValueLang->kEigenschaftWert = $propertyValue->kEigenschaftwert;
+                $propertyValueLang->cName            = $propertyValue->cName;
                 foreach ($this->languages as $language) {
-                    $propertyValueLang->kEigenschaftWert = $propertyValueID;
-                    $propertyValueLang->kSprache         = $language->getId();
-                    $propertyValueLang->cName            = $propertyValue->cName;
+                    $propertyValueLang->kSprache = $language->getId();
                     $this->db->insert('teigenschaftwertsprache', $propertyValueLang);
                 }
                 
@@ -624,14 +630,15 @@ class DemoDataInstaller
                 $property               = new stdClass();
                 $property->kEigenschaft = $maxPropertyID;
                 $property->kArtikel     = $maxPk + $i;
-                $property->cName        = (Shop::getLanguage(true) === 'ger') ? 'Farbe' : 'Color';
+                $property->cName        = Shop::getLanguage(true) === 'ger' ? 'Farbe' : 'Color';
                 $property->cWaehlbar    = 'Y';
                 $property->cTyp         = 'SELECTBOX';
                 $property->nSort        = 0;
-                $propertyID             = $this->db->insert('teigenschaft', $property);
+                $this->db->insert('teigenschaft', $property);
                 
                 $propertyLang               = new stdClass();
-                $propertyLang->kEigenschaft = $propertyID;
+                $propertyLang->kEigenschaft = $maxPropertyID;
+                // ToDo: inserts also for default language. Could this lead to errors?
                 foreach ($this->languages as $language) {
                     $propertyLang->kSprache = $language->getId();
                     $propertyLang->cName    = 'Color';

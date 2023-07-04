@@ -52,8 +52,8 @@ class PageController extends AbstractController
      */
     public function notFoundResponse(
         ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty
+        array                  $args,
+        JTLSmarty              $smarty
     ): ResponseInterface {
         $this->smarty = $smarty;
         if ($this->state->languageID === 0) {
@@ -288,10 +288,10 @@ class PageController extends AbstractController
      * @return ResponseInterface
      */
     protected function delegateResponse(
-        string $class,
+        string                 $class,
         ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty
+        array                  $args,
+        JTLSmarty              $smarty
     ): ResponseInterface {
         $controller = new $class(
             $this->db,

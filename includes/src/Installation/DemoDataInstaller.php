@@ -587,7 +587,15 @@ class DemoDataInstaller
                 $propertyValue->nSort            = $i - $variation;
                 $propertyValue->fLagerbestand    = 0;
                 $propertyValue->fPackeinheit     = 0.0000;
-                $this->db->insert('teigenschaftwert', $propertyValue);
+                $propertyValueID                 = $this->db->insert('teigenschaftwert', $propertyValue);
+
+                $propertyValueLang = new stdClass();
+                foreach ($this->languages as $language) {
+                    $propertyValueLang->kEigenschaftWert = $propertyValueID;
+                    $propertyValueLang->kSprache         = $language->getId();
+                    $propertyValueLang->cName            = $propertyValue->cName;
+                    $this->db->insert('teigenschaftwertsprache', $propertyValueLang);
+                }
                 
                 $propertyCombinationID                   = $maxPropCombValID + ($i - $variation);
                 $propCombinationValue                    = new stdClass();

@@ -18,7 +18,7 @@ class Migration_20190322135100 extends Migration implements IMigration
     protected $description = 'Add lang var config';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -28,7 +28,7 @@ class Migration_20190322135100 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

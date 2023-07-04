@@ -61,6 +61,7 @@ class NewsletterController extends PageController
                     ->setLastName($post['cNachname'] ?? '')
                     ->setEmail($post['cEmail'] ?? '')
                     ->setCustomerID((int)($post['kKunde'] ?? 0))
+                    ->setCustomerGroupID($customer->getGroupID())
                     ->setLanguageID($this->languageID)
                     ->setRealIP(Request::getRealIP());
                 try {

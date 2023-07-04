@@ -19,7 +19,7 @@ class Migration_20230502131755 extends Migration implements IMigration
     protected $description = 'Add new language variable called less used mainly for bootstrap collapse elements.';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      * @throws Exception
      */
     public function up()
@@ -29,7 +29,7 @@ class Migration_20230502131755 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

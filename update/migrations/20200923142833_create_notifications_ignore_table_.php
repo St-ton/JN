@@ -18,7 +18,7 @@ class Migration_20200923142833 extends Migration implements IMigration
     protected $description = 'Create notifications ignore table.';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -33,7 +33,7 @@ class Migration_20200923142833 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

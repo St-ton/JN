@@ -43,7 +43,7 @@ class DeliveryAddressTemplate extends Adresse
      * @param DbInterface $db
      * @param int         $id
      */
-    public function __construct(private DbInterface $db, int $id = 0)
+    public function __construct(private readonly DbInterface $db, int $id = 0)
     {
         if ($id > 0) {
             $this->load($id);

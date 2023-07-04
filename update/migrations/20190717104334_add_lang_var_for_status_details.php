@@ -18,7 +18,7 @@ class Migration_20190717104334 extends Migration implements IMigration
     protected $description = 'Add lang var for status details';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -39,7 +39,7 @@ class Migration_20190717104334 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

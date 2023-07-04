@@ -270,7 +270,7 @@ class ActivationController extends AbstractBackendController
     }
 
     /**
-     * @param string   $sql
+     * @param string    $sql
      * @param SqlObject $searchSQL
      * @return stdClass[]
      * @former gibBewertungFreischalten()

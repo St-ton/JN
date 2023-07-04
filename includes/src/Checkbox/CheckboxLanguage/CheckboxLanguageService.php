@@ -4,7 +4,6 @@ namespace JTL\Checkbox\CheckboxLanguage;
 
 use JTL\Abstracts\AbstractService;
 use JTL\DataObjects\AbstractDataObject;
-use JTL\Interfaces\RepositoryInterface;
 
 /**
  * Class CheckboxLanguageService
@@ -13,13 +12,34 @@ use JTL\Interfaces\RepositoryInterface;
 class CheckboxLanguageService extends AbstractService
 {
     /**
+     * @var CheckboxLanguageRepository
+     */
+    protected CheckboxLanguageRepository $repository;
+
+    /**
+     * @return void
+     */
+    protected function initDependencies(): void
+    {
+        $this->repository = new CheckboxLanguageRepository();
+    }
+
+    /**
+     * @return CheckboxLanguageRepository
+     */
+    public function getRepository(): CheckboxLanguageRepository
+    {
+        return $this->repository;
+    }
+
+    /**
      * @param array $filters
      * @return array
      */
     public function getList(array $filters): array
     {
         $languageList      = [];
-        $checkboxLanguages = $this->repository->getList($filters);
+        $checkboxLanguages = $this->getRepository()->getList($filters);
         foreach ($checkboxLanguages as $checkboxLanguage) {
             $language       = new CheckboxLanguageDataTableObject();
             $languageList[] = $language->hydrateWithObject($checkboxLanguage);
@@ -48,19 +68,6 @@ class CheckboxLanguageService extends AbstractService
         }
         $updateDTO->setCheckboxLanguageID($language->getCheckboxLanguageID());
 
-        return $this->repository->update($updateDTO);
-    }
-
-    protected function initRepository(): void
-    {
-        $this->repository = new CheckboxLanguageRepository();
-    }
-
-    /**
-     * @return RepositoryInterface
-     */
-    public function getRepository(): RepositoryInterface
-    {
-        return $this->repository;
+        return $this->getRepository()->update($updateDTO);
     }
 }

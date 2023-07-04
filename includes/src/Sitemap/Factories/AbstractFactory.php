@@ -19,9 +19,9 @@ abstract class AbstractFactory implements FactoryInterface
      */
     public function __construct(
         protected DbInterface $db,
-        protected array $config,
-        protected string $baseURL,
-        protected string $baseImageURL
+        protected array       $config,
+        protected string      $baseURL,
+        protected string      $baseImageURL
     ) {
     }
 

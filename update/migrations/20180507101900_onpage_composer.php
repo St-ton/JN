@@ -15,7 +15,7 @@ class Migration_20180507101900 extends Migration implements IMigration
     protected $description = 'Add OnPage Composer tables';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -110,7 +110,7 @@ class Migration_20180507101900 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

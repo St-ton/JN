@@ -18,7 +18,7 @@ class Migration_20200309145200 extends Migration implements IMigration
     protected $description = 'Add lang var coupon success';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -27,7 +27,7 @@ class Migration_20200309145200 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

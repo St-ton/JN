@@ -18,7 +18,7 @@ class Migration_20170509165900 extends Migration implements IMigration
     protected $description = 'Add available column to redirect table';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -29,7 +29,7 @@ class Migration_20170509165900 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

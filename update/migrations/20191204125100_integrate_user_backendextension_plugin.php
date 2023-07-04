@@ -24,7 +24,7 @@ class Migration_20191204125100 extends Migration implements IMigration
     protected $description = 'Integrate user backendextension plugin in shop core';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -54,7 +54,7 @@ class Migration_20191204125100 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

@@ -18,7 +18,7 @@ class Migration_20170127165900 extends Migration implements IMigration
     protected $description = 'Add language var "show all reviews" to reset review filter';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -27,7 +27,7 @@ class Migration_20170127165900 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

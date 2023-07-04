@@ -19,10 +19,10 @@ abstract class AbstractItem implements ItemInterface
      * @param Model|null            $model
      */
     public function __construct(
-        protected DbInterface $db,
-        protected SimpleXMLElement $xml,
+        protected DbInterface       $db,
+        protected SimpleXMLElement  $xml,
         protected ?SimpleXMLElement $parentXml,
-        protected ?Model $model = null
+        protected ?Model            $model = null
     ) {
     }
 
@@ -34,7 +34,7 @@ abstract class AbstractItem implements ItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getDB(): DbInterface
     {
@@ -42,7 +42,7 @@ abstract class AbstractItem implements ItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setDB(DbInterface $db): void
     {
@@ -50,7 +50,7 @@ abstract class AbstractItem implements ItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getModel(): ?Model
     {
@@ -58,7 +58,7 @@ abstract class AbstractItem implements ItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setModel(Model $model): void
     {
@@ -66,7 +66,7 @@ abstract class AbstractItem implements ItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getXML(): SimpleXMLElement
     {
@@ -74,7 +74,7 @@ abstract class AbstractItem implements ItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setXML(SimpleXMLElement $xml): void
     {

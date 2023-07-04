@@ -294,11 +294,13 @@ ifndef('SAFE_MODE', $GLOBALS['plgSafeMode'] ?? file_exists(SAFE_MODE_LOCK));
 
 ifndef('TRACK_VISITORS', true);
 
+ifndef('COMPRESS_DESCRIPTIONS', false);
+ifndef('COMPRESSION_LEVEL', -1);
+
 ifndef('DELIVERY_TIME_DAYS_TO_WEEKS_LIMIT', 15);
 ifndef('DELIVERY_TIME_DAYS_TO_MONTHS_LIMIT', 61);
 ifndef('DELIVERY_TIME_DAYS_PER_WEEK', 7);
 ifndef('DELIVERY_TIME_DAYS_PER_MONTH', 30);
-
 
 const ADMINGROUP                          = 1;
 const MAX_LOGIN_ATTEMPTS                  = 3;
@@ -309,7 +311,7 @@ const SHIPPING_CLASS_MAX_VALIDATION_COUNT = 10;
  * @param string $constant
  * @param mixed  $value
  */
-function ifndef(string $constant, $value)
+function ifndef(string $constant, mixed $value): void
 {
     defined($constant) || define($constant, $value);
 }

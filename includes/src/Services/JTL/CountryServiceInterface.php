@@ -16,7 +16,6 @@ interface CountryServiceInterface
      */
     public function init(): void;
 
-
     /**
      * @return Collection
      */
@@ -30,7 +29,7 @@ interface CountryServiceInterface
 
     /**
      * @param array $ISOToFilter
-     * @param bool $getAllIfEmpty
+     * @param bool  $getAllIfEmpty
      * @return Collection
      */
     public function getFilteredCountryList(array $ISOToFilter, bool $getAllIfEmpty = false): Collection;

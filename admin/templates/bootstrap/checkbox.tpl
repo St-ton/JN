@@ -82,8 +82,10 @@
                                                 <tr>
                                                     <td>
                                                         <div class="custom-control custom-checkbox">
-                                                            <input class="custom-control-input" name="kCheckBox[]" id="cb-check-{$oCheckBoxUebersicht@index}" type="checkbox" value="{$oCheckBoxUebersicht->kCheckBox}" />
-                                                            <label class="custom-control-label" for="cb-check-{$oCheckBoxUebersicht@index}"></label>
+                                                            {if $oCheckBoxUebersicht->nInternal === 0}
+                                                                <input class="custom-control-input" name="kCheckBox[]" id="cb-check-{$oCheckBoxUebersicht@index}" type="checkbox" value="{$oCheckBoxUebersicht->kCheckBox}" />
+                                                                <label class="custom-control-label" for="cb-check-{$oCheckBoxUebersicht@index}"></label>
+                                                            {/if}
                                                         </div>
                                                     </td>
                                                     <td><label for="cb-check-{$oCheckBoxUebersicht@index}">{$oCheckBoxUebersicht->cName}</label></td>
@@ -174,16 +176,18 @@
                         <input name="erstellen" type="hidden" value="1" />
                         <input name="tab" type="hidden" value="erstellen" />
                         {if isset($oCheckBox->kCheckBox) && $oCheckBox->kCheckBox > 0}
+                            <input name="nInternal" type="hidden" value= "{$oCheckBox->nInternal}" />
                             <input name="kCheckBox" type="hidden" value="{$oCheckBox->kCheckBox}" />
                         {elseif isset($kCheckBox) && $kCheckBox > 0}
                             <input name="kCheckBox" type="hidden" value="{$kCheckBox}" />
+                            <input name="nInternal" type="hidden" value= "{$nInternal}" />
                         {/if}
 
                         <div class="settings">
                             <div class="form-group form-row align-items-center{if isset($cPlausi_arr.cName)} form-error{/if}">
                                 <label class="col col-sm-4 col-form-label text-sm-right" for="cName">{__('name')}</label>
                                 <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                    <input id="cName" name="cName" type="text" placeholder="Name" class="form-control" value="{if isset($cPost_arr.cName)}{$cPost_arr.cName}{elseif isset($oCheckBox->cName)}{$oCheckBox->cName}{/if}">
+                                    <input id="cName" name="cName" type="text" placeholder="Name" class="form-control" value="{if isset($cPost_arr.cName)}{$cPost_arr.cName}{elseif isset($oCheckBox->cName)}{$oCheckBox->cName}{/if}" {if isset($oCheckBox->nInternal) &&  $oCheckBox->nInternal == 1}readonly{/if}>
                                 </div>
                                 <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('hintCheckboxName')}</div>
                             </div>
@@ -221,19 +225,19 @@
                                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                         <div class="form-row align-items-center">
                                             <div class="col-xs-3 group-radio">
-                                                <label>
-                                                <input id="nLink" name="nLink" type="radio" class="" value="-1" onClick="aenderAnzeigeLinks(false);"{if (!isset($cPlausi_arr.kLink) && (!isset($oCheckBox->kLink) || !$oCheckBox->kLink)) || isset($cPlausi_arr.kLink) && $cPost_arr.nLink == -1} checked="checked"{/if} />
+                                                <label {if isset($oCheckBox->nInternal) &&  $oCheckBox->nInternal == 1}disabled{/if}>
+                                                <input id="nLink" name="nLink" type="radio" class="" value="-1" onClick="aenderAnzeigeLinks(false);"{if (!isset($cPlausi_arr.kLink) && (!isset($oCheckBox->kLink) || !$oCheckBox->kLink)) || isset($cPlausi_arr.kLink) && $cPost_arr.nLink == -1} checked="checked"{/if} {if isset($oCheckBox->nInternal) &&  $oCheckBox->nInternal == 1}disabled{/if} />
                                                     {__('noLink')}
                                                 </label>
                                             </div>
                                             <div class="col-xs-3 group-radio">
-                                                <label>
-                                                    <input id="nLink2" name="nLink" type="radio" class="form-control2" value="1" onClick="aenderAnzeigeLinks(true);"{if (isset($cPost_arr.nLink) && $cPost_arr.nLink == 1) || (isset($oCheckBox->kLink) && $oCheckBox->kLink > 0)} checked="checked"{/if} />
+                                                <label {if isset($oCheckBox->nInternal) &&  $oCheckBox->nInternal == 1}disabled{/if}>
+                                                    <input id="nLink2" name="nLink" type="radio" class="form-control2" value="1" onClick="aenderAnzeigeLinks(true);"{if (isset($cPost_arr.nLink) && $cPost_arr.nLink == 1) || (isset($oCheckBox->kLink) && $oCheckBox->kLink > 0)} checked="checked"{/if} {if isset($oCheckBox->nInternal) &&  $oCheckBox->nInternal == 1}disabled{/if} />
                                                     {__('internalLink')}
                                                 </label>
                                             </div>
                                             <div id="InterneLinks" style="display: none;">
-                                                <select name="kLink" class="custom-select">
+                                                <select name="kLink" class="custom-select" {if isset($oCheckBox->nInternal) &&  $oCheckBox->nInternal == 1}disabled{/if}>
                                                     {foreach $oLink_arr as $oLink}
                                                         <option value="{$oLink->kLink}"{if (isset($cPost_arr.kLink) && $cPost_arr.kLink == $oLink->kLink) || (isset($oCheckBox->kLink) && $oCheckBox->kLink == $oLink->kLink)} selected{/if}>{$oLink->cName}</option>
                                                     {/foreach}
@@ -244,7 +248,6 @@
                                     <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('hintInternalPage')}</div>
                                 </div>
                             {/if}
-
                             <div class="form-group form-row align-items-center{if isset($cPlausi_arr.cAnzeigeOrt)} form-error{/if}">
                                 <label class="col col-sm-4 col-form-label text-sm-right" for="cAnzeigeOrt">{__('checkboxLocation')}:</label>
                                 <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
@@ -254,7 +257,7 @@
                                             multiple="multiple"
                                             onClick="checkFunctionDependency();"
                                             data-selected-text-format="count > 2"
-                                            data-size="7">
+                                            data-size="7" {if isset($oCheckBox->nInternal) &&  $oCheckBox->nInternal == 1} disabled{/if} required>
                                         {foreach $cAnzeigeOrt_arr as $key => $cAnzeigeOrt}
                                             {assign var=bAOSelect value=false}
                                             {if !isset($cPost_arr.cAnzeigeOrt) && !isset($cPlausi_arr.cAnzeigeOrt) && !isset($oCheckBox->kAnzeigeOrt_arr) && $key == $smarty.const.CHECKBOX_ORT_REGISTRIERUNG}
@@ -282,7 +285,7 @@
                             <div class="form-group form-row align-items-center">
                                 <label class="col col-sm-4 col-form-label text-sm-right" for="nPflicht">{__('requiredEntry')}:</label>
                                 <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                    <select id="nPflicht" name="nPflicht" class="custom-select">
+                                    <select id="nPflicht" name="nPflicht" class="custom-select" {if isset($oCheckBox->nInternal) &&  $oCheckBox->nInternal == 1}disabled{/if}>
                                         <option value="Y"{if (isset($cPost_arr.nPflicht) && $cPost_arr.nPflicht === 'Y') || (isset($oCheckBox->nPflicht) && $oCheckBox->nPflicht == 1)} selected{/if}>
                                             {__('yes')}
                                         </option>
@@ -293,11 +296,10 @@
                                 </div>
                                 <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('hintCheckCheckboxActivation')}</div>
                             </div>
-
                             <div class="form-group form-row align-items-center">
                                 <label class="col col-sm-4 col-form-label text-sm-right" for="nAktiv">{__('active')}:</label>
                                 <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                    <select id="nAktiv" name="nAktiv" class="custom-select">
+                                    <select id="nAktiv" name="nAktiv" class="custom-select" {if isset($oCheckBox->nInternal) &&  $oCheckBox->nInternal == 1}disabled{/if}>
                                         <option value="Y"{if (isset($cPost_arr.nAktiv) && $cPost_arr.nAktiv === 'Y') || (isset($oCheckBox->nAktiv) && $oCheckBox->nAktiv == 1)} selected{/if}>
                                             {__('yes')}
                                         </option>
@@ -312,7 +314,7 @@
                             <div class="form-group form-row align-items-center">
                                 <label class="col col-sm-4 col-form-label text-sm-right" for="nLogging">{__('checkboxLogging')}:</label>
                                 <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                    <select id="nLogging" name="nLogging" class="custom-select">
+                                    <select id="nLogging" name="nLogging" class="custom-select" {if isset($oCheckBox->nInternal) &&  $oCheckBox->nInternal == 1}disabled{/if}>
                                         <option value="Y"{if (isset($cPost_arr.nLogging) && $cPost_arr.nLogging === 'Y') || (isset($oCheckBox->nLogging) && $oCheckBox->nLogging == 1)} selected{/if}>
                                             {__('yes')}
                                         </option>
@@ -336,7 +338,7 @@
                                 <div class="form-group form-row align-items-center">
                                     <label class="col col-sm-4 col-form-label text-sm-right" for="kCheckBoxFunktion">{__('specialShopFunction')}:</label>
                                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                        <select class="custom-select" id="kCheckBoxFunktion" name="kCheckBoxFunktion" onclick="checkFunctionDependency();">
+                                        <select class="custom-select" id="kCheckBoxFunktion" name="kCheckBoxFunktion" onclick="checkFunctionDependency();" {if isset($oCheckBox->nInternal) &&  $oCheckBox->nInternal == 1}disabled{/if}>
                                             <option value="0"></option>
                                             {foreach $oCheckBoxFunktion_arr as $oCheckBoxFunktion}
                                                 <option value="{$oCheckBoxFunktion->kCheckBoxFunktion}"{if (isset($cPost_arr.kCheckBoxFunktion) && $cPost_arr.kCheckBoxFunktion == $oCheckBoxFunktion->kCheckBoxFunktion) || (isset($oCheckBox->kCheckBoxFunktion) && $oCheckBox->kCheckBoxFunktion == $oCheckBoxFunktion->kCheckBoxFunktion)} selected{/if}>{$oCheckBoxFunktion->cName}</option>
@@ -357,7 +359,7 @@
                                                 multiple="multiple"
                                                 data-selected-text-format="count > 2"
                                                 data-size="7"
-                                                data-actions-box="true">
+                                                data-actions-box="true" required>
                                         {foreach $customerGroups as $customerGroup}
                                             {assign var=bKGSelect value=false}
                                             {if !isset($cPost_arr.kKundengruppe) && !isset($cPlausi_arr.kKundengruppe) && !isset($oCheckBox->kKundengruppe_arr) && $customerGroup->isDefault()}

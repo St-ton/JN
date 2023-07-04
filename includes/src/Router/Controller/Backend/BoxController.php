@@ -453,7 +453,7 @@ class BoxController extends AbstractBackendController
     /**
      * @param int    $boxID
      * @param string $isoCode
-     * @return mixed
+     * @return stdClass|stdClass[]|null
      */
     public function getContent(int $boxID, string $isoCode = '')
     {
@@ -672,9 +672,9 @@ class BoxController extends AbstractBackendController
 
         return $this->db->queryPrepared(
             'INSERT INTO tboxensichtbar (kBox, kSeite, nSort, bAktiv)
-                    VALUES (:boxID, :validPageType, :sort, :active)
-                    ON DUPLICATE KEY UPDATE
-                      nSort = :sort, bAktiv = :active',
+                VALUES (:boxID, :validPageType, :sort, :active)
+                ON DUPLICATE KEY UPDATE
+                  nSort = :sort, bAktiv = :active',
             [
                     'boxID'         => $boxID,
                     'validPageType' => $pageID,

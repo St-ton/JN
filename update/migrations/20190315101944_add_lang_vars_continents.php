@@ -18,7 +18,7 @@ class Migration_20190315101944 extends Migration implements IMigration
     protected $description = 'Add lang vars continents';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -39,7 +39,7 @@ class Migration_20190315101944 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

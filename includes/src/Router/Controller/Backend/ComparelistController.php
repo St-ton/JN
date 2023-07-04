@@ -78,7 +78,7 @@ class ComparelistController extends AbstractBackendController
                 ORDER BY nAnzahl DESC
                 LIMIT :lmt',
             [
-                'ds' => (int)$_SESSION['Vergleichsliste']->nZeitFilter,
+                'ds'  => (int)$_SESSION['Vergleichsliste']->nZeitFilter,
                 'lmt' => (int)$_SESSION['Vergleichsliste']->nAnzahl
             ]
         );

@@ -12,7 +12,7 @@ class Migration_20210311091000 extends Migration implements IMigration
     protected $description = 'Add target column to tlink';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -23,7 +23,7 @@ class Migration_20210311091000 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

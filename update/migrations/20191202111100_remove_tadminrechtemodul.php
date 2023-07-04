@@ -19,7 +19,7 @@ class Migration_20191202111100 extends Migration implements IMigration
     protected $description = 'Remove tadminrechtemodul';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -28,7 +28,7 @@ class Migration_20191202111100 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

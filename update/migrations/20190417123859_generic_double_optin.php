@@ -30,7 +30,7 @@ class Migration_20190417123859 extends Migration implements IMigration
     protected $kEmailvorlage;
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -249,7 +249,7 @@ class Migration_20190417123859 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

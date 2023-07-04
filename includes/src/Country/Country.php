@@ -106,17 +106,17 @@ class Country
             return;
         }
         $this->setContinent($countryData->cKontinent)
-             ->setEU((int)$countryData->nEU)
-             ->setNameDE($countryData->cDeutsch)
-             ->setNameEN($countryData->cEnglisch)
-             ->setPermitRegistration((int)$countryData->bPermitRegistration === 1)
-             ->setRequireStateDefinition((int)$countryData->bRequireStateDefinition === 1)
-             ->setShippingAvailable($db->getSingleObject(
-                 'SELECT COUNT(*) AS cnt 
+            ->setEU((int)$countryData->nEU)
+            ->setNameDE($countryData->cDeutsch)
+            ->setNameEN($countryData->cEnglisch)
+            ->setPermitRegistration((int)$countryData->bPermitRegistration === 1)
+            ->setRequireStateDefinition((int)$countryData->bRequireStateDefinition === 1)
+            ->setShippingAvailable($db->getSingleObject(
+                'SELECT COUNT(*) AS cnt 
                       FROM tversandart
                       WHERE cLaender LIKE :iso',
-                 ['iso' => '%' . $this->getISO() . '%']
-             )->cnt > 0);
+                ['iso' => '%' . $this->getISO() . '%']
+            )->cnt > 0);
     }
 
     /**

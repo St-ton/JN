@@ -161,7 +161,7 @@ final class Customer extends AbstractSync
                 continue;
             }
             $exists = $this->db->select('tgutschein', 'kGutschein', (int)$voucher->kGutschein);
-            if (!empty($exists->kGutschein)) {
+            if ($exists !== null && !empty($exists->kGutschein)) {
                 continue;
             }
             $this->db->insert('tgutschein', $voucher);
@@ -211,9 +211,9 @@ final class Customer extends AbstractSync
         $customer->cAnrede  = $this->mapSalutation($customer->cAnrede);
 
         $lang = $this->db->select('tsprache', 'kSprache', $customer->kSprache);
-        if (empty($lang->kSprache)) {
+        if ($lang === null || empty($lang->kSprache)) {
             $lang               = $this->db->select('tsprache', 'cShopStandard', 'Y');
-            $customer->kSprache = $lang->kSprache;
+            $customer->kSprache = (int)$lang->kSprache;
         }
         $kInetKunde  = (int)($xml['tkunde attr']['kKunde'] ?? 0);
         $oldCustomer = new CustomerClass($kInetKunde);
@@ -385,17 +385,17 @@ final class Customer extends AbstractSync
     /**
      * @param CustomerClass $customer
      * @param CustomerClass $oldCustomer
-     * @param int      $kInetKunde
-     * @param array    $customerAttributes
-     * @param array    $res
+     * @param int           $kInetKunde
+     * @param array         $customerAttributes
+     * @param array         $res
      * @return array
      */
     private function merge(
         CustomerClass $customer,
         CustomerClass $oldCustomer,
-        int $kInetKunde,
-        array $customerAttributes,
-        array $res
+        int           $kInetKunde,
+        array         $customerAttributes,
+        array         $res
     ): array {
         // Angaben vom alten Kunden übernehmen
         $customer->kKunde      = $kInetKunde;

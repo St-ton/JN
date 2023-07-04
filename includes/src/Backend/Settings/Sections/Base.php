@@ -271,7 +271,6 @@ class Base implements SectionInterface
         return false;
     }
 
-
     /**
      * @inheritdoc
      */
@@ -303,11 +302,9 @@ class Base implements SectionInterface
             if (!isset($data[$id])) {
                 continue;
             }
-            if ($item->getInputType() === 'pass') {
-                if (empty($data[$id])) {
-                    $data[$id]       = $item->getCurrentValue();
-                    $unfiltered[$id] = $item->getCurrentValue();
-                }
+            if (($item->getInputType() === 'pass') && empty($data[$id])) {
+                $data[$id]       = $item->getCurrentValue();
+                $unfiltered[$id] = $item->getCurrentValue();
             }
             $value->cWert                 = $data[$id];
             $value->cName                 = $id;

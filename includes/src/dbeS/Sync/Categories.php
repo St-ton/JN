@@ -139,9 +139,9 @@ final class Categories extends AbstractSync
     }
 
     /**
-     * @param array    $xml
-     * @param int      $categoryID
-     * @param stdClass $category
+     * @param array      $xml
+     * @param int        $categoryID
+     * @param stdClass   $category
      * @param array|null $oldSeoData
      */
     private function setLanguages(array $xml, int $categoryID, stdClass $category, $oldSeoData = null): void

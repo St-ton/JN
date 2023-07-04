@@ -18,7 +18,7 @@ class Migration_20181220104200 extends Migration implements IMigration
     protected $description = 'Remove Google Analytics';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -27,7 +27,7 @@ class Migration_20181220104200 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

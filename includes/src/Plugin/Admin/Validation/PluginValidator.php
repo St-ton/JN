@@ -41,7 +41,7 @@ final class PluginValidator extends AbstractValidator
         }
         if ($forUpdate === false) {
             $check = $this->db->select('tplugin', 'cPluginID', $baseNode['PluginID']);
-            if (isset($check->kPlugin) && $check->kPlugin > 0) {
+            if ($check !== null && $check->kPlugin > 0) {
                 return InstallCode::DUPLICATE_PLUGIN_ID;
             }
         }

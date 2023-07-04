@@ -349,7 +349,7 @@ final class Orders extends AbstractSync
         if (isset($order->kWaehrung)) {
             $currentCurrency = $this->db->select('twaehrung', 'kWaehrung', $order->kWaehrung);
             $defaultCurrency = $this->db->select('twaehrung', 'cStandard', 'Y');
-            if (isset($currentCurrency->kWaehrung, $defaultCurrency->kWaehrung)) {
+            if ($currentCurrency !== null && isset($currentCurrency->kWaehrung, $defaultCurrency->kWaehrung)) {
                 $correctionFactor     = (float)$currentCurrency->fFaktor;
                 $order->fGesamtsumme /= $correctionFactor;
                 $order->fGuthaben    /= $correctionFactor;
@@ -553,7 +553,7 @@ final class Orders extends AbstractSync
     private function getShopOrder(int $orderID): ?stdClass
     {
         $order = $this->db->select('tbestellung', 'kBestellung', $orderID);
-        if (!isset($order->kBestellung) || $order->kBestellung <= 0) {
+        if ($order === null || !isset($order->kBestellung) || $order->kBestellung <= 0) {
             return null;
         }
         $order->kBestellung       = (int)$order->kBestellung;
@@ -857,7 +857,7 @@ final class Orders extends AbstractSync
                 ['kBestellung', 'cName'],
                 [$orderID, $orderAttribute->key]
             );
-            if (isset($orderAttributeOld->kBestellattribut)) {
+            if ($orderAttributeOld !== null && isset($orderAttributeOld->kBestellattribut)) {
                 $this->db->update(
                     'tbestellattribut',
                     'kBestellattribut',

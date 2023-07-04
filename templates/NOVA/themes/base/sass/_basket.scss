@@ -124,7 +124,6 @@
   }
   .cart-items-price {
     white-space: nowrap;
-    color: $font-accent;
     @include media-breakpoint-down(sm) {
       margin-left: auto;
     }

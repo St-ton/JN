@@ -69,12 +69,12 @@ class WishlistItemProperty
      * @param int         $wishlistItemID
      */
     public function __construct(
-        int $propertyID,
-        ?int $propertyValueID,
+        int     $propertyID,
+        ?int    $propertyValueID,
         ?string $freeText,
         ?string $propertyName,
         ?string $propertyValueName,
-        int $wishlistItemID
+        int     $wishlistItemID
     ) {
         $this->kEigenschaft         = $propertyID;
         $this->kEigenschaftWert     = $propertyValueID;

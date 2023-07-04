@@ -12,7 +12,7 @@ class Migration_20211021085500 extends Migration implements IMigration
     protected $description = 'Add productdetails content setting';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -34,7 +34,7 @@ class Migration_20211021085500 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

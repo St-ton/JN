@@ -13,7 +13,7 @@ class Shopinfo extends AbstractWidget
     /**
      *
      */
-    public function init()
+    public function init(): void
     {
         $this->oSmarty->assign('strFileVersion', \APPLICATION_VERSION)
             ->assign('strDBVersion', Shop::getShopDatabaseVersion())
@@ -28,7 +28,7 @@ class Shopinfo extends AbstractWidget
      * @return string
      * @throws \SmartyException
      */
-    public function getContent()
+    public function getContent(): string
     {
         return $this->oSmarty->fetch('tpl_inc/widgets/shopinfo.tpl');
     }

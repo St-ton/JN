@@ -1,0 +1,6 @@
+// This rule is a replacement for the one defined in bootstrap's NOVA/themes/base/bootstrap/scss/_print.scss
+@if $enable-print-styles {
+	@page {
+		size: a3;
+	}
+}

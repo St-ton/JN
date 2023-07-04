@@ -20,9 +20,9 @@ class Bestseller extends AbstractSortingOption
         parent::__construct($productFilter);
         $this->setOrderBy('tbestseller.isBestseller DESC, tbestseller.fAnzahl DESC, tartikel.cName');
         $this->join->setComment('join from SORT by bestseller')
-                   ->setType('LEFT JOIN')
-                   ->setTable('tbestseller')
-                   ->setOn('tartikel.kArtikel = tbestseller.kArtikel');
+            ->setType('LEFT JOIN')
+            ->setTable('tbestseller')
+            ->setOn('tartikel.kArtikel = tbestseller.kArtikel');
         $this->setName(Shop::Lang()->get('bestseller'));
         $this->setPriority($this->getConfig('artikeluebersicht')['suche_sortierprio_bestseller']);
         $this->setValue(\SEARCH_SORT_BESTSELLER);

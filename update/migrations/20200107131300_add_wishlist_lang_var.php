@@ -19,7 +19,7 @@ class Migration_20200107131300 extends Migration implements IMigration
     protected $description = 'Add lang var to wishlist section';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -28,7 +28,7 @@ class Migration_20200107131300 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

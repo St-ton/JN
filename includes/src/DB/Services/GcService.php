@@ -95,18 +95,18 @@ class GcService implements GcServiceInterface
                 $cFrom = $table;
                 $cJoin = '';
                 foreach ($subTables as $subTable => $cKey) {
-                    $cFrom .= ", {$subTable}";
-                    $cJoin .= " LEFT JOIN {$subTable} ON {$subTable}.{$cKey} = {$table}.{$cKey}";
+                    $cFrom .= ", $subTable";
+                    $cJoin .= " LEFT JOIN $subTable ON $subTable.$cKey = $table.$cKey";
                 }
                 $this->db->query(
-                    "DELETE {$cFrom} 
-                        FROM {$table} {$cJoin} 
-                        WHERE DATE_SUB(NOW(), INTERVAL {$interval} DAY) >= {$table}.{$dateField}"
+                    "DELETE $cFrom 
+                        FROM $table $cJoin 
+                        WHERE DATE_SUB(NOW(), INTERVAL $interval DAY) >= $table.$dateField"
                 );
             } else {
                 $this->db->query(
-                    "DELETE FROM {$table} 
-                        WHERE DATE_SUB(NOW(), INTERVAL {$interval} DAY) >= {$dateField}"
+                    "DELETE FROM $table 
+                        WHERE DATE_SUB(NOW(), INTERVAL $interval DAY) >= $dateField"
                 );
             }
         }

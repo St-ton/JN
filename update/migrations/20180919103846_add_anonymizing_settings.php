@@ -12,7 +12,7 @@ class Migration_20180919103846 extends Migration implements IMigration
     protected $description = 'Add anonymizing settings';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -46,7 +46,7 @@ class Migration_20180919103846 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

@@ -18,7 +18,7 @@ class Migration_20180801165500 extends Migration implements IMigration
     protected $description = 'Create news language table';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -120,7 +120,7 @@ class Migration_20180801165500 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

@@ -18,7 +18,7 @@ class Migration_20190507095430 extends Migration implements IMigration
     protected $description = 'Remove product tags';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -66,7 +66,7 @@ class Migration_20190507095430 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

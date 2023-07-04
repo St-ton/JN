@@ -71,7 +71,7 @@ class Separator
             $data = Shop::Container()->getDB()->select('ttrennzeichen', 'kTrennzeichen', $id);
             Shop::Container()->getCache()->set($cacheID, $data, [\CACHING_GROUP_CORE]);
         }
-        if (isset($data->kTrennzeichen) && $data->kTrennzeichen > 0) {
+        if ($data !== null && $data->kTrennzeichen > 0) {
             $this->kTrennzeichen     = (int)$data->kTrennzeichen;
             $this->kSprache          = (int)$data->kSprache;
             $this->nEinheit          = (int)$data->nEinheit;

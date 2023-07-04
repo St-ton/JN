@@ -18,7 +18,7 @@ class Migration_20200529141800 extends Migration implements IMigration
     protected $description = 'Add lang var videoTypeNotSupported, videoTagNotSupported and audioTagNotSupported';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -31,7 +31,7 @@ class Migration_20200529141800 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

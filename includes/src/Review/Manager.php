@@ -27,11 +27,11 @@ class Manager
      * @param array                 $config
      */
     public function __construct(
-        protected DbInterface $db,
+        protected DbInterface           $db,
         protected AlertServiceInterface $alertService,
-        protected JTLCacheInterface $cache,
-        protected JTLSmarty $smarty,
-        protected array $config
+        protected JTLCacheInterface     $cache,
+        protected JTLSmarty             $smarty,
+        protected array                 $config
     ) {
     }
 

@@ -27,7 +27,7 @@ class ProductFilterURL
      * ProductFilterURL constructor.
      * @param ProductFilter $productFilter
      */
-    public function __construct(private ProductFilter $productFilter)
+    public function __construct(private readonly ProductFilter $productFilter)
     {
     }
 
@@ -268,8 +268,8 @@ class ProductFilterURL
     /**
      * URLs generieren, die Filter lösen
      *
-     * @param NavigationURLsInterface      $url
-     * @param SearchResultsInterface|null  $searchResults
+     * @param NavigationURLsInterface     $url
+     * @param SearchResultsInterface|null $searchResults
      * @return NavigationURLsInterface
      */
     public function createUnsetFilterURLs($url, $searchResults = null): NavigationURLsInterface
@@ -318,7 +318,7 @@ class ProductFilterURL
                     $filter->getID(),
                     $this->getURL(
                         $additionalFilter->init($filter->getID())
-                                         ->setSeo($this->productFilter->getFilterConfig()->getLanguages())
+                            ->setSeo($this->productFilter->getFilterConfig()->getLanguages())
                     )
                 );
                 $filter->setUnsetFilterURL($url->getCharacteristics());
@@ -346,7 +346,7 @@ class ProductFilterURL
             // the url should be <shop>/<merkmalwert-url>__<merkmalfilter>[__<merkmalfilter>]
             $charValSeo = \str_replace(
                 $this->productFilter->getCharacteristicValue()
-                                    ->getSeo($this->productFilter->getFilterConfig()->getLanguageID()) . \SEP_MERKMAL,
+                    ->getSeo($this->productFilter->getFilterConfig()->getLanguageID()) . \SEP_MERKMAL,
                 '',
                 $url->getCategories()
             );

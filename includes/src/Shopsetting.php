@@ -134,8 +134,8 @@ final class Shopsetting implements ArrayAccess
     }
 
     /**
-     * @param int    $sectionID
-     * @param array  $value
+     * @param int   $sectionID
+     * @param array $value
      */
     public function overrideSection(int $sectionID, array $value): void
     {
@@ -292,7 +292,7 @@ final class Shopsetting implements ArrayAccess
     }
 
     /**
-     * @param null|int $section
+     * @param null|int    $section
      * @param null|string $name
      * @return mixed|null
      */

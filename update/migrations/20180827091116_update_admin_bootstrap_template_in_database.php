@@ -18,7 +18,7 @@ class Migration_20180827091116 extends Migration implements IMigration
     protected $description = 'Update admin bootstrap template in database';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -26,7 +26,7 @@ class Migration_20180827091116 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

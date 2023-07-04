@@ -29,8 +29,11 @@ class TestWriter implements ExportWriterInterface
     /**
      * @inheritdoc
      */
-    public function __construct(private Model $model, private array $config, private ?ExportSmarty $smarty = null)
-    {
+    public function __construct(
+        private readonly Model         $model,
+        private readonly array         $config,
+        private readonly ?ExportSmarty $smarty = null
+    ) {
     }
 
     public function start(): void

@@ -17,7 +17,12 @@ use PHPMailer\PHPMailer\PHPMailer;
  */
 class Mail implements MailInterface
 {
+    /**
+     * @deprecated since 5.3.0 - this was a typo
+     */
     public const LENTH_LIMIT = 987;
+
+    public const LENGTH_LIMIT = 987;
 
     /**
      * @var int
@@ -138,7 +143,9 @@ class Mail implements MailInterface
         $this->setData($data);
         $this->setTemplate($template);
         $this->setLanguage($language ?? $this->detectLanguage());
-        $this->setCustomerGroupID(Frontend::getCustomer()->getGroupID());
+        if ($this->customerGroupID === 0) {
+            $this->setCustomerGroupID(Frontend::getCustomer()->getGroupID());
+        }
         $template->load($this->language->getId(), $this->customerGroupID);
         $model = $template->getModel();
         if ($model === null) {
@@ -171,7 +178,7 @@ class Mail implements MailInterface
     {
         $hasLongLines = false;
         foreach (\preg_split('/((\r?\n)|(\r\n?))/', $text) as $line) {
-            if (\mb_strlen($line) > self::LENTH_LIMIT) {
+            if (\mb_strlen($line) > self::LENGTH_LIMIT) {
                 $hasLongLines = true;
                 break;
             }
@@ -222,6 +229,9 @@ class Mail implements MailInterface
      */
     private function detectLanguage(): LanguageModel
     {
+        if ($this->language !== null) {
+            return $this->language;
+        }
         $allLanguages = LanguageHelper::getAllLanguages(1);
         if (isset($this->data->tkunde->kSprache) && $this->data->tkunde->kSprache > 0) {
             return $allLanguages[(int)$this->data->tkunde->kSprache];
@@ -247,7 +257,7 @@ class Mail implements MailInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setLanguage(LanguageModel $language): MailInterface
     {

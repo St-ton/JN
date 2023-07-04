@@ -284,10 +284,10 @@ class Updater
 
     /**
      * @param Version $targetVersion
-     * @return array|bool
+     * @return array
      * @throws Exception
      */
-    protected function getSqlUpdates(Version $targetVersion)
+    protected function getSqlUpdates(Version $targetVersion): array
     {
         $sqlFilePathVersion = \sprintf('%d%02d', $targetVersion->getMajor(), $targetVersion->getMinor());
         $sqlFile            = $this->getSqlUpdatePath((int)$sqlFilePathVersion);
@@ -295,8 +295,10 @@ class Updater
         if (!\file_exists($sqlFile)) {
             throw new Exception('SQL file in path "' . $sqlFile . '" not found');
         }
-
         $lines = \file($sqlFile);
+        if ($lines === false) {
+            $lines = [];
+        }
         foreach ($lines as $i => $line) {
             $line = \trim($line);
             if (\str_starts_with($line, '--') || \str_starts_with($line, '#')) {
@@ -337,9 +339,9 @@ class Updater
         if ($tplXML !== null && !empty($tplXML->Parent)) {
             $parentFolder = (string)$tplXML->Parent;
         }
-        $config     = new Config($current->getPaths()->getBaseDirName(), $this->db);
-        $oldConfig  = $config->loadConfigFromDB();
-        $updates    = 0;
+        $config    = new Config($current->getPaths()->getBaseDirName(), $this->db);
+        $oldConfig = $config->loadConfigFromDB();
+        $updates   = 0;
         foreach ($config->getConfigXML($reader, $parentFolder) as $conf) {
             foreach ($conf->settings as $setting) {
                 if ($setting->cType === 'upload') {

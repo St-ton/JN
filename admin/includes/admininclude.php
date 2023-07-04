@@ -68,8 +68,8 @@ $cache    = Shop::Container()->getCache()->setJtlCacheConfig(
 $session  = Backend::getInstance();
 $lang     = LanguageHelper::getInstance($db, $cache);
 $oAccount = Shop::Container()->getAdminAccount();
-$updates  = collect([]);
-$expired  = collect([]);
+$updates  = collect();
+$expired  = collect();
 Shop::setRouter(new Router(
     $db,
     $cache,

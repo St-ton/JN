@@ -32,9 +32,9 @@ abstract class AbstractPush
      * @param LoggerInterface   $logger
      */
     public function __construct(
-        protected DbInterface $db,
+        protected DbInterface       $db,
         protected JTLCacheInterface $cache,
-        protected LoggerInterface $logger
+        protected LoggerInterface   $logger
     ) {
         $this->mapper = new Mapper();
     }
@@ -66,9 +66,9 @@ abstract class AbstractPush
     }
 
     /**
-     * @param string $zip
+     * @param string       $zip
      * @param object|array $xml
-     * @param string $wawiVersion
+     * @param string       $wawiVersion
      */
     public function zipRedirect(string $zip, $xml, string $wawiVersion): void
     {

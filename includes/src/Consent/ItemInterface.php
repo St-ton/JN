@@ -79,6 +79,11 @@ interface ItemInterface
     public function setPrivacyPolicy(string $tos, int $idx = null): void;
 
     /**
+     * @return bool
+     */
+    public function hasMoreInfo(): bool;
+
+    /**
      * @return int
      */
     public function getCurrentLanguageID(): int;

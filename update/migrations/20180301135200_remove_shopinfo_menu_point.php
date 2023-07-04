@@ -18,7 +18,7 @@ class Migration_20180301135200 extends Migration implements IMigration
     protected $description = 'Remove shopinfo menu item';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -26,7 +26,7 @@ class Migration_20180301135200 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

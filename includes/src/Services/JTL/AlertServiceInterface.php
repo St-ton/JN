@@ -17,17 +17,17 @@ interface AlertServiceInterface
     public function initFromSession(): void;
 
     /**
-     * @param string $type
-     * @param string $message
-     * @param string $key
+     * @param string     $type
+     * @param string     $message
+     * @param string     $key
      * @param array|null $options
      * @return Alert|null
      */
     public function addAlert(string $type, string $message, string $key, array $options = null): ?Alert;
 
     /**
-     * @param string $message
-     * @param string $key
+     * @param string     $message
+     * @param string     $key
      * @param array|null $options
      * @return Alert|null
      */
@@ -42,16 +42,16 @@ interface AlertServiceInterface
     public function addWarning(string $message, string $key, array $options = null): ?Alert;
 
     /**
-     * @param string $message
-     * @param string $key
+     * @param string     $message
+     * @param string     $key
      * @param array|null $options
      * @return Alert|null
      */
     public function addInfo(string $message, string $key, array $options = null): ?Alert;
 
     /**
-     * @param string $message
-     * @param string $key
+     * @param string     $message
+     * @param string     $key
      * @param array|null $options
      * @return Alert|null
      */
@@ -66,8 +66,8 @@ interface AlertServiceInterface
     public function addDanger(string $message, string $key, array $options = null): ?Alert;
 
     /**
-     * @param string $message
-     * @param string $key
+     * @param string     $message
+     * @param string     $key
      * @param array|null $options
      * @return Alert|null
      */

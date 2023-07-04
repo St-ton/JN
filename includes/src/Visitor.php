@@ -16,7 +16,7 @@ class Visitor
      */
     private static function getInstance()
     {
-        return new \JTL\Customer\Visitor(Shop::Container()->getDB(), Shop::Container()->getCache());
+        return new Customer\Visitor(Shop::Container()->getDB(), Shop::Container()->getCache());
     }
 
     /**

@@ -1,6 +1,6 @@
-<div class="content-header">
+<div class="content-header card-widget">
     <div class="row">
-        <div class="col">
+        <div class="col card-header">
             <h1 class="content-header-headline {if isset($cBeschreibung) && $cBeschreibung|strlen == 0}nospacing{/if}">{if $cTitel|strlen > 0}{$cTitel}{else}{__('unknown')}{/if}</h1>
         </div>
         <div class="col-auto ml-auto">
@@ -23,9 +23,11 @@
         </div>
     {/if}
     {if isset($pluginMeta)}
+        <div class="card-body body-hidden">
         <p><strong>{__('pluginAuthor')}:</strong> {$pluginMeta->getAuthor()}</p>
         <p><strong>{__('pluginHomepage')}:</strong> <a href="{$pluginMeta->getURL()}" target="_blank" rel="noopener"><i class="fa fa-external-link"></i> {__($pluginMeta->getURL())}</a></p>
         <p><strong>{__('pluginVersion')}:</strong> {$pluginMeta->getVersion()}</p>
         <p><strong>{__('description')}:</strong> {__($pluginMeta->getDescription())}</p>
+        </div>
     {/if}
 </div>

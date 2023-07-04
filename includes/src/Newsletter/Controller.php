@@ -26,7 +26,7 @@ final class Controller
      * @param DbInterface $db
      * @param array       $config
      */
-    public function __construct(private DbInterface $db, private array $config)
+    public function __construct(private readonly DbInterface $db, private readonly array $config)
     {
     }
 
@@ -44,17 +44,17 @@ final class Controller
     }
 
     /**
-     * @param int $kKunde
+     * @param int $customerID
      * @return bool
      */
-    public function checkAlreadySubscribed(int $kKunde): bool
+    public function checkAlreadySubscribed(int $customerID): bool
     {
-        if ($kKunde <= 0) {
+        if ($customerID <= 0) {
             return false;
         }
-        $recipient = $this->db->select('tnewsletterempfaenger', 'kKunde', $kKunde);
+        $recipient = $this->db->select('tnewsletterempfaenger', 'kKunde', $customerID);
 
-        return isset($recipient->kKunde) && $recipient->kKunde > 0;
+        return $recipient !== null && $recipient->kKunde > 0;
     }
 
     /**

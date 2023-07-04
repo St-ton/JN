@@ -16,7 +16,7 @@ class Migration_20171214111100 extends Migration implements IMigration
     protected $description = 'Add cookie config notice';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -24,7 +24,7 @@ class Migration_20171214111100 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

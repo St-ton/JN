@@ -18,7 +18,7 @@ class Migration_20180904114800 extends Migration implements IMigration
     protected $description = 'Change optional fill out hint';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -39,7 +39,7 @@ class Migration_20180904114800 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

@@ -177,6 +177,11 @@ class Kategorie implements RoutableInterface
     private ?string $dLetzteAktualisierung = null;
 
     /**
+     * @var bool
+     */
+    private bool $compressed = false;
+
+    /**
      * @param int              $id
      * @param int              $languageID
      * @param int              $customerGroupID
@@ -184,10 +189,10 @@ class Kategorie implements RoutableInterface
      * @param DbInterface|null $db
      */
     public function __construct(
-        int $id = 0,
-        int $languageID = 0,
-        int $customerGroupID = 0,
-        bool $noCache = false,
+        int                  $id = 0,
+        int                  $languageID = 0,
+        int                  $customerGroupID = 0,
+        bool                 $noCache = false,
         private ?DbInterface $db = null
     ) {
         $this->db = $db ?? Shop::Container()->getDB();
@@ -224,6 +229,13 @@ class Kategorie implements RoutableInterface
                 $this->$k = $v;
             }
             $this->currentLanguageID = $languageID;
+            if ($this->compressed === true) {
+                foreach ($this->descriptions as &$description) {
+                    $description = \gzuncompress($description);
+                }
+                unset($description);
+                $this->compressed = false;
+            }
             \executeHook(\HOOK_KATEGORIE_CLASS_LOADFROMDB, [
                 'oKategorie' => &$this,
                 'cacheTags'  => [],
@@ -287,7 +299,15 @@ class Kategorie implements RoutableInterface
             'cached'     => false
         ]);
         if (!$noCache) {
-            Shop::Container()->getCache()->set($cacheID, $this, $cacheTags);
+            $toSave = clone $this;
+            if (\COMPRESS_DESCRIPTIONS === true) {
+                foreach ($toSave->descriptions as &$description) {
+                    $description = \gzcompress($description, \COMPRESSION_LEVEL);
+                }
+                unset($description);
+                $toSave->compressed = true;
+            }
+            Shop::Container()->getCache()->set($cacheID, $toSave, $cacheTags);
         }
 
         return $this;
@@ -326,7 +346,7 @@ class Kategorie implements RoutableInterface
                 LEFT JOIN tkategorieattributsprache 
                     ON tkategorieattributsprache.kAttribut = tkategorieattribut.kKategorieAttribut
                 LEFT JOIN tsprache
-					ON tsprache.cStandard = \'Y\'
+                    ON tsprache.cStandard = \'Y\'
                 WHERE kKategorie = :cid
                 ORDER BY tkategorieattribut.bIstFunktionsAttribut DESC, tkategorieattribut.nSort',
             ['cid' => $this->getID()]
@@ -430,7 +450,7 @@ class Kategorie implements RoutableInterface
             $cacheID = 'gkb_' . $this->getID();
             if (($data = Shop::Container()->getCache()->get($cacheID)) === false) {
                 $item = $this->db->select('tkategoriepict', 'kKategorie', $this->getID());
-                $data = (isset($item->cPfad) && $item->cPfad)
+                $data = $item !== null && $item->cPfad
                     ? \PFAD_KATEGORIEBILDER . $item->cPfad
                     : \BILD_KEIN_KATEGORIEBILD_VORHANDEN;
                 Shop::Container()->getCache()->set(
@@ -486,7 +506,7 @@ class Kategorie implements RoutableInterface
             $customerGroupID
         );
 
-        return empty($data->kKategorie);
+        return $data === null || empty($data->kKategorie);
     }
 
     /**

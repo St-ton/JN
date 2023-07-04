@@ -61,10 +61,10 @@ class CacheRedis implements ICachingMethod
      */
     private function setRedis(
         ?string $host = null,
-        ?int $port = null,
+        ?int    $port = null,
         ?string $pass = null,
-        ?int $database = null,
-        bool $persist = false
+        ?int    $database = null,
+        bool    $persist = false
     ): bool {
         $redis   = new Redis();
         $connect = $persist === false ? 'connect' : 'pconnect';

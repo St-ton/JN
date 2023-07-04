@@ -18,7 +18,7 @@ class Migration_20200817144500 extends Migration implements IMigration
     protected $description = 'Add favourable shipping lang';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -37,7 +37,7 @@ class Migration_20200817144500 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

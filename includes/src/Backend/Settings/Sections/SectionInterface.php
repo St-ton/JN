@@ -122,6 +122,7 @@ interface SectionInterface
      * @param Item[] $items
      */
     public function setItems(array $items): void;
+
     /**
      * @return int
      */

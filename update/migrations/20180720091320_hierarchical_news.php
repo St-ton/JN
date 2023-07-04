@@ -18,7 +18,7 @@ class Migration_20180720091320 extends Migration implements IMigration
     protected $description = 'Hierarchical news';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -30,7 +30,7 @@ class Migration_20180720091320 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

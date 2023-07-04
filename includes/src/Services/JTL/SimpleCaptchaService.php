@@ -21,12 +21,12 @@ class SimpleCaptchaService implements CaptchaServiceInterface
      * SimpleCaptchaService constructor.
      * @param bool $enabled
      */
-    public function __construct(private bool $enabled)
+    public function __construct(private readonly bool $enabled)
     {
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function isConfigured(): bool
     {
@@ -34,7 +34,7 @@ class SimpleCaptchaService implements CaptchaServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function isEnabled(): bool
     {
@@ -42,7 +42,7 @@ class SimpleCaptchaService implements CaptchaServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getHeadMarkup($smarty): string
     {
@@ -50,7 +50,7 @@ class SimpleCaptchaService implements CaptchaServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getBodyMarkup($smarty): string
     {
@@ -74,12 +74,12 @@ class SimpleCaptchaService implements CaptchaServiceInterface
         }
 
         return $smarty->assign('captchaToken', $token)
-                      ->assign('captchaCode', \sha1($code))
-                      ->fetch('snippets/simple_captcha.tpl');
+            ->assign('captchaCode', \sha1($code))
+            ->fetch('snippets/simple_captcha.tpl');
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function validate(array $requestData): bool
     {

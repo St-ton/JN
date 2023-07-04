@@ -29,7 +29,7 @@ class Migration_20190515160510 extends Migration implements IMigration
     protected $description = 'Create unique index for tkundenattribut';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -50,7 +50,7 @@ class Migration_20190515160510 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

@@ -3141,6 +3141,14 @@ input[type=number] {
     -moz-appearance: none;
 }
 
+.bootstrap-select {
+    &.disabled {
+        color: #6c757d;
+        background-color: #e9ecef;
+        opacity: 0.7;
+    }
+}
+
 .search-page {
     overflow-x: auto;
     .path {
@@ -3187,4 +3195,7 @@ input[type=number] {
     @media (max-width: 768px) {
         max-width: 412px;
     }
+}
+.card-widget.card .chevronToggle {
+    float: right;
 }

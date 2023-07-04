@@ -19,7 +19,7 @@ class Migration_20180319160200 extends Migration implements IMigration
     protected $description = 'Add options for new filters';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -283,7 +283,7 @@ class Migration_20180319160200 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

@@ -41,7 +41,7 @@ class OptinAvailAgain extends OptinBase implements OptinInterface
 
     /**
      * @param OptinRefData $refData
-     * @param int $location
+     * @param int          $location
      * @return OptinInterface
      */
     public function createOptin(OptinRefData $refData, int $location = 0): OptinInterface
@@ -101,26 +101,27 @@ class OptinAvailAgain extends OptinBase implements OptinInterface
      */
     public function activateOptin(): void
     {
-        $data            = new stdClass();
-        $data->kSprache  = Shop::getLanguageID();
-        $data->cIP       = Request::getRealIP();
-        $data->dErstellt = 'NOW()';
-        $data->nStatus   = 0;
-        $data->kArtikel  = $this->refData->getProductId();
-        $data->cMail     = $this->refData->getEmail();
-        $data->cVorname  = $this->refData->getFirstName();
-        $data->cNachname = $this->refData->getLastName();
+        $data                  = new stdClass();
+        $data->kSprache        = $this->refData->getLanguageID();
+        $data->cIP             = Request::getRealIP();
+        $data->dErstellt       = 'NOW()';
+        $data->nStatus         = 0;
+        $data->kArtikel        = $this->refData->getProductId();
+        $data->cMail           = $this->refData->getEmail();
+        $data->cVorname        = $this->refData->getFirstName();
+        $data->cNachname       = $this->refData->getLastName();
+        $data->customerGroupID = $this->refData->getCustomerGroupID();
 
         \executeHook(\HOOK_ARTIKEL_INC_BENACHRICHTIGUNG, ['Benachrichtigung' => $data]);
 
         $inquiryID = (int)$this->dbHandler->queryPrepared(
             'INSERT INTO tverfuegbarkeitsbenachrichtigung
-                (cVorname, cNachname, cMail, kSprache, kArtikel, cIP, dErstellt, nStatus)
+                (cVorname, cNachname, cMail, kSprache, kArtikel, cIP, dErstellt, nStatus, customerGroupID)
                 VALUES
-                (:cVorname, :cNachname, :cMail, :kSprache, :kArtikel, :cIP, NOW(), :nStatus)
+                (:cVorname, :cNachname, :cMail, :kSprache, :kArtikel, :cIP, NOW(), :nStatus, :customerGroupID)
                 ON DUPLICATE KEY UPDATE
                     cVorname = :cVorname, cNachname = :cNachname, ksprache = :kSprache,
-                    cIP = :cIP, dErstellt = NOW(), nStatus = :nStatus',
+                    cIP = :cIP, dErstellt = NOW(), nStatus = :nStatus, customerGroupID = :customerGroupID',
             \get_object_vars($data),
             ReturnType::LAST_INSERTED_ID
         );

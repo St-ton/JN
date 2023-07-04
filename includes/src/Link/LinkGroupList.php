@@ -29,7 +29,7 @@ final class LinkGroupList implements LinkGroupListInterface
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */
-    public function __construct(private DbInterface $db, private JTLCacheInterface $cache)
+    public function __construct(private readonly DbInterface $db, private readonly JTLCacheInterface $cache)
     {
         $this->linkGroups        = new LinkGroupCollection();
         $this->visibleLinkGroups = new LinkGroupCollection();
@@ -359,9 +359,7 @@ final class LinkGroupList implements LinkGroupListInterface
      */
     public function getLinkgroupByTemplate(string $name, bool $filtered = true): ?LinkGroupInterface
     {
-        $source = $filtered ? $this->visibleLinkGroups : $this->linkGroups;
-
-        return $source->getLinkgroupByTemplate($name);
+        return ($filtered ? $this->visibleLinkGroups : $this->linkGroups)->getLinkgroupByTemplate($name);
     }
 
     /**
@@ -369,8 +367,6 @@ final class LinkGroupList implements LinkGroupListInterface
      */
     public function getLinkgroupByID(int $id, bool $filtered = true): ?LinkGroupInterface
     {
-        $source = $filtered ? $this->visibleLinkGroups : $this->linkGroups;
-
-        return $source->getLinkgroupByID($id);
+        return ($filtered ? $this->visibleLinkGroups : $this->linkGroups)->getLinkgroupByID($id);
     }
 }

@@ -187,7 +187,6 @@ class ValidationService implements ValidationServiceInterface
         return $this->createMissingResult();
     }
 
-
     /**
      * @inheritdoc
      */
@@ -211,7 +210,6 @@ class ValidationService implements ValidationServiceInterface
 
         return $result;
     }
-
 
     /**
      * @inheritdoc

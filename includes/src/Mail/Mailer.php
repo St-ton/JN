@@ -32,9 +32,9 @@ class Mailer
      * @param ValidatorInterface $validator
      */
     public function __construct(
-        private HydratorInterface $hydrator,
-        private RendererInterface $renderer,
-        Shopsetting $settings,
+        private HydratorInterface  $hydrator,
+        private RendererInterface  $renderer,
+        Shopsetting                $settings,
         private ValidatorInterface $validator
     ) {
         $this->config = $settings->getAll();

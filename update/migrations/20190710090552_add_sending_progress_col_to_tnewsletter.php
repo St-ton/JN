@@ -18,7 +18,7 @@ class Migration_20190710090552 extends Migration implements IMigration
     protected $description = 'Add sending progress col to tnewsletter';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -33,7 +33,7 @@ class Migration_20190710090552 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

@@ -12,6 +12,8 @@ use JTL\License\Exception\DownloadValidationException;
 use JTL\License\Exception\FilePermissionException;
 use JTL\License\Manager;
 use JTL\License\Struct\ExsLicense;
+use JTL\License\Struct\Release;
+use JTLShop\SemVer\Version;
 
 /**
  * Class Helper
@@ -34,9 +36,10 @@ class Helper
 
     /**
      * @param string $itemID
-     * @return InstallerInterface
+     * @return Release
+     * @throws InvalidArgumentException
      */
-    public function getInstaller(string $itemID): InstallerInterface
+    public function getAvailableRelease(string $itemID): Release
     {
         $licenseData = $this->manager->getLicenseByItemID($itemID);
         if ($licenseData === null) {
@@ -45,6 +48,43 @@ class Helper
         $available = $licenseData->getReleases()->getAvailable();
         if ($available === null) {
             throw new InvalidArgumentException('Could not find release for item with ID ' . $itemID);
+        }
+
+        return $available;
+    }
+
+    /**
+     * @param string $itemID
+     * @return bool
+     * @throws InvalidArgumentException
+     */
+    public function validatePrerequisites(string $itemID): bool
+    {
+        $available = $this->getAvailableRelease($itemID);
+        $php       = Version::parse(\PHP_VERSION);
+        $version   = new Version();
+        $version->setMajor($php->getMajor());
+        $version->setMinor($php->getMinor());
+        if ($available->getPhpMaxVersion() !== null && $version->greaterThan($available->getPhpMaxVersion())) {
+            throw new InvalidArgumentException('PHP version too high');
+        }
+        if ($available->getPhpMinVersion() !== null && $version->smallerThan($available->getPhpMinVersion())) {
+            throw new InvalidArgumentException('PHP version too low');
+        }
+
+        return true;
+    }
+
+    /**
+     * @param string $itemID
+     * @return InstallerInterface
+     * @throws InvalidArgumentException
+     */
+    public function getInstaller(string $itemID): InstallerInterface
+    {
+        $licenseData = $this->manager->getLicenseByItemID($itemID);
+        if ($licenseData === null) {
+            throw new InvalidArgumentException('Could not find item with ID ' . $itemID);
         }
         $type = $licenseData->getType();
 
@@ -67,15 +107,6 @@ class Helper
      */
     public function getDownload(string $itemID): string
     {
-        $licenseData = $this->manager->getLicenseByItemID($itemID);
-        if ($licenseData === null) {
-            throw new InvalidArgumentException('Could not find item with ID ' . $itemID);
-        }
-        $available = $licenseData->getReleases()->getAvailable();
-        if ($available === null) {
-            throw new InvalidArgumentException('Could not find update for item with ID ' . $itemID);
-        }
-
-        return (new Downloader())->downloadRelease($available);
+        return (new Downloader())->downloadRelease($this->getAvailableRelease($itemID));
     }
 }

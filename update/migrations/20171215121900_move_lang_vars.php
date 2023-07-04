@@ -15,7 +15,7 @@ class Migration_20171215121900 extends Migration implements IMigration
     protected $description = 'Move language variables "invalidHash" und "invalidCustomer" to account data';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -24,7 +24,7 @@ class Migration_20171215121900 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

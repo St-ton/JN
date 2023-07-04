@@ -16,7 +16,7 @@ class Migration_20190904144400 extends Migration implements IMigration
     protected $description = 'Add input type for plugin language variables';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -24,7 +24,7 @@ class Migration_20190904144400 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

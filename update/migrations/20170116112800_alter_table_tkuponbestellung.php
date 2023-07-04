@@ -18,7 +18,7 @@ class Migration_20170116112800 extends Migration implements IMigration
     protected $description = 'Alter table tkuponbestellung';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -119,7 +119,7 @@ class Migration_20170116112800 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

@@ -18,7 +18,7 @@ class Migration_20191211111500 extends Migration implements IMigration
     protected $description = 'Correct shipping to lang var';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -27,7 +27,7 @@ class Migration_20191211111500 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

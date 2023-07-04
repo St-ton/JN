@@ -18,7 +18,7 @@ class Migration_20220509115006 extends Migration implements IMigration
     protected $description = 'Add noDiscount to price table';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -26,7 +26,7 @@ class Migration_20220509115006 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

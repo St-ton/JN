@@ -20,7 +20,7 @@ class Migration_20220503122842 extends Migration implements IMigration
     protected $description = 'Create setting for top selling';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -51,7 +51,7 @@ class Migration_20220503122842 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

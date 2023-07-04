@@ -18,7 +18,7 @@ class Migration_20180919130519 extends Migration implements IMigration
     protected $description = 'Create indices for or-filtered attributes';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -53,7 +53,7 @@ class Migration_20180919130519 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

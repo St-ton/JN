@@ -16,7 +16,7 @@ class Migration_20190930162800 extends Migration implements IMigration
     protected $description = 'Remove financial proposal config';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -24,7 +24,7 @@ class Migration_20190930162800 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

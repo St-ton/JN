@@ -18,7 +18,7 @@ class Migration_20180420123520 extends Migration implements IMigration
     protected $description = 'Change language values for assets';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -26,7 +26,7 @@ class Migration_20180420123520 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

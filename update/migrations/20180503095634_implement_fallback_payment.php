@@ -20,7 +20,7 @@ class Migration_20180503095634 extends Migration implements IMigration
     protected string $szPaymentModuleId = 'za_null_jtl';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -37,7 +37,7 @@ class Migration_20180503095634 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

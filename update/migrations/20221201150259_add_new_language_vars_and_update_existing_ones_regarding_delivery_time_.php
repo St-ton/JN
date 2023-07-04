@@ -19,7 +19,7 @@ class Migration_20221201150259 extends Migration implements IMigration
     protected $description = 'Add new language vars and update existing ones regarding delivery time.';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      * @throws Exception
      */
     public function up()
@@ -64,7 +64,7 @@ class Migration_20221201150259 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

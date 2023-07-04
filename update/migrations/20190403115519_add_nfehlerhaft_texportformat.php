@@ -18,7 +18,7 @@ class Migration_20190403115519 extends Migration implements IMigration
     protected $description = 'Add nFehlerhaft to texportformat, tpluginemailvorlage';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -69,7 +69,7 @@ class Migration_20190403115519 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

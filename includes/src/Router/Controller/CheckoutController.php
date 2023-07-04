@@ -126,7 +126,10 @@ class CheckoutController extends RegistrationController
         if (!Upload::pruefeWarenkorbUploads($this->cart)) {
             Upload::redirectWarenkorb(\UPLOAD_ERROR_NEED_UPLOAD);
         }
+        // SHOP-4236 Checkbox zum Widerrufsrecht bei Downloadartikeln im Checkout
+        $hasDownloads = false;
         if (Download::hasDownloads($this->cart)) {
+            $hasDownloads = true;
             // Nur registrierte Benutzer
             $this->config['kaufabwicklung']['bestellvorgang_unregistriert'] = 'N';
         }
@@ -183,7 +186,6 @@ class CheckoutController extends RegistrationController
         //autom. step ermitteln
         if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
             if (!isset($_SESSION['Lieferadresse'])) {
-                $shippingID = 0;
                 if ($this->config['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] === 'N') {
                     $shippingID = $this->db->getSingleInt(
                         'SELECT DISTINCT(kLieferadresse) AS id
@@ -193,11 +195,11 @@ class CheckoutController extends RegistrationController
                         'id',
                         ['cid' => $this->customer->getID()]
                     );
+                } else {
+                    $shippingID = Order::getLastOrderRefIDs($this->customer->getID())->kLieferadresse;
                 }
                 $form->pruefeLieferdaten([
-                    'kLieferadresse' => $shippingID > 0
-                        ? $shippingID
-                        : Order::getLastOrderRefIDs($this->customer->getID())->kLieferadresse
+                    'kLieferadresse' => max($shippingID, 0)
                 ]);
                 if (isset($_SESSION['Lieferadresse']) && $_SESSION['Lieferadresse']->kLieferadresse > 0) {
                     $_GET['editLieferadresse'] = 1;
@@ -330,6 +332,7 @@ class CheckoutController extends RegistrationController
             ->assign('Steuerpositionen', $this->cart->gibSteuerpositionen())
             ->assign('bestellschritt', $this->getNextOrderStep($this->step))
             ->assign('unregForm', Request::verifyGPCDataInt('unreg_form'))
+            ->assign('hasDownloads', $hasDownloads)
             ->assignDeprecated('C_WARENKORBPOS_TYP_ARTIKEL', \C_WARENKORBPOS_TYP_ARTIKEL, '5.0.0')
             ->assignDeprecated('C_WARENKORBPOS_TYP_GRATISGESCHENK', \C_WARENKORBPOS_TYP_GRATISGESCHENK, '5.0.0');
 
@@ -1852,7 +1855,7 @@ class CheckoutController extends RegistrationController
                     $localizedNames,
                     1,
                     $fBrutto,
-                    (int)$packagings->kSteuerklasse,
+                    $packagings->kSteuerklasse,
                     \C_WARENKORBPOS_TYP_VERPACKUNG,
                     false
                 );

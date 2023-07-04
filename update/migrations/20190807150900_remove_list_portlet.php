@@ -16,7 +16,7 @@ class Migration_20190807150900 extends Migration implements IMigration
     protected $description = 'Remove List Portlet';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -24,7 +24,7 @@ class Migration_20190807150900 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

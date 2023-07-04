@@ -18,7 +18,7 @@ class Migration_20171213093514 extends Migration implements IMigration
     protected $description = 'Delete unused fulltext keys';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -38,7 +38,7 @@ class Migration_20171213093514 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

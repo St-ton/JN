@@ -192,6 +192,14 @@ class Item implements ItemInterface
     /**
      * @inheritdoc
      */
+    public function hasMoreInfo(): bool
+    {
+        return !empty($this->getPurpose()) || !empty($this->getCompany()) || !empty($this->getPrivacyPolicy());
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getCurrentLanguageID(): int
     {
         return $this->currentLanguageID;

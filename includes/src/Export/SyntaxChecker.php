@@ -196,7 +196,7 @@ class SyntaxChecker
             "SELECT tartikel.kArtikel
                 FROM tartikel
                 LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe != :groupID
+                    AND tartikelsichtbarkeit.kKundengruppe = :groupID
                 WHERE tartikel.kVaterArtikel = 0
                     AND (tartikel.cLagerBeachten = 'N' OR tartikel.fLagerbestand > 0)
                     AND tartikelsichtbarkeit.kArtikel IS NULL

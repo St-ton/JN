@@ -18,7 +18,7 @@ class Migration_20181129151242 extends Migration implements IMigration
     protected $description = 'Remove tkuponneukunde, add tkuponflag';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -82,7 +82,7 @@ class Migration_20181129151242 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

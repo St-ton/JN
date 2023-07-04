@@ -18,7 +18,7 @@ class Migration_20170227100440 extends Migration implements IMigration
     protected $description = 'Alter tzahlungsinfo to represent sync status';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -29,7 +29,7 @@ class Migration_20170227100440 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

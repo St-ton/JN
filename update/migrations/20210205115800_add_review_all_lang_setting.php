@@ -12,7 +12,7 @@ class Migration_20210205115800 extends Migration implements IMigration
     protected $description = 'Add review all lang setting';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -39,7 +39,7 @@ class Migration_20210205115800 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

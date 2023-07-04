@@ -573,16 +573,14 @@ class DemoDataInstaller
             ? $limit - count($variations) : 0;
         $propertyID            = 0;
         $lastName              = '';
-        $productParentID       = 0;
         $propertyCombinationID = 0;
+        $productParentID       = 0;
         
         for ($i = 1; $i <= $limit; ++$i) {
             if ($propertyID > 0
                 && $variations[$i - $variation - 1] !== null
             ) {
-                $name            = $lastName . '-' . $variations[$i - $variation - 1];
-                $productParentID = $eigenschaft->kArtikel ?? $productParentID;
-                
+                $name                            = $lastName . '-' . $variations[$i - $variation - 1];
                 $propertyValue                   = new stdClass();
                 $propertyValue->kEigenschaftwert = $maxPropValueID + ($i - $variation);
                 $propertyValue->kEigenschaft     = $maxPropertyID;
@@ -623,11 +621,14 @@ class DemoDataInstaller
                 } catch (OverflowException) {
                     $name = $this->faker->unique(true)->productName . '_' . ++$index;
                 }
-                $lastName = $name;
+                $lastName        = $name;
+                $productParentID = 0;
             }
             
             if ($i === $variation) {
+                $productParentID        = $maxPk + $i;
                 $property               = new stdClass();
+                $propertyID             = $maxPropertyID;
                 $property->kEigenschaft = $maxPropertyID;
                 $property->kArtikel     = $maxPk + $i;
                 $property->cName        = Shop::getLanguage(true) === 'ger' ? 'Farbe' : 'Color';
@@ -635,7 +636,7 @@ class DemoDataInstaller
                 $property->cTyp         = 'SELECTBOX';
                 $property->nSort        = 0;
                 $this->db->insert('teigenschaft', $property);
-                
+
                 $propertyLang               = new stdClass();
                 $propertyLang->kEigenschaft = $maxPropertyID;
                 // ToDo: inserts also for default language. Could this lead to errors?
@@ -657,7 +658,7 @@ class DemoDataInstaller
                 : 0;
             $product->kVersandklasse           = 1;
             $product->kEigenschaftKombi        = $propertyCombinationID;
-            $product->kVaterArtikel            = $productParentID;
+            $product->kVaterArtikel            = ($product->kArtikel === $productParentID) ? 0 : $productParentID;
             $product->kStueckliste             = 0;
             $product->kWarengruppe             = 0;
             $product->kVPEEinheit              = 0;

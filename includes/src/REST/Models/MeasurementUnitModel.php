@@ -9,6 +9,10 @@ use JTL\Model\DataModel;
 /**
  * Class MeasurementUnitModel
  *
+ * @OA\Schema(
+ *     title="MeasurementUnitModel",
+ *     description="MeasurementUnitModel",
+ * )
  * @package JTL\REST\Models
  * @property int    $kMassEinheit
  * @method int getKMassEinheit()

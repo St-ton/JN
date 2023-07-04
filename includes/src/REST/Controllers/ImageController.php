@@ -53,14 +53,14 @@ class ImageController extends AbstractController
     /**
      * @inheritdoc
      * @OA\Get(
-     *   path="/image/product/{productId}",
+     *   path="/image/product/{id}",
      *   tags={"product"},
-     *   description="List product images",
-     *   summary="List product images",
+     *   description="List image with primary key <id>",
+     *   summary="List image with primary key <id>",
      *   @OA\Parameter(
-     *       name="productId",
+     *       name="id",
      *       in="path",
-     *       description="ID of product that needs to be fetched",
+     *       description="ID of image that needs to be fetched",
      *       required=true,
      *       @OA\Schema(
      *           type="integer"
@@ -68,23 +68,23 @@ class ImageController extends AbstractController
      *   ),
      *   @OA\Response(
      *     response=200,
-     *     description="A list with product images",
+     *     description="List image with primary key <id>",
      *     @OA\JsonContent(ref="#/components/schemas/ProductImageModel"),
      *   ),
      *   @OA\Response(
      *     response=404,
-     *     description="Product images not found"
+     *     description="Image not found"
      *   )
      * )
      * @OA\Get(
-     *     path="/image/category/{categoryId}",
+     *     path="/image/category/{id}",
      *     tags={"category"},
-     *     description="List category images",
-     *     summary="List category images",
+     *     description="List image with primary key <id>",
+     *     summary="List image with primary key <id>",
      *     @OA\Parameter(
-     *         name="categoryId",
+     *         name="id",
      *         in="path",
-     *         description="ID of product that needs to be fetched",
+     *         description="ID of image that needs to be fetched",
      *         required=true,
      *         @OA\Schema(
      *             type="integer"
@@ -101,14 +101,14 @@ class ImageController extends AbstractController
      *     )
      * )
      * @OA\Get(
-     *     path="/image/variation/{variationId}",
-     *     tags={"category"},
-     *     description="List variation images",
-     *     summary="List variation images",
+     *     path="/image/variation/{id}",
+     *     tags={"variation"},
+     *     description="List image with primary key <id>",
+     *     summary="List image with primary key <id>",
      *     @OA\Parameter(
-     *         name="variationId",
+     *         name="id",
      *         in="path",
-     *         description="ID of variation that needs to be fetched",
+     *         description="ID of iamge that needs to be fetched",
      *         required=true,
      *         @OA\Schema(
      *             type="integer"
@@ -125,14 +125,14 @@ class ImageController extends AbstractController
      *     )
      * )
      * @OA\Get(
-     *     path="/image/characteristicvalue/{characteristicvalueId}",
+     *     path="/image/characteristicvalue/{id}",
      *     tags={"characteristicvalue"},
-     *     description="List characteristic value images",
-     *     summary="List characteristic value images",
+     *     description="List image with primary key <id>",
+     *     summary="List image with primary key <id>",
      *     @OA\Parameter(
-     *         name="characteristicvalueId",
+     *         name="id",
      *         in="path",
-     *         description="ID of characteristic value that needs to be fetched",
+     *         description="ID of image that needs to be fetched",
      *         required=true,
      *         @OA\Schema(
      *             type="integer"
@@ -269,6 +269,7 @@ class ImageController extends AbstractController
             $fileName = \str_replace(' ', '_', $file->getClientFilename());
             $file->moveTo($basePath . $fileName);
             $model->setPath($fileName);
+            $model->setId($model->getNewID());
         }
         if ($reference > 0) {
             $model->setPropertyValueID($reference);

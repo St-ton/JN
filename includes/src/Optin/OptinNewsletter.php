@@ -438,6 +438,7 @@ class OptinNewsletter extends OptinBase implements OptinInterface
                 ->setLastName($singleOptin->cNachname)
                 ->setEmail($singleOptin->cEmail)
                 ->setCustomerID($singleOptin->kKunde)
+                ->setCustomerGroupID(Frontend::getCustomer()->getGroupID())
                 ->setLanguageID(Shop::getLanguageID())
                 ->setRealIP(Request::getRealIP());
             $this->saveOptin($this->optCode);

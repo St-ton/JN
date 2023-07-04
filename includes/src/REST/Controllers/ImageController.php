@@ -307,6 +307,7 @@ class ImageController extends AbstractController
             $fileName = \str_replace(' ', '_', $file->getClientFilename());
             $file->moveTo($basePath . $fileName);
             $model->setPath($fileName);
+            $model->setId($model->getNewID());
         }
         if ($reference > 0) {
             $model->setProductID($reference);

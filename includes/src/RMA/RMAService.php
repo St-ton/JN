@@ -154,7 +154,7 @@ class RMAService extends AbstractService
             "SELECT twarenkorbpos.kArtikel AS id, twarenkorbpos.cEinheit AS unit,
        twarenkorbpos.cArtNr AS productNR, twarenkorbpos.fPreisEinzelNetto AS unitPriceNet, twarenkorbpos.fMwSt AS vat,
        twarenkorbpos.cName AS name, tbestellung.kKunde AS clientID,
-       tbestellung.kLieferadresse AS shippingAddressID, tbestellung.cStatus AS status,
+       tbestellung.kLieferadresse AS shippingAddressID, tbestellung.cStatus AS orderStatus,
        tbestellung.cBestellNr AS orderID, tlieferscheinpos.kLieferscheinPos AS shippingNotePosID,
        tlieferscheinpos.kLieferschein AS shippingNoteID, tlieferscheinpos.fAnzahl AS quantity,
        tartikel.cSeo AS seo, DATE_FORMAT(FROM_UNIXTIME(tversand.dErstellt), '%d-%m-%Y') AS createDate,
@@ -214,7 +214,7 @@ class RMAService extends AbstractService
             $property->value   = $product->propertyValueLocalized ?? $product->propertyValue ?? '';
             $product->property = $property;
 
-            $product->Artikel->fuelleArtikel((int)$product->id);
+            $product->Artikel = (new Artikel())->fuelleArtikel((int)$product->id);
 
             return $product;
         })->keyBy('shippingNotePosID')->all();

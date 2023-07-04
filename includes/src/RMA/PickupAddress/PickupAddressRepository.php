@@ -53,7 +53,7 @@ class PickupAddressRepository extends AbstractRepository
     public function generateID(object $data = null): int
     {
         $id = $this->getDB()->getSingleInt(
-            'SELECT id FROM ' . $this->getTableName() . 'WHERE hash = :hash',
+            'SELECT id FROM ' . $this->getTableName() . ' WHERE hash = :hash',
             'id',
             ['hash' => $data->hash ?? '']
         ) + 1;

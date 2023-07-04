@@ -722,7 +722,11 @@
 
         error: function() {
             if (console && console.error) {
-                console.error(arguments);
+                if (1 in arguments && arguments[1] === 'abort') {
+                    console.info(arguments);
+                } else {
+                    console.error(arguments);
+                }
             }
         },
 

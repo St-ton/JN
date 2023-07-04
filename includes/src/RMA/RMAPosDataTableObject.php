@@ -2,8 +2,12 @@
 
 namespace JTL\RMA;
 
+use JTL\Catalog\Product\Artikel;
+use JTL\Catalog\Product\Preise;
 use JTL\DataObjects\AbstractDataObject;
 use JTL\DataObjects\DataTableObjectInterface;
+use JTL\Exceptions\CircularReferenceException;
+use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Helpers\Date;
 
 /**
@@ -107,6 +111,16 @@ class RMAPosDataTableObject extends AbstractDataObject implements DataTableObjec
      * @var array|null
      */
     private ?array $history = null;
+
+    /**
+     * @var Artikel|null
+     */
+    private ?Artikel $product = null;
+
+    /**
+     * @var object|null
+     */
+    private ?object $reason = null;
     
     /**
      * @var string[]
@@ -278,6 +292,27 @@ class RMAPosDataTableObject extends AbstractDataObject implements DataTableObjec
     }
 
     /**
+     * @param int|string|null $reasonID
+     * @param RmaService|null $rmaService
+     * @return $this
+     */
+    public function setReason(int|string|null $reasonID, ?RmaService $rmaService = null): self
+    {
+        $rmaService   = $rmaService ?? new RmaService();
+        $this->reason = $rmaService->getReason($reasonID ?? $this->reasonID ?? 0);
+
+        return $this;
+    }
+
+    /**
+     * @return object|null
+     */
+    public function getReason(): ?object
+    {
+        return $this->reason;
+    }
+
+    /**
      * @return string
      */
     public function getName(): string
@@ -302,6 +337,30 @@ class RMAPosDataTableObject extends AbstractDataObject implements DataTableObjec
     public function getUnitPriceNet(): float
     {
         return $this->unitPriceNet;
+    }
+
+    /**
+     * @return float
+     */
+    public function getPriceNet(): float
+    {
+        return $this->unitPriceNet * $this->quantity;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPriceLocalized(): string
+    {
+        return Preise::getLocalizedPriceString($this->unitPriceNet * $this->quantity);
+    }
+
+    /**
+     * @return string
+     */
+    public function getUnitPriceLocalized(): string
+    {
+        return Preise::getLocalizedPriceString($this->unitPriceNet);
     }
 
     /**
@@ -504,5 +563,31 @@ class RMAPosDataTableObject extends AbstractDataObject implements DataTableObjec
         $this->history = $history;
 
         return $this;
+    }
+
+    /**
+     * @param int|null $productID
+     * @param Artikel|null $product
+     * @return $this
+     * @throws CircularReferenceException
+     * @throws ServiceNotFoundException
+     */
+    public function setProduct(?int $productID = null, ?Artikel $product = null): self
+    {
+        if ($product !== null) {
+            $this->product = $product;
+        } elseif ($productID !== null) {
+            $this->product = (new Artikel())->fuelleArtikel($productID);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Artikel|null
+     */
+    public function getProduct(): ?Artikel
+    {
+        return $this->product;
     }
 }

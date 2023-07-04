@@ -1,7 +1,10 @@
 {block name='account-shipping-address-form'}
     {block name='account-shipping-address-form-form'}
+        {if !isset($isModal)}
+            {assign var=isModal value=false}
+        {/if}
         {row}
-            {col cols=12 md=6 class='shipping-address-form-wrapper'}
+            {col cols=12 md={($isModal) ? 12 : 6} class='shipping-address-form-wrapper'}
                 {form method="post" id='lieferadressen' action="{get_static_route params=['editLieferadresse' => 1]}" class="jtl-validate" slide=true}
                     {block name='account-shipping-address-form-include-customer-shipping-address'}
                         {include file='checkout/customer_shipping_address.tpl' prefix="register" fehlendeAngaben=null}
@@ -45,64 +48,66 @@
                     {/block}
                 {/form}
             {/col}
-            {col cols=12 md=6 class='shipping-addresses-wrapper'}
-                {block name='account-shipping-address-form-form-address-wrapper'}
-                    <table id="lieferadressen-liste" class="{if $Einstellungen.kaufabwicklung.bestellvorgang_kaufabwicklungsmethode == 'N'}shipping-address-standard-active{/if} table display compact" style="width:100%">
-                        <thead>
-                            <tr>
-                                <th>&nbsp;</th>
-                                <th>&nbsp;</th>
-                                <th>&nbsp;</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {block name='account-shipping-address-form-form-addresses'}
-                            {foreach $Lieferadressen as $address}
+            {if !$isModal}
+                {col cols=12 md=6 class='shipping-addresses-wrapper'}
+                    {block name='account-shipping-address-form-form-address-wrapper'}
+                        <table id="lieferadressen-liste" class="{if $Einstellungen.kaufabwicklung.bestellvorgang_kaufabwicklungsmethode == 'N'}shipping-address-standard-active{/if} table display compact" style="width:100%">
+                            <thead>
                                 <tr>
-                                    <td>
-                                        {if $address->cFirma}{$address->cFirma}<br />{/if}
-                                        <strong>{if $address->cTitel}{$address->cTitel}{/if} {$address->cVorname} {$address->cNachname}</strong><br />
-                                        {$address->cStrasse} {$address->cHausnummer}<br />
-                                        {$address->cPLZ} {$address->cOrt}<br />
-                                        <div id="deliveryAdditional{$address->kLieferadresse}" class="collapse">
-                                            {block name='account-shipping-address-include-inc-delivery-address'}
-                                                {include file='checkout/inc_delivery_address.tpl' Lieferadresse=$address hideMainInfo=true}
-                                            {/block}
-                                        </div>
-                                        {button variant="link" class="btn-show-more"
-                                            data=["toggle"=> "collapse", "target"=>"#deliveryAdditional{$address->kLieferadresse}"]}
-                                            {lang  key='showMore'}
-                                        {/button}
-                                    </td>
-                                    <td class="text-right">
-                                        {buttongroup}
-                                            {if $Einstellungen.kaufabwicklung.bestellvorgang_kaufabwicklungsmethode == 'N' && $address->nIstStandardLieferadresse !== 1}
-                                                <button type="button" class="btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="top" title="{lang key='useAsDefaultShippingAddress' section='account data'}" onclick="location.href='{get_static_route id='jtl.php' params=['editLieferadresse' => 1, 'setAddressAsDefault' => {$address->kLieferadresse}]}'">
-                                                    {lang key='setAsStandard' section='account data'}
-                                                </button>
-                                            {/if}
-
-                                            <button type="button" class="btn btn-secondary btn-sm" data-toggle="tooltip" data-placement="top" title="{lang key='editAddress' section='account data'}" onclick="location.href='{get_static_route id='jtl.php' params=['editLieferadresse' => 1, 'editAddress' => {$address->kLieferadresse}]}'">
-                                                <span class="fas fa-pencil-alt"></span>
-                                            </button>
-
-                                            <button type="button" class="btn btn-danger btn-sm delete-popup-modal" data-lieferadresse="{$address->kLieferadresse}" data-toggle="tooltip" data-placement="top" title="{lang key='deleteAddress' section='account data'}">
-                                                <span class="fas fa-times"></span>
-                                            </button>
-                                        {/buttongroup}
-                                    </td>
-                                    <td>
-                                        <span class="invisible">
-                                            {$address->nIstStandardLieferadresse}
-                                        </span>
-                                    </td>
+                                    <th>&nbsp;</th>
+                                    <th>&nbsp;</th>
+                                    <th>&nbsp;</th>
                                 </tr>
-                            {/foreach}
-                            {/block}
-                        </tbody>
-                    </table>
-                {/block}
-            {/col}
+                            </thead>
+                            <tbody>
+                                {block name='account-shipping-address-form-form-addresses'}
+                                {foreach $Lieferadressen as $address}
+                                    <tr>
+                                        <td>
+                                            {if $address->cFirma}{$address->cFirma}<br />{/if}
+                                            <strong>{if $address->cTitel}{$address->cTitel}{/if} {$address->cVorname} {$address->cNachname}</strong><br />
+                                            {$address->cStrasse} {$address->cHausnummer}<br />
+                                            {$address->cPLZ} {$address->cOrt}<br />
+                                            <div id="deliveryAdditional{$address->kLieferadresse}" class="collapse">
+                                                {block name='account-shipping-address-include-inc-delivery-address'}
+                                                    {include file='checkout/inc_delivery_address.tpl' Lieferadresse=$address hideMainInfo=true}
+                                                {/block}
+                                            </div>
+                                            {button variant="link" class="btn-show-more"
+                                                data=["toggle"=> "collapse", "target"=>"#deliveryAdditional{$address->kLieferadresse}"]}
+                                                {lang  key='showMore'}
+                                            {/button}
+                                        </td>
+                                        <td class="text-right">
+                                            {buttongroup}
+                                                {if $Einstellungen.kaufabwicklung.bestellvorgang_kaufabwicklungsmethode == 'N' && $address->nIstStandardLieferadresse !== 1}
+                                                    <button type="button" class="btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="top" title="{lang key='useAsDefaultShippingAddress' section='account data'}" onclick="location.href='{get_static_route id='jtl.php' params=['editLieferadresse' => 1, 'setAddressAsDefault' => {$address->kLieferadresse}]}'">
+                                                        {lang key='setAsStandard' section='account data'}
+                                                    </button>
+                                                {/if}
+
+                                                <button type="button" class="btn btn-secondary btn-sm" data-toggle="tooltip" data-placement="top" title="{lang key='editAddress' section='account data'}" onclick="location.href='{get_static_route id='jtl.php' params=['editLieferadresse' => 1, 'editAddress' => {$address->kLieferadresse}]}'">
+                                                    <span class="fas fa-pencil-alt"></span>
+                                                </button>
+
+                                                <button type="button" class="btn btn-danger btn-sm delete-popup-modal" data-lieferadresse="{$address->kLieferadresse}" data-toggle="tooltip" data-placement="top" title="{lang key='deleteAddress' section='account data'}">
+                                                    <span class="fas fa-times"></span>
+                                                </button>
+                                            {/buttongroup}
+                                        </td>
+                                        <td>
+                                            <span class="invisible">
+                                                {$address->nIstStandardLieferadresse}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                {/foreach}
+                                {/block}
+                            </tbody>
+                        </table>
+                    {/block}
+                {/col}
+            {/if}
         {/row}
     {/block}
     {block name='account-shipping-address-form-script'}

@@ -96,6 +96,11 @@ class Migration_20230519120834 extends Migration implements IMigration
                     'ger' => 'Abholadresse',
                     'eng' => 'Pickup address'
                 ]
+            , 'newPickupAddress' =>
+                [
+                    'ger' => 'Neue Abholadresse erstellen',
+                    'eng' => 'Create new pickup address'
+                ]
         ];
         $newVars->datatables = [
             'search' =>

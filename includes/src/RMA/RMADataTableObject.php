@@ -2,6 +2,7 @@
 
 namespace JTL\RMA;
 
+use JTL\Catalog\Product\Preise;
 use JTL\DataObjects\AbstractDataObject;
 use JTL\DataObjects\DataTableObjectInterface;
 use JTL\Helpers\Date;
@@ -272,7 +273,7 @@ class RMADataTableObject extends AbstractDataObject implements DataTableObjectIn
      */
     public function addPosition(RMAPosDataTableObject $position): self
     {
-        $this->positions[$position->getID()] = $position;
+        $this->positions[/*$position->getID()*/] = $position;
 
         return $this;
     }
@@ -311,5 +312,29 @@ class RMADataTableObject extends AbstractDataObject implements DataTableObjectIn
             }
         }
         return new RMAPosDataTableObject();
+    }
+
+    /**
+     * @return float
+     */
+    public function getPriceNet(): float
+    {
+        $total = 0.00;
+        foreach ($this->getPositions() as $pos) {
+            $total += $pos->getPriceNet();
+        }
+        return $total;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPriceLocalized(): string
+    {
+        $total = 0.00;
+        foreach ($this->getPositions() as $pos) {
+            $total += $pos->getPriceNet();
+        }
+        return Preise::getLocalizedPriceString($total);
     }
 }

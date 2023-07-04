@@ -90,7 +90,10 @@ class IOMethods
             ->register('updateReviewHelpful', $this->updateReviewHelpful(...))
             ->register('setDeliveryaddressDefault', $this->setDeliveryaddressDefault(...))
             ->register('createRMA', $this->createRMA(...))
-            ->register('deleteRMA', $this->deleteRMA(...));
+            ->register('deleteRMA', $this->deleteRMA(...))
+            ->register('rmaSummary', $this->rmaSummary(...))
+            ->register('rmaPositions', $this->rmaPositions(...))
+            ->register('createShippingAddress', $this->createShippingAddress(...));
     }
 
     /**
@@ -1460,71 +1463,249 @@ class IOMethods
         $ioResponse = new IOResponse();
         $response   = new stdClass();
 
-        if (Form::validateToken($param['jtl_token'][0])) {
-            if (!isset($param['quantity']) || !isset($param['reason']) || !isset($param['comment'])) {
-                $response->result = false;
-                $response->msg    = Shop::Lang()->get('mandatoryFieldNotification', 'errorMessages');
-                $ioResponse->assignVar('response', $response);
+        if (!Form::validateToken($param['jtl_token'][0])) {
+            $response->result = false;
+            $response->msg    = Shop::Lang()->get('missingToken', 'messages');
+            $ioResponse->assignVar('response', $response);
 
-                return $ioResponse;
-            }
-
-            $RMAService = new RMAService();
-            $customerID = Frontend::getCustomer()->getID();
-            if ($customerID <= 0) {
-                $response->result = false;
-                $response->msg    = Shop::Lang()->get('rma_login', 'rma');
-                $ioResponse->assignVar('response', $response);
-
-                return $ioResponse;
-            }
-
-            $data                  = new stdClass();
-            $data->customerID      = $customerID;
-            $data->pickupAddressID = 0;
-            $data->createDate      = date('Y-m-d H:i:s');
-            $rmaTableObject        = new RMADataTableObject();
-            $rmaTableObject->hydrateWithObject($data);
-            $rmaID = $RMAService->getRepository()->insert($rmaTableObject);
-            if ($rmaID <= 0) {
-                $response->result = false;
-                $response->msg    = Shop::Lang()->get('unknownError', 'messages');
-                $ioResponse->assignVar('response', $response);
-
-                return $ioResponse;
-            }
-
-            $returnableProducts = $RMAService->getReturnableProducts($customerID);
-
-            foreach ($param['quantity'] as $key => $quantity) {
-                $dbData                    = $returnableProducts[(int)$quantity['shippingNotePosID']];
-                $data                      = new stdClass();
-                $data->rmaID               = $rmaID;
-                $data->shippingNotePosID   = $dbData->shippingNotePosID;
-                $data->orderPosID          = 0;
-                $data->productID           = $dbData->Artikel->kArtikel;
-                $data->reasontID           = $RMAService->getReason(
-                    $param['comment'][$key]['value'] ?? 0
-                );
-                $data->name                = $dbData->name;
-                $data->unitPriceNet        = $dbData->unitPriceNet;
-                $data->quantity            = (float)$quantity['value'];
-                $data->vat                 = $dbData->vat;
-                $data->unit                = $dbData->unit;
-                $data->stockBeforePurchase = 0.00;
-                $data->longestMinDelivery  = 0;
-                $data->longestMaxDelivery  = 0;
-                $data->comment             = $param['comment'][$key]['value'];
-                $data->createDate          = date('Y-m-d H:i:s');
-                $rmaPosTableObject         = new RMAPosDataTableObject();
-                $rmaPosTableObject->hydrateWithObject($data);
-                $RMAService->getRepository('RMAPosRepository')->insert($rmaPosTableObject);
-            }
-
-            $response->result = true;
-            $response->rmaID  = $rmaID;
-            $response->msg    = Shop::Lang()->get('rma_info_success', 'rma', [$rmaID]);
+            return $ioResponse;
         }
+        if (!isset($param['quantity']) || !isset($param['reason']) || !isset($param['comment'])) {
+            $response->result = false;
+            $response->msg    = Shop::Lang()->get('mandatoryFieldNotification', 'errorMessages');
+            $ioResponse->assignVar('response', $response);
+
+            return $ioResponse;
+        }
+
+        $rmaService = new RMAService();
+        $customerID = Frontend::getCustomer()->getID();
+        if ($customerID <= 0) {
+            $response->result = false;
+            $response->msg    = Shop::Lang()->get('rma_login', 'rma');
+            $ioResponse->assignVar('response', $response);
+
+            return $ioResponse;
+        }
+
+        $data                  = new stdClass();
+        $data->customerID      = $customerID;
+        $data->pickupAddressID = 0;
+        $data->createDate      = date('Y-m-d H:i:s');
+        $rmaTableObject        = new RMADataTableObject();
+        $rmaTableObject->hydrateWithObject($data);
+        $rmaID = $rmaService->getRepository()->insert($rmaTableObject);
+        if ($rmaID <= 0) {
+            $response->result = false;
+            $response->msg    = Shop::Lang()->get('unknownError', 'messages');
+            $ioResponse->assignVar('response', $response);
+
+            return $ioResponse;
+        }
+
+        $returnableProducts = $rmaService->getReturnableProducts($customerID);
+
+        foreach ($param['quantity'] as $key => $quantity) {
+            $dbData                    = $returnableProducts[(int)$quantity['shippingNotePosID']];
+            $data                      = new stdClass();
+            $data->rmaID               = $rmaID;
+            $data->shippingNotePosID   = $dbData->shippingNotePosID;
+            $data->orderPosID          = 0;
+            $data->productID           = $dbData->Artikel->kArtikel;
+            $data->reasontID           = $rmaService->getReason(
+                $param['comment'][$key]['value'] ?? 0
+            );
+            $data->name                = $dbData->name;
+            $data->unitPriceNet        = $dbData->unitPriceNet;
+            $data->quantity            = (float)$quantity['value'];
+            $data->vat                 = $dbData->vat;
+            $data->unit                = $dbData->unit;
+            $data->stockBeforePurchase = 0.00;
+            $data->longestMinDelivery  = 0;
+            $data->longestMaxDelivery  = 0;
+            $data->comment             = $param['comment'][$key]['value'];
+            $data->createDate          = date('Y-m-d H:i:s');
+            $rmaPosTableObject         = new RMAPosDataTableObject();
+            $rmaPosTableObject->hydrateWithObject($data);
+            $rmaService->getRepository('RMAPosRepository')->insert($rmaPosTableObject);
+        }
+
+        $response->result = true;
+        $response->rmaID  = $rmaID;
+        $response->msg    = Shop::Lang()->get('rma_info_success', 'rma', [$rmaID]);
+
+        $ioResponse->assignVar('response', $response);
+
+        return $ioResponse;
+    }
+
+
+    /**
+     * @param array $args
+     * @return IOResponse
+     * @since 5.3.0
+     */
+    public function rmaPositions(array $args = []): IOResponse
+    {
+        $param = [];
+        foreach ($args as $arg) {
+            if (!isset($param[$arg['name']])) {
+                $param[$arg['name']] = [$arg['value']];
+            } else {
+                $param[$arg['name']][] = $arg['value'];
+            }
+        }
+        $ioResponse = new IOResponse();
+        $response   = new stdClass();
+
+        if (!Form::validateToken($param['jtl_token'][0])) {
+            $response->result = false;
+            $response->msg    = Shop::Lang()->get('missingToken', 'messages');
+            $ioResponse->assignVar('response', $response);
+
+            return $ioResponse;
+        }
+        if (!isset($param['quantity']) || !isset($param['reason']) || !isset($param['comment'])) {
+            $response->result = false;
+            $response->msg    = Shop::Lang()->get('mandatoryFieldNotification', 'errorMessages');
+            $ioResponse->assignVar('response', $response);
+
+            return $ioResponse;
+        }
+
+        $rmaService = new RMAService();
+        $customerID = Frontend::getCustomer()->getID();
+        if ($customerID <= 0) {
+            $response->result = false;
+            $response->msg    = Shop::Lang()->get('rma_login', 'rma');
+            $ioResponse->assignVar('response', $response);
+
+            return $ioResponse;
+        }
+
+        $data                  = new stdClass();
+        $data->customerID      = $customerID;
+        $data->pickupAddressID = 0;
+        $data->createDate      = date('Y-m-d H:i:s');
+        $rmaDTO                = new RMADataTableObject();
+        $rmaDTO->hydrateWithObject($data);
+
+        $returnableProducts = $rmaService->getReturnableProducts($customerID);
+
+        foreach ($param['quantity'] as $key => $quantity) {
+            $dbData                    = $returnableProducts[(int)$quantity['shippingNotePosID']];
+            $data                      = new stdClass();
+            $data->shippingNotePosID   = $dbData->shippingNotePosID;
+            $data->orderPosID          = 0;
+            $data->productID           = $dbData->Artikel->kArtikel;
+            $data->reasonID            = $param['reason'][$key]['value'] ?? 0;
+            $data->name                = $dbData->name;
+            $data->unitPriceNet        = $dbData->unitPriceNet;
+            $data->quantity            = (float)$quantity['value'];
+            $data->vat                 = $dbData->vat;
+            $data->unit                = $dbData->unit;
+            $data->stockBeforePurchase = 0.00;
+            $data->longestMinDelivery  = 0;
+            $data->longestMaxDelivery  = 0;
+            $data->comment             = $param['comment'][$key]['value'];
+            $data->createDate          = date('Y-m-d H:i:s');
+            $rmaPosDTO                 = new RMAPosDataTableObject();
+            $rmaPosDTO->hydrateWithObject($data);
+            $rmaPosDTO->setProduct(null, $dbData->Artikel);
+            $rmaPosDTO->setReason(null, $rmaService);
+            $rmaDTO->addPosition($rmaPosDTO);
+        }
+
+        $response->result = true;
+        $response->html   = Shop::Smarty()->assign('rmaPositions', $rmaDTO->getPositions())
+            ->assign('rmaTotal', $rmaDTO->getPriceLocalized())
+            ->fetch('account/rma_positions.tpl');
+
+        $ioResponse->assignVar('response', $response);
+
+        return $ioResponse;
+    }
+
+    /**
+     * @param array $args
+     * @return IOResponse
+     * @since 5.3.0
+     */
+    public function rmaSummary(array $args = []): IOResponse
+    {
+        $param = [];
+        foreach ($args as $arg) {
+            if (!isset($param[$arg['name']])) {
+                $param[$arg['name']] = [$arg['value']];
+            } else {
+                $param[$arg['name']][] = $arg['value'];
+            }
+        }
+        $ioResponse = new IOResponse();
+        $response   = new stdClass();
+
+        if (!Form::validateToken($param['jtl_token'][0])) {
+            $response->result = false;
+            $response->msg    = Shop::Lang()->get('missingToken', 'messages');
+            $ioResponse->assignVar('response', $response);
+
+            return $ioResponse;
+        }
+        if (!isset($param['quantity']) || !isset($param['reason']) || !isset($param['comment'])) {
+            $response->result = false;
+            $response->msg    = Shop::Lang()->get('mandatoryFieldNotification', 'errorMessages');
+            $ioResponse->assignVar('response', $response);
+
+            return $ioResponse;
+        }
+
+        $rmaService = new RMAService();
+        $customerID = Frontend::getCustomer()->getID();
+        if ($customerID <= 0) {
+            $response->result = false;
+            $response->msg    = Shop::Lang()->get('rma_login', 'rma');
+            $ioResponse->assignVar('response', $response);
+
+            return $ioResponse;
+        }
+
+        $data                  = new stdClass();
+        $data->customerID      = $customerID;
+        $data->pickupAddressID = 0;
+        $data->createDate      = date('Y-m-d H:i:s');
+        $rmaDTO                = new RMADataTableObject();
+        $rmaDTO->hydrateWithObject($data);
+
+        $returnableProducts = $rmaService->getReturnableProducts($customerID);
+
+        foreach ($param['quantity'] as $key => $quantity) {
+            $dbData                    = $returnableProducts[(int)$quantity['shippingNotePosID']];
+            $data                      = new stdClass();
+            $data->shippingNotePosID   = $dbData->shippingNotePosID;
+            $data->orderPosID          = 0;
+            $data->productID           = $dbData->Artikel->kArtikel;
+            $data->reasonID            = $param['reason'][$key]['value'] ?? 0;
+            $data->name                = $dbData->name;
+            $data->unitPriceNet        = $dbData->unitPriceNet;
+            $data->quantity            = (float)$quantity['value'];
+            $data->vat                 = $dbData->vat;
+            $data->unit                = $dbData->unit;
+            $data->stockBeforePurchase = 0.00;
+            $data->longestMinDelivery  = 0;
+            $data->longestMaxDelivery  = 0;
+            $data->comment             = $param['comment'][$key]['value'];
+            $data->createDate          = date('Y-m-d H:i:s');
+            $rmaPosDTO                 = new RMAPosDataTableObject();
+            $rmaPosDTO->hydrateWithObject($data);
+            $rmaPosDTO->setProduct(null, $dbData->Artikel);
+            $rmaPosDTO->setReason(null, $rmaService);
+            $rmaDTO->addPosition($rmaPosDTO);
+        }
+
+        $response->result = true;
+        $response->html   = Shop::Smarty()->assign('rma', $rmaDTO)
+            ->fetch('account/rma_summary.tpl');
+
         $ioResponse->assignVar('response', $response);
 
         return $ioResponse;
@@ -1542,8 +1723,8 @@ class IOMethods
         $ioResponse = new IOResponse();
         $response   = new stdClass();
 
-        $RMAService = new RMAService();
-        if ($RMAService->delete([$rmaID]) === true) {
+        $rmaService = new RMAService();
+        if ($rmaService->delete([$rmaID]) === true) {
             $response->result = true;
             $ioResponse->assignVar('response', $response);
 
@@ -1553,6 +1734,73 @@ class IOMethods
         $response->result = false;
         $response->msg    = Shop::Lang()->get('rma_error', 'rma');
 
+        return $ioResponse;
+    }
+
+    /**
+     * @param array $postData
+     * @return IOResponse
+     */
+    public function createShippingAddress(array $args = []): IOResponse
+    {
+        $param = [];
+        foreach ($args as $arg) {
+            $newName         = str_replace('[]', '_', $arg['name']);
+            $newName         = str_replace('[', '_', $newName);
+            $newName         = str_replace(']', '', $newName);
+            $param[$newName] = $arg['value'];
+        }
+        $ioResponse = new IOResponse();
+        $response   = new stdClass();
+
+        if (!Form::validateToken($param['jtl_token'])) {
+            $response->result = false;
+            $response->msg    = Shop::Lang()->get('missingToken', 'messages');
+            $ioResponse->assignVar('response', $response);
+
+            return $ioResponse;
+        }
+
+        $customerID = Frontend::getCustomer()->getID();
+        if ($customerID <= 0) {
+            $response->result = false;
+            $response->msg    = Shop::Lang()->get('rma_login', 'rma');
+            $ioResponse->assignVar('response', $response);
+
+            return $ioResponse;
+        }
+
+        $data                     = Text::filterXSS($param ?? '');
+        $template                 = new DeliveryAddressTemplate($this->db);
+        $template->kLieferadresse = 0;
+        $template->kKunde         = $customerID;
+        $template->cAnrede        = $data['register_shipping_address_anrede'] ?? '';
+        $template->cTitel         = $data['register_shipping_address_titel'] ?? '';
+        $template->cVorname       = $data['register_shipping_address_vorname'] ?? '';
+        $template->cNachname      = $data['register_shipping_address_nachname'] ?? '';
+        $template->cFirma         = $data['register_shipping_address_firma'] ?? '';
+        $template->cZusatz        = $data['register_shipping_address_firmazusatz'] ?? '';
+        $template->cStrasse       = $data['register_shipping_address_strasse'] ?? '';
+        $template->cHausnummer    = $data['register_shipping_address_hausnummer'] ?? '';
+        $template->cAdressZusatz  = $data['register_shipping_address_adresszusatz'] ?? '';
+        $template->cLand          = $data['register_shipping_address_land'] ?? '';
+        $template->cBundesland    = $data['register_shipping_address_bundesland'] ?? '';
+        $template->cPLZ           = $data['register_shipping_address_plz'] ?? '';
+        $template->cOrt           = $data['register_shipping_address_ort'] ?? '';
+        $template->cMobil         = $data['register_shipping_address_mobil'] ?? '';
+        $template->cFax           = $data['register_shipping_address_fax'] ?? '';
+        $template->cTel           = $data['register_shipping_address_tel'] ?? '';
+        $template->cMail          = $data['register_shipping_address_email'] ?? '';
+
+        $pkAddressID = $template->persist();
+        if ($pkAddressID > 0) {
+            $response->result  = true;
+            $selectOptions     = Shop::Smarty()->assign('pkAddresses', DeliveryAddressTemplate::getAll($customerID))
+                ->assign('selectedID', $pkAddressID)
+                ->fetch('account/pickupaddress/form_option.tpl');
+            $response->options = $selectOptions;
+            $ioResponse->assignVar('response', $response);
+        }
         return $ioResponse;
     }
 

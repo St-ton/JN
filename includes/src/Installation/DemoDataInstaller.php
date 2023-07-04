@@ -536,16 +536,16 @@ class DemoDataInstaller
         $maxPk            = $this->db->getSingleInt('SELECT MAX(kArtikel) AS cnt FROM tartikel', 'cnt');
         $manufacturers    = $this->db->getSingleInt('SELECT COUNT(kHersteller) AS cnt FROM thersteller', 'cnt');
         $categories       = $this->db->getSingleInt('SELECT COUNT(kKategorie) AS cnt FROM tkategorie', 'cnt');
-        $maxEigk          = $this->db->getSingleInt('SELECT MAX(kEigenschaft) AS cnt FROM teigenschaft', 'cnt') + 1;
-        $maxEigWertk      = $this->db->getSingleInt('SELECT MAX(kEigenschaftWert) AS cnt FROM teigenschaftwert', 'cnt');
-        $maxEigKombiWertk = $this->db->getSingleInt(
+        $maxPropertyID    = $this->db->getSingleInt('SELECT MAX(kEigenschaft) AS cnt FROM teigenschaft', 'cnt') + 1;
+        $maxPropValueID   = $this->db->getSingleInt('SELECT MAX(kEigenschaftWert) AS cnt FROM teigenschaftwert', 'cnt');
+        $maxPropCombValID = $this->db->getSingleInt(
             'SELECT MAX(kEigenschaftKombi) AS cnt FROM teigenschaftkombiwert',
             'cnt'
         );
         if ($categories === 0) {
             return $this;
         }
-        $unitCount         = $this->db->getSingleInt(
+        $unitCount  = $this->db->getSingleInt(
             'SELECT MAX(groupCount) AS unitCount
                 FROM (
                     SELECT COUNT(*) AS groupCount
@@ -554,40 +554,47 @@ class DemoDataInstaller
                 ) x',
             'unitCount'
         );
-        $limit             = $this->config['products'];
-        $index             = 0;
-        $taxRate           = 19.00;
-        $variationen       = ['Rot', 'Blau', 'Gelb'];
-        $variation         = (count($variationen) > 0 && $limit > count($variationen)) ? $limit - count($variationen)
-            : 0;
-        $idEig             = 0;
-        $lastName          = '';
-        $kVaterArtikel     = 0;
-        $kEigenschaftKombi = 0;
+        $limit      = $this->config['products'];
+        $index      = 0;
+        $taxRate    = 19.00;
+        $variations = [$this->faker->unique()->colorName];
+        $colorLimit = rand(1, 10);
+
+        for ($i = 0; $i <= $colorLimit; ++$index) {
+            $variations[] = $this->faker->unique()->colorName;
+        }
+        $variation             = (\count($variations) > 0 && $limit > count($variations))
+            ? $limit - count($variations) : 0;
+        $propertyID            = 0;
+        $lastName              = '';
+        $productParentID       = 0;
+        $propertyCombinationID = 0;
         
         for ($i = 1; $i <= $limit; ++$i) {
-            if ($idEig > 0 && $variationen[$i - $variation - 1] !== null) {
-                $name          = $lastName . '-' . $variationen[$i - $variation - 1];
-                $kVaterArtikel = $eigenschaft->kArtikel ?? $kVaterArtikel;
+            if ($propertyID > 0
+                && $variations[$i - $variation - 1] !== null
+            ) {
+                $name            = $lastName . '-' . $variations[$i - $variation - 1];
+                $productParentID = $eigenschaft->kArtikel ?? $productParentID;
                 
-                $eigenschaftwert                   = new stdClass();
-                $eigenschaftwert->kEigenschaftwert = $maxEigWertk + ($i - $variation);
-                $eigenschaftwert->kEigenschaft     = $maxEigk;
-                $eigenschaftwert->cName            = $variationen[$i - $variation - 1];
-                $eigenschaftwert->fAufpreisNetto   = 0.0000;
-                $eigenschaftwert->fGewichtDiff     = 0.0000;
-                $eigenschaftwert->cArtNr           = '0';
-                $eigenschaftwert->nSort            = $i - $variation;
-                $eigenschaftwert->fLagerbestand    = 0;
-                $eigenschaftwert->fPackeinheit     = 0.0000;
-                $this->db->insert('teigenschaftwert', $eigenschaftwert);
+                $propertyValue                   = new stdClass();
+                $propertyValue->kEigenschaftwert = $maxPropValueID + ($i - $variation);
+                $propertyValue->kEigenschaft     = $maxPropertyID;
+                $propertyValue->cName            = $variations[$i - $variation - 1];
+                $propertyValue->fAufpreisNetto   = 0.0000;
+                $propertyValue->fGewichtDiff     = 0.0000;
+                $propertyValue->cArtNr           = '0';
+                $propertyValue->nSort            = $i - $variation;
+                $propertyValue->fLagerbestand    = 0;
+                $propertyValue->fPackeinheit     = 0.0000;
+                $this->db->insert('teigenschaftwert', $propertyValue);
                 
-                $kEigenschaftKombi                       = $maxEigKombiWertk + ($i - $variation);
-                $eigenschaftkombiwert                    = new stdClass();
-                $eigenschaftkombiwert->kEigenschaftKombi = $kEigenschaftKombi;
-                $eigenschaftkombiwert->kEigenschaft      = $maxEigk;
-                $eigenschaftkombiwert->kEigenschaftWert  = $maxEigWertk + ($i - $variation);
-                $this->db->insert('teigenschaftkombiwert', $eigenschaftkombiwert);
+                $propertyCombinationID                   = $maxPropCombValID + ($i - $variation);
+                $propCombinationValue                    = new stdClass();
+                $propCombinationValue->kEigenschaftKombi = $propertyCombinationID;
+                $propCombinationValue->kEigenschaft      = $maxPropertyID;
+                $propCombinationValue->kEigenschaftWert  = $maxPropValueID + ($i - $variation);
+                $this->db->insert('teigenschaftkombiwert', $propCombinationValue);
             } else {
                 try {
                     $name = $this->faker->unique()->productName;
@@ -606,21 +613,21 @@ class DemoDataInstaller
             }
             
             if ($i === $variation) {
-                $eigenschaft               = new stdClass();
-                $eigenschaft->kEigenschaft = $maxEigk;
-                $eigenschaft->kArtikel     = $maxPk + $i;
-                $eigenschaft->cName        = 'Farbe';
-                $eigenschaft->cWaehlbar    = 'Y';
-                $eigenschaft->cTyp         = 'SELECTBOX';
-                $eigenschaft->nSort        = 0;
-                $idEig                     = $this->db->insert('teigenschaft', $eigenschaft);
+                $property               = new stdClass();
+                $property->kEigenschaft = $maxPropertyID;
+                $property->kArtikel     = $maxPk + $i;
+                $property->cName        = (Shop::getLanguage(true) === 'ger') ? 'Farbe' : 'Color';
+                $property->cWaehlbar    = 'Y';
+                $property->cTyp         = 'SELECTBOX';
+                $property->nSort        = 0;
+                $propertyID             = $this->db->insert('teigenschaft', $property);
                 
-                $eigenschaftsprache               = new stdClass();
-                $eigenschaftsprache->kEigenschaft = $idEig;
+                $propertyLang               = new stdClass();
+                $propertyLang->kEigenschaft = $propertyID;
                 foreach ($this->languages as $language) {
-                    $eigenschaftsprache->kSprache = $language->getId();
-                    $eigenschaftsprache->cName    = ($language->getCode() === 'ger') ? 'Farbe' : 'Color';
-                    $this->db->insert('teigenschaftsprache', $eigenschaftsprache);
+                    $propertyLang->kSprache = $language->getId();
+                    $propertyLang->cName    = 'Color';
+                    $this->db->insert('teigenschaftsprache', $propertyLang);
                 }
             }
             
@@ -634,8 +641,8 @@ class DemoDataInstaller
                 ? \random_int(1, $unitCount)
                 : 0;
             $product->kVersandklasse           = 1;
-            $product->kEigenschaftKombi        = $kEigenschaftKombi;
-            $product->kVaterArtikel            = $kVaterArtikel;
+            $product->kEigenschaftKombi        = $propertyCombinationID;
+            $product->kVaterArtikel            = $productParentID;
             $product->kStueckliste             = 0;
             $product->kWarengruppe             = 0;
             $product->kVPEEinheit              = 0;

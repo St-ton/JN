@@ -15,12 +15,7 @@ class AdminTemplate
     /**
      * @var string
      */
-    public static $cTemplate;
-
-    /**
-     * @var int
-     */
-    public static $nVersion;
+    public static $cTemplate = 'bootstrap';
 
     /**
      * @var AdminTemplate|null
@@ -35,27 +30,7 @@ class AdminTemplate
     /**
      * @var string
      */
-    public $name;
-
-    /**
-     * @var string
-     */
-    public $author;
-
-    /**
-     * @var string
-     */
-    public $url;
-
-    /**
-     * @var int
-     */
-    public $version;
-
-    /**
-     * @var string
-     */
-    public $preview;
+    public string $version = '1.0.0';
 
     /**
      * AdminTemplate constructor.
@@ -112,8 +87,6 @@ class AdminTemplate
 
                 return $this;
             }
-            // fall back to admin template "default"
-            self::$cTemplate = 'bootstrap';
         }
 
         return $this;
@@ -158,7 +131,7 @@ class AdminTemplate
                         if (\file_exists($filePath)) {
                             $tplGroups[$name][] = ($absolute === true ? \PFAD_ROOT : '') .
                                 (self::$isAdmin === true ? \PFAD_ADMIN : '') .
-                                \PFAD_TEMPLATES . $dir . '/' . (string)$cssFile->attributes()->Path;
+                                \PFAD_TEMPLATES . $dir . '/' . $cssFile->attributes()->Path;
                             $customFilePath     = \str_replace('.css', '_custom.css', $filePath);
                             if (\file_exists($customFilePath)) {
                                 $tplGroups[$name][] = \str_replace(
@@ -166,7 +139,7 @@ class AdminTemplate
                                     '_custom.css',
                                     ($absolute === true ? \PFAD_ROOT : '') .
                                     (self::$isAdmin === true ? \PFAD_ADMIN : '') .
-                                    \PFAD_TEMPLATES . $dir . '/' . (string)$cssFile->attributes()->Path
+                                    \PFAD_TEMPLATES . $dir . '/' . $cssFile->attributes()->Path
                                 );
                             }
                         }
@@ -187,7 +160,7 @@ class AdminTemplate
                     foreach ($js->File as $jsFile) {
                         $tplGroups[$name][] = ($absolute === true ? \PFAD_ROOT : '') .
                             (self::$isAdmin === true ? \PFAD_ADMIN : '') .
-                            \PFAD_TEMPLATES . $dir . '/' . (string)$jsFile->attributes()->Path;
+                            \PFAD_TEMPLATES . $dir . '/' . $jsFile->attributes()->Path;
                     }
                 }
             }
@@ -213,10 +186,9 @@ class AdminTemplate
         $outputCSS     = '';
         $outputJS      = '';
         $baseURL       = Shop::getURL();
-        $version       = empty($this->version) ? '1.0.0' : $this->version;
         $files         = $this->getMinifyArray($minify);
         if ($minify === false) {
-            $fileSuffix = '?v=' . $version;
+            $fileSuffix = '?v=' . $this->version;
             foreach ($files['admin_js'] as $_file) {
                 $outputJS .= '<script type="text/javascript" src="'
                     . $baseURL . '/'
@@ -235,7 +207,7 @@ class AdminTemplate
             }
         } else {
             $tplString  = $this->getDir(); // add tpl string to avoid caching
-            $fileSuffix = '&v=' . $version;
+            $fileSuffix = '&v=' . $this->version;
             $outputCSS  = '<link rel="stylesheet" type="text/css" href="'
                 . $baseURL . '/'
                 . \PFAD_MINIFY . '/index.php?g=admin_css&tpl='

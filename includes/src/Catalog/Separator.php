@@ -2,6 +2,8 @@
 
 namespace JTL\Catalog;
 
+use JTL\Cache\JTLCacheInterface;
+use JTL\DB\DbInterface;
 use JTL\Language\LanguageHelper;
 use JTL\Shop;
 use stdClass;
@@ -48,11 +50,14 @@ class Separator
     private static array $unitObject = [];
 
     /**
-     * Separator constructor.
-     * @param int $id
+     * @param int                    $id
+     * @param DbInterface|null       $db
+     * @param JTLCacheInterface|null $cache
      */
-    public function __construct(int $id = 0)
+    public function __construct(int $id = 0, private ?DbInterface $db = null, private ?JTLCacheInterface $cache = null)
     {
+        $this->db    = $this->db ?? Shop::Container()->getDB();
+        $this->cache = $this->cache ?? Shop::Container()->getCache();
         if ($id > 0) {
             $this->loadFromDB($id);
         }
@@ -67,9 +72,9 @@ class Separator
     private function loadFromDB(int $id = 0): self
     {
         $cacheID = 'units_lfdb_' . $id;
-        if (($data = Shop::Container()->getCache()->get($cacheID)) === false) {
-            $data = Shop::Container()->getDB()->select('ttrennzeichen', 'kTrennzeichen', $id);
-            Shop::Container()->getCache()->set($cacheID, $data, [\CACHING_GROUP_CORE]);
+        if (($data = $this->cache->get($cacheID)) === false) {
+            $data = $this->db->select('ttrennzeichen', 'kTrennzeichen', $id);
+            $this->cache->set($cacheID, $data, [\CACHING_GROUP_CORE]);
         }
         if ($data !== null && $data->kTrennzeichen > 0) {
             $this->kTrennzeichen     = (int)$data->kTrennzeichen;
@@ -97,9 +102,11 @@ class Separator
         if (isset(self::$unitObject[$languageID][$unitID])) {
             return self::$unitObject[$languageID][$unitID];
         }
+        $cache   = Shop::Container()->getCache();
+        $db      = Shop::Container()->getDB();
         $cacheID = 'units_' . $unitID . '_' . $languageID;
-        if (($data = Shop::Container()->getCache()->get($cacheID)) === false) {
-            $data = Shop::Container()->getDB()->select(
+        if (($data = $cache->get($cacheID)) === false) {
+            $data = $db->select(
                 'ttrennzeichen',
                 'nEinheit',
                 $unitID,
@@ -112,8 +119,7 @@ class Separator
                 $data->nEinheit        = (int)$data->nEinheit;
                 $data->nDezimalstellen = (int)$data->nDezimalstellen;
             }
-
-            Shop::Container()->getCache()->set($cacheID, $data, [\CACHING_GROUP_CORE]);
+            $cache->set($cacheID, $data, [\CACHING_GROUP_CORE]);
         }
         if (!isset(self::$unitObject[$languageID])) {
             self::$unitObject[$languageID] = [];
@@ -214,10 +220,12 @@ class Separator
     public static function getAll(int $languageID): array
     {
         $cacheID = 'units_all_' . $languageID;
-        if (($all = Shop::Container()->getCache()->get($cacheID)) === false) {
+        $cache   = Shop::Container()->getCache();
+        $db      = Shop::Container()->getDB();
+        if (($all = $cache->get($cacheID)) === false) {
             $all = [];
             if ($languageID > 0) {
-                $data = Shop::Container()->getDB()->selectAll(
+                $data = $db->selectAll(
                     'ttrennzeichen',
                     'kSprache',
                     $languageID,
@@ -225,11 +233,11 @@ class Separator
                     'nEinheit'
                 );
                 foreach ($data as $item) {
-                    $sep                     = new self((int)$item->kTrennzeichen);
+                    $sep                     = new self((int)$item->kTrennzeichen, $db, $cache);
                     $all[$sep->getEinheit()] = $sep;
                 }
             }
-            Shop::Container()->getCache()->set($cacheID, $all, [\CACHING_GROUP_CORE]);
+            $cache->set($cacheID, $all, [\CACHING_GROUP_CORE]);
         }
 
         return $all;
@@ -247,7 +255,7 @@ class Separator
         }
         unset($data->kTrennzeichen);
 
-        $id = Shop::Container()->getDB()->insert('ttrennzeichen', $data);
+        $id = $this->db->insert('ttrennzeichen', $data);
 
         if ($id > 0) {
             return $primary ? $id : true;
@@ -268,7 +276,7 @@ class Separator
         $upd->cDezimalZeichen   = $this->cDezimalZeichen;
         $upd->cTausenderZeichen = $this->cTausenderZeichen;
 
-        return Shop::Container()->getDB()->update('ttrennzeichen', 'kTrennzeichen', $this->kTrennzeichen, $upd);
+        return $this->db->update('ttrennzeichen', 'kTrennzeichen', $this->kTrennzeichen, $upd);
     }
 
     /**
@@ -276,7 +284,7 @@ class Separator
      */
     public function delete(): int
     {
-        return Shop::Container()->getDB()->delete('ttrennzeichen', 'kTrennzeichen', $this->kTrennzeichen);
+        return $this->db->delete('ttrennzeichen', 'kTrennzeichen', $this->kTrennzeichen);
     }
 
     /**
@@ -400,12 +408,14 @@ class Separator
     {
         $conf      = Shop::getSettingSection(\CONF_ARTIKELDETAILS);
         $languages = LanguageHelper::getAllLanguages();
+        $db        = Shop::Container()->getDB();
+        $cache     = Shop::Container()->getCache();
         if (\is_array($languages) && \count($languages) > 0) {
-            Shop::Container()->getDB()->query('TRUNCATE ttrennzeichen');
+            $db->query('TRUNCATE ttrennzeichen');
             $units = [\JTL_SEPARATOR_WEIGHT, \JTL_SEPARATOR_AMOUNT, \JTL_SEPARATOR_LENGTH];
             foreach ($languages as $language) {
                 foreach ($units as $unit) {
-                    $sep = new self();
+                    $sep = new self(0, $db, $cache);
                     $dec = 2;
                     if ($unit === \JTL_SEPARATOR_WEIGHT) {
                         $dec = ($conf['artikeldetails_gewicht_stellenanzahl'] ?? '') !== ''
@@ -426,9 +436,9 @@ class Separator
                         ->save();
                 }
             }
-            Shop::Container()->getCache()->flushTags([\CACHING_GROUP_CORE]);
+            $cache->flushTags([\CACHING_GROUP_CORE]);
 
-            return Shop::Container()->getDB()->getAffectedRows(
+            return $db->getAffectedRows(
                 'DELETE teinstellungen, teinstellungenconf
                     FROM teinstellungenconf
                     LEFT JOIN teinstellungen 

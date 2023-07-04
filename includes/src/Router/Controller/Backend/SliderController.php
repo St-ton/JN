@@ -145,7 +145,7 @@ class SliderController extends AbstractBackendController
     {
         $filtered = Text::filterXSS($_REQUEST);
         foreach (\array_keys((array)$filtered['aSlide']) as $item) {
-            $slide  = new Slide();
+            $slide  = new Slide(0, $this->db);
             $aSlide = $filtered['aSlide'][$item];
             if (!\str_contains((string)$item, 'neu')) {
                 $slide->setID((int)$item);

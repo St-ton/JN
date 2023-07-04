@@ -15,6 +15,7 @@ use JTL\Helpers\Text;
 use JTL\OPC\InputType;
 use JTL\OPC\Portlet;
 use JTL\OPC\PortletInstance;
+use JTL\Session\Frontend;
 use JTL\Shop;
 
 /**
@@ -162,8 +163,10 @@ class ProductStream extends Portlet
         $products       = [];
         $defaultOptions = Artikel::getDefaultOptions();
         $db             = Shop::Container()->getDB();
+        $customerGroup  = Frontend::getCustomerGroup();
+        $currency       = Frontend::getCurrency();
         foreach ($this->getFilteredProductIds($instance) as $productID) {
-            $products[] = (new Artikel($db))->fuelleArtikel($productID, $defaultOptions);
+            $products[] = (new Artikel($db, $customerGroup, $currency))->fuelleArtikel($productID, $defaultOptions);
         }
 
         return Product::separateByAvailability($products);

@@ -29,13 +29,14 @@ class Seo
         if (!$url || !\is_string($url)) {
             return '';
         }
-        $exists = Shop::Container()->getDB()->select('tseo', 'cSeo', $url);
+        $db     = Shop::Container()->getDB();
+        $exists = $db->select('tseo', 'cSeo', $url);
         if ($exists === null) {
             return $url;
         }
-        Shop::Container()->getDB()->query('SET @IKEY := 0');
+        $db->query('SET @IKEY := 0');
 
-        return Shop::Container()->getDB()->getSingleObject(
+        return $db->getSingleObject(
             "SELECT oseo.newSeo
                 FROM (
                     SELECT CONCAT('{$url}', '_', (CONVERT(@IKEY:=@IKEY+1 USING 'utf8') COLLATE utf8_unicode_ci)) newSeo,

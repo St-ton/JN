@@ -4,7 +4,6 @@ use JTL\Catalog\Product\Artikel;
 use JTL\Extensions\Upload\File;
 use JTL\Extensions\Upload\Upload;
 use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Helpers\Seo;
 use JTL\Nice;
 use JTL\Session\Frontend;

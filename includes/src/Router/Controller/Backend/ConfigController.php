@@ -117,7 +117,7 @@ class ConfigController extends AbstractBackendController
                 $tagsToFlush[] = \CACHING_GROUP_BOX;
             }
             $this->cache->flushTags($tagsToFlush);
-            Shopsetting::getInstance()->reset();
+            Shopsetting::getInstance($this->db, $this->cache)->reset();
             if (isset($postData['test_emails']) && (int)$postData['test_emails'] === 1) {
                 \ob_start();
                 $test = new SmtpTest();

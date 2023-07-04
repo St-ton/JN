@@ -56,7 +56,7 @@ class WishlistController extends AbstractController
         $linkHelper       = Shop::Container()->getLinkService();
         $customerID       = Frontend::getCustomer()->getID();
         if ($wishlistID === 0 && $customerID > 0 && Frontend::getWishList()->getID() <= 0) {
-            $_SESSION['Wunschliste'] = new Wishlist();
+            $_SESSION['Wunschliste'] = new Wishlist(0, $this->db);
             $_SESSION['Wunschliste']->schreibeDB();
             $wishlistID = $_SESSION['Wunschliste']->getID();
         }
@@ -72,7 +72,7 @@ class WishlistController extends AbstractController
         if ($action !== null && Form::validateToken()) {
             if (isset($_POST['kWunschliste'])) {
                 $wishlistID = (int)$_POST['kWunschliste'];
-                $wl         = Wishlist::instanceByID($wishlistID)->filterPositions($searchQuery);
+                $wl         = Wishlist::instanceByID($wishlistID, $this->db)->filterPositions($searchQuery);
                 switch ($action) {
                     case 'addToCart':
                         $wishlistPosition = Wishlist::getWishListPositionDataByID($wishlistItemID);
@@ -100,12 +100,12 @@ class WishlistController extends AbstractController
                                 if ($this->config['global']['global_wunschliste_anzeigen'] === 'Y') {
                                     $mails = \explode(' ', Text::filterXSS($_POST['email']));
                                     $this->alertService->addNotice(Wishlist::send($mails, $wishlistID), 'sendWL');
-                                    $wishlist = Wishlist::buildPrice(Wishlist::instanceByID($wishlistID));
+                                    $wishlist = Wishlist::buildPrice(Wishlist::instanceByID($wishlistID, $this->db));
                                 }
                             } else {
                                 $step = 'wunschliste versenden';
                                 // Wunschliste aufbauen und cPreis setzen (Artikelanzahl mit eingerechnet)
-                                $wishlist = Wishlist::buildPrice(Wishlist::instanceByID($wishlistID));
+                                $wishlist = Wishlist::buildPrice(Wishlist::instanceByID($wishlistID, $this->db));
                             }
                         }
                         break;
@@ -160,13 +160,14 @@ class WishlistController extends AbstractController
                     case 'update':
                         if ($wl->isSelfControlled()) {
                             $this->alertService->addNotice(Wishlist::update($wishlistID), 'updateWL');
-                            $wishlist                = Wishlist::buildPrice(Wishlist::instanceByID($wishlistID));
+                            $wishlist = Wishlist::buildPrice(Wishlist::instanceByID($wishlistID, $this->db));
+
                             $_SESSION['Wunschliste'] = $wishlist;
                         }
                         break;
 
                     case 'setPublic':
-                        $list = Wishlist::instanceByID($wishlistTargetID);
+                        $list = Wishlist::instanceByID($wishlistTargetID, $this->db);
                         if ($wishlistTargetID !== 0 && $list->isSelfControlled()) {
                             $list->setVisibility(true);
                             $this->alertService->addNotice(
@@ -177,7 +178,7 @@ class WishlistController extends AbstractController
                         break;
 
                     case 'setPrivate':
-                        $list = Wishlist::instanceByID($wishlistTargetID);
+                        $list = Wishlist::instanceByID($wishlistTargetID, $this->db);
                         if ($wishlistTargetID !== 0 && $list->isSelfControlled()) {
                             $list->setVisibility(false);
                             $this->alertService->addNotice(
@@ -195,10 +196,13 @@ class WishlistController extends AbstractController
                         break;
 
                     case 'delete':
-                        if ($wishlistTargetID !== 0 && Wishlist::instanceByID($wishlistTargetID)->isSelfControlled()) {
+                        if ($wishlistTargetID !== 0
+                            && Wishlist::instanceByID($wishlistTargetID, $this->db)->isSelfControlled()
+                        ) {
                             $this->alertService->addNotice(Wishlist::delete($wishlistTargetID), 'deleteWL');
                             if ($wishlistTargetID === $wishlistID) {
                                 // the currently active one was deleted, search for a new one
+                                /** @var Wishlist $newWishlist */
                                 $newWishlist = Wishlist::getWishlists()->first();
                                 if ($newWishlist !== null) {
                                     $wishlistID = $newWishlist->getID();
@@ -206,7 +210,7 @@ class WishlistController extends AbstractController
                                     $wishlist = $newWishlist->ladeWunschliste($wishlistID);
                                 } elseif (Frontend::getWishList()->getID() > 0) {
                                     // the only existing wishlist was deleted, create a new one
-                                    $wishlist = new Wishlist();
+                                    $wishlist = new Wishlist(0, $this->db);
                                     $wishlist->schreibeDB();
                                     $wishlistID = $wishlist->getID();
                                 }
@@ -217,7 +221,9 @@ class WishlistController extends AbstractController
                         break;
 
                     case 'setAsDefault':
-                        if ($wishlistTargetID !== 0 && Wishlist::instanceByID($wishlistTargetID)->isSelfControlled()) {
+                        if ($wishlistTargetID !== 0
+                            && Wishlist::instanceByID($wishlistTargetID, $this->db)->isSelfControlled()
+                        ) {
                             $this->alertService->addNotice(Wishlist::setDefault($wishlistTargetID), 'setDefaultWL');
                             $wishlistID = $wishlistTargetID;
                         }
@@ -229,7 +235,7 @@ class WishlistController extends AbstractController
                         break;
                 }
             } elseif ($action === 'search' && $wishlistID > 0) {
-                $wishlist = Wishlist::instanceByID($wishlistID)->filterPositions($searchQuery);
+                $wishlist = Wishlist::instanceByID($wishlistID, $this->db)->filterPositions($searchQuery);
             }
         }
 
@@ -264,7 +270,8 @@ class WishlistController extends AbstractController
         }
         $link = ($this->state->linkID > 0) ? $linkHelper->getPageLink($this->state->linkID) : null;
         if ($wishlist === null) {
-            $wishlist = Wishlist::buildPrice(Wishlist::instanceByID($wishlistID)->filterPositions($searchQuery));
+            $wishlist = Wishlist::buildPrice(Wishlist::instanceByID($wishlistID, $this->db)
+                ->filterPositions($searchQuery));
         }
         if ($customerID > 0) {
             $wishlists = Wishlist::getWishlists();

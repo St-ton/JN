@@ -334,7 +334,7 @@ class IOController extends AbstractBackendController
 
             if ($res->queryString === null) {
                 $errorMsg     = \__('errorIndexNotCreatable');
-                $shopSettings = Shopsetting::getInstance();
+                $shopSettings = Shopsetting::getInstance($this->db, $this->cache);
                 $settings     = $shopSettings[Shopsetting::mapSettingName(\CONF_ARTIKELUEBERSICHT)];
 
                 if ($settings['suche_fulltext'] !== 'N') {

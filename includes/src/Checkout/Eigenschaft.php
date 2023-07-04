@@ -3,6 +3,7 @@
 namespace JTL\Checkout;
 
 use JTL\Catalog\Product\EigenschaftWert;
+use JTL\DB\DbInterface;
 use JTL\Helpers\GeneralObject;
 use JTL\Shop;
 
@@ -50,11 +51,12 @@ class Eigenschaft
     public $nSort;
 
     /**
-     * Eigenschaft constructor.
-     * @param int $id
+     * @param int              $id
+     * @param DbInterface|null $db
      */
-    public function __construct(int $id = 0)
+    public function __construct(int $id = 0, private ?DbInterface $db = null)
     {
+        $this->db = $this->db ?? Shop::Container()->getDB();
         if ($id > 0) {
             $this->loadFromDB($id);
         }
@@ -66,7 +68,7 @@ class Eigenschaft
      */
     public function loadFromDB(int $id): self
     {
-        $obj = Shop::Container()->getDB()->select('teigenschaft', 'kEigenschaft', $id) ?? new \stdClass();
+        $obj = $this->db->select('teigenschaft', 'kEigenschaft', $id) ?? new \stdClass();
         foreach (\get_object_vars($obj) as $k => $v) {
             $this->$k = $v;
         }
@@ -86,7 +88,7 @@ class Eigenschaft
         $obj = GeneralObject::copyMembers($this);
         unset($obj->EigenschaftsWert);
 
-        return Shop::Container()->getDB()->insert('teigenschaft', $obj);
+        return $this->db->insert('teigenschaft', $obj);
     }
 
     /**
@@ -96,6 +98,6 @@ class Eigenschaft
     {
         $obj = GeneralObject::copyMembers($this);
 
-        return Shop::Container()->getDB()->update('teigenschaft', 'kEigenschaft', $obj->kEigenschaft, $obj);
+        return $this->db->update('teigenschaft', 'kEigenschaft', $obj->kEigenschaft, $obj);
     }
 }

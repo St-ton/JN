@@ -65,7 +65,7 @@ class SearchConfigController extends AbstractBackendController
                 }
             }
 
-            $shopSettings = Shopsetting::getInstance();
+            $shopSettings = Shopsetting::getInstance($this->db, $this->cache);
             $this->saveAdminSectionSettings($sectionID, $_POST);
 
             $this->cache->flushTags(

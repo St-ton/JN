@@ -174,7 +174,7 @@ final class SyntaxChecker
 
         try {
             $renderer = new SmartyRenderer(new MailSmarty($db));
-            $hydrator = new TestHydrator($renderer->getSmarty(), $db, Shopsetting::getInstance());
+            $hydrator = new TestHydrator($renderer->getSmarty(), $db, Shopsetting::getInstance($db));
             $sc       = new self(new TemplateFactory($db), $renderer, $hydrator);
             $template = $sc->factory->getTemplateByID($templateID);
 

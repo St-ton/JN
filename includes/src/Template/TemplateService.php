@@ -134,7 +134,10 @@ class TemplateService implements TemplateServiceInterface
                 );
                 if ($check !== null) {
                     $attributes = ['type' => 'test'];
-                    Shopsetting::getInstance()->overrideSection(\CONF_TEMPLATE, $this->getPreviewTemplateConfig());
+                    Shopsetting::getInstance($this->db, $this->cache)->overrideSection(
+                        \CONF_TEMPLATE,
+                        $this->getPreviewTemplateConfig()
+                    );
                 }
             }
             \executeHook(\HOOK_TPL_LOAD_PRE, [

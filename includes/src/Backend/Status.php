@@ -653,7 +653,7 @@ class Status
      */
     public function getExtensions(): array
     {
-        $nice       = Nice::getInstance();
+        $nice       = Nice::getInstance($this->db, $this->cache);
         $extensions = $nice->gibAlleMoeglichenModule();
         foreach ($extensions as $extension) {
             $extension->bActive = $nice->checkErweiterung($extension->kModulId);

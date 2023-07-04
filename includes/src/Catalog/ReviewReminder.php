@@ -6,10 +6,12 @@ use Exception;
 use JTL\Catalog\Product\Artikel;
 use JTL\Checkout\Bestellung;
 use JTL\Customer\Customer;
+use JTL\Customer\CustomerGroup;
 use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\EmptyResultSetException;
 use JTL\Exceptions\InvalidSettingException;
 use JTL\Exceptions\ServiceNotFoundException;
+use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
 
@@ -98,6 +100,8 @@ class ReviewReminder
         $reciepients    = [];
         $defaultOptions = Artikel::getDefaultOptions();
         $db             = Shop::Container()->getDB();
+        $currency       = Frontend::getCurrency();
+        $logger         = Shop::Container()->getLogService();
         foreach ($this->orders as $orderData) {
             $openReviews = [];
             $order       = new Bestellung((int)$orderData->kBestellung);
@@ -106,11 +110,12 @@ class ReviewReminder
             $obj              = new stdClass();
             $obj->tkunde      = $customer;
             $obj->tbestellung = $order;
+            $customerGroup    = new CustomerGroup($customer->getGroupID());
             foreach ($order->Positionen as $item) {
                 if ($item->kArtikel <= 0) {
                     continue;
                 }
-                $productVisible = (new Artikel($db))->fuelleArtikel(
+                $productVisible = (new Artikel($db, $customerGroup, $currency))->fuelleArtikel(
                     (int)$item->kArtikel,
                     $defaultOptions,
                     (int)$customer->kKundengruppe
@@ -140,7 +145,6 @@ class ReviewReminder
                     WHERE kBestellung = :oid',
                 ['oid' => (int)$orderData->kBestellung]
             );
-            $logger = Shop::Container()->getLogService();
             if ($logger->isHandling(\JTLLOG_LEVEL_DEBUG)) {
                 $logger->withName('Bewertungserinnerung')->debug(
                     'Kunde und Bestellung aus baueBewertungsErinnerung (Mail versendet): <pre>' .

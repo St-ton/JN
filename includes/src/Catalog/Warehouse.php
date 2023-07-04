@@ -541,19 +541,19 @@ class Warehouse extends MainModel
      */
     public function loadLanguages(): bool
     {
-        if ($this->getWarenlager() > 0) {
-            $data = Shop::Container()->getDB()->selectAll('twarenlagersprache', 'kWarenlager', $this->getWarenlager());
-            if (\count($data) > 0) {
-                $this->cSpracheAssoc_arr = [];
-                foreach ($data as $item) {
-                    $this->cSpracheAssoc_arr[(int)$item->kSprache] = $item->cName;
-                }
-
-                return true;
-            }
+        if ($this->getWarenlager() <= 0) {
+            return false;
+        }
+        $data = Shop::Container()->getDB()->selectAll('twarenlagersprache', 'kWarenlager', $this->getWarenlager());
+        if (\count($data) === 0) {
+            return false;
+        }
+        $this->cSpracheAssoc_arr = [];
+        foreach ($data as $item) {
+            $this->cSpracheAssoc_arr[(int)$item->kSprache] = $item->cName;
         }
 
-        return false;
+        return true;
     }
 
     /**

@@ -75,7 +75,7 @@ class RedirectController extends AbstractBackendController
                     break;
                 case 'new':
                     if (Request::postInt('redirect-id') > 0) {
-                        $redirect = new Redirect(Request::postInt('redirect-id'));
+                        $redirect = new Redirect(Request::postInt('redirect-id'), $this->db);
                         $data     = [
                             'kRedirect'     => Request::postInt('redirect-id'),
                             'cToUrl'        => Request::postVar('cToUrl'),
@@ -174,7 +174,7 @@ class RedirectController extends AbstractBackendController
     private function actionSave(array $redirects): void
     {
         foreach ($redirects as $id => $item) {
-            $redirect = new Redirect((int)$id);
+            $redirect = new Redirect((int)$id, $this->db);
             if ($redirect->kRedirect <= 0 || $redirect->cToUrl === $item['cToUrl']) {
                 continue;
             }
@@ -213,7 +213,7 @@ class RedirectController extends AbstractBackendController
      */
     private function actionEdit(int $id): void
     {
-        $redirect = new Redirect($id);
+        $redirect = new Redirect($id, $this->db);
         $this->smarty->assign('cTab', 'new_redirect')
             ->assign('cFromUrl', $redirect->cFromUrl)
             ->assign('cToUrl', $redirect->cToUrl)
@@ -229,7 +229,7 @@ class RedirectController extends AbstractBackendController
      */
     private function actionCreate(): void
     {
-        $redirect = new Redirect();
+        $redirect = new Redirect(0, $this->db);
         if ($redirect->saveExt(
             Request::verifyGPDataString('cFromUrl'),
             Request::verifyGPDataString('cToUrl'),

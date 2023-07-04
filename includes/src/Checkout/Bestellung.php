@@ -10,6 +10,7 @@ use JTL\Catalog\Currency;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\Customer\Customer;
+use JTL\Customer\CustomerGroup;
 use JTL\Extensions\Download\Download;
 use JTL\Extensions\Upload\Upload;
 use JTL\Helpers\ShippingMethod;
@@ -582,6 +583,10 @@ class Bestellung
         $defaultOptions           = Artikel::getDefaultOptions();
         $languageID               = Shop::getLanguageID();
         $customerGroupID          = $customer?->getGroupID() ?? 0;
+        $customerGroup            = new CustomerGroup($customerGroupID);
+        if ($customerGroup->getID() === 0) {
+            $customerGroup->loadDefaultGroup();
+        }
         if (!$languageID) {
             $language             = LanguageHelper::getDefaultLanguage();
             $languageID           = (int)$language->kSprache;
@@ -615,7 +620,7 @@ class Bestellung
 
             if ($item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL) {
                 if ($initProduct) {
-                    $item->Artikel = (new Artikel($db))
+                    $item->Artikel = (new Artikel($db, $customerGroup, $this->Waehrung))
                         ->fuelleArtikel($item->kArtikel, $defaultOptions, $customerGroupID, $languageID);
                 }
                 if ($this->kBestellung > 0) {

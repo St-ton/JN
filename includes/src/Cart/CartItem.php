@@ -246,11 +246,11 @@ class CartItem
      * @param string $freeText
      * @return bool
      */
-    public function setzeVariationsWert(int $propertyID, int $valueID, $freeText = ''): bool
+    public function setzeVariationsWert(int $propertyID, int $valueID, string $freeText = ''): bool
     {
         $db                                = Shop::Container()->getDB();
-        $attributeValue                    = new EigenschaftWert($valueID);
-        $attribute                         = new Eigenschaft($propertyID);
+        $attributeValue                    = new EigenschaftWert($valueID, $db);
+        $attribute                         = new Eigenschaft($propertyID, $db);
         $newAttributes                     = new CartItemProperty();
         $newAttributes->kEigenschaft       = $propertyID;
         $newAttributes->kEigenschaftWert   = $valueID;

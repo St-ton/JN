@@ -873,7 +873,7 @@ class IOMethods
         }
 
         foreach ($valueIDs as $valueID) {
-            $currentValue = new EigenschaftWert((int)$valueID);
+            $currentValue = new EigenschaftWert((int)$valueID, $this->db);
             $weightDiff  += $currentValue->fGewichtDiff;
             $newProductNr = (!empty($currentValue->cArtNr) && $product->cArtNr !== $currentValue->cArtNr)
                 ? $currentValue->cArtNr
@@ -1395,7 +1395,7 @@ class IOMethods
     public function setWishlistVisibility(int $wlID, bool $state, string $token): IOResponse
     {
         $ioResponse = new IOResponse();
-        $wl         = Wishlist::instanceByID($wlID);
+        $wl         = Wishlist::instanceByID($wlID, $this->db);
         if ($wl->isSelfControlled() === false) {
             return $ioResponse;
         }
@@ -1419,11 +1419,10 @@ class IOMethods
      */
     public function updateWishlistItem(int $wlID, array $formData): IOResponse
     {
-        $wl = Wishlist::instanceByID($wlID);
+        $wl = Wishlist::instanceByID($wlID, $this->db);
         if ($wl->isSelfControlled() === true && Form::validateToken($formData['jtl_token'])) {
             Wishlist::update($wlID, $formData);
         }
-
         $ioResponse     = new IOResponse();
         $response       = new stdClass();
         $response->wlID = $wlID;

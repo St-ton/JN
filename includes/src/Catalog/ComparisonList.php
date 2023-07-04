@@ -44,23 +44,26 @@ class ComparisonList
     private function loadFromSession(): void
     {
         $compareList = Frontend::get('Vergleichsliste');
-        if ($compareList !== null) {
-            $db             = Shop::Container()->getDB();
-            $defaultOptions = Artikel::getDefaultOptions();
-            $baseURL        = Shop::Container()->getLinkService()->getStaticRoute('vergleichsliste.php');
-            foreach ($compareList->oArtikel_arr as $key => $item) {
-                $product = new Artikel($db);
-                $product->fuelleArtikel($item->kArtikel, $defaultOptions);
-                if ($product->getID() === null) {
-                    unset($compareList->oArtikel_arr[$key]);
-                    continue;
-                }
-                $product->cURLDEL = $baseURL . '?vlplo=' . $item->kArtikel;
-                if (isset($item->oVariationen_arr) && \count($item->oVariationen_arr) > 0) {
-                    $product->Variationen = $item->oVariationen_arr;
-                }
-                $this->oArtikel_arr[] = $product;
+        if ($compareList === null) {
+            return;
+        }
+        $db             = Shop::Container()->getDB();
+        $defaultOptions = Artikel::getDefaultOptions();
+        $baseURL        = Shop::Container()->getLinkService()->getStaticRoute('vergleichsliste.php');
+        $customerGroup  = Frontend::getCustomerGroup();
+        $currency       = Frontend::getCurrency();
+        foreach ($compareList->oArtikel_arr as $key => $item) {
+            $product = new Artikel($db, $customerGroup, $currency);
+            $product->fuelleArtikel($item->kArtikel, $defaultOptions);
+            if ($product->getID() === null) {
+                unset($compareList->oArtikel_arr[$key]);
+                continue;
             }
+            $product->cURLDEL = $baseURL . '?vlplo=' . $item->kArtikel;
+            if (isset($item->oVariationen_arr) && \count($item->oVariationen_arr) > 0) {
+                $product->Variationen = $item->oVariationen_arr;
+            }
+            $this->oArtikel_arr[] = $product;
         }
     }
 
@@ -75,8 +78,10 @@ class ComparisonList
         }
         $defaultOptions = Artikel::getDefaultOptions();
         $db             = Shop::Container()->getDB();
+        $customerGroup  = Frontend::getCustomerGroup();
+        $currency       = Frontend::getCurrency();
         foreach ($compareList->oArtikel_arr as $i => $item) {
-            $tmpProduct = new Artikel($db);
+            $tmpProduct = new Artikel($db, $customerGroup, $currency);
             try {
                 $tmpProduct->fuelleArtikel($item->kArtikel, $defaultOptions);
             } catch (Exception) {

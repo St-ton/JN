@@ -30,7 +30,7 @@ class CacheMemcache implements ICachingMethod
             $this->setMemcache($options['memcache_host'], (int)$options['memcache_port']);
             $this->setIsInitialized(true);
             $this->setJournalID('memcache_journal');
-            //@see http://php.net/manual/de/memcached.expiration.php
+            // @see http://php.net/manual/de/memcached.expiration.php
             $options['lifetime'] = \min(60 * 60 * 24 * 30, $options['lifetime']);
             $this->setOptions($options);
             self::$instance = $this;
@@ -85,15 +85,10 @@ class CacheMemcache implements ICachingMethod
      */
     public function loadMulti(array $cacheIDs): array
     {
-        if (!\is_array($cacheIDs)) {
-            return [];
-        }
-        $prefixedKeys = [];
-        foreach ($cacheIDs as $_cid) {
-            $prefixedKeys[] = $this->options['prefix'] . $_cid;
-        }
-        $res = $this->dePrefixArray($this->memcache->get($prefixedKeys));
-
+        $prefixedKeys = \array_map(function ($cid) {
+            return $this->options['prefix'] . $cid;
+        }, $cacheIDs);
+        $res          = $this->dePrefixArray($this->memcache->get($prefixedKeys));
         // fill up result
         return \array_merge(\array_fill_keys($cacheIDs, false), $res);
     }

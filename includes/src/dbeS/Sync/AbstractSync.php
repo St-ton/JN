@@ -653,7 +653,7 @@ abstract class AbstractSync
             return false;
         }
 
-        return (new Redirect())->saveExt('/' . $oldSeo, $newSeo, true);
+        return (new Redirect(0, $this->db))->saveExt('/' . $oldSeo, $newSeo, true);
     }
 
     /**

@@ -16,11 +16,12 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 const NO_MODE = 0;
 const NO_PFAD = PFAD_LOGFILES . 'notify.log';
 
+$db                  = Shop::Container()->getDB();
 $logger              = Shop::Container()->getLogService();
 $moduleId            = null;
 $order               = null;
-$Sprache             = Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
-$conf                = Shopsetting::getInstance()->getAll();
+$Sprache             = $db->select('tsprache', 'cShopStandard', 'Y');
+$conf                = Shopsetting::getInstance($db, Shop::Container()->getCache())->getAll();
 $cEditZahlungHinweis = '';
 //Session Hash
 $cPh = Request::verifyGPDataString('ph');
@@ -53,7 +54,7 @@ if (strlen($cSh) > 0) {
     }
     // Load from Session Hash / Session Hash starts with "_"
     $sessionHash    = substr(Text::htmlentities($cSh), 1);
-    $paymentSession = Shop::Container()->getDB()->select(
+    $paymentSession = $db->select(
         'tzahlungsession',
         'cZahlungsID',
         $sessionHash,
@@ -90,7 +91,7 @@ if (strlen($cSh) > 0) {
     );
     if (!isset($paymentSession->kBestellung) || !$paymentSession->kBestellung) {
         // Generate fake Order and ask PaymentMethod if order should be finalized
-        $orderHandler  = new OrderHandler(Shop::Container()->getDB(), Frontend::getCustomer(), Frontend::getCart());
+        $orderHandler  = new OrderHandler($db, Frontend::getCustomer(), Frontend::getCart());
         $order         = $orderHandler->fakeOrder();
         $paymentMethod = isset($_SESSION['Zahlungsart']->cModulId)
             ? LegacyMethod::create($_SESSION['Zahlungsart']->cModulId)
@@ -120,7 +121,7 @@ if (strlen($cSh) > 0) {
                     $upd->nBezahlt     = 1;
                     $upd->dZeitBezahlt = 'NOW()';
                     $upd->kBestellung  = $order->kBestellung;
-                    Shop::Container()->getDB()->update('tzahlungsession', 'cZahlungsID', $sessionHash, $upd);
+                    $db->update('tzahlungsession', 'cZahlungsID', $sessionHash, $upd);
                     $paymentMethod->handleNotification($order, '_' . $sessionHash, $_REQUEST);
                     if ($paymentMethod->redirectOnPaymentSuccess() === true) {
                         header('Location: ' . $paymentMethod->getReturnURL($order));
@@ -176,7 +177,7 @@ if (strlen($cPh) > 0) {
     if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
         $logger->debug('Notify request: {req}', ['req' => print_r(Text::filterXSS($_REQUEST), true)]);
     }
-    $paymentId = Shop::Container()->getDB()->getSingleObject(
+    $paymentId = $db->getSingleObject(
         'SELECT ZID.kBestellung, ZA.cModulId
             FROM tzahlungsid ZID
             LEFT JOIN tzahlungsart ZA
@@ -211,7 +212,7 @@ if ($moduleId !== null) {
                 ['hash' => $cPh, 'pmm' => print_r($paymentMethod, true)]
             );
         }
-        $paymentHash = Shop::Container()->getDB()->escape(Text::htmlentities(Text::filterXSS($cPh)));
+        $paymentHash = $db->escape(Text::htmlentities(Text::filterXSS($cPh)));
         $paymentMethod->handleNotification($order, $paymentHash, $_REQUEST);
         if ($paymentMethod->redirectOnPaymentSuccess() === true) {
             header('Location: ' . $paymentMethod->getReturnURL($order));

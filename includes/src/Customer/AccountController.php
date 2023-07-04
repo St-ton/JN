@@ -65,7 +65,7 @@ class AccountController
         private readonly LinkServiceInterface  $linkService,
         private readonly JTLSmarty             $smarty
     ) {
-        $this->config = Shopsetting::getInstance()->getAll();
+        $this->config = Shopsetting::getInstance($this->db)->getAll();
     }
 
     /**
@@ -1298,7 +1298,7 @@ class AccountController
     private function modifyWishlist(int $customerID, int $wishlistID): string
     {
         $step     = 'mein Konto';
-        $wishlist = new Wishlist($wishlistID);
+        $wishlist = new Wishlist($wishlistID, $this->db);
         if ($wishlist->getCustomerID() !== $customerID) {
             return $step;
         }

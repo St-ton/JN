@@ -35,7 +35,7 @@ class WizardCheckMiddleware implements MiddlewareInterface
         if ($request->getMethod() === 'GET'
             && Shop::isAdmin()
             && !Backend::get('redirectedToWizard')
-            && Shopsetting::getInstance()->getValue(\CONF_GLOBAL, 'global_wizard_done') === 'N'
+            && Shopsetting::getInstance($this->db)->getValue(\CONF_GLOBAL, 'global_wizard_done') === 'N'
             && !\str_contains($request->getUri()->getPath(), Route::WIZARD)
             && (new Updater($this->db))->hasPendingUpdates() === false
         ) {

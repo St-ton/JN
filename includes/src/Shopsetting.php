@@ -3,6 +3,7 @@
 namespace JTL;
 
 use ArrayAccess;
+use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use function Functional\reindex;
 
@@ -68,9 +69,10 @@ final class Shopsetting implements ArrayAccess
     ];
 
     /**
-     * Shopsetting constructor.
+     * @param DbInterface       $db
+     * @param JTLCacheInterface $cache
      */
-    private function __construct()
+    private function __construct(private readonly DbInterface $db, private readonly JTLCacheInterface $cache)
     {
         self::$instance = $this;
     }
@@ -83,11 +85,13 @@ final class Shopsetting implements ArrayAccess
     }
 
     /**
-     * @return Shopsetting
+     * @param DbInterface|null       $db
+     * @param JTLCacheInterface|null $cache
+     * @return self
      */
-    public static function getInstance(): self
+    public static function getInstance(?DbInterface $db = null, JTLCacheInterface $cache = null): self
     {
-        return self::$instance ?? new self();
+        return self::$instance ?? new self($db ?? Shop::Container()->getDB(), $cache ?? Shop::Container()->getCache());
     }
 
     /**
@@ -162,10 +166,10 @@ final class Shopsetting implements ArrayAccess
             return null;
         }
         if ($section === \CONF_TEMPLATE) {
-            $settings = Shop::Container()->getCache()->get(
+            $settings = $this->cache->get(
                 $cacheID,
                 function ($cache, $id, &$content, &$tags): bool {
-                    $content = $this->getTemplateConfig(Shop::Container()->getDB());
+                    $content = $this->getTemplateConfig();
                     $tags    = [\CACHING_GROUP_TEMPLATE, \CACHING_GROUP_OPTION];
 
                     return true;
@@ -177,17 +181,17 @@ final class Shopsetting implements ArrayAccess
                 }
             }
         } elseif ($section === \CONF_BRANDING) {
-            return Shop::Container()->getCache()->get(
+            return $this->cache->get(
                 $cacheID,
                 function ($cache, $id, &$content, &$tags): bool {
-                    $content = $this->getBrandingConfig(Shop::Container()->getDB());
+                    $content = $this->getBrandingConfig();
                     $tags    = [\CACHING_GROUP_OPTION];
 
                     return true;
                 }
             );
         } else {
-            $settings = Shop::Container()->getCache()->get(
+            $settings = $this->cache->get(
                 $cacheID,
                 function ($cache, $id, &$content, &$tags) use ($section): bool {
                     $content = $this->getSectionData($section);
@@ -232,7 +236,7 @@ final class Shopsetting implements ArrayAccess
     private function getSectionData(int $section): array
     {
         if ($section === \CONF_PLUGINZAHLUNGSARTEN) {
-            return Shop::Container()->getDB()->getObjects(
+            return $this->db->getObjects(
                 "SELECT cName, cWert, '' AS type
                      FROM tplugineinstellungen
                      WHERE cName LIKE '%_min%' 
@@ -240,7 +244,7 @@ final class Shopsetting implements ArrayAccess
             );
         }
 
-        return Shop::Container()->getDB()->getObjects(
+        return $this->db->getObjects(
             'SELECT teinstellungen.cName, teinstellungen.cWert, teinstellungenconf.cInputTyp AS type
                 FROM teinstellungen
                 LEFT JOIN teinstellungenconf
@@ -312,12 +316,11 @@ final class Shopsetting implements ArrayAccess
     }
 
     /**
-     * @param DbInterface $db
      * @return array
      */
-    private function getBrandingConfig(DbInterface $db): array
+    private function getBrandingConfig(): array
     {
-        $data = $db->getObjects(
+        $data = $this->db->getObjects(
             'SELECT tbranding.kBranding AS id, tbranding.cBildKategorie AS type, 
             tbrandingeinstellung.cPosition AS position, tbrandingeinstellung.cBrandingBild AS path,
             tbrandingeinstellung.dTransparenz AS transparency, tbrandingeinstellung.dGroesse AS size
@@ -338,12 +341,11 @@ final class Shopsetting implements ArrayAccess
     }
 
     /**
-     * @param DbInterface $db
      * @return array
      */
-    private function getTemplateConfig(DbInterface $db): array
+    private function getTemplateConfig(): array
     {
-        $data     = $db->getObjects(
+        $data     = $this->db->getObjects(
             "SELECT cSektion AS sec, cWert AS val, cName AS name 
                 FROM ttemplateeinstellungen 
                 WHERE cTemplate = (SELECT cTemplate FROM ttemplate WHERE eTyp = 'standard')"
@@ -367,9 +369,8 @@ final class Shopsetting implements ArrayAccess
         if ($this->allSettings !== null) {
             return $this->allSettings;
         }
-        $db       = Shop::Container()->getDB();
         $result   = [];
-        $settings = $db->getArrays(
+        $settings = $this->db->getArrays(
             'SELECT teinstellungen.kEinstellungenSektion, teinstellungen.cName, teinstellungen.cWert,
                 teinstellungenconf.cInputTyp AS type
                 FROM teinstellungen
@@ -398,8 +399,8 @@ final class Shopsetting implements ArrayAccess
                 }
             }
         }
-        $result['template'] = $this->getTemplateConfig($db);
-        $result['branding'] = $this->getBrandingConfig($db);
+        $result['template'] = $this->getTemplateConfig();
+        $result['branding'] = $this->getBrandingConfig();
         $this->allSettings  = $result;
 
         return $result;
@@ -414,7 +415,7 @@ final class Shopsetting implements ArrayAccess
     public function preLoad(): array
     {
         $cacheID           = 'settings_all_preload';
-        $result            = Shop::Container()->getCache()->get(
+        $result            = $this->cache->get(
             $cacheID,
             function ($cache, $id, &$content, &$tags): bool {
                 $content = $this->getAll();

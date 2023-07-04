@@ -530,7 +530,7 @@ class NewsController extends AbstractController
         } elseif (\mb_strlen($post['cKommentar']) > 1000) {
             $checks['cKommentar'] = 2;
         }
-        if (Frontend::getCustomer()->getID() > 0 && $newsID > 0) {
+        if ($newsID > 0 && Frontend::getCustomer()->getID() > 0) {
             $commentCount = Shop::Container()->getDB()->getSingleInt(
                 'SELECT COUNT(*) AS cnt
                     FROM tnewskommentar
@@ -729,7 +729,7 @@ class NewsController extends AbstractController
         );
         $items       = [];
         foreach ($categoryIDs as $categoryID) {
-            $items[] = (new Category($this->db))->load($categoryID, $this->cache);
+            $items[] = (new Category($this->db, $this->cache))->load($categoryID);
         }
 
         return $items;

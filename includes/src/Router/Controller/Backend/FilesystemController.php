@@ -32,7 +32,7 @@ class FilesystemController extends AbstractBackendController
         if (!empty($_POST) && Form::validateToken()) {
             $postData = Text::filterXSS($_POST);
             $this->saveAdminSectionSettings(\CONF_FS, $_POST);
-            Shopsetting::getInstance()->reset();
+            Shopsetting::getInstance($this->db, $this->cache)->reset();
             if (isset($postData['test'])) {
                 $this->test($postData);
             }

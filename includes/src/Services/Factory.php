@@ -93,7 +93,10 @@ class Factory
         $container->singleton(PasswordServiceInterface::class, PasswordService::class);
         $container->singleton(CountryServiceInterface::class, CountryService::class);
         $container->singleton(JTLDebugBar::class, static function (Container $container) {
-            return new JTLDebugBar($container->getDB()->getPDO(), Shopsetting::getInstance()->getAll());
+            return new JTLDebugBar(
+                $container->getDB()->getPDO(),
+                Shopsetting::getInstance($container->getDB(), $container->getCache())->getAll()
+            );
         });
         $container->singleton('BackendAuthLogger', static function (Container $container) {
             $loggingConf = Shop::getSettingValue(\CONF_GLOBAL, 'admin_login_logger_mode');
@@ -125,9 +128,8 @@ class Factory
 
             return $vs;
         });
-        $container->bind(JTLApi::class, static function () {
-            // return new JTLApi($_SESSION, $container->make(Nice::class));
-            return new JTLApi($_SESSION, Nice::getInstance());
+        $container->bind(JTLApi::class, static function (Container $container) {
+            return new JTLApi($_SESSION, Nice::getInstance($container->getDB(), $container->getCache()));
         });
         $container->singleton(GcServiceInterface::class, GcService::class);
         $container->singleton(GetText::class);
@@ -136,14 +138,14 @@ class Factory
         $container->singleton(DB::class);
         $container->singleton(PageDB::class);
         $container->singleton(Locker::class);
-        $container->bind(BoxFactoryInterface::class, static function () {
-            return new BoxFactory(Shopsetting::getInstance()->getAll());
+        $container->bind(BoxFactoryInterface::class, static function (Container $container) {
+            return new BoxFactory(Shopsetting::getInstance($container->getDB(), $container->getCache())->getAll());
         });
         $container->singleton(BoxServiceInterface::class, static function (Container $container) {
             $smarty = Shop::Smarty();
 
             return new BoxService(
-                Shopsetting::getInstance()->getAll(),
+                Shopsetting::getInstance($container->getDB(), $container->getCache())->getAll(),
                 $container->getBoxFactory(),
                 $container->getDB(),
                 $container->getCache(),
@@ -182,7 +184,7 @@ class Factory
         });
         $container->bind(Mailer::class, static function (Container $container) {
             $db        = $container->getDB();
-            $settings  = Shopsetting::getInstance();
+            $settings  = Shopsetting::getInstance($db, $container->getCache());
             $smarty    = new SmartyRenderer(new MailSmarty($db));
             $hydrator  = new DefaultsHydrator($smarty->getSmarty(), $db, $settings);
             $validator = new MailValidator($db, $settings->getAll());

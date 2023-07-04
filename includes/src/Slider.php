@@ -205,7 +205,7 @@ class Slider implements IExtensionPoint
             foreach ($data as $slideData) {
                 $slideData->kSlider = $this->getID();
                 if ($slideData->kSlide !== null) {
-                    $slide = new Slide();
+                    $slide = new Slide(0, $this->db);
                     $slide->map($slideData);
                     $this->slides[] = $slide;
                 }

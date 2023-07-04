@@ -196,7 +196,7 @@ class Import
                 }
                 if (isset($obj->cFromUrl, $obj->cToUrl)) {
                     // is redirect import
-                    $redirect = new Redirect();
+                    $redirect = new Redirect(0, $this->db);
                     if (!$redirect->saveExt($obj->cFromUrl, $obj->cToUrl)) {
                         ++$this->errorCount;
                         $this->errors[] = \sprintf(\__('csvImportSaveError'), $rowIndex);

@@ -8,6 +8,7 @@ use JTL\Cache\JTLCacheInterface;
 /**
  * Class GlobalSetting
  * @package JTL
+ * @deprecated since 5.3.0
  */
 final class GlobalSetting
 {
@@ -35,6 +36,7 @@ final class GlobalSetting
      */
     private function __construct()
     {
+        \trigger_error(__CLASS__ . ' is deprecated and should not be used anymore.', \E_USER_DEPRECATED);
         self::$instance = $this;
 
         $this->cache = Shop::Container()->getCache();

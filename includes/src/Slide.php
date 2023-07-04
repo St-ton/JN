@@ -2,6 +2,7 @@
 
 namespace JTL;
 
+use JTL\DB\DbInterface;
 use stdClass;
 
 /**
@@ -95,10 +96,12 @@ class Slide
     }
 
     /**
-     * @param int $id
+     * @param int              $id
+     * @param DbInterface|null $db
      */
-    public function __construct(int $id = 0)
+    public function __construct(int $id = 0, private ?DbInterface $db = null)
     {
+        $this->db = $this->db ?? Shop::Container()->getDB();
         if ($id > 0) {
             $this->load($id);
         }
@@ -115,7 +118,7 @@ class Slide
                 $id = $this->id;
             }
 
-            $slide = Shop::Container()->getDB()->select('tslide', 'kSlide', $id);
+            $slide = $this->db->select('tslide', 'kSlide', $id);
             if ($slide !== null) {
                 $this->set($slide);
 
@@ -218,7 +221,7 @@ class Slide
         $slide->cLink   = $this->getLink();
         $slide->cText   = $this->getText();
 
-        return Shop::Container()->getDB()->update('tslide', 'kSlide', $this->getID(), $slide);
+        return $this->db->update('tslide', 'kSlide', $this->getID(), $slide);
     }
 
     /**
@@ -234,7 +237,7 @@ class Slide
             }
             unset($slide->cBildAbsolut, $slide->cThumbnailAbsolut, $slide->kSlide);
             if ($this->sort === null) {
-                $sort         = Shop::Container()->getDB()->getSingleObject(
+                $sort         = $this->db->getSingleObject(
                     'SELECT nSort
                         FROM tslide
                         WHERE kSlider = :sliderID
@@ -243,7 +246,7 @@ class Slide
                 );
                 $slide->nSort = ($sort === null || (int)$sort->nSort === 0) ? 1 : ($sort->nSort + 1);
             }
-            $id = Shop::Container()->getDB()->insert('tslide', $slide);
+            $id = $this->db->insert('tslide', $slide);
             if ($id > 0) {
                 $this->id = $id;
 
@@ -259,7 +262,7 @@ class Slide
      */
     public function delete(): bool
     {
-        return (int)$this->id > 0 && Shop::Container()->getDB()->delete('tslide', 'kSlide', (int)$this->id) > 0;
+        return (int)$this->id > 0 && $this->db->delete('tslide', 'kSlide', (int)$this->id) > 0;
     }
 
     /**

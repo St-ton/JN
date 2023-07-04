@@ -327,7 +327,7 @@ abstract class AbstractController implements ControllerInterface
     public function preRender(): void
     {
         global $nStartzeit;
-        $this->config             = Shopsetting::getInstance()->getAll();
+        $this->config             = Shopsetting::getInstance($this->db, $this->cache)->getAll();
         $cart                     = Frontend::getCart();
         $linkHelper               = Shop::Container()->getLinkService();
         $this->expandedCategories = $this->expandedCategories ?? new KategorieListe();

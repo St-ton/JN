@@ -6,6 +6,7 @@ use JTL\Backend\Permissions;
 use JTL\Catalog\Product\Artikel;
 use JTL\Helpers\Request;
 use JTL\Pagination\Pagination;
+use JTL\Session\Frontend;
 use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -90,8 +91,10 @@ class GiftsController extends AbstractBackendController
 
         $options                            = Artikel::getDefaultOptions();
         $options->nKeinLagerbestandBeachten = 1;
+        $customerGroup                      = Frontend::getCustomerGroup();
+        $currency                           = Frontend::getCurrency();
         foreach ($data as $productID) {
-            $product = new Artikel($this->db);
+            $product = new Artikel($this->db, $customerGroup, $currency);
             $product->fuelleArtikel($productID, $options, 0, 0, true);
             if ($product->kArtikel > 0) {
                 $res[] = $product;
@@ -124,8 +127,10 @@ class GiftsController extends AbstractBackendController
 
         $options                            = Artikel::getDefaultOptions();
         $options->nKeinLagerbestandBeachten = 1;
+        $customerGroup                      = Frontend::getCustomerGroup();
+        $currency                           = Frontend::getCurrency();
         foreach ($data as $item) {
-            $product = new Artikel($this->db);
+            $product = new Artikel($this->db, $customerGroup, $currency);
             $product->fuelleArtikel((int)$item->kArtikel, $options, 0, 0, true);
             if ($product->kArtikel > 0) {
                 $product->nGGAnzahl = (int)$item->nAnzahl;
@@ -160,8 +165,10 @@ class GiftsController extends AbstractBackendController
         );
         $options                            = Artikel::getDefaultOptions();
         $options->nKeinLagerbestandBeachten = 1;
+        $customerGroup                      = Frontend::getCustomerGroup();
+        $currency                           = Frontend::getCurrency();
         foreach ($data as $item) {
-            $product = new Artikel($this->db);
+            $product = new Artikel($this->db, $customerGroup, $currency);
             $product->fuelleArtikel((int)$item->kArtikel, $options, 0, 0, true);
             if ($product->kArtikel > 0) {
                 $product->nGGAnzahl = (int)$item->nAnzahl;

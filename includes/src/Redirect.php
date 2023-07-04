@@ -47,16 +47,12 @@ class Redirect
     public int $paramHandling = 0;
 
     /**
-     * @var DbInterface
+     * @param int              $id
+     * @param DbInterface|null $db
      */
-    protected DbInterface $db;
-
-    /**
-     * @param int $id
-     */
-    public function __construct(int $id = 0)
+    public function __construct(int $id = 0, protected ?DbInterface $db = null)
     {
-        $this->db = Shop::Container()->getDB();
+        $this->db = $this->db ?? Shop::Container()->getDB();
         if ($id > 0) {
             $this->loadFromDB($id);
         }
@@ -236,7 +232,7 @@ class Redirect
         }
         if ($item === null) {
             if (!isset($_GET['notrack']) && Shop::getSettingValue(\CONF_GLOBAL, 'redirect_save_404') === 'Y') {
-                $item           = new self();
+                $item           = new self(0, $this->db);
                 $item->cFromUrl = $url . (!empty($queryString) ? '?' . $queryString : '');
                 $item->cToUrl   = '';
                 unset($item->kRedirect);

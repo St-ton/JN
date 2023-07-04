@@ -27,8 +27,10 @@ final class RecentlyViewedProducts extends AbstractBox
             $products       = [];
             $defaultOptions = Artikel::getDefaultOptions();
             $db             = Shop::Container()->getDB();
+            $customerGroup  = Frontend::getCustomerGroup();
+            $currency       = Frontend::getCurrency();
             foreach ($_SESSION['ZuletztBesuchteArtikel'] as $i => $item) {
-                $product = new Artikel($db);
+                $product = new Artikel($db, $customerGroup, $currency);
                 $product->fuelleArtikel($item->kArtikel, $defaultOptions);
                 if ($product->kArtikel > 0) {
                     $products[$i] = $product;

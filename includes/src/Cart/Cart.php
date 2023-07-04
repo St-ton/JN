@@ -443,15 +443,18 @@ class Cart
                 $variation->kEigenschaft = (int)$variation->kEigenschaft;
                 foreach ($attributeValues as $aValue) {
                     $aValue->kEigenschaft = (int)$aValue->kEigenschaft;
-                    //gleiche Eigenschaft suchen
+                    // gleiche Eigenschaft suchen
+                    if (!isset($aValue->cFreifeldWert)) {
+                        $aValue->cFreifeldWert = '';
+                    }
                     if ($aValue->kEigenschaft !== $variation->kEigenschaft) {
                         continue;
                     }
                     if ($variation->cTyp === 'FREIFELD' || $variation->cTyp === 'PFLICHT-FREIFELD') {
                         $cartItem->setzeVariationsWert($variation->kEigenschaft, 0, $aValue->cFreifeldWert);
                     } elseif ($aValue->kEigenschaftWert > 0) {
-                        $value = new EigenschaftWert($aValue->kEigenschaftWert);
-                        $attr  = new Eigenschaft($value->kEigenschaft);
+                        $value = new EigenschaftWert($aValue->kEigenschaftWert, $db);
+                        $attr  = new Eigenschaft($value->kEigenschaft, $db);
                         // Varkombi Kind?
                         if ($cartItem->Artikel->kVaterArtikel > 0) {
                             if ($attr->kArtikel === $cartItem->Artikel->kVaterArtikel) {
@@ -889,7 +892,9 @@ class Cart
         $options->nVariationen = 1;
 
         $bulk            = $this->config['kaufabwicklung']['general_child_item_bulk_pricing'] === 'Y';
-        $customerGroupID = Frontend::getCustomerGroup()->getID();
+        $customerGroup   = Frontend::getCustomerGroup();
+        $customerGroupID = $customerGroup->getID();
+        $currency        = Frontend::getCurrency();
         $langID          = Shop::getLanguageID();
         $db              = Shop::Container()->getDB();
         foreach ($this->PositionenArr as $item) {
@@ -898,7 +903,7 @@ class Cart
                 continue;
             }
             $oldItem                             = clone $item;
-            $product                             = new Artikel($db);
+            $product                             = new Artikel($db, $customerGroup, $currency);
             $options->nKeineSichtbarkeitBeachten = 1;
             if ($item->kKonfigitem === 0) {
                 $options->nKeineSichtbarkeitBeachten = 0;
@@ -1342,7 +1347,7 @@ class Cart
         $redirect      = false;
         $depAmount     = $this->getAllDependentAmount(true);
         $reservedStock = [];
-
+        $db            = Shop::Container()->getDB();
         foreach ($this->PositionenArr as $i => $item) {
             if ($item->kArtikel <= 0
                 || $item->Artikel->cLagerBeachten !== 'Y'
@@ -1361,7 +1366,7 @@ class Cart
                 foreach ($item->WarenkorbPosEigenschaftArr as $oWarenkorbPosEigenschaft) {
                     if ($oWarenkorbPosEigenschaft->kEigenschaftWert > 0 && $item->nAnzahl > 0) {
                         //schaue in DB, ob Lagerbestand ausreichend
-                        $stock = Shop::Container()->getDB()->getSingleObject(
+                        $stock = $db->getSingleObject(
                             'SELECT kEigenschaftWert, fLagerbestand >= :cnt AS bAusreichend, fLagerbestand
                                 FROM teigenschaftwert
                                 WHERE kEigenschaftWert = :vid',
@@ -1381,7 +1386,7 @@ class Cart
                 // Position ohne Variationen bzw. Variationen ohne eigenen Lagerbestand
                 // schaue in DB, ob Lagerbestand ausreichend
                 $depProducts = $item->Artikel->getAllDependentProducts(true);
-                $depStock    = Shop::Container()->getDB()->getObjects(
+                $depStock    = $db->getObjects(
                     'SELECT kArtikel, fLagerbestand
                         FROM tartikel
                         WHERE kArtikel IN (' . \implode(', ', \array_keys($depProducts)) . ')'
@@ -1435,11 +1440,11 @@ class Cart
     public function loadFromDB(int $kWarenkorb): self
     {
         $obj = Shop::Container()->getDB()->select('twarenkorb', 'kWarenkorb', $kWarenkorb);
-        if ($obj !== null) {
-            $members = \array_keys(\get_object_vars($obj));
-            foreach ($members as $member) {
-                $this->$member = $obj->$member;
-            }
+        if ($obj === null) {
+            return $this;
+        }
+        foreach (\array_keys(\get_object_vars($obj)) as $member) {
+            $this->$member = $obj->$member;
         }
 
         return $this;
@@ -1607,10 +1612,10 @@ class Cart
      */
     public function checkIfCouponIsStillValid(): bool
     {
-        $isValid = true;
         if (!isset($_SESSION['Kupon']->kKupon)) {
-            return $isValid;
+            return true;
         }
+        $isValid = true;
         require_once \PFAD_ROOT . \PFAD_INCLUDES . 'bestellvorgang_inc.php';
         if ($this->posTypEnthalten(\C_WARENKORBPOS_TYP_KUPON)) {
             // Kupon darf nicht im leeren Warenkorb eingelöst werden
@@ -1670,6 +1675,7 @@ class Cart
         require_once \PFAD_ROOT . \PFAD_INCLUDES . 'bestellvorgang_inc.php';
         $coupon        = $_SESSION['Kupon'];
         $maxPreisKupon = $coupon->fWert;
+        $db            = Shop::Container()->getDB();
         if ($coupon->fWert > $this->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true)) {
             $maxPreisKupon = $this->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true);
         }
@@ -1681,7 +1687,7 @@ class Cart
         $specialPosition        = new stdClass();
         $specialPosition->cName = [];
         foreach (Frontend::getLanguages() as $language) {
-            $localized                                    = Shop::Container()->getDB()->select(
+            $localized                                    = $db->select(
                 'tkuponsprache',
                 'kKupon',
                 (int)$coupon->kKupon,

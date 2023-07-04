@@ -19,6 +19,6 @@ class ContentAuthor
     public static function getInstance(?DbInterface $db = null): Author
     {
         \trigger_error(__CLASS__ . ' is deprecated. Use JTL\News\Author instead.', \E_USER_DEPRECATED);
-        return Author::getInstance(Shop::Container()->getDB());
+        return Author::getInstance($db ?? Shop::Container()->getDB());
     }
 }

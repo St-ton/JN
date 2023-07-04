@@ -2,6 +2,7 @@
 
 namespace JTL;
 
+use JTL\DB\DbInterface;
 use JTL\DB\SqlObject;
 use JTL\Helpers\Date;
 use stdClass;
@@ -43,6 +44,11 @@ class Statistik
     private array $dateUntilParts = [];
 
     /**
+     * @var DbInterface
+     */
+    private DbInterface $db;
+
+    /**
      * @param int    $stampFrom
      * @param int    $stampUntil
      * @param string $dateFrom
@@ -50,6 +56,7 @@ class Statistik
      */
     public function __construct(int $stampFrom = 0, int $stampUntil = 0, string $dateFrom = '', string $dateUntil = '')
     {
+        $this->db = Shop::Container()->getDB();
         if (\mb_strlen($dateFrom) > 0 && \mb_strlen($dateUntil) > 0) {
             $this->dateStartParts = Date::getDateParts($dateFrom);
             $this->dateUntilParts = Date::getDateParts($dateUntil);
@@ -74,7 +81,7 @@ class Statistik
                 $this->interval = $interval;
             }
             $dateSQL = $this->getDateSQL('dZeit');
-            $stats   = Shop::Container()->getDB()->getObjects(
+            $stats   = $this->db->getObjects(
                 "SELECT * , COUNT(t.dZeit) AS nCount
                     FROM (
                         SELECT dZeit, DATE_FORMAT(dZeit, '%d.%m.%Y') AS dTime,
@@ -119,7 +126,7 @@ class Statistik
 
             $dateSQL = $this->getDateSQL('dZeit');
 
-            return Shop::Container()->getDB()->getObjects(
+            return $this->db->getObjects(
                 "SELECT t.cReferer, SUM(t.nCount) AS nCount
                     FROM (
                         SELECT IF(cReferer = '', :directEntry, cReferer) AS cReferer,
@@ -159,7 +166,7 @@ class Statistik
 
             $dateSQL = $this->getDateSQL('dZeit');
 
-            return Shop::Container()->getDB()->getObjects(
+            return $this->db->getObjects(
                 'SELECT tbesucherbot.cUserAgent, COUNT(tbesucherbot.kBesucherBot) AS nCount
                     FROM
                         (
@@ -194,7 +201,7 @@ class Statistik
 
             $dateSQL = $this->getDateSQL('tbestellung.dErstellt');
 
-            return $this->merge(Shop::Container()->getDB()->getObjects(
+            return $this->merge($this->db->getObjects(
                 "SELECT tbestellung.dErstellt AS dZeit, SUM(tbestellung.fGesamtsumme) AS nCount,
                     DATE_FORMAT(tbestellung.dErstellt, '%m') AS nMonth,
                     DATE_FORMAT(tbestellung.dErstellt, '%H') AS nHour,
@@ -225,7 +232,7 @@ class Statistik
 
             $dateSQL = $this->getDateSQL('dZeit');
 
-            return Shop::Container()->getDB()->getObjects(
+            return $this->db->getObjects(
                 'SELECT t.cEinstiegsseite, COUNT(t.cEinstiegsseite) AS nCount
                     FROM
                     (
@@ -254,7 +261,7 @@ class Statistik
     private function calculateDaysDiff(): self
     {
         if (\count($this->dateStartParts) > 0 && \count($this->dateUntilParts) > 0) {
-            $dateDiff = Shop::Container()->getDB()->getSingleObject(
+            $dateDiff = $this->db->getSingleObject(
                 'SELECT DATEDIFF(:to, :from) AS nTage',
                 ['from' => $this->dateStartParts['cDatum'], 'to' => $this->dateUntilParts['cDatum']]
             );

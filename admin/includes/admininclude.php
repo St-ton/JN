@@ -75,7 +75,7 @@ Shop::setRouter(new Router(
     $cache,
     new State(),
     Shop::Container()->getAlertService(),
-    Shopsetting::getInstance()->getAll()
+    Shopsetting::getInstance($db, $cache)->getAll()
 ));
 $smarty = new BackendSmarty($db);
 

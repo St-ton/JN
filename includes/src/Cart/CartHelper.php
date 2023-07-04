@@ -1038,23 +1038,22 @@ class CartHelper
      */
     public static function getPartComponent(int $kStueckliste, bool $assoc = false): array
     {
-        if ($kStueckliste > 0) {
-            $data = Shop::Container()->getDB()->selectAll('tstueckliste', 'kStueckliste', $kStueckliste);
-            if (\count($data) > 0) {
-                if ($assoc) {
-                    $res = [];
-                    foreach ($data as $item) {
-                        $res[$item->kArtikel] = $item;
-                    }
-
-                    return $res;
-                }
-
-                return $data;
-            }
+        if ($kStueckliste <= 0) {
+            return [];
+        }
+        $data = Shop::Container()->getDB()->selectAll('tstueckliste', 'kStueckliste', $kStueckliste);
+        if (\count($data) === 0) {
+            return [];
+        }
+        if ($assoc === false) {
+            return $data;
+        }
+        $res = [];
+        foreach ($data as $item) {
+            $res[$item->kArtikel] = $item;
         }
 
-        return [];
+        return $res;
     }
 
     /**
@@ -1333,8 +1332,10 @@ class CartHelper
         $errors         = [];
         $defaultOptions = Artikel::getDefaultOptions();
         $db             = Shop::Container()->getDB();
+        $customerGroup  = Frontend::getCustomerGroup();
+        $currency       = Frontend::getCurrency();
         foreach ($attributes as $key => $attribute) {
-            $product = new Artikel($db);
+            $product = new Artikel($db, $customerGroup, $currency);
             $product->fuelleArtikel($attribute->kArtikel, $defaultOptions);
             $redirects = self::addToCartCheck(
                 $product,
@@ -1357,7 +1358,7 @@ class CartHelper
         }
 
         if (\count($errors) > 0) {
-            $product = new Artikel($db);
+            $product = new Artikel($db, $customerGroup, $currency);
             $product->fuelleArtikel($isParent ? $parentID : $productID, $defaultOptions);
             $redirectURL = $product->cURLFull . '?a=';
             if ($isParent) {
@@ -1636,10 +1637,13 @@ class CartHelper
         if (empty($_POST['anzahl'])) {
             return;
         }
-        $updated     = false;
-        $freeGiftID  = 0;
-        $cartNotices = $_SESSION['Warenkorbhinweise'] ?? [];
-        $options     = Artikel::getDefaultOptions();
+        $db            = Shop::Container()->getDB();
+        $updated       = false;
+        $freeGiftID    = 0;
+        $cartNotices   = $_SESSION['Warenkorbhinweise'] ?? [];
+        $options       = Artikel::getDefaultOptions();
+        $customerGroup = Frontend::getCustomerGroup();
+        $currency      = Frontend::getCurrency();
         foreach ($cart->PositionenArr as $i => $item) {
             $item->kArtikel = (int)$item->kArtikel;
             if ($item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL) {
@@ -1648,7 +1652,7 @@ class CartHelper
                 }
                 //stückzahlen verändert?
                 if (isset($_POST['anzahl'][$i])) {
-                    $product = new Artikel();
+                    $product = new Artikel($db, $customerGroup, $currency);
                     $valid   = true;
                     $product->fuelleArtikel($item->kArtikel, $options);
                     $quantity = (float)\str_replace(',', '.', $_POST['anzahl'][$i]);
@@ -1713,7 +1717,7 @@ class CartHelper
                         && \is_array($item->WarenkorbPosEigenschaftArr)
                     ) {
                         foreach ($item->WarenkorbPosEigenschaftArr as $eWert) {
-                            $value = new EigenschaftWert($eWert->kEigenschaftWert);
+                            $value = new EigenschaftWert($eWert->kEigenschaftWert, $db);
                             if ($value->fPackeinheit * ($quantity +
                                     $cart->gibAnzahlEinerVariation(
                                         $item->kArtikel,
@@ -1804,7 +1808,7 @@ class CartHelper
         // Gesamtsumme Warenkorb < Gratisgeschenk && Gratisgeschenk in den Pos?
         if ($freeGiftID > 0) {
             // Prüfen, ob der Artikel wirklich ein Gratis Geschenk ist
-            $gift = Shop::Container()->getDB()->getSingleObject(
+            $gift = $db->getSingleObject(
                 'SELECT kArtikel
                     FROM tartikelattribut
                     WHERE kArtikel = :pid
@@ -1947,16 +1951,19 @@ class CartHelper
                 LIMIT ' . (int)$conf['kaufabwicklung']['warenkorb_xselling_anzahl'],
             'kXSellArtikel'
         );
-        if (\count($xsellData) > 0) {
-            $xSelling->Kauf          = new stdClass();
-            $xSelling->Kauf->Artikel = [];
-            $defaultOptions          = Artikel::getDefaultOptions();
-            foreach ($xsellData as $productID) {
-                $product = new Artikel($db);
-                $product->fuelleArtikel($productID, $defaultOptions);
-                if ($product->kArtikel > 0 && $product->aufLagerSichtbarkeit()) {
-                    $xSelling->Kauf->Artikel[] = $product;
-                }
+        if (\count($xsellData) === 0) {
+            return $xSelling;
+        }
+        $xSelling->Kauf          = new stdClass();
+        $xSelling->Kauf->Artikel = [];
+        $defaultOptions          = Artikel::getDefaultOptions();
+        $customerGroup           = Frontend::getCustomerGroup();
+        $currency                = Frontend::getCurrency();
+        foreach ($xsellData as $productID) {
+            $product = new Artikel($db, $customerGroup, $currency);
+            $product->fuelleArtikel($productID, $defaultOptions);
+            if ($product->kArtikel > 0 && $product->aufLagerSichtbarkeit()) {
+                $xSelling->Kauf->Artikel[] = $product;
             }
         }
 
@@ -1983,11 +1990,11 @@ class CartHelper
         } elseif ($conf['sonstiges']['sonstiges_gratisgeschenk_sortierung'] === 'L') {
             $sqlSort = ' ORDER BY tartikel.fLagerbestand DESC';
         }
-        $db       = Shop::Container()->getDB();
-        $limit    = $conf['sonstiges']['sonstiges_gratisgeschenk_anzahl'] > 0
+        $db            = Shop::Container()->getDB();
+        $limit         = $conf['sonstiges']['sonstiges_gratisgeschenk_anzahl'] > 0
             ? ' LIMIT ' . (int)$conf['sonstiges']['sonstiges_gratisgeschenk_anzahl']
             : '';
-        $giftsTmp = $db->getObjects(
+        $giftsTmp      = $db->getObjects(
             "SELECT tartikel.kArtikel, tartikelattribut.cWert
                 FROM tartikel
                 JOIN tartikelattribut
@@ -2002,9 +2009,10 @@ class CartHelper
                 'csum' => Frontend::getCart()->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true)
             ]
         );
-
+        $customerGroup = Frontend::getCustomerGroup();
+        $currency      = Frontend::getCurrency();
         foreach ($giftsTmp as $gift) {
-            $product = new Artikel($db);
+            $product = new Artikel($db, $customerGroup, $currency);
             $product->fuelleArtikel((int)$gift->kArtikel, Artikel::getDefaultOptions());
             if ($product->kArtikel > 0
                 && ($product->kEigenschaftKombi > 0
@@ -2205,12 +2213,13 @@ class CartHelper
     public static function freeGiftStillValid(Cart $cart): bool
     {
         $valid = true;
+        $db    = Shop::Container()->getDB();
         foreach ($cart->PositionenArr as $item) {
             if ($item->nPosTyp !== \C_WARENKORBPOS_TYP_GRATISGESCHENK) {
                 continue;
             }
             // Prüfen ob der Artikel wirklich ein Gratisgeschenk ist und ob die Mindestsumme erreicht wird
-            $gift = Shop::Container()->getDB()->getSingleObject(
+            $gift = $db->getSingleObject(
                 'SELECT kArtikel
                 FROM tartikelattribut
                 WHERE kArtikel = :pid

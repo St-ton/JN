@@ -67,7 +67,7 @@ class SeparatorController extends AbstractBackendController
             if (!isset($post['nDezimal_' . $unt], $post['cDezZeichen_' . $unt], $post['cTausenderZeichen_' . $unt])) {
                 continue;
             }
-            $separator = new Separator();
+            $separator = new Separator(0, $this->db, $this->cache);
             $separator->setSprache($this->currentLanguageID)
                 ->setEinheit($unt)
                 ->setDezimalstellen((int)$post['nDezimal_' . $unt])

@@ -163,7 +163,7 @@ class StockUpdater
         }
         if ($product->cLagerVariation === 'Y' && \is_array($attributeValues) && \count($attributeValues) > 0) {
             foreach ($attributeValues as $value) {
-                $EigenschaftWert = new EigenschaftWert($value->kEigenschaftWert);
+                $EigenschaftWert = new EigenschaftWert($value->kEigenschaftWert, $this->db);
                 if ($EigenschaftWert->fPackeinheit == 0) {
                     $EigenschaftWert->fPackeinheit = 1;
                 }

@@ -6,6 +6,7 @@ use DateInterval;
 use Exception;
 use JTL\Backend\Permissions;
 use JTL\Catalog\Category\Kategorie;
+use JTL\Catalog\Currency;
 use JTL\Catalog\Hersteller;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
@@ -31,6 +32,7 @@ use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
+use function Functional\first;
 
 /**
  * Class StatsController
@@ -795,8 +797,7 @@ class CouponsController extends AbstractBackendController
     private function informCouponCustomers(Kupon $coupon): void
     {
         $coupon->augment();
-        $defaultLang     = $this->db->select('tsprache', 'cShopStandard', 'Y');
-        $defaultCurrency = $this->db->select('twaehrung', 'cStandard', 'Y');
+        $defaultCurrency = (new Currency())->getDefault();
         $defaultOptions  = Artikel::getDefaultOptions();
         // lokalisierter Kuponwert und MBW
         $coupon->cLocalizedWert = $coupon->cWertTyp === 'festpreis'
@@ -807,7 +808,7 @@ class CouponsController extends AbstractBackendController
             $defaultCurrency,
             false
         );
-        // kKunde-Array aller auserwaehlten Kunden
+        // kKunde-Array aller ausgewaehlten Kunden
         $customerIDs     = Text::parseSSKint($coupon->cKunden);
         $customerData    = $this->db->getInts(
             'SELECT kKunde
@@ -824,6 +825,11 @@ class CouponsController extends AbstractBackendController
         $productIDs      = [];
         $manufacturerIDs = Text::parseSSK($coupon->cHersteller);
         $itemNumbers     = Text::parseSSK($coupon->cArtikel);
+        $mailer          = Shop::Container()->get(Mailer::class);
+        $allLanguages    = LanguageHelper::getAllLanguages(1);
+        $defaultLang     = first($allLanguages, function (LanguageModel $model) {
+            return $model->isShopDefault() === true;
+        });
         if (\count($itemNumbers) > 0) {
             $sql = new SqlObject();
             $in  = [];
@@ -840,17 +846,15 @@ class CouponsController extends AbstractBackendController
             );
         }
         foreach ($customerData as $customerID) {
-            $customer = new Customer($customerID);
-            $langID   = $customer->kSprache;
-            $cgID     = $customer->kKundengruppe;
-            $language = Shop::Lang()->getIsoFromLangID($langID);
-            if (!$language) {
-                $language = $defaultLang;
-            }
+            $customer   = new Customer($customerID);
+            $langID     = $customer->kSprache;
+            $cgID       = $customer->kKundengruppe;
+            $cGroup     = new CustomerGroup($cgID);
+            $language   = $allLanguages[$langID] ?? $defaultLang;
             $localized  = $this->db->select(
                 'tkuponsprache',
                 ['kKupon', 'cISOSprache'],
-                [$coupon->kKupon, $language->cISO]
+                [$coupon->kKupon, $language->getCode()]
             );
             $categories = [];
             if ($coupon->cKategorien !== '-1') {
@@ -863,7 +867,7 @@ class CouponsController extends AbstractBackendController
             }
             $products = [];
             foreach ($productIDs as $productID) {
-                $product = new Artikel($this->db);
+                $product = new Artikel($this->db, $cGroup, $defaultCurrency);
                 $product->fuelleArtikel(
                     $productID,
                     $defaultOptions,
@@ -885,9 +889,11 @@ class CouponsController extends AbstractBackendController
             $obj                     = new stdClass();
             $obj->tkupon             = $coupon;
             $obj->tkunde             = $customer;
-            $mailer                  = Shop::Container()->get(Mailer::class);
             $mail                    = new Mail();
-            $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_KUPON, $obj));
+            $mail                    = $mail->createFromTemplateID(\MAILTEMPLATE_KUPON, $obj);
+            $mail->setLanguage($language);
+            $mail->setCustomerGroupID($cgID);
+            $mailer->send($mail);
         }
     }
 

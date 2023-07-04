@@ -28,7 +28,7 @@ class SelectionWizardController extends AbstractBackendController
         $this->smarty = $smarty;
         $this->checkPermissions(Permissions::EXTENSION_SELECTIONWIZARD_VIEW);
         $step     = '';
-        $nice     = Nice::getInstance();
+        $nice     = Nice::getInstance($this->db, $this->cache);
         $tab      = 'uebersicht';
         $postData = Text::filterXSS($_POST);
         $this->getText->loadAdminLocale('pages/auswahlassistent');

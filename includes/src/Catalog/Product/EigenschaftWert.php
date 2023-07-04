@@ -2,6 +2,7 @@
 
 namespace JTL\Catalog\Product;
 
+use JTL\DB\DbInterface;
 use JTL\Helpers\GeneralObject;
 use JTL\Shop;
 
@@ -62,11 +63,12 @@ class EigenschaftWert
     public string $cArtNr = '';
 
     /**
-     * EigenschaftWert constructor.
-     * @param int $id
+     * @param int              $id
+     * @param DbInterface|null $db
      */
-    public function __construct(int $id = 0)
+    public function __construct(int $id = 0, private ?DbInterface $db = null)
     {
+        $this->db = $this->db ?? Shop::Container()->getDB();
         if ($id > 0) {
             $this->loadFromDB($id);
         }
@@ -81,7 +83,7 @@ class EigenschaftWert
         if ($id <= 0) {
             return $this;
         }
-        $data = Shop::Container()->getDB()->select('teigenschaftwert', 'kEigenschaftWert', $id);
+        $data = $this->db->select('teigenschaftwert', 'kEigenschaftWert', $id);
         if ($data !== null && $data->kEigenschaftWert > 0) {
             $this->kEigenschaft     = (int)$data->kEigenschaft;
             $this->kEigenschaftWert = (int)$data->kEigenschaftWert;
@@ -109,7 +111,7 @@ class EigenschaftWert
         $obj = GeneralObject::copyMembers($this);
         unset($obj->fAufpreis);
 
-        return Shop::Container()->getDB()->insert('teigenschaftwert', $obj);
+        return $this->db->insert('teigenschaftwert', $obj);
     }
 
     /**
@@ -120,6 +122,6 @@ class EigenschaftWert
         $obj = GeneralObject::copyMembers($this);
         unset($obj->fAufpreis);
 
-        return Shop::Container()->getDB()->update('teigenschaftwert', 'kEigenschaftWert', $obj->kEigenschaftWert, $obj);
+        return $this->db->update('teigenschaftwert', 'kEigenschaftWert', $obj->kEigenschaftWert, $obj);
     }
 }

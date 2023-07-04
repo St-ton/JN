@@ -2,6 +2,8 @@
 
 namespace JTL;
 
+use JTL\Cache\JTLCacheInterface;
+use JTL\DB\DbInterface;
 use JTL\xtea\XTEA;
 use stdClass;
 
@@ -37,17 +39,20 @@ class Nice
     private array $moduleIDs = [];
 
     /**
-     * @return Nice
+     * @param DbInterface|null       $db
+     * @param JTLCacheInterface|null $cache
+     * @return self
      */
-    public static function getInstance(): self
+    public static function getInstance(?DbInterface $db = null, ?JTLCacheInterface $cache = null): self
     {
-        return self::$instance ?? new self();
+        return self::$instance ?? new self($db ?? Shop::Container()->getDB(), $cache ?? Shop::Container()->getCache());
     }
 
     /**
-     * Nice constructor.
+     * @param DbInterface       $db
+     * @param JTLCacheInterface $cache
      */
-    protected function __construct()
+    protected function __construct(private readonly DbInterface $db, private readonly JTLCacheInterface $cache)
     {
         $this->brocken = $this->load();
         if (\mb_strlen($this->brocken) > 0) {
@@ -74,9 +79,9 @@ class Nice
     private function load(): string
     {
         $cacheID = 'cbrocken';
-        if (($brocken = Shop::Container()->getCache()->get($cacheID)) === false) {
+        if (($brocken = $this->cache->get($cacheID)) === false) {
             $brocken = '';
-            $data    = Shop::Container()->getDB()->getSingleObject(
+            $data    = $this->db->getSingleObject(
                 'SELECT cBrocken 
                     FROM tbrocken 
                     LIMIT 1'
@@ -95,7 +100,7 @@ class Nice
                         \base64_decode($data->cBrocken)
                     )
                 );
-                Shop::Container()->getCache()->set($cacheID, $brocken, [\CACHING_GROUP_CORE]);
+                $this->cache->set($cacheID, $brocken, [\CACHING_GROUP_CORE]);
             }
         }
 

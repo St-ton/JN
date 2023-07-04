@@ -96,8 +96,10 @@ class Plugins
             if (!\is_array($params['kArtikel'])) {
                 $params['kArtikel'] = [$params['kArtikel']];
             }
+            $customerGroup = Frontend::getCustomerGroup();
+            $currency      = Frontend::getCurrency();
             foreach ($params['kArtikel'] as $productID) {
-                $product    = new Artikel($this->db);
+                $product    = new Artikel($this->db, $customerGroup, $currency);
                 $products[] = $product->fuelleArtikel($productID, Artikel::getDefaultOptions());
             }
         } else {

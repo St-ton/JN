@@ -91,7 +91,7 @@ class EmailTemplateController extends AbstractBackendController
         $pluginSettingsTable = 'tpluginemailvorlageeinstellungen';
         $emailTemplateID     = Request::verifyGPCDataInt('kEmailvorlage');
         $pluginID            = Request::verifyGPCDataInt('kPlugin');
-        $settings            = Shopsetting::getInstance();
+        $settings            = Shopsetting::getInstance($this->db, $this->cache);
         $renderer            = new SmartyRenderer(new MailSmarty($this->db));
         $hydrator            = new TestHydrator($renderer->getSmarty(), $this->db, $settings);
         $this->mailer        = new Mailer($hydrator, $renderer, $settings, new NullValidator());

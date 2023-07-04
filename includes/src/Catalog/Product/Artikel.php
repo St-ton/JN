@@ -1403,7 +1403,7 @@ class Artikel implements RoutableInterface
             } elseif ($item > 0) {
                 $propValueID = (int)$item;
             }
-            $propValue       = new EigenschaftWert($propValueID);
+            $propValue       = new EigenschaftWert($propValueID, $this->getDB());
             $extraCharge     = $propValue->fAufpreisNetto;
             $propExtraCharge = $this->getDB()->select(
                 'teigenschaftwertaufpreis',

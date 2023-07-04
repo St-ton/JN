@@ -490,36 +490,37 @@ class SimpleMail
         if (Shop::getSettingValue(\CONF_EMAILBLACKLIST, 'blacklist_benutzen') !== 'Y') {
             return false;
         }
-        foreach (Shop::Container()->getDB()->getObjects('SELECT cEmail FROM temailblacklist') as $item) {
+        $db = Shop::Container()->getDB();
+        foreach ($db->getObjects('SELECT cEmail FROM temailblacklist') as $item) {
             if (\str_contains($item->cEmail, '*')) {
                 \preg_match('/' . \str_replace('*', '[a-z0-9\-\_\.\@\+]*', $item->cEmail) . '/', $mail, $hits);
                 // Blocked
                 if (isset($hits[0]) && \mb_strlen($mail) === \mb_strlen($hits[0])) {
-                    $block = Shop::Container()->getDB()->select('temailblacklistblock', 'cEmail', $mail);
+                    $block = $db->select('temailblacklistblock', 'cEmail', $mail);
                     if ($block !== null && !empty($block->cEmail)) {
                         $_upd                = new stdClass();
                         $_upd->dLetzterBlock = 'NOW()';
-                        Shop::Container()->getDB()->update('temailblacklistblock', 'cEmail', $mail, $_upd);
+                        $db->update('temailblacklistblock', 'cEmail', $mail, $_upd);
                     } else {
                         $block                = new stdClass();
                         $block->cEmail        = $mail;
                         $block->dLetzterBlock = 'NOW()';
-                        Shop::Container()->getDB()->insert('temailblacklistblock', $block);
+                        $db->insert('temailblacklistblock', $block);
                     }
 
                     return true;
                 }
             } elseif (\mb_convert_case($item->cEmail, \MB_CASE_LOWER) === \mb_convert_case($mail, \MB_CASE_LOWER)) {
-                $block = Shop::Container()->getDB()->select('temailblacklistblock', 'cEmail', $mail);
+                $block = $db->select('temailblacklistblock', 'cEmail', $mail);
                 if (!empty($block->cEmail)) {
                     $_upd                = new stdClass();
                     $_upd->dLetzterBlock = 'NOW()';
-                    Shop::Container()->getDB()->update('temailblacklistblock', 'cEmail', $mail, $_upd);
+                    $db->update('temailblacklistblock', 'cEmail', $mail, $_upd);
                 } else {
                     $block                = new stdClass();
                     $block->cEmail        = $mail;
                     $block->dLetzterBlock = 'NOW()';
-                    Shop::Container()->getDB()->insert('temailblacklistblock', $block);
+                    $db->insert('temailblacklistblock', $block);
                 }
 
                 return true;

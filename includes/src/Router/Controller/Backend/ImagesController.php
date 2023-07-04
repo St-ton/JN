@@ -62,7 +62,7 @@ class ImagesController extends AbstractBackendController
      */
     private function actionSaveConfig(): void
     {
-        $shopSettings = Shopsetting::getInstance();
+        $shopSettings = Shopsetting::getInstance($this->db, $this->cache);
         $oldConfig    = $shopSettings->getSettings([\CONF_BILDER])['bilder'];
         $this->saveAdminSectionSettings(
             \CONF_BILDER,

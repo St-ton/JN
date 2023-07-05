@@ -207,7 +207,7 @@
     {/row}
 {/block}
 {block name='account-rma-form-pickup-address-modal'}
-    {modal id="pickupAddressModal" title={lang key='newPickupAddress' section='rma'}}
+    {modal id="pickupAddressModal" class="fade" title={lang key='newPickupAddress' section='rma'}}
         {include file='account/shipping_address_form.tpl' isModal=true LieferLaender=$shippingCountries}
     {/modal}
 {/block}
@@ -347,6 +347,8 @@
 
             $('#lieferadressen').on('submit', function (e) {
                 e.preventDefault();
+                $('#lieferadressen button[type="submit"]')
+                    .addClass('isLoading').attr('disabled', true);
                 let formData = $(this).serializeArray();
                 $.evo.io().request(
                     {
@@ -362,6 +364,8 @@
                             alert(data['response']['msg']);
                         } else {
                             $('#pickupAddress').html(data['response']['options']);
+                            $('#lieferadressen button[type="submit"]')
+                                .removeClass('isLoading').attr('disabled', false);
                             $('#pickupAddressModal').modal('hide');
                         }
                     }

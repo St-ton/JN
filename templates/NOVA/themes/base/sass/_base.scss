@@ -557,3 +557,31 @@ input.typeahead {
   position: sticky;
   top: calc(68px + 2rem);
 }
+
+button[type="submit"].isLoading:before {
+  content: '';
+  margin-right: 1.5rem;
+  float: right;
+}
+
+button[type="submit"].isLoading:after {
+  content: '';
+  position: absolute;
+  margin-left: .25rem;
+  animation: pointLoader 1.2s linear infinite;
+}
+
+@keyframes pointLoader {
+  0% {
+    content: '';
+  }
+  25% {
+    content: '.';
+  }
+  50% {
+    content: '..';
+  }
+  75% {
+    content: '...';
+  }
+}

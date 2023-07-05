@@ -153,7 +153,7 @@ final class Categories extends AbstractSync
             return;
         }
 
-        $customerDiscounts = $this->mapper->mapArray($xml['tkategorie'], 'category_userdiscount', 'mCustomerDiscount');
+        $customerDiscounts = $this->mapper->mapArray($xml['tkategorie'], 'category_customerdiscount', 'mCustomerDiscount');
         foreach ($customerDiscounts as $customerDiscount) {
             if (isset($customerDiscount->delete) || (float)$customerDiscount->discount === 0.0) {
                 $this->deleteCustomerDiscount($catId, (int)$customerDiscount->kKunde);

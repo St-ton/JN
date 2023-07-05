@@ -19,17 +19,17 @@ class Queue
      * @param DbInterface     $db
      * @param LoggerInterface $logger
      * @param JobFactory      $factory
-     * @param int             $cronStartedAt
+     * @param int             $timestampCronHasStartedAt
      * @since 5.3.0
      */
     public function __construct(
         private readonly DbInterface     $db,
         private readonly LoggerInterface $logger,
         private readonly JobFactory      $factory,
-        private int             $cronStartedAt = 0
+        private int $timestampCronHasStartedAt = 0
     ) {
-        if ($this->cronStartedAt === 0) {
-            $this->cronStartedAt = \time();
+        if ($this->timestampCronHasStartedAt === 0) {
+            $this->timestampCronHasStartedAt = \time();
         }
         Shop::Container()->getGetText()->loadAdminLocale('pages/cron');
     }
@@ -41,7 +41,7 @@ class Queue
     {
         $queueEntries = $this->db->getCollection(
             'SELECT tjobqueue.*, tcron.nextStart, tcron.startTime AS cronStartTime, tcron.frequency, ' .
-                    $this->cronStartedAt . ' AS cronHasStartedAt
+                    $this->timestampCronHasStartedAt . ' AS cronHasStartedAt
                 FROM tjobqueue
                 JOIN tcron
                     ON tcron.cronID = tjobqueue.cronID

@@ -50,7 +50,7 @@ final class SendMailQueue extends Job
             $validator
         );
         $mailsSent = true;
-        while ($mailsSent === true && \time() < ($queueEntry->cronHasStartedAt + $maxJobLength)) {
+        while ($mailsSent === true && \time() < ($queueEntry->timestampCronHasStartedAt + $maxJobLength)) {
             $mailsSent = $mailer->sendQueuedMails();
         }
 

@@ -137,6 +137,6 @@ class QueueEntry
         $this->lastStart                 = new DateTime($data->lastStart ?? '');
         $this->lastFinish                = new DateTime($data->lastFinish ?? '');
         $this->nextStart                 = new DateTime($data->nextStart ?? '');
-        $this->timestampCronHasStartedAt = (int)($data->cronHasStartedAt ?? 0);
+        $this->timestampCronHasStartedAt = (int)($data->cronHasStartedAt ?? \time());
     }
 }

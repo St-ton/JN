@@ -2,8 +2,10 @@
 
 namespace JTL\Cache\Methods;
 
+use Exception;
 use JTL\Cache\ICachingMethod;
 use JTL\Cache\JTLCacheTrait;
+use JTL\Shop;
 use Redis;
 use RedisException;
 
@@ -59,10 +61,10 @@ class CacheRedis implements ICachingMethod
      */
     private function setRedis(
         ?string $host = null,
-        ?int $port = null,
+        ?int    $port = null,
         ?string $pass = null,
-        ?int $database = null,
-        bool $persist = false
+        ?int    $database = null,
+        bool    $persist = false
     ): bool {
         $redis   = new Redis();
         $connect = $persist === false ? 'connect' : 'pconnect';
@@ -121,7 +123,7 @@ class CacheRedis implements ICachingMethod
 
             return \is_bool($res) ? $res : false;
         } catch (RedisException $e) {
-            echo 'Redis exception: ' . $e->getMessage();
+            $this->handleException($e);
 
             return false;
         }
@@ -140,7 +142,7 @@ class CacheRedis implements ICachingMethod
 
             return $res;
         } catch (RedisException $e) {
-            echo 'Redis exception: ' . $e->getMessage();
+            $this->handleException($e);
 
             return false;
         }
@@ -154,7 +156,7 @@ class CacheRedis implements ICachingMethod
         try {
             return $this->redis->get($cacheID);
         } catch (RedisException $e) {
-            echo 'Redis exception: ' . $e->getMessage();
+            $this->handleException($e);
 
             return false;
         }
@@ -176,7 +178,7 @@ class CacheRedis implements ICachingMethod
 
             return $return;
         } catch (RedisException $e) {
-            echo 'Redis exception: ' . $e->getMessage();
+            $this->handleException($e);
 
             return [];
         }
@@ -198,7 +200,7 @@ class CacheRedis implements ICachingMethod
         try {
             return $this->redis->del($cacheID) > 0;
         } catch (RedisException $e) {
-            echo 'Redis exception: ' . $e->getMessage();
+            $this->handleException($e);
 
             return false;
         }
@@ -242,7 +244,7 @@ class CacheRedis implements ICachingMethod
         $tagged = \array_unique($this->getKeysByTag($tags));
         $tags   = \is_string($tags)
             ? [self::_keyFromTagName($tags)]
-            : \array_map('self::_keyFromTagName', $tags);
+            : \array_map(self::_keyFromTagName(...), $tags);
 
         return $this->flush(\array_merge($tags, $tagged)) ? \count($tags) : 0;
     }
@@ -262,7 +264,7 @@ class CacheRedis implements ICachingMethod
     {
         $matchTags = \is_string($tags)
             ? [self::_keyFromTagName($tags)]
-            : \array_map('self::_keyFromTagName', $tags);
+            : \array_map(self::_keyFromTagName(...), $tags);
         $res       = \count($matchTags) === 1
             ? $this->redis->sMembers($matchTags[0])
             : $this->redis->sUnion($matchTags);
@@ -300,7 +302,7 @@ class CacheRedis implements ICachingMethod
         try {
             $stats = $this->redis->info();
         } catch (RedisException $e) {
-            echo 'Redis exception: ' . $e->getMessage();
+            $this->handleException($e);
 
             return [];
         }
@@ -309,7 +311,7 @@ class CacheRedis implements ICachingMethod
                 ? $this->redis->slowlog('get', 25)
                 : [];
         } catch (RedisException $e) {
-            echo 'Redis exception: ' . $e->getMessage();
+            $this->handleException($e);
         }
         $db  = $this->redis->getDBNum();
         $idx = 'db' . $db;
@@ -350,7 +352,27 @@ class CacheRedis implements ICachingMethod
                 ? ($stats['keyspace_misses'] / $stats['uptime_in_seconds'])
                 : null, // misses per second
             'mem'      => $stats['used_memory'], // used memory in bytes
+            'max'      => $stats['maxmemory'] ?? null,
             'slow'     => $slowLogData // redis slow log
         ];
+    }
+
+    /**
+     * @param Exception $e
+     * @return void
+     * @throws Exception
+     */
+    private function handleException(Exception $e): void
+    {
+        if ($this->options['debug'] === true && $this->options['debug_method'] === 'echo') {
+            echo $e->getMessage();
+
+            return;
+        }
+        try {
+            Shop::Container()->getLogService()->error($e->getMessage());
+        } catch (Exception) {
+            throw $e;
+        }
     }
 }

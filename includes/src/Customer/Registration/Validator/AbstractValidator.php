@@ -56,7 +56,7 @@ abstract class AbstractValidator implements ValidatorInterface
         )
             ->pluck('cLandISO')
             ->map(static function (string $iso): string {
-                return mb_convert_case($iso, \MB_CASE_UPPER);
+                return \mb_convert_case($iso, \MB_CASE_UPPER);
             })
             ->toArray();
         if (!\in_array(\mb_convert_case($country, \MB_CASE_UPPER), $supportedCountryCodes, true)) {

@@ -185,7 +185,6 @@ class Download
         }
     }
 
-
     /**
      * @param array $keys
      * @param int   $languageID
@@ -298,6 +297,12 @@ class Download
                 ->setBestellung($orderID)
                 ->setErstellt('NOW()')
                 ->save();
+
+            \executeHook(\HOOK_ORDER_DOWNLOAD_FILE, [
+                'download'   => $download,
+                'customerID' => $customerID,
+                'orderID'    => $orderID
+            ]);
 
             self::sendFileToBrowser(
                 \PFAD_DOWNLOADS . $download->getPfad(),

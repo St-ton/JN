@@ -12,7 +12,7 @@ class Migration_20200907151700 extends Migration implements IMigration
     protected $description = 'Revert newsletter unsubscribeAnytime lang';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -28,7 +28,7 @@ class Migration_20200907151700 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

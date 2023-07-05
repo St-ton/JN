@@ -67,6 +67,7 @@ class GiftsController extends AbstractBackendController
             )
             ->getResponse('gratisgeschenk.tpl');
     }
+
     /**
      * @param string $sql
      * @return array
@@ -127,7 +128,7 @@ class GiftsController extends AbstractBackendController
             $product = new Artikel($this->db);
             $product->fuelleArtikel((int)$item->kArtikel, $options, 0, 0, true);
             if ($product->kArtikel > 0) {
-                $product->nGGAnzahl = $item->nAnzahl;
+                $product->nGGAnzahl = (int)$item->nAnzahl;
                 $res[]              = (object)[
                     'artikel'       => $product,
                     'lastOrdered'   => \date_format(\date_create($item->lastOrdered), 'd.m.Y H:i:s'),
@@ -163,7 +164,7 @@ class GiftsController extends AbstractBackendController
             $product = new Artikel($this->db);
             $product->fuelleArtikel((int)$item->kArtikel, $options, 0, 0, true);
             if ($product->kArtikel > 0) {
-                $product->nGGAnzahl = $item->nAnzahl;
+                $product->nGGAnzahl = (int)$item->nAnzahl;
                 $res[]              = (object)[
                     'artikel'      => $product,
                     'orderCreated' => \date_format(\date_create($item->orderCreated), 'd.m.Y H:i:s'),

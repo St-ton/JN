@@ -41,7 +41,6 @@
         "smarty/smarty": "^4.0",
         "jdorn/sql-formatter": "^1.2",
         "phpmyadmin/sql-parser": "^5.4.2",
-        "phpgangsta/googleauthenticator": "dev-master",
         "phpmailer/phpmailer": "^6.0",
         "jtlshop/qrcodegenerator": "2.0.*",
         "erusev/parsedown": "1.8.0-beta-7",
@@ -65,6 +64,7 @@
         "nesbot/carbon": "^2.57",
         "gettext/translator": "^1.1",
         "mrclay/minify": "^3.0",
+        "mrclay/props-dic": "^2.2",
         "wikimedia/less.php": "~3.0.0",
         "scssphp/scssphp": "^1.5.2",
         "league/route": "^5.1",
@@ -75,7 +75,6 @@
     },
     "require-dev": {
         "roave/security-advisories": "dev-latest",
-        "phpunit/php-token-stream": "^3.0",
         "mschop/pathogen": "^0.6",
         "nikic/php-parser": "^4.10",
         "phpmd/phpmd": "@stable",

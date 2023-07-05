@@ -207,9 +207,9 @@ class NiceDB implements DbInterface
      */
     private function analyzeQuery(
         string $stmt,
-        array $assigns = null,
-        array $named = null,
-        float $time = 0
+        array  $assigns = null,
+        array  $named = null,
+        float  $time = 0
     ): DbInterface {
         if ($this->debug !== true
             || \str_contains($stmt, 'tprofiler')
@@ -639,7 +639,7 @@ class NiceDB implements DbInterface
         $keyvalue1 = null,
         $keyname2 = null,
         $keyvalue2 = null,
-        bool $echo = false,
+        bool   $echo = false,
         string $select = '*'
     ): ?stdClass {
         $start = \microtime(true);
@@ -706,7 +706,7 @@ class NiceDB implements DbInterface
         $keyvalue1 = null,
         $keyname2 = null,
         $keyvalue2 = null,
-        bool $echo = false,
+        bool   $echo = false,
         string $select = '*'
     ): ?stdClass {
         return $this->selectSingleRow(
@@ -788,9 +788,9 @@ class NiceDB implements DbInterface
      * @inheritdoc
      */
     public function executeQuery(
-        string $stmt,
-        int $return = ReturnType::DEFAULT,
-        bool $echo = false,
+        string    $stmt,
+        int       $return = ReturnType::DEFAULT,
+        bool      $echo = false,
         ?callable $fnInfo = null
     ) {
         return $this->_execute(0, $stmt, [], $return, $echo, $fnInfo);
@@ -800,10 +800,10 @@ class NiceDB implements DbInterface
      * @inheritdoc
      */
     public function executeQueryPrepared(
-        string $stmt,
-        array $params,
-        int $return = ReturnType::DEFAULT,
-        bool $echo = false,
+        string    $stmt,
+        array     $params,
+        int       $return = ReturnType::DEFAULT,
+        bool      $echo = false,
         ?callable $fnInfo = null
     ) {
         return $this->_execute(1, $stmt, $params, $return, $echo, $fnInfo);
@@ -813,10 +813,10 @@ class NiceDB implements DbInterface
      * @inheritdoc
      */
     public function queryPrepared(
-        string $stmt,
-        array $params,
-        int $return = ReturnType::DEFAULT,
-        bool $echo = false,
+        string    $stmt,
+        array     $params,
+        int       $return = ReturnType::DEFAULT,
+        bool      $echo = false,
         ?callable $fnInfo = null
     ) {
         return $this->_execute(1, $stmt, $params, $return, $echo, $fnInfo);
@@ -921,11 +921,11 @@ class NiceDB implements DbInterface
      * @throws InvalidArgumentException
      */
     protected function _execute(
-        int $type,
-        string $stmt,
-        array $params,
-        int $return,
-        bool $echo = false,
+        int       $type,
+        string    $stmt,
+        array     $params,
+        int       $return,
+        bool      $echo = false,
         ?callable $fnInfo = null
     ) {
         if (!\in_array($type, [0, 1], true)) {
@@ -1477,7 +1477,10 @@ class NiceDB implements DbInterface
             $errorMessage = $e === null
                 ? $this->getErrorCode() . ': ' . $this->getErrorMessage()
                 : $e->getMessage();
-            Shop::Container()->getLogService()->error('Error executing query: ' . $stmt . "\n" . $errorMessage);
+            Shop::Container()->getLogService()->error(
+                "Error executing query {qry}\n{msg}",
+                ['qry' => $stmt, 'msg' => $errorMessage]
+            );
         }
     }
 
@@ -1487,6 +1490,9 @@ class NiceDB implements DbInterface
      */
     public function __unserialize(array $data): void
     {
+        foreach (\get_object_vars(Shop::Container()->getDB()) as $k => $v) {
+            $this->$k = $v;
+        }
     }
 
     /**

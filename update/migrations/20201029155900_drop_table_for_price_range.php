@@ -18,7 +18,7 @@ class Migration_20201029155900 extends Migration implements IMigration
     protected $description = 'Drop the table for price range';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -28,7 +28,7 @@ class Migration_20201029155900 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

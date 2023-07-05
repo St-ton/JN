@@ -18,7 +18,7 @@ class Migration_20170118152400 extends Migration implements IMigration
     protected $description = 'Adds language variables account section';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -36,7 +36,7 @@ class Migration_20170118152400 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

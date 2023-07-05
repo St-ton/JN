@@ -6,7 +6,6 @@ use Illuminate\Support\Collection;
 use JTL\Contracts\RoutableInterface;
 use JTL\DB\SqlObject;
 use JTL\Helpers\Text;
-use JTL\Language\LanguageHelper;
 use JTL\MagicCompatibilityTrait;
 use JTL\Media\Image;
 use JTL\Media\MultiSizeImage;
@@ -133,7 +132,7 @@ class Hersteller implements RoutableInterface
         $this->setImageType(Image::TYPE_MANUFACTURER);
         $this->setRouteType(Router::TYPE_MANUFACTURER);
         if ($id > 0) {
-            $this->loadFromDB($id, $languageID, $noCache);
+            $this->loadFromDB($id, $this->currentLanguageID, $noCache);
         }
     }
 
@@ -164,12 +163,12 @@ class Hersteller implements RoutableInterface
      */
     public function loadFromDB(int $id, int $languageID = 0, bool $noCache = false)
     {
-        // noCache param to avoid problem with de-serialization of class properties with jtl search
-        $this->currentLanguageID = $languageID > 0 ? $languageID : Shop::getLanguageID();
-        if ($this->currentLanguageID === 0) {
-            $this->currentLanguageID = LanguageHelper::getDefaultLanguage()->getId();
+        if ($languageID === 0 && $this->currentLanguageID === 0) {
+            $this->initLanguageID();
+        } elseif ($languageID > 0 && $this->currentLanguageID !== $languageID) {
+            $this->initLanguageID($languageID);
         }
-        $cacheID   = 'manuf_' . $id . Shop::Container()->getCache()->getBaseID();
+        $cacheID   = 'manuf_' . $id;
         $cacheTags = [\CACHING_GROUP_MANUFACTURER];
         $cached    = true;
         if ($noCache === true || ($data = Shop::Container()->getCache()->get($cacheID)) === false) {
@@ -211,7 +210,6 @@ class Hersteller implements RoutableInterface
         }
         if ($data !== null) {
             $this->map($data);
-            $this->currentLanguageID = $languageID;
         }
 
         return $this;

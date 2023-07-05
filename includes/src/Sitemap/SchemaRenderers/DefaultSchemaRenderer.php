@@ -15,7 +15,7 @@ final class DefaultSchemaRenderer extends AbstractSchemaRenderer
     public function buildIndex(array $sitemapFiles): string
     {
         $xml  = $this->getXmlHeader();
-        $xml .= '<sitemapindex xmlns="https://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
+        $xml .= '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
         foreach ($sitemapFiles as $url) {
             $xml .= "<sitemap>\n<loc>" . $url . "</loc>\n";
             if ($this->config['sitemap']['sitemap_insert_lastmod'] === 'Y') {
@@ -34,7 +34,7 @@ final class DefaultSchemaRenderer extends AbstractSchemaRenderer
     public function buildHeader(): string
     {
         $xml  = $this->getXmlHeader();
-        $xml .= '<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9"';
+        $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"';
 
         if ($this->config['sitemap']['sitemap_googleimage_anzeigen'] === 'Y' ||
             $this->config['sitemap']['sitemap_images_categories'] === 'Y' ||
@@ -43,12 +43,12 @@ final class DefaultSchemaRenderer extends AbstractSchemaRenderer
             $this->config['sitemap']['sitemap_images_news_items'] === 'Y' ||
             $this->config['sitemap']['sitemap_images_attributes'] === 'Y'
         ) {
-            $xml .= ' xmlns:image="https://www.google.com/schemas/sitemap-image/1.1"';
+            $xml .= ' xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"';
         }
 
-        $xml .= ' xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"' . "\n";
-        $xml .= '  xsi:schemaLocation="https://www.sitemaps.org/schemas/sitemap/0.9' . "\n";
-        $xml .= '  https://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">' . "\n";
+        $xml .= ' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' . "\n";
+        $xml .= '  xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9' . "\n";
+        $xml .= '  http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">' . "\n";
 
         return $xml;
     }

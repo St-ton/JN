@@ -18,7 +18,7 @@ class Migration_20160913123000 extends Migration implements IMigration
     protected $description = 'Create admin favorite table';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -35,7 +35,7 @@ class Migration_20160913123000 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

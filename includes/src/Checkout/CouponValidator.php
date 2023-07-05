@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-
 namespace JTL\Checkout;
 
 use JTL\Customer\Customer;
@@ -14,7 +13,7 @@ use JTL\Shop;
 class CouponValidator
 {
     /**
-     * @param array $post
+     * @param array    $post
      * @param Customer $customer
      * @return array|int
      * @former plausiKupon()
@@ -66,7 +65,7 @@ class CouponValidator
             // unregistrierte Neukunden, keine Kupons für Gastbestellungen zugelassen
             return;
         }
-        if (!($_SESSION['Kupon']->cKuponTyp ?? '') !== 'standard' && !empty($customer->cMail)) {
+        if (($_SESSION['Kupon']->cKuponTyp ?? '') === 'standard' || empty($customer->cMail)) {
             return;
         }
         // not for already registered customers with order(s)

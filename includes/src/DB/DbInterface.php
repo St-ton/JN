@@ -138,7 +138,7 @@ interface DbInterface
         $keyvalue1 = null,
         $keyname2 = null,
         $keyvalue2 = null,
-        bool $echo = false,
+        bool   $echo = false,
         string $select = '*'
     ): ?stdClass;
 
@@ -162,7 +162,7 @@ interface DbInterface
         $keyvalue1 = null,
         $keyname2 = null,
         $keyvalue2 = null,
-        bool $echo = false,
+        bool   $echo = false,
         string $select = '*'
     ): ?stdClass;
 
@@ -229,9 +229,9 @@ interface DbInterface
     );
 
     /**
-     * @param string   $stmt
-     * @param int      $return
-     * @param bool     $echo
+     * @param string $stmt
+     * @param int    $return
+     * @param bool   $echo
      * @return int|object|array
      */
     public function query(string $stmt, int $return = ReturnType::DEFAULT, bool $echo = false);
@@ -257,10 +257,10 @@ interface DbInterface
      * @throws \InvalidArgumentException
      */
     public function executeQueryPrepared(
-        string $stmt,
-        array $params,
-        int $return = ReturnType::DEFAULT,
-        bool $echo = false,
+        string    $stmt,
+        array     $params,
+        int       $return = ReturnType::DEFAULT,
+        bool      $echo = false,
         ?callable $fnInfo = null
     );
 
@@ -273,10 +273,10 @@ interface DbInterface
      * @return bool|int|object|array|Collection
      */
     public function queryPrepared(
-        string $stmt,
-        array $params,
-        int $return = ReturnType::DEFAULT,
-        bool $echo = false,
+        string    $stmt,
+        array     $params,
+        int       $return = ReturnType::DEFAULT,
+        bool      $echo = false,
         ?callable $fnInfo = null
     );
 
@@ -347,8 +347,8 @@ interface DbInterface
     public function getAffectedRows(string $stmt, array $params = []): int;
 
     /**
-     * @param string   $stmt
-     * @param array    $params
+     * @param string $stmt
+     * @param array  $params
      * @return PDOStatement
      * @since 5.1.0
      */

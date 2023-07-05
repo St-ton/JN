@@ -298,8 +298,7 @@ class Versandart
         ];
 
         $method = Shop::Container()->getDB()->select('tversandart', 'kVersandart', $id);
-
-        if (isset($method->kVersandart) && $method->kVersandart > 0) {
+        if ($method !== null && $method->kVersandart > 0) {
             unset($method->kVersandart);
             $kVersandartNew = Shop::Container()->getDB()->insert('tversandart', $method);
             if ($kVersandartNew > 0) {
@@ -418,7 +417,6 @@ class Versandart
                 return $surcharge->hasZIPCode($zip);
             });
     }
-
 
     /**
      * @return Collection

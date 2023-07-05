@@ -78,7 +78,7 @@ class ListingItem
     /**
      * @var string|null
      */
-    private ?string $exsid;
+    private ?string $exsid = '';
 
     /**
      * @var int

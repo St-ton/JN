@@ -86,6 +86,9 @@ trait RoutableTrait
      */
     public function initLanguageID(int $languageID = null, string $locale = null): void
     {
+        if ($languageID === 0) {
+            $languageID = null;
+        }
         $this->currentLanguageID = $languageID ?? Shop::getLanguageID();
         if ($this->currentLanguageID === 0) {
             $this->currentLanguageID = (int)($_SESSION['kSprache'] ?? 1);

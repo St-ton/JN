@@ -49,8 +49,11 @@ class OrderHandler
      * @param Customer    $customer
      * @param Cart        $cart
      */
-    public function __construct(private DbInterface $db, private Customer $customer, private Cart $cart)
-    {
+    public function __construct(
+        private readonly DbInterface $db,
+        private Customer             $customer,
+        private readonly Cart        $cart
+    ) {
         $this->languageID   = Shop::getLanguageID();
         $this->stockUpdater = new StockUpdater($db, $customer, $cart);
     }
@@ -385,7 +388,7 @@ class OrderHandler
         $this->db->update('tbesucher', 'kKunde', $upd->kKunde, $upd);
         $obj->tkunde         = $this->customer;
         $obj->tbestellung    = $order;
-        $obj->totalLocalized = Preise::getLocalizedPriceString($amount->total[1], $amount->currency, false);
+        $obj->totalLocalized = Preise::getLocalizedPriceWithoutFactor($amount->total[1], $amount->currency, false);
         $obj->payments       = $order->getIncommingPayments(false);
 
         if (isset($order->oEstimatedDelivery->longestMin, $order->oEstimatedDelivery->longestMax)) {
@@ -686,7 +689,7 @@ class OrderHandler
         $customer->dGeburtstag   = Text::unhtmlentities($sessionCustomer->dGeburtstag);
         $customer->cBundesland   = Text::unhtmlentities($sessionCustomer->cBundesland);
 
-        $_SESSION['Kunde'] = $customer;
+        $this->customer = $_SESSION['Kunde'] = $customer;
 
         $shippingAddress = new Lieferadresse();
         $deliveryAddress = Frontend::getDeliveryAddress();

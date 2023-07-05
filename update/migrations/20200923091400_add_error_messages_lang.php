@@ -12,7 +12,7 @@ class Migration_20200923091400 extends Migration implements IMigration
     protected $description = 'Add missingToken, unknownError messages';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -43,7 +43,7 @@ class Migration_20200923091400 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

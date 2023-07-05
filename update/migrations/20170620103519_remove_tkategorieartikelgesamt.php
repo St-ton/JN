@@ -18,7 +18,7 @@ class Migration_20170620103519 extends Migration implements IMigration
     protected $description = 'Remove tkategorieartikelgesamt';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -26,7 +26,7 @@ class Migration_20170620103519 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

@@ -18,7 +18,7 @@ class Migration_20220412144811 extends Migration implements IMigration
     protected $description = 'Add News Settings';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -41,7 +41,7 @@ class Migration_20220412144811 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

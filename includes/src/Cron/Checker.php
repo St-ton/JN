@@ -21,7 +21,7 @@ class Checker
      * @param DbInterface     $db
      * @param LoggerInterface $logger
      */
-    public function __construct(private DbInterface $db, private LoggerInterface $logger)
+    public function __construct(private readonly DbInterface $db, private readonly LoggerInterface $logger)
     {
         if (!\file_exists(\JOBQUEUE_LOCKFILE)) {
             \touch(\JOBQUEUE_LOCKFILE);
@@ -79,7 +79,7 @@ class Checker
                     AND tcron.startDate < NOW()
                     AND tjobqueue.jobQueueID IS NULL'
         );
-        $this->logger->debug(\sprintf('Found %d new cron jobs.', \count($jobs)));
+        $this->logger->debug('Found {cnt} new cron jobs.', ['cnt' => \count($jobs)]);
 
         return $jobs;
     }

@@ -116,8 +116,8 @@ class Group implements JsonSerializable
     private function loadFromDB(int $id = 0, int $languageID = 0): self
     {
         $data = Shop::Container()->getDB()->select('tkonfiggruppe', 'kKonfiggruppe', $id);
-        if (!isset($data->kKonfiggruppe) || $data->kKonfiggruppe <= 0) {
-            Shop::Container()->getLogService()->error('Cannot load config group with id ' . $id);
+        if ($data === null || !isset($data->kKonfiggruppe) || $data->kKonfiggruppe <= 0) {
+            Shop::Container()->getLogService()->error('Cannot load config group with id {id}', ['id' => $id]);
 
             return $this;
         }

@@ -95,7 +95,6 @@ class PaymentMethod
         return true;
     }
 
-
     /**
      * @param int $minOrders
      * @param int $customerID
@@ -124,8 +123,8 @@ class PaymentMethod
         );
         if ($count !== null && $count->anz < $minOrders) {
             Shop::Container()->getLogService()->debug(
-                'pruefeZahlungsartMinBestellungen Bestellanzahl zu niedrig: Anzahl '
-                . (int)$count->anz . ' < ' . $minOrders
+                'pruefeZahlungsartMinBestellungen Bestellanzahl zu niedrig: Anzahl {cnt} < {min}',
+                ['cnt' => (int)$count->anz, 'min' => $minOrders]
             );
 
             return false;
@@ -144,8 +143,8 @@ class PaymentMethod
             && Frontend::getCart()->gibGesamtsummeWarenOhne([\C_WARENKORBPOS_TYP_VERSANDPOS], true) < $minOrderValue
         ) {
             Shop::Container()->getLogService()->debug(
-                'pruefeZahlungsartMinBestellwert Bestellwert zu niedrig: Wert ' .
-                Frontend::getCart()->gibGesamtsummeWaren(true) . ' < ' . $minOrderValue
+                'checkMinOrderValue Bestellwert zu niedrig: Wert {crnt} < {min}',
+                ['crnt' => Frontend::getCart()->gibGesamtsummeWaren(true), 'min' => $minOrderValue]
             );
 
             return false;
@@ -165,8 +164,8 @@ class PaymentMethod
             >= $maxOrderValue
         ) {
             Shop::Container()->getLogService()->debug(
-                'pruefeZahlungsartMaxBestellwert Bestellwert zu hoch: Wert ' .
-                Frontend::getCart()->gibGesamtsummeWaren(true) . ' > ' . $maxOrderValue
+                'pruefeZahlungsartMaxBestellwert Bestellwert zu hoch: Wert {crnt} > {max}',
+                ['crnt' => Frontend::getCart()->gibGesamtsummeWaren(true), 'max' => $maxOrderValue]
             );
 
             return false;

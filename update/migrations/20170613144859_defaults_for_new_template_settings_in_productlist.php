@@ -20,7 +20,7 @@ class Migration_20170613144859 extends Migration implements IMigration
     protected $description = 'Defaults for new template settings in productlist';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -41,7 +41,7 @@ class Migration_20170613144859 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

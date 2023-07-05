@@ -27,7 +27,7 @@ class UpdateIO
      * @param DbInterface $db
      * @param GetText     $getText
      */
-    public function __construct(private DbInterface $db, GetText $getText)
+    public function __construct(private readonly DbInterface $db, GetText $getText)
     {
         $getText->loadAdminLocale('pages/dbupdater');
     }
@@ -181,7 +181,7 @@ class UpdateIO
     public function executeMigration($id = null, $version = null, $dir = null, $pluginID = null)
     {
         try {
-            $updater    = new Updater($this->db);
+            $updater = new Updater($this->db);
             if (!$updater->hasMinUpdateVersion()) {
                 throw new Exception($updater->getMinUpdateVersionError());
             }

@@ -165,7 +165,7 @@ class SmartyRenderer implements RendererInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function renderHTML(string $id): string
     {
@@ -173,7 +173,7 @@ class SmartyRenderer implements RendererInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function renderText(string $id): string
     {

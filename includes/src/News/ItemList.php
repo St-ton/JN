@@ -22,7 +22,7 @@ final class ItemList implements ItemListInterface
      * ItemList constructor.
      * @param DbInterface $db
      */
-    public function __construct(private DbInterface $db)
+    public function __construct(private readonly DbInterface $db)
     {
         $this->items = new Collection();
     }
@@ -60,7 +60,7 @@ final class ItemList implements ItemListInterface
                     ON tseo.cKey = \'kNews\'
                     AND tseo.kKey = tnews.kNews
                     AND tseo.kSprache = tnewssprache.languageID
-                WHERE tnews.kNews IN (' . $itemList  . ')
+                WHERE tnews.kNews IN (' . $itemList . ')
                 GROUP BY tnews.kNews, tnewssprache.languageID
                 ORDER BY FIELD(tnews.kNews, ' . $itemList . ')'
         );

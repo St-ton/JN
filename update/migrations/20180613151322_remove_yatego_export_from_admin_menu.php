@@ -18,7 +18,7 @@ class Migration_20180613151322 extends Migration implements IMigration
     protected $description = 'Remove Yatego Export from admin menu';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -28,7 +28,7 @@ class Migration_20180613151322 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

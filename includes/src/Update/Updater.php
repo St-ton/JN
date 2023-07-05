@@ -11,10 +11,13 @@ use JTL\Network\JTLApi;
 use JTL\Shop;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
+use JTL\Template\Config;
+use JTL\Template\XMLReader;
 use JTLShop\SemVer\Version;
 use JTLShop\SemVer\VersionCollection;
 use PDOException;
 use stdClass;
+use function Functional\first;
 
 /**
  * Class Updater
@@ -281,10 +284,10 @@ class Updater
 
     /**
      * @param Version $targetVersion
-     * @return array|bool
+     * @return array
      * @throws Exception
      */
-    protected function getSqlUpdates(Version $targetVersion)
+    protected function getSqlUpdates(Version $targetVersion): array
     {
         $sqlFilePathVersion = \sprintf('%d%02d', $targetVersion->getMajor(), $targetVersion->getMinor());
         $sqlFile            = $this->getSqlUpdatePath((int)$sqlFilePathVersion);
@@ -292,8 +295,10 @@ class Updater
         if (!\file_exists($sqlFile)) {
             throw new Exception('SQL file in path "' . $sqlFile . '" not found');
         }
-
         $lines = \file($sqlFile);
+        if ($lines === false) {
+            $lines = [];
+        }
         foreach ($lines as $i => $line) {
             $line = \trim($line);
             if (\str_starts_with($line, '--') || \str_starts_with($line, '#')) {
@@ -317,11 +322,49 @@ class Updater
 
     public function finalize(): void
     {
+        $this->updateTemplateConfig();
         $smarty = new JTLSmarty(true, ContextType::FRONTEND);
         $smarty->clearCompiledTemplate();
         Shop::Container()->getCache()->flushAll();
         $ms = new MinifyService();
         $ms->flushCache();
+    }
+
+    protected function updateTemplateConfig(): void
+    {
+        $parentFolder = null;
+        $reader       = new XMLReader();
+        $current      = Shop::Container()->getTemplateService()->getActiveTemplate();
+        $tplXML       = $reader->getXML($current->getPaths()->getBaseDirName());
+        if ($tplXML !== null && !empty($tplXML->Parent)) {
+            $parentFolder = (string)$tplXML->Parent;
+        }
+        $config    = new Config($current->getPaths()->getBaseDirName(), $this->db);
+        $oldConfig = $config->loadConfigFromDB();
+        $updates   = 0;
+        foreach ($config->getConfigXML($reader, $parentFolder) as $conf) {
+            foreach ($conf->settings as $setting) {
+                if ($setting->cType === 'upload') {
+                    continue;
+                }
+                if (isset($oldConfig[$setting->section][$setting->key])) {
+                    // not a new setting - no need to update
+                    continue;
+                }
+                $value = $setting->value ?? null;
+                if ($value === null) {
+                    continue;
+                }
+                if (\is_array($value)) {
+                    $value = first($value);
+                }
+                $config->updateConfigInDB($setting->section, $setting->key, $value);
+                ++$updates;
+            }
+        }
+        Shop::Container()->getLogService()->info(\sprintf(
+            \__('%d config values were updated after database update.'), $updates)
+        );
     }
 
     /**

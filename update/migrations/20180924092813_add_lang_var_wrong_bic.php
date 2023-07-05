@@ -18,7 +18,7 @@ class Migration_20180924092813 extends Migration implements IMigration
     protected $description = 'Add lang var wrongBic';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -49,7 +49,7 @@ class Migration_20180924092813 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

@@ -46,23 +46,25 @@
                 <div class="subheading1">{__('slider')}</div>
                 <hr class="mb-n3">
             </div>
-            <div class="table-responsive card-body">
-                <table id="tableSlide" class="table">
-                    <thead>
-                    <tr>
-                        <th class="text-left"></th>
-                        <th width="10%">{__('Image')}</th>
-                        <th width="40%">{__('title')} / {__('link')}</th>
-                        <th width="40%">{__('text')}</th>
-                        <th width="5%"></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {foreach $oSlider->getSlides() as $oSlide}
-                        {slide kSlide=$oSlide->getID() oSlide=$oSlide}
-                    {/foreach}
-                    </tbody>
-                </table>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="tableSlide" class="table">
+                        <thead>
+                        <tr>
+                            <th class="text-left"></th>
+                            <th width="10%">{__('Image')}</th>
+                            <th width="40%">{__('title')} / {__('link')}</th>
+                            <th width="40%">{__('text')}</th>
+                            <th width="5%"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {foreach $oSlider->getSlides() as $oSlide}
+                            {slide kSlide=$oSlide->getID() oSlide=$oSlide}
+                        {/foreach}
+                        </tbody>
+                    </table>
+                </div>
             </div>
             <table class="hidden"><tbody id="newSlide">{slide oSlide=null kSlide='NEU'}</tbody></table>
             <div class="card-footer">

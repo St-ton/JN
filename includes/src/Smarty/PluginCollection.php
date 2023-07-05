@@ -16,7 +16,7 @@ class PluginCollection
      * @param array          $config
      * @param LanguageHelper $lang
      */
-    public function __construct(private array $config, private LanguageHelper $lang)
+    public function __construct(private readonly array $config, private readonly LanguageHelper $lang)
     {
     }
 
@@ -62,10 +62,10 @@ class PluginCollection
      */
     public function truncate(
         string $string,
-        int $length = 80,
+        int    $length = 80,
         string $etc = '...',
-        bool $break = false,
-        bool $middle = false
+        bool   $break = false,
+        bool   $middle = false
     ): string {
         if ($length === 0) {
             return '';
@@ -87,7 +87,7 @@ class PluginCollection
     /**
      * translation
      *
-     * @param array $params
+     * @param array                     $params
      * @param \Smarty_Internal_Template $template
      * @return void|string
      */

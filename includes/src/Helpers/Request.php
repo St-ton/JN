@@ -41,6 +41,7 @@ class Request
     {
         return isset($_GET[$var]) ? (int)$_GET[$var] : $default;
     }
+
     /**
      * @param string $var
      * @param mixed  $default
@@ -242,8 +243,7 @@ class Request
                         $code = 0;
                     } else {
                         $code = \curl_getinfo($rch, \CURLINFO_HTTP_CODE);
-                        if ($code === 301 || $code === 302) {
-                            \preg_match('/Location:(.*?)\n/', $header, $matches);
+                        if (($code === 301 || $code === 302) && \preg_match('/Location:(.*?)\n/i', $header, $matches)) {
                             $newurl = \trim(\array_pop($matches));
                         } else {
                             $code = 0;
@@ -301,10 +301,10 @@ class Request
      */
     public static function make_http_request(
         string $url,
-        int $timeout = 5,
+        int    $timeout = 5,
         $post = null,
-        bool $state = false,
-        bool $skipStatusCheck = false
+        bool   $state = false,
+        bool   $skipStatusCheck = false
     ) {
         $status = 0;
         $data   = '';

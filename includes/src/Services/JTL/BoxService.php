@@ -58,11 +58,11 @@ class BoxService implements BoxServiceInterface
      * @inheritdoc
      */
     public static function getInstance(
-        array $config,
-        FactoryInterface $factory,
-        DbInterface $db,
+        array             $config,
+        FactoryInterface  $factory,
+        DbInterface       $db,
         JTLCacheInterface $cache,
-        JTLSmarty $smarty,
+        JTLSmarty         $smarty,
         RendererInterface $renderer
     ): BoxServiceInterface {
         return self::$instance ?? new self($config, $factory, $db, $cache, $smarty, $renderer);
@@ -71,21 +71,21 @@ class BoxService implements BoxServiceInterface
     /**
      * BoxService constructor.
      *
-     * @inheritDoc
+     * @inheritdoc
      */
     public function __construct(
-        private array $config,
-        private FactoryInterface $factory,
-        private DbInterface $db,
-        private JTLCacheInterface $cache,
-        private JTLSmarty $smarty,
-        private RendererInterface $renderer
+        private readonly array             $config,
+        private readonly FactoryInterface  $factory,
+        private readonly DbInterface       $db,
+        private readonly JTLCacheInterface $cache,
+        private readonly JTLSmarty         $smarty,
+        private RendererInterface          $renderer
     ) {
         self::$instance = $this;
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function addRecentlyViewed(int $productID, int $limit = null): void
     {
@@ -114,7 +114,7 @@ class BoxService implements BoxServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getVisibility(int $pageType, bool $global = true)
     {
@@ -149,7 +149,7 @@ class BoxService implements BoxServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function filterBoxVisibility(int $boxID, int $pageType, $filter = ''): int
     {
@@ -166,7 +166,7 @@ class BoxService implements BoxServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function showBoxes(ProductFilter $pf): bool
     {
@@ -192,7 +192,7 @@ class BoxService implements BoxServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getRawData(): array
     {
@@ -200,7 +200,7 @@ class BoxService implements BoxServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getBoxes(): array
     {
@@ -208,7 +208,7 @@ class BoxService implements BoxServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function compatGet(): array
     {
@@ -244,7 +244,7 @@ class BoxService implements BoxServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function render(array $positionedBoxes, int $pageType): array
     {
@@ -291,7 +291,7 @@ class BoxService implements BoxServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function buildList(int $pageType = \PAGE_UNBEKANNT, bool $activeOnly = true): array
     {
@@ -400,6 +400,7 @@ class BoxService implements BoxServiceInterface
             if ($first->kContainer > 0) {
                 $box = $this->factory->getBoxByBaseType($first->kBoxvorlage, $first->eTyp);
                 $box->map($boxes);
+                $this->loadPluginBox($box);
                 if (!isset($children[$first->kContainer])) {
                     $children[$first->kContainer] = [];
                 }
@@ -411,31 +412,10 @@ class BoxService implements BoxServiceInterface
             $first = first($boxes);
             $box   = $this->factory->getBoxByBaseType($first->kBoxvorlage, $first->eTyp);
             $box->map($boxes);
-            $class = \get_class($box);
-            if ($class === Plugin::class) {
-                $loader = new LegacyPluginLoader($this->db, $this->cache);
-                try {
-                    $plugin = $loader->init($box->getCustomID());
-                } catch (InvalidArgumentException) {
-                    continue;
-                }
-                $box->setTemplateFile(
-                    $plugin->getPaths()->getFrontendPath()
-                    . \PFAD_PLUGIN_BOXEN
-                    . $box->getTemplateFile()
-                );
-                $box->setPlugin($plugin);
-            } elseif ($class === Extension::class) {
-                $loader = new PluginLoader($this->db, $this->cache);
-                try {
-                    $plugin = $loader->init($box->getCustomID());
-                } catch (InvalidArgumentException) {
-                    continue;
-                }
-                $box->setTemplateFile($plugin->getPaths()->getFrontendPath() . $box->getTemplateFile());
-                $box->setExtension($plugin);
-                $box->setPlugin($plugin);
-            } elseif ($box->getType() === Type::CONTAINER) {
+            if ($this->loadPluginBox($box) === false) {
+                continue;
+            }
+            if ($box->getType() === Type::CONTAINER) {
                 $box->setChildren($children);
             }
             $result[] = $box;
@@ -448,5 +428,44 @@ class BoxService implements BoxServiceInterface
         });
 
         return $this->boxes;
+    }
+
+    /**
+     * @param BoxInterface $box
+     * @return bool
+     */
+    private function loadPluginBox(BoxInterface $box): bool
+    {
+        $class = \get_class($box);
+        if ($class === Extension::class) {
+            $loader = new PluginLoader($this->db, $this->cache);
+            try {
+                $plugin = $loader->init($box->getCustomID());
+            } catch (InvalidArgumentException) {
+                return false;
+            }
+            $box->setTemplateFile($plugin->getPaths()->getFrontendPath() . $box->getTemplateFile());
+            $box->setExtension($plugin);
+            $box->setPlugin($plugin);
+
+            return true;
+        }
+
+        if ($class === Plugin::class) {
+            $loader = new LegacyPluginLoader($this->db, $this->cache);
+            try {
+                $plugin = $loader->init($box->getCustomID());
+            } catch (InvalidArgumentException) {
+                return false;
+            }
+            $box->setTemplateFile(
+                $plugin->getPaths()->getFrontendPath()
+                . \PFAD_PLUGIN_BOXEN
+                . $box->getTemplateFile()
+            );
+            $box->setPlugin($plugin);
+        }
+
+        return true;
     }
 }

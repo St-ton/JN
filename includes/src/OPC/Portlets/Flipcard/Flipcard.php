@@ -17,7 +17,7 @@ class Flipcard extends Portlet
     public function getPropertyDesc(): array
     {
         return [
-            'flip-dir' => [
+            'flip-dir'     => [
                 'type'    => InputType::RADIO,
                 'label'   => \__('flipcardOrientation'),
                 'width'   => 50,

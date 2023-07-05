@@ -33,7 +33,7 @@ abstract class AbstractImage implements IMedia
     /**
      * @var string
      */
-    public const REGEX_ALLOWED_CHARS = 'a-zA-Z0-9 äööüÄÖÜß\@\$\-\_\.\+\!\*\\\'\(\)\,';
+    public const REGEX_ALLOWED_CHARS = 'a-zA-Z0-9 äööüÄÖÜß\@\$\-\_\.\+\!\*\\\'\(\)\,%';
 
     /**
      * @var array
@@ -55,7 +55,7 @@ abstract class AbstractImage implements IMedia
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getDB(): DbInterface
     {
@@ -63,7 +63,7 @@ abstract class AbstractImage implements IMedia
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setDB(DbInterface $db): void
     {
@@ -77,6 +77,7 @@ abstract class AbstractImage implements IMedia
     {
         try {
             $request      = '/' . \ltrim($request, '/');
+            $request      = \urldecode($request);
             $mediaReq     = $this->create($request);
             $allowedNames = $this->getImageNames($mediaReq);
             if (\count($allowedNames) === 0) {
@@ -149,7 +150,7 @@ abstract class AbstractImage implements IMedia
         $id,
         $mixed,
         string $size,
-        int $number = 1,
+        int    $number = 1,
         string $sourcePath = null
     ): MediaImageRequest {
         return MediaImageRequest::create([
@@ -307,7 +308,7 @@ abstract class AbstractImage implements IMedia
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function cacheImage(MediaImageRequest $req, bool $overwrite = false): array
     {
@@ -378,7 +379,7 @@ abstract class AbstractImage implements IMedia
                 $loop = $real !== false && \unlink($real);
                 $res  = $res && $loop;
                 if ($real === false) {
-                    $logger->warning('Cannot delete file ' . $file->getPathname() . ' - invalid realpath?');
+                    $logger->warning('Cannot delete file {file} - invalid realpath?', ['file' => $file->getPathname()]);
                 }
             }
             foreach (\array_reverse(\iterator_to_array($finder->directories(), true)) as $directory) {
@@ -387,7 +388,10 @@ abstract class AbstractImage implements IMedia
                 $loop = $real !== false && \rmdir($real);
                 $res  = $res && $loop;
                 if ($real === false) {
-                    $logger->warning('Cannot delete directory ' . $directory->getPathname() . ' - invalid realpath?');
+                    $logger->warning(
+                        'Cannot delete directory {dir} - invalid realpath?',
+                        ['dir' => $directory->getPathname()]
+                    );
                 }
             }
             foreach ($directories as $directory) {

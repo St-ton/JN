@@ -18,7 +18,7 @@ class Migration_20211213123035 extends Migration implements IMigration
     protected $description = 'New index for download history';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -26,7 +26,7 @@ class Migration_20211213123035 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

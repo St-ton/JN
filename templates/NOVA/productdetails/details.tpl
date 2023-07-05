@@ -16,6 +16,13 @@
         {opcMountPoint id='opc_before_buy_form' inContainer=false}
         {container class="{if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
             {form id="buy_form{if !empty($smarty.get.quickView)}-quickview{/if}" action=$Artikel->cURLFull class="jtl-validate"}
+                {button aria=["label"=>"{lang key='addToCart'}"]
+                    name="inWarenkorb"
+                    variant="hidden"
+                    type="submit"
+                    value="{lang key='addToCart'}"
+                    disabled=$Artikel->bHasKonfig && !$isConfigCorrect|default:false
+                    class="js-cfg-validate btn-hidden-default"}{/button}
                 {row id="product-offer" class="product-detail"}
                     {block name='productdetails-details-include-image'}
                         {col cols=12 lg=6 class="product-gallery"}

@@ -16,7 +16,7 @@ class Migration_20181105110900 extends Migration implements IMigration
     protected $description = 'Longer slider/slide titles';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -25,7 +25,7 @@ class Migration_20181105110900 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

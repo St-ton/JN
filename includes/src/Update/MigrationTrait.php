@@ -55,7 +55,7 @@ trait MigrationTrait
      * @param string $query
      * @return int
      */
-    public function execute(string $query)
+    public function execute(string $query): int
     {
         return $this->exec($query, ReturnType::AFFECTED_ROWS);
     }
@@ -73,7 +73,7 @@ trait MigrationTrait
      * @param string $query
      * @return array
      */
-    public function fetchAll(string $query)
+    public function fetchAll(string $query): array
     {
         return $this->exec($query, ReturnType::ARRAY_OF_OBJECTS);
     }
@@ -82,7 +82,7 @@ trait MigrationTrait
      * @param string $query
      * @return array
      */
-    public function fetchArray(string $query)
+    public function fetchArray(string $query): array
     {
         return $this->exec($query, ReturnType::ARRAY_OF_ASSOC_ARRAYS);
     }

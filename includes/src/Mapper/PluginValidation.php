@@ -11,7 +11,7 @@ use JTL\Plugin\InstallCode;
 class PluginValidation
 {
     /**
-     * @param int     $code
+     * @param int         $code
      * @param string|null $pluginID
      * @return string
      */
@@ -206,6 +206,7 @@ class PluginValidation
             InstallCode::INVALID_CONSENT_VENDOR_ID => \__('INVALID_CONSENT_VENDOR_ID'),
             InstallCode::INVALID_CONSENT_VENDOR_COMPANY => \__('INVALID_CONSENT_VENDOR_COMPANY'),
             InstallCode::INVALID_LINK_IDENTIFIER => \__('INVALID_LINK_IDENTIFIER'),
+            InstallCode::INVALID_MIGRATION => \__('INVALID_MIGRATION'),
             default => \__('unknownError'),
         };
 

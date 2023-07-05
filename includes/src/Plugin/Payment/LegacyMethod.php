@@ -10,17 +10,16 @@ use JTL\Session\Frontend;
 
 /**
  * Class LegacyMethod
- * @package JTL\Plugin\Payment
- *
- * @param string $moduleID;
- * @param string $moduleAbbr
- * @param string $name
- * @param string $caption
- * @param bool $duringCheckout
- * @param string $cModulId
- * @param bool $bPayAgain
- * @param array $paymentConfig
+ * @param string $moduleID
+ * @param string   $moduleAbbr
+ * @param string   $name
+ * @param string   $caption
+ * @param bool     $duringCheckout
+ * @param string   $cModulId
+ * @param bool     $bPayAgain
+ * @param array    $paymentConfig
  * @param int|null $kZahlungsart
+ * @package JTL\Plugin\Payment
  */
 class LegacyMethod
 {
@@ -65,7 +64,7 @@ class LegacyMethod
 
     /**
      * @param string $name
-     * @param mixed $value
+     * @param mixed  $value
      */
     public function __set($name, $value)
     {

@@ -29,7 +29,7 @@ class Migration_20190506151038 extends Migration implements IMigration
     protected $description = 'Create unique index for tseo';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -51,7 +51,7 @@ class Migration_20190506151038 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

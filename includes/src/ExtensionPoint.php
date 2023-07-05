@@ -18,10 +18,10 @@ class ExtensionPoint
      * @param int   $kKundengruppe
      */
     public function __construct(
-        protected int $nSeitenTyp,
+        protected int   $nSeitenTyp,
         protected array $cParam_arr,
-        protected int $kSprache,
-        protected int $kKundengruppe
+        protected int   $kSprache,
+        protected int   $kKundengruppe
     ) {
     }
 
@@ -57,7 +57,7 @@ class ExtensionPoint
                 $instance = new $class($db);
                 $instance->init((int)$extension->kInitial);
             } else {
-                Shop::Container()->getLogService()->error(\sprintf('Extension "%s" not found', $class));
+                Shop::Container()->getLogService()->error('Extension {ext} not found', ['ext' => $class]);
             }
         }
 

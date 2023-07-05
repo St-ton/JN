@@ -32,9 +32,9 @@ class Mailer
      * @param ValidatorInterface $validator
      */
     public function __construct(
-        private HydratorInterface $hydrator,
-        private RendererInterface $renderer,
-        Shopsetting $settings,
+        private HydratorInterface  $hydrator,
+        private RendererInterface  $renderer,
+        Shopsetting                $settings,
         private ValidatorInterface $validator
     ) {
         $this->config = $settings->getAll();
@@ -73,11 +73,12 @@ class Mailer
     }
 
     /**
+     * @param string|null $section - since 5.3.0
      * @return array
      */
-    public function getConfig(): array
+    public function getConfig(?string $section = null): array
     {
-        return $this->config;
+        return $section === null ? $this->config : ($this->config[$section] ?? []);
     }
 
     /**
@@ -253,7 +254,9 @@ class Mailer
         $phpmailer->Timeout    = \SOCKET_TIMEOUT;
         $phpmailer->setLanguage($mail->getLanguage()->getIso639());
         $phpmailer->setFrom($mail->getFromMail(), $mail->getFromName());
-        $phpmailer->addAddress($mail->getToMail(), $mail->getToName());
+        foreach ($mail->getRecipients() as $recipient) {
+            $phpmailer->addAddress($recipient['mail'], $recipient['name']);
+        }
         $phpmailer->addReplyTo($mail->getReplyToMail(), $mail->getReplyToName());
         $phpmailer->Subject = $mail->getSubject();
         foreach ($mail->getCopyRecipients() as $recipient) {
@@ -275,7 +278,7 @@ class Mailer
             'phpmailer' => $phpmailer
         ]);
         if (\mb_strlen($phpmailer->Body) === 0) {
-            Shop::Container()->getLogService()->warning('Empty body for mail ' . $phpmailer->Subject);
+            Shop::Container()->getLogService()->warning('Empty body for mail {sub}', ['sub' => $phpmailer->Subject]);
         }
         $sent = $phpmailer->send();
         $mail->setError($phpmailer->ErrorInfo);
@@ -321,7 +324,7 @@ class Mailer
         if ($sent) {
             $this->log($mail);
         } else {
-            Shop::Container()->getLogService()->error('Error sending mail: ' . $mail->getError());
+            Shop::Container()->getLogService()->error('Error sending mail: {err}', ['err' => $mail->getError()]);
         }
         \executeHook(\HOOK_MAILTOOLS_VERSCHICKEMAIL_GESENDET);
 

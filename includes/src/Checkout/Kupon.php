@@ -16,6 +16,7 @@ use JTL\Language\LanguageHelper;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
+use function Functional\select;
 
 /**
  * Class Kupon
@@ -270,6 +271,24 @@ class Kupon
         if ($name === 'cLocalizedValue') {
             $this->cLocalizedWert = $value;
         }
+    }
+
+    /**
+     * @return array
+     */
+    public function __sleep(): array
+    {
+        return select(\array_keys(\get_object_vars($this)), static function ($e): bool {
+            return $e !== 'db';
+        });
+    }
+
+    /**
+     * @return void
+     */
+    public function __wakeup(): void
+    {
+        $this->db = Shop::Container()->getDB();
     }
 
     /**
@@ -1086,10 +1105,10 @@ class Kupon
      * @return string
      */
     public function generateCode(
-        int $len = 7,
-        bool $lower = true,
-        bool $upper = true,
-        bool $numbers = true,
+        int    $len = 7,
+        bool   $lower = true,
+        bool   $upper = true,
+        bool   $numbers = true,
         string $prefix = '',
         string $suffix = ''
     ): string {
@@ -1156,12 +1175,12 @@ class Kupon
             if (isset($item->Artikel->cArtNr) && \mb_strlen($item->Artikel->cArtNr) > 0) {
                 $itemNmbrKey        = 'cArtNr' . $key;
                 $prep[$itemNmbrKey] = \str_replace('%', '\%', $item->Artikel->cArtNr);
-                $productQry        .= ' OR FIND_IN_SET(:'  . $itemNmbrKey . ", REPLACE(cArtikel, ';', ',')) > 0";
+                $productQry        .= ' OR FIND_IN_SET(:' . $itemNmbrKey . ", REPLACE(cArtikel, ';', ',')) > 0";
             }
             if (isset($item->Artikel->cHersteller) && \mb_strlen($item->Artikel->cHersteller) > 0) {
                 $mnfKey        = 'mnf' . $key;
                 $prep[$mnfKey] = $item->Artikel->kHersteller;
-                $manufQry     .= ' OR FIND_IN_SET(:'  . $mnfKey . ", REPLACE(cHersteller, ';', ',')) > 0";
+                $manufQry     .= ' OR FIND_IN_SET(:' . $mnfKey . ", REPLACE(cHersteller, ';', ',')) > 0";
             }
             if ($item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL
                 && isset($item->Artikel->kArtikel)
@@ -1208,7 +1227,7 @@ class Kupon
                     AND (nVerwendungen = 0
                         OR nVerwendungen > nVerwendungenBisher)
                     AND (cArtikel = '' " . $productQry . ")
-                    AND (cHersteller IS NULL OR cHersteller = '' OR cHersteller = '-1' " . $manufQry . ")
+                    AND (cHersteller = '' OR cHersteller = '-1' " . $manufQry . ")
                     AND (cKategorien = ''
                         OR cKategorien = '-1' " . $catQry . ")
                     AND (cKunden = ''

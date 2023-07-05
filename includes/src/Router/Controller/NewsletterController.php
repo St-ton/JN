@@ -45,7 +45,7 @@ class NewsletterController extends PageController
         $controller         = new Controller($this->db, $this->config);
         $option             = 'eintragen';
         $customer           = Frontend::getCustomer();
-        $this->canonicalURL = $this->currentLink->getURL();
+        $this->canonicalURL = $this->currentLink?->getURL() ?? '';
         if ($valid && Request::verifyGPCDataInt('abonnieren') > 0) {
             $post = Text::filterXSS($_POST);
             if ($customer->getID() > 0) {
@@ -61,6 +61,7 @@ class NewsletterController extends PageController
                     ->setLastName($post['cNachname'] ?? '')
                     ->setEmail($post['cEmail'] ?? '')
                     ->setCustomerID((int)($post['kKunde'] ?? 0))
+                    ->setCustomerGroupID($customer->getGroupID())
                     ->setLanguageID($this->languageID)
                     ->setRealIP(Request::getRealIP());
                 try {

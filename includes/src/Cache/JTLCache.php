@@ -241,7 +241,7 @@ final class JTLCache implements JTLCacheInterface
             'redis_persistent' => false, // optional redis database id, null or 0 for default
             'memcache_port'    => self::DEFAULT_MEMCACHE_PORT, // port for memcache(d) server
             'memcache_host'    => self::DEFAULT_MEMCACHE_HOST, // host of memcache(d) server
-            'prefix'           => 'j5_' . (\defined('DB_NAME') ? \DB_NAME . '_' : ''),
+            'prefix'           => 'j_' . \APPLICATION_VERSION . '_' . (\defined('DB_NAME') ? \DB_NAME . '_' : ''),
             // try to make a quite unique prefix if multiple shops are used
             'lifetime'         => self::DEFAULT_LIFETIME, // cache lifetime in seconds
             'collect_stats'    => false,
@@ -587,8 +587,6 @@ final class JTLCache implements JTLCacheInterface
      */
     public function flushAll(): bool
     {
-        $this->method->flush($this->method->getJournalID());
-
         return $this->method->flushAll();
     }
 

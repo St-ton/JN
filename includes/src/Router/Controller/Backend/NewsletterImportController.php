@@ -139,6 +139,11 @@ class NewsletterImportController extends AbstractBackendController
             /**
              * @var int
              */
+            public $customerGroupID = 0;
+
+            /**
+             * @var int
+             */
             public $kSprache;
 
             /**
@@ -197,8 +202,9 @@ class NewsletterImportController extends AbstractBackendController
 
         $customerData = $this->db->select('tkunde', 'cMail', $recipient->cEmail);
         if ($customerData !== null && $customerData->kKunde > 0) {
-            $recipient->kKunde   = (int)$customerData->kKunde;
-            $recipient->kSprache = (int)$customerData->kSprache;
+            $recipient->kKunde          = (int)$customerData->kKunde;
+            $recipient->kSprache        = (int)$customerData->kSprache;
+            $recipient->customerGroupID = (int)$customerData->kKundengruppe;
         }
         $rowData               = new stdClass();
         $rowData->cAnrede      = $recipient->cAnrede;
@@ -222,7 +228,8 @@ class NewsletterImportController extends AbstractBackendController
                     ->setFirstName($rowData->cVorname ?? '')
                     ->setLastName($rowData->cNachname ?? '')
                     ->setEmail($rowData->cEmail ?? '')
-                    ->setLanguageID(Shop::getLanguageID())
+                    ->setLanguageID($rowData->kSprache)
+                    ->setCustomerGroupID($recipient->customerGroupID)
                     ->setRealIP(Request::getRealIP());
                 /** @noinspection PhpPossiblePolymorphicInvocationInspection */
                 (new Optin(OptinNewsletter::class))
@@ -232,15 +239,15 @@ class NewsletterImportController extends AbstractBackendController
                     ->activateOptin();
             } catch (Exception $e) {
                 Shop::Container()->getLogService()->notice(
-                    'optin creation failed during import, for '
-                    . $rowData->cEmail . ' cause: ' . $e->getMessage()
+                    'Optin creation failed during import for {mail}. Cause: {msg}',
+                    ['mail' => $rowData->cEmail, 'msg' => $e->getMessage()]
                 );
             }
             if ($res) {
-                return \__('successImport') .
-                    $recipient->cVorname .
-                    ' ' . $recipient->cNachname .
-                    ' (' . $recipient->cEmail . ')';
+                return \__('successImport')
+                    . $recipient->cVorname
+                    . ' ' . $recipient->cNachname
+                    . ' (' . $recipient->cEmail . ')';
             }
         }
 

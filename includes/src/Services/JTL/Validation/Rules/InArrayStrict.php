@@ -15,7 +15,7 @@ class InArrayStrict implements RuleInterface
 {
     /**
      * WhitelistStrict constructor.
-     * @param mixed[] $whitelist
+     * @param array $whitelist
      */
     public function __construct(protected array $whitelist)
     {

@@ -25,17 +25,17 @@ class Manager
 
     /**
      * Manager constructor.
-     * @param DbInterface $db
-     * @param JTLSmarty $smarty
-     * @param AdminAccount $adminAccount
-     * @param GetText $getText
+     * @param DbInterface           $db
+     * @param JTLSmarty             $smarty
+     * @param AdminAccount          $adminAccount
+     * @param GetText               $getText
      * @param AlertServiceInterface $alertService
      */
     public function __construct(
-        protected DbInterface $db,
-        protected JTLSmarty $smarty,
-        protected AdminAccount $adminAccount,
-        protected GetText $getText,
+        protected DbInterface           $db,
+        protected JTLSmarty             $smarty,
+        protected AdminAccount          $adminAccount,
+        protected GetText               $getText,
         protected AlertServiceInterface $alertService
     ) {
         $getText->loadAdminLocale('configs/configs');
@@ -43,7 +43,7 @@ class Manager
     }
 
     /**
-     * @param string $setting
+     * @param string      $setting
      * @param null|string $oldValue
      * @param null|string $newValue
      */
@@ -54,6 +54,12 @@ class Manager
             || $oldValue === $newValue
         ) {
             return;
+        }
+
+        //do not write any password to the log
+        if (str_ends_with($setting, '_pass')) {
+            $oldValue = '***';
+            $newValue = '***';
         }
 
         $this->db->queryPrepared(
@@ -75,7 +81,7 @@ class Manager
 
     /**
      * @param string $setting
-     * @param array $newValue
+     * @param array  $newValue
      */
     public function addLogListbox(string $setting, array $newValue): void
     {

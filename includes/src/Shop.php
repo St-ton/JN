@@ -16,7 +16,6 @@ use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\Tax;
 use JTL\Language\LanguageHelper;
-use JTL\Link\SpecialPageNotFoundException;
 use JTL\Mapper\PageTypeToPageName;
 use JTL\Plugin\Helper as PluginHelper;
 use JTL\Plugin\LegacyPluginLoader;
@@ -130,6 +129,23 @@ final class Shop extends ShopBC
         'has'    => 'registryHas',
         'set'    => 'registrySet',
         'get'    => 'registryGet'
+    ];
+
+    /**
+     * @var array
+     */
+    public static array $forceHost = [
+        [
+            'host'      => '',
+            'scheme'    => '',
+            'locale'    => '',
+            'iso'       => '',
+            'id'        => 0,
+            'default'   => 'N',
+            'prefix'    => '/',
+            'currency'  => false,
+            'localized' => false
+        ]
     ];
 
     /**
@@ -612,6 +628,9 @@ final class Shop extends ShopBC
             $customer->setLanguageID($languageID);
             $customer->updateInDB();
         }
+        if ($languageID !== self::$kSprache) {
+            self::Container()->getLinkService()->updateDefaultLanguageData($languageID, $iso);
+        }
         self::setLanguage($languageID, $iso);
     }
 
@@ -633,9 +652,9 @@ final class Shop extends ShopBC
      * @return ProductFilter
      */
     public static function buildProductFilter(
-        array $params,
+        array                  $params,
         ProductFilter|stdClass $productFilter = null,
-        bool $validate = true
+        bool                   $validate = true
     ): ProductFilter {
         $pf = new ProductFilter(
             Config::getDefault(),

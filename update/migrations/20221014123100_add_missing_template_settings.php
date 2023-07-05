@@ -14,7 +14,7 @@ class Migration_20221014123100 extends Migration implements IMigration
     protected $description = 'Add missing template settings';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up(): void
     {
@@ -32,7 +32,7 @@ class Migration_20221014123100 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down(): void
     {

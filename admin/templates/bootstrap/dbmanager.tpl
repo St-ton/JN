@@ -4,7 +4,7 @@
 {function table_scope_header table=null}
     <h2>{__('table')}: {$table}
         <div class="btn-group btn-group-xs" role="group">
-            <a href="{$adminURL}{$route}table={$table}&token={$smarty.session.jtl_token}" class="btn btn-default"><span class="glyphicon glyphicon-equalizer"></span> {__('structure')}</a>
+            <a href="{$adminURL}{$route}?table={$table}&token={$smarty.session.jtl_token}" class="btn btn-default"><span class="glyphicon glyphicon-equalizer"></span> {__('structure')}</a>
             <a href="{$adminURL}{$route}?select={$table}&token={$smarty.session.jtl_token}" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> {__('show')}</a>
         </div>
     </h2>
@@ -131,9 +131,8 @@ $(function() {
 });
 
 function get_params(p) {
-    var params = $('#filter form').serializeArray();
-
-    for (var i = 0; i < params.length; i++) {
+    let params = $('#filter form').serializeArray();
+    for (let i = 0; i < params.length; i++) {
         if (params[i].name === 'page') {
             delete params[i];
         }
@@ -145,15 +144,14 @@ function get_params(p) {
 
 function add_row_listener() {
     $(document).on('click', '*[data-action="add-row"] > a', function(e) {
-        var $row = $(this).parent('.fieldset-row');
-        var $body = $row.parent('.fieldset-body');
+        let $row = $(this).parent('.fieldset-row');
+        let $body = $row.parent('.fieldset-body');
 
         if ($row.is('.fieldset-row:first')) {
             $add_row_tpl
                 .clone()
                 .appendTo($body);
-        }
-        else {
+        } else {
             $row.remove();
         }
 
@@ -163,14 +161,14 @@ function add_row_listener() {
 }
 
 function filter_tables(value) {
-    var rex = new RegExp(value, 'i');
-    var $nav = $('.db-sidenav');
-    var $items = $nav.find('li');
+    const rex = new RegExp(value, 'i');
+    const $nav = $('.db-sidenav');
+    const $items = $nav.find('li');
 
     $items.hide();
     $nav.unhighlight();
 
-    var $found = $items.filter(function () {
+    const $found = $items.filter(function () {
         return rex.test($(this).text());
     });
 
@@ -185,12 +183,12 @@ function filter_tables(value) {
 /*****************************************************************************************************/
 
 function highlight_sql($base) {
-    var $elm = $base.find('code.sql');
+    const $elm = $base.find('code.sql');
     $elm.each(function () {
-        var $sql = $(this),
+        let $sql = $(this),
             $div = $sql.find('div');
         if ($div.is(":visible")) {
-            var $highlight = $('<div class="sql-highlight cm-s-default"></div>');
+            let $highlight = $('<div class="sql-highlight cm-s-default"></div>');
             $sql.append($highlight);
             if (typeof CodeMirror !== 'undefined') {
                 CodeMirror.runMode($sql.text(), 'text/x-mysql', $highlight[0]);
@@ -203,7 +201,7 @@ function highlight_sql($base) {
 function get_sql_editor($textarea, options, resize, lintOptions) {
     if ($textarea.length > 0 && typeof CodeMirror !== 'undefined') {
         // merge options for CodeMirror
-        var defaults = {
+        let defaults = {
             lineNumbers: true,
             matchBrackets: true,
             extraKeys: { "Ctrl-Space": "autocomplete" },
@@ -230,7 +228,7 @@ function get_sql_editor($textarea, options, resize, lintOptions) {
         $.extend(true, defaults, options);
 
         // create CodeMirror editor
-        var codemirrorEditor = CodeMirror.fromTextArea($textarea[0], defaults);
+        const codemirrorEditor = CodeMirror.fromTextArea($textarea[0], defaults);
         codemirrorEditor.setCursor($textarea.val().length);
 
         // allow resizing
@@ -264,12 +262,12 @@ function get_sql_editor($textarea, options, resize, lintOptions) {
 }
 
 CodeMirror.runMode = function(string, modespec, callback, options) {
-    var mode = CodeMirror.getMode(CodeMirror.defaults, modespec),
+    const mode = CodeMirror.getMode(CodeMirror.defaults, modespec),
         ie = /MSIE \d/.test(navigator.userAgent),
         ie_lt9 = ie && (document.documentMode === null || document.documentMode < 9);
 
     if (callback.nodeType == 1) {
-        var tabSize = (options && options.tabSize) || CodeMirror.defaults.tabSize,
+        let tabSize = (options && options.tabSize) || CodeMirror.defaults.tabSize,
             node = callback, col = 0;
         node.innerHTML = "";
         callback = function(text, style) {
@@ -278,9 +276,9 @@ CodeMirror.runMode = function(string, modespec, callback, options) {
                 col = 0;
                 return;
             }
-            var content = "";
-            for (var pos = 0;;) {
-                var idx = text.indexOf("\t", pos);
+            let content = "";
+            for (let pos = 0;;) {
+                let idx = text.indexOf("\t", pos);
                 if (idx === -1) {
                     content += text.slice(pos);
                     col += text.length - pos;
@@ -288,15 +286,15 @@ CodeMirror.runMode = function(string, modespec, callback, options) {
                 } else {
                     col += idx - pos;
                     content += text.slice(pos, idx);
-                    var size = tabSize - col % tabSize;
+                    let size = tabSize - col % tabSize;
                     col += size;
-                    for (var i = 0; i < size; ++i) content += " ";
+                    for (let i = 0; i < size; ++i) content += " ";
                     pos = idx + 1;
                 }
             }
 
             if (style) {
-                var sp = node.appendChild(document.createElement("span"));
+                const sp = node.appendChild(document.createElement("span"));
                 sp.className = "cm-" + style.replace(/ +/g, " cm-");
                 sp.appendChild(document.createTextNode(content));
             } else {
@@ -305,10 +303,10 @@ CodeMirror.runMode = function(string, modespec, callback, options) {
         };
     }
 
-    var lines = CodeMirror.splitLines(string), state = (options && options.state) || CodeMirror.startState(mode);
-    for (var i = 0, e = lines.length; i < e; ++i) {
+    const lines = CodeMirror.splitLines(string), state = (options && options.state) || CodeMirror.startState(mode);
+    for (let i = 0, e = lines.length; i < e; ++i) {
         if (i) callback("\n");
-        var stream = new CodeMirror.StringStream(lines[i]);
+        const stream = new CodeMirror.StringStream(lines[i]);
         if (!stream.string && mode.blankLine) mode.blankLine(state);
         while (!stream.eol()) {
             var style = mode.token(stream, state);
@@ -319,11 +317,11 @@ CodeMirror.runMode = function(string, modespec, callback, options) {
 };
 
 function bindCodeMirrorToInlineEditor() {
-    var $inline_editor = $('#sql_query_edit');
+    const $inline_editor = $('#sql_query_edit');
     if ($inline_editor.length > 0) {
         if (typeof CodeMirror !== 'undefined') {
-            var height = $inline_editor.css('height');
-            codemirror_inline_editor = get_sql_editor($inline_editor);
+            const height = $inline_editor.css('height');
+            let codemirror_inline_editor = get_sql_editor($inline_editor);
             codemirror_inline_editor.getWrapperElement().style.height = height;
             codemirror_inline_editor.refresh();
             codemirror_inline_editor.focus();
@@ -416,8 +414,12 @@ $(function() {
 
                 <form action="{$adminURL}{$route}?command" method="POST">
                     {$jtl_token}
+                    {$hint = ''}
+                    {if $jsTypo !== null}
+                        {$hint = json_encode($jsTypo)}
+                    {/if}
                     <div class="form-group">
-                        <textarea name="query" id="query" class="codemirror sql" data-hint='{json_encode($jsTypo)}'>{if isset($info) && isset($info.statement)}{$info.statement}{/if}</textarea>
+                        <textarea name="query" id="query" class="codemirror sql" data-hint='{$hint}'>{if isset($info) && isset($info.statement)}{$info.statement}{/if}</textarea>
                     </div>
                     <div class="form-group">
                         <button type="submit" class="btn btn-primary"><i class="fa fa-share"></i> {__('execute')}</button>
@@ -426,7 +428,7 @@ $(function() {
 
                 <!-- ###################################################### -->
                 {if isset($result) && !isset($result[0])}
-                    <div class="alert alert-xs alert-success">
+                    <div class="alert alert-xs alert-info" style="margin-top:20px;">
                         <p>{__('noData')}</p>
                     </div>
                 {elseif isset($result[0])}
@@ -531,7 +533,11 @@ $(function() {
                 {table_scope_header table=$selectedTable}
                 {$headers = array_keys($columns)}
                 <div id="filter">
-                    <form method="GET" action="{$adminURL}{$route}" data-sql={json_encode($info.statement)}>
+                    {$stmt = ''}
+                    {if $info !== null}
+                        {$stmt = json_encode($info.statement)}
+                    {/if}
+                    <form method="GET" action="{$adminURL}{$route}" data-sql={$stmt}>
                         <input type="hidden" name="token" value="{$smarty.session.jtl_token}">
                         <input type="hidden" name="select" value="{$selectedTable}">
 
@@ -566,20 +572,20 @@ $(function() {
                         </fieldset>
                     </form>
                 </div>
-
-                <div class="query">
-                    <div class="query-code">
-                        <code class="sql"><div>{$info.statement}</div></code>
+                {if $info !== null}
+                    <div class="query">
+                        <div class="query-code">
+                            <code class="sql"><div>{$info.statement}</div></code>
+                        </div>
+                        <div class="query-sub">
+                            <span class="text-muted" title="Millisekunden"><i class="fa fa-clock-o" aria-hidden="true"></i> &nbsp;{"`$info.time*1000`"|number_format:2} ms</span>
+                            <span class="text-muted"><i class="fa fa-database" aria-hidden="true"></i> &nbsp;{$count|number_format:0} {__('dataEntries')}</span>
+                            <a href="{$adminURL}{$route}?command&query={urlencode($info.statement)}&token={$smarty.session.jtl_token}">
+                                <i class="fa fa-pencil" aria-hidden="true"></i> {__('edit')}
+                            </a>
+                        </div>
                     </div>
-                    <div class="query-sub">
-                        <span class="text-muted" title="Millisekunden"><i class="fa fa-clock-o" aria-hidden="true"></i> &nbsp;{"`$info.time*1000`"|number_format:2} ms</span>
-                        <span class="text-muted"><i class="fa fa-database" aria-hidden="true"></i> &nbsp;{$count|number_format:0} {__('dataEntries')}</span>
-                        <a href="{$adminURL}{$route}?command&query={urlencode($info.statement)}&token={$smarty.session.jtl_token}">
-                            <i class="fa fa-pencil" aria-hidden="true"></i> {__('edit')}
-                        </a>
-                    </div>
-                </div>
-
+                {/if}
                 {if count($data) > 0}
                     <div class="table-responsive">
                         <table class="table table-striped table-condensed table-bordered table-hover table-sql table-sticky-header nowrap">
@@ -626,7 +632,7 @@ $(function() {
                         </table>
                     </div>
                 {else}
-                    <div class="alert alert-xs alert-success">
+                    <div class="alert alert-xs alert-info" style="margin-top: 20px;">
                         <p>{__('noData')}</p>
                     </div>
                 {/if}

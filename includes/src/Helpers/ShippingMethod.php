@@ -70,6 +70,30 @@ class ShippingMethod
     }
 
     /**
+     * @param int    $minDelivery
+     * @param int    $maxDelivery
+     * @param string $languageVar
+     * @return string
+     */
+    private static function getDeliveryText(int $minDelivery, int $maxDelivery, string $languageVar): string
+    {
+        if (!\stripos($languageVar, 'simple')) {
+            return \str_replace(
+                ['#MINDELIVERYTIME#', '#MAXDELIVERYTIME#'],
+                [(string)$minDelivery, (string)$maxDelivery],
+                Shop::Lang()->get($languageVar)
+            );
+        }
+
+        return \str_replace(
+            '#DELIVERYTIME#',
+            (string)$minDelivery,
+            Shop::Lang()->get($languageVar)
+        );
+    }
+
+
+    /**
      * @param float|int $freeFromX
      * @return array
      */
@@ -89,8 +113,8 @@ class ShippingMethod
 
     /**
      * @param array $prices
-     * @param int $cgroupID
-     * @param int $shippingClassID
+     * @param int   $cgroupID
+     * @param int   $shippingClassID
      * @return string
      */
     public function getFreeShippingCountries(array $prices, int $cgroupID, int $shippingClassID = 0): string
@@ -164,6 +188,7 @@ class ShippingMethod
             $filterSQL           = ' AND tzahlungsart.kZahlungsart = :paymentID ';
             $params['paymentID'] = $filterPaymentID;
         }
+
         return Shop::Container()->getDB()->getObjects(
             'SELECT tversandartzahlungsart.*, tzahlungsart.*
                  FROM tversandartzahlungsart, tzahlungsart
@@ -191,28 +216,20 @@ class ShippingMethod
         string $countryCode,
         string $zip,
         string $shippingClasses,
-        int $cgroupID
+        int    $cgroupID
     ): array {
         $minSum    = 10000;
         $vatNote   = null;
         $db        = Shop::Container()->getDB();
         $depending = self::normalerArtikelversand($countryCode) === false ? 'Y' : 'N';
         $methods   = $db->getObjects(
-            "SELECT tversandart.*,
-                GROUP_CONCAT(tversandartsprache.cName) AS nameLocalized,
-                GROUP_CONCAT(tversandartsprache.cLieferdauer) AS durationLocalized,
-                GROUP_CONCAT(tversandartsprache.cHinweistextShop) AS noticeLocalized,
-                GROUP_CONCAT(tversandartsprache.cISOSprache) AS code
-                FROM tversandart
-                JOIN tversandartsprache
-                    ON tversandartsprache.kVersandart = tversandart.kVersandart
+            "SELECT * FROM tversandart
                 WHERE cNurAbhaengigeVersandart = :depOnly
                     AND cLaender LIKE :iso
                     AND (cVersandklassen = '-1'
                     OR cVersandklassen RLIKE :sClasses)
                     AND (cKundengruppen = '-1'
                     OR FIND_IN_SET(:cGroupID, REPLACE(cKundengruppen, ';', ',')) > 0)
-                GROUP BY tversandart.kVersandart
                 ORDER BY nSort",
             [
                 'iso'      => '%' . $countryCode . '%',
@@ -264,21 +281,25 @@ class ShippingMethod
             if ($method->fEndpreis < $minSum && $method->cIgnoreShippingProposal !== 'Y') {
                 $minSum = $method->fEndpreis;
             }
-            $method->code                      = \collect(\explode(',', $method->code));
-            $method->nameLocalized             = \collect(\explode(',', $method->nameLocalized));
-            $method->noticeLocalized           = \collect(\explode(',', $method->noticeLocalized));
-            $method->durationLocalized         = \collect(\explode(',', $method->durationLocalized));
+            $method->angezeigterName           = [];
+            $method->angezeigterHinweistext    = [];
+            $method->cLieferdauer              = [];
             $method->specificShippingcosts_arr = null;
-            $method->angezeigterName           = $method->code->combine($method->nameLocalized)->toArray();
-            $method->angezeigterHinweistext    = $method->code->combine($method->noticeLocalized)->toArray();
-            $method->cLieferdauer              = $method->code->combine($method->durationLocalized)->toArray();
-            unset(
-                $method->nameLocalized,
-                $method->code,
-                $method->durationLocalized,
-                $method->noticeLocalized
-            );
-
+            foreach (Frontend::getLanguages() as $language) {
+                $code      = $language->getCode();
+                $localized = $db->select(
+                    'tversandartsprache',
+                    'kVersandart',
+                    $method->kVersandart,
+                    'cISOSprache',
+                    $code
+                );
+                if (isset($localized, $localized->cName)) {
+                    $method->angezeigterName[$code]        = $localized->cName;
+                    $method->angezeigterHinweistext[$code] = $localized->cHinweistextShop;
+                    $method->cLieferdauer[$code]           = $localized->cLieferdauer;
+                }
+            }
             if ($method->fEndpreis == 0) {
                 // Abfrage ob ein Artikel Artikelabhängige Versandkosten besitzt
                 $method->cPreisLocalized = Shop::Lang()->get('freeshipping');
@@ -685,9 +706,9 @@ class ShippingMethod
     public static function getFavourableShippingMethod(
         string $deliveryCountry,
         string $shippingClasses,
-        int $customerGroupID,
+        int    $customerGroupID,
         $product,
-        bool $checkProductDepedency = true
+        bool   $checkProductDepedency = true
     ) {
         $favourableIDX   = 0;
         $minVersand      = 10000;
@@ -807,10 +828,10 @@ class ShippingMethod
      * @return bool|stdClass
      */
     public static function gibArtikelabhaengigeVersandkosten(
-        string $country,
+        string  $country,
         Artikel $product,
         $amount,
-        bool $checkDeliveryAddress = true
+        bool    $checkDeliveryAddress = true
     ) {
         $taxRate    = null;
         $hookReturn = false;
@@ -864,7 +885,7 @@ class ShippingMethod
                                     Tax::getNet((float)$item->fKosten, $taxRate),
                                     $currency
                                 ) . ' ' . Shop::Lang()->get('plus', 'productDetails') . ' ' .
-                                Shop::Lang()->get('vat', 'productDetails');
+                                    Shop::Lang()->get('vat', 'productDetails');
                             } else {
                                 $item->cPreisLocalized = Preise::getLocalizedPriceString($item->fKosten, $currency);
                             }
@@ -924,8 +945,8 @@ class ShippingMethod
      */
     public static function gibArtikelabhaengigeVersandkostenImWK(
         string $country,
-        array $items,
-        bool $checkDelivery = true
+        array  $items,
+        bool   $checkDelivery = true
     ): array {
         $shippingItems = [];
         $items         = \array_filter($items, static function ($item): bool {
@@ -1239,17 +1260,30 @@ class ShippingMethod
      */
     public static function getDeliverytimeEstimationText(int $minDeliveryDays, int $maxDeliveryDays): string
     {
-        $deliveryText = $minDeliveryDays === $maxDeliveryDays
-            ? \str_replace(
-                '#DELIVERYDAYS#',
-                (string)$minDeliveryDays,
-                Shop::Lang()->get('deliverytimeEstimationSimple')
-            )
-            : \str_replace(
-                ['#MINDELIVERYDAYS#', '#MAXDELIVERYDAYS#'],
-                [(string)$minDeliveryDays, (string)$maxDeliveryDays],
-                Shop::Lang()->get('deliverytimeEstimation')
-            );
+        switch (true) {
+            case ($maxDeliveryDays < \DELIVERY_TIME_DAYS_TO_WEEKS_LIMIT):
+                $minDelivery = $minDeliveryDays;
+                $maxDelivery = $maxDeliveryDays;
+                $languageVar = $minDeliveryDays === $maxDeliveryDays
+                    ? 'deliverytimeEstimationSimple'
+                    : 'deliverytimeEstimation';
+                break;
+            case ($maxDeliveryDays < \DELIVERY_TIME_DAYS_TO_MONTHS_LIMIT):
+                $minDelivery = (int)\ceil($minDeliveryDays / \DELIVERY_TIME_DAYS_PER_WEEK);
+                $maxDelivery = (int)\ceil($maxDeliveryDays / \DELIVERY_TIME_DAYS_PER_WEEK);
+                $languageVar = $minDelivery === $maxDelivery
+                    ? 'deliverytimeEstimationSimpleWeeks'
+                    : 'deliverytimeEstimationWeeks';
+                break;
+            default:
+                $minDelivery = (int)\ceil($minDeliveryDays / \DELIVERY_TIME_DAYS_PER_MONTH);
+                $maxDelivery = (int)\ceil($maxDeliveryDays / \DELIVERY_TIME_DAYS_PER_MONTH);
+                $languageVar = $minDelivery === $maxDelivery
+                    ? 'deliverytimeEstimationSimpleMonths'
+                    : 'deliverytimeEstimationMonths';
+        }
+
+        $deliveryText = self::getDeliveryText($minDelivery, $maxDelivery, $languageVar);
 
         \executeHook(\HOOK_GET_DELIVERY_TIME_ESTIMATION_TEXT, [
             'min'  => $minDeliveryDays,
@@ -1289,7 +1323,7 @@ class ShippingMethod
                 'cISOSprache',
                 Shop::getLanguageCode()
             );
-            $name      = !empty($localized->cName)
+            $name      = $localized !== null && !empty($localized->cName)
                 ? $localized->cName
                 : $method->cName;
         }
@@ -1369,8 +1403,10 @@ class ShippingMethod
         $db              = Shop::Container()->getDB();
         $shippingClasses = self::getShippingClasses(Frontend::getCart());
         $defaultShipping = self::normalerArtikelversand($country);
-        $cacheID         = 'vkfrei_' . $customerGroupID . '_'
-            . $country . '_' . $shippingClasses . '_' . Shop::getLanguageCode();
+        $cacheID         = 'vkfrei_' . $customerGroupID
+            . '_' . $country
+            . '_' . $shippingClasses
+            . '_' . Shop::getLanguageCode();
         if (($shippingMethod = $cache->get($cacheID)) === false) {
             $iso = 'DE';
             if (\mb_strlen($country) > 0) {
@@ -1390,6 +1426,8 @@ class ShippingMethod
                 return $e->kVersandart;
             });
             if (\count($shippingMethods) === 0) {
+                $cache->set($cacheID, null, [\CACHING_GROUP_OPTION]);
+
                 return 0;
             }
 
@@ -1441,9 +1479,9 @@ class ShippingMethod
      * @since 5.0.0
      */
     public static function getPossibleShippingCountries(
-        int $customerGroupID = 0,
-        bool $ignoreConf = false,
-        bool $force = false,
+        int   $customerGroupID = 0,
+        bool  $ignoreConf = false,
+        bool  $force = false,
         array $filterISO = []
     ): array {
         if (empty($customerGroupID)) {

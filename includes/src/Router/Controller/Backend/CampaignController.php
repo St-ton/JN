@@ -28,12 +28,13 @@ use function Functional\reindex;
  */
 class CampaignController extends AbstractBackendController
 {
-    private const OK               = 1;
-    private const ERR_EMPTY_NAME   = 3;
-    private const ERR_EMPTY_PARAM  = 4;
-    private const ERR_EMPTY_VALUE  = 5;
-    private const ERR_NAME_EXISTS  = 6;
-    private const ERR_PARAM_EXISTS = 7;
+    private const OK                 = 1;
+    private const ERR_EMPTY_NAME     = 3;
+    private const ERR_EMPTY_PARAM    = 4;
+    private const ERR_EMPTY_VALUE    = 5;
+    private const ERR_NAME_EXISTS    = 6;
+    private const ERR_PARAM_EXISTS   = 7;
+    private const ERR_PARAM_RESERVED = 8;
 
     /**
      * @inheritdoc
@@ -44,34 +45,12 @@ class CampaignController extends AbstractBackendController
         $this->checkPermissions(Permissions::STATS_CAMPAIGN_VIEW);
         $this->getText->loadAdminLocale('pages/kampagne');
 
-
         $campaignID   = 0;
         $definitionID = 0;
-        $stamp        = '';
+        $now          = new DateTimeImmutable();
         $step         = 'kampagne_uebersicht';
 
-        // Zeitraum
-        // 1 = Monat
-        // 2 = Woche
-        // 3 = Tag
-        if (!isset($_SESSION['Kampagne'])) {
-            $_SESSION['Kampagne'] = new stdClass();
-        }
-        if (!isset($_SESSION['Kampagne']->nAnsicht)) {
-            $_SESSION['Kampagne']->nAnsicht = 1;
-        }
-        if (!isset($_SESSION['Kampagne']->cStamp)) {
-            $_SESSION['Kampagne']->cStamp = \date('Y-m-d H:i:s');
-        }
-        if (!isset($_SESSION['Kampagne']->nSort)) {
-            $_SESSION['Kampagne']->nSort = 0;
-        }
-        if (!isset($_SESSION['Kampagne']->cSort)) {
-            $_SESSION['Kampagne']->cSort = 'DESC';
-        }
-
-        $now = new DateTimeImmutable();
-
+        $this->sanitizeSessionData();
         if (Request::verifyGPCDataInt('neu') === 1 && Form::validateToken()) {
             $step = 'kampagne_erstellen';
         } elseif (Request::verifyGPCDataInt('editieren') === 1
@@ -98,7 +77,6 @@ class CampaignController extends AbstractBackendController
             $step         = 'kampagne_defdetail';
             $campaignID   = Request::verifyGPCDataInt('kKampagne');
             $definitionID = Request::verifyGPCDataInt('kKampagneDef');
-            $stamp        = Request::verifyGPDataString('cStamp');
         } elseif (Request::verifyGPCDataInt('erstellen_speichern') === 1 && Form::validateToken()) {
             // Speichern / Editieren
             $postData             = Text::filterXSS($_POST);
@@ -118,7 +96,7 @@ class CampaignController extends AbstractBackendController
                 $this->alertService->addSuccess(\__('successCampaignSave'), 'successCampaignSave');
             } else {
                 $this->alertService->addError($this->getErrorMessage($res), 'campaignError');
-                $smarty->assign('oKampagne', $campaign);
+                $this->smarty->assign('oKampagne', $campaign);
                 $step = 'kampagne_erstellen';
             }
         } elseif (Request::verifyGPCDataInt('delete') === 1 && Form::validateToken()) {
@@ -160,59 +138,88 @@ class CampaignController extends AbstractBackendController
 
             $_SESSION['Kampagne']->nSort = Request::verifyGPCDataInt('nSort');
         }
+        $this->handleStep($step, $campaignID, $definitionID);
+        $this->assignViewData();
+
+        return $this->smarty->assign('step', $step)
+            ->assign('route', $this->route)
+            ->getResponse('kampagne.tpl');
+    }
+
+    /**
+     * @param string $step
+     * @param int    $campaignID
+     * @param int    $definitionID
+     * @return void
+     */
+    private function handleStep(string $step, int $campaignID, int $definitionID): void
+    {
         if ($step === 'kampagne_uebersicht') {
             $campaigns   = self::getCampaigns(true, false, $this->db);
             $definitions = $this->getDefinitions();
             $maxKey      = 0;
             if (\count($campaigns) > 0) {
                 $members = \array_keys($campaigns);
-                $maxKey  = $members[count($members) - 1];
+                $maxKey  = $members[\count($members) - 1];
             }
 
-            $smarty->assign('nGroessterKey', $maxKey)
+            $this->smarty->assign('nGroessterKey', $maxKey)
                 ->assign('oKampagne_arr', $campaigns)
                 ->assign('oKampagneDef_arr', $definitions)
                 ->assign('oKampagneStat_arr', $this->getStats($campaigns, $definitions));
-        } elseif ($step === 'kampagne_erstellen') { // Erstellen / Editieren
-            if ($campaignID > 0) {
-                $smarty->assign('oKampagne', new Campaign($campaignID));
-            }
-        } elseif ($step === 'kampagne_detail') { // Detailseite
-            if ($campaignID > 0) {
-                $campaigns   = self::getCampaigns(true, false, $this->db);
-                $definitions = $this->getDefinitions();
-                if (!isset($_SESSION['Kampagne']->oKampagneDetailGraph)) {
-                    $_SESSION['Kampagne']->oKampagneDetailGraph = new stdClass();
-                }
-                $_SESSION['Kampagne']->oKampagneDetailGraph->oKampagneDef_arr = $definitions;
-                $_SESSION['nDiagrammTyp']                                     = 5;
 
-                $stats = $this->getDetailStats($campaignID, $definitions);
-                // Highchart
-                $charts = [];
-                for ($i = 1; $i <= 10; $i++) {
-                    $charts[$i] = $this->getLineChart($stats, $i);
-                }
-
-                $smarty->assign('TypeNames', $this->getTypeNames())
-                    ->assign('Charts', $charts)
-                    ->assign('oKampagne', new Campaign($campaignID))
-                    ->assign('oKampagneStat_arr', $stats)
-                    ->assign('oKampagne_arr', $campaigns)
-                    ->assign('oKampagneDef_arr', $definitions)
-                    ->assign('nRand', \time());
+            return;
+        }
+        if ($step === 'kampagne_erstellen') { // Erstellen / Editieren
+            if ($campaignID > 0) {
+                $this->smarty->assign('oKampagne', new Campaign($campaignID));
             }
-        } elseif ($step === 'kampagne_defdetail') { // DefDetailseite
+
+            return;
+        }
+        if ($step === 'kampagne_detail') { // Detailseite
+            if ($campaignID <= 0) {
+                return;
+            }
+            $campaigns   = self::getCampaigns(true, false, $this->db);
+            $definitions = $this->getDefinitions();
+            if (!isset($_SESSION['Kampagne']->oKampagneDetailGraph)) {
+                $_SESSION['Kampagne']->oKampagneDetailGraph = new stdClass();
+            }
+            $_SESSION['Kampagne']->oKampagneDetailGraph->oKampagneDef_arr = $definitions;
+            $_SESSION['nDiagrammTyp']                                     = 5;
+
+            $stats = $this->getDetailStats($campaignID, $definitions);
+            // Highchart
+            $charts = [];
+            for ($i = 1; $i <= 10; $i++) {
+                $charts[$i] = $this->getLineChart($stats, $i);
+            }
+            $this->smarty->assign('TypeNames', $this->getTypeNames())
+                ->assign('Charts', $charts)
+                ->assign('oKampagne', new Campaign($campaignID))
+                ->assign('oKampagneStat_arr', $stats)
+                ->assign('oKampagne_arr', $campaigns)
+                ->assign('oKampagneDef_arr', $definitions)
+                ->assign('nRand', \time());
+
+            return;
+        }
+        if ($step === 'kampagne_defdetail') { // DefDetailseite
+            $stamp = Request::verifyGPDataString('cStamp');
             if (\mb_strlen($stamp) === 0) {
                 $stamp = $this->checkGesamtStatZeitParam();
             }
 
             if ($campaignID > 0 && $definitionID > 0 && \mb_strlen($stamp) > 0) {
                 $definition = $this->getDefinition($definitionID);
-                $members    = [];
-                $stampText  = '';
-                $select     = '';
-                $where      = '';
+                if ($definition === null) {
+                    return;
+                }
+                $members   = [];
+                $stampText = '';
+                $select    = '';
+                $where     = '';
                 $this->generateDetailSelectWhere($select, $where, $stamp);
 
                 $stats = $this->db->getObjects(
@@ -235,7 +242,7 @@ class CampaignController extends AbstractBackendController
                     ' LIMIT ' . $paginationDefinitionDetail->getLimitSQL()
                 );
 
-                $smarty->assign('oPagiDefDetail', $paginationDefinitionDetail)
+                $this->smarty->assign('oPagiDefDetail', $paginationDefinitionDetail)
                     ->assign('oKampagne', new Campaign($campaignID))
                     ->assign('oKampagneStat_arr', $campaignStats)
                     ->assign('oKampagneDef', $definition)
@@ -245,42 +252,45 @@ class CampaignController extends AbstractBackendController
                     ->assign('nGesamtAnzahlDefDetail', \count($stats));
             }
         }
+    }
 
+    private function assignViewData(): void
+    {
+        $now  = new DateTimeImmutable();
         $date = \date_create($_SESSION['Kampagne']->cStamp);
-        switch ((int)$_SESSION['Kampagne']->nAnsicht) {
+        switch ($_SESSION['Kampagne']->nAnsicht) {
             case 1:    // Monat
                 $timeSpan   = '01.' . \date_format($date, 'm.Y') . ' - ' . \date_format($date, 't.m.Y');
                 $greaterNow = (int)$now->format('n') === (int)\date_format($date, 'n')
                     && (int)$now->format('Y') === (int)\date_format($date, 'Y');
-                $smarty->assign('cZeitraum', $timeSpan)
-                    ->assign('cZeitraumParam', \base64_encode($timeSpan))
-                    ->assign('bGreaterNow', $greaterNow);
                 break;
             case 2:    // Woche
                 $dateParts  = Date::getWeekStartAndEnd(\date_format($date, 'Y-m-d'));
                 $timeSpan   = \date('d.m.Y', $dateParts[0]) . ' - ' . \date('d.m.Y', $dateParts[1]);
                 $greaterNow = \date('Y-m-d', $dateParts[1]) >= $now->format('Y-m-d');
-                $smarty->assign('cZeitraum', $timeSpan)
-                    ->assign('cZeitraumParam', \base64_encode($timeSpan))
-                    ->assign('bGreaterNow', $greaterNow);
                 break;
             case 3:    // Tag
             default:
                 $timeSpan   = \date_format($date, 'd.m.Y');
                 $greaterNow = (int)$now->format('n') === (int)\date_format($date, 'n')
                     && (int)$now->format('Y') === (int)\date_format($date, 'Y');
-                $smarty->assign('cZeitraum', $timeSpan)
-                    ->assign('cZeitraumParam', \base64_encode($timeSpan))
-                    ->assign('bGreaterNow', $greaterNow);
                 break;
         }
+        $this->smarty->assign('cZeitraum', $timeSpan)
+            ->assign('cZeitraumParam', \base64_encode($timeSpan))
+            ->assign('bGreaterNow', $greaterNow);
+    }
 
-        return $smarty->assign('PFAD_ADMIN', \PFAD_ADMIN)
-            ->assign('PFAD_TEMPLATES', \PFAD_TEMPLATES)
-            ->assign('PFAD_GFX', \PFAD_GFX)
-            ->assign('step', $step)
-            ->assign('route', $this->route)
-            ->getResponse('kampagne.tpl');
+    private function sanitizeSessionData(): void
+    {
+        if (!isset($_SESSION['Kampagne'])) {
+            $_SESSION['Kampagne'] = (object)[
+                'nAnsicht' => 1,
+                'nSort'    => 0,
+                'cSort'    => 'DESC',
+                'cStamp'   => \date('Y-m-d H:i:s'),
+            ];
+        }
     }
 
     /**
@@ -322,7 +332,7 @@ class CampaignController extends AbstractBackendController
         $stats = [];
         $sql   = '';
         $date  = \date_create($_SESSION['Kampagne']->cStamp);
-        switch ((int)$_SESSION['Kampagne']->nAnsicht) {
+        switch ($_SESSION['Kampagne']->nAnsicht) {
             case 1:    // Monat
                 $sql = "WHERE '" . \date_format($date, 'Y-m') . "' = DATE_FORMAT(dErstellt, '%Y-%m')";
                 break;
@@ -347,24 +357,25 @@ class CampaignController extends AbstractBackendController
 
         $data = $this->db->getObjects(
             'SELECT kKampagne, kKampagneDef, SUM(fWert) AS fAnzahl
-            FROM tkampagnevorgang
-            ' . $sql . '
-            GROUP BY kKampagne, kKampagneDef'
+                FROM tkampagnevorgang
+                ' . $sql . '
+                GROUP BY kKampagne, kKampagneDef'
         );
         foreach ($data as $item) {
-            $stats[$item->kKampagne][$item->kKampagneDef] = $item->fAnzahl;
+            $stats[(int)$item->kKampagne][(int)$item->kKampagneDef] = (int)$item->fAnzahl;
         }
-        if (isset($_SESSION['Kampagne']->nSort) && $_SESSION['Kampagne']->nSort > 0) {
+        $_SESSION['Kampagne']->nSort = 1;
+        if ($_SESSION['Kampagne']->nSort > 0) {
             $sort = [];
-            if ((int)$_SESSION['Kampagne']->nSort > 0 && \count($stats) > 0) {
+            if ($_SESSION['Kampagne']->nSort > 0 && \count($stats) > 0) {
                 foreach ($stats as $i => $stat) {
                     $sort[$i] = $stat[$_SESSION['Kampagne']->nSort];
                 }
             }
             if ($_SESSION['Kampagne']->cSort === 'ASC') {
-                \uasort($sort, [$this, 'sortAsc']);
+                \uasort($sort, $this->sortAsc(...));
             } else {
-                \uasort($sort, [$this, 'sortDesc']);
+                \uasort($sort, $this->sortDesc(...));
             }
             $tmpStats = [];
             foreach ($sort as $i => $tmp) {
@@ -385,13 +396,9 @@ class CampaignController extends AbstractBackendController
      * @return int
      * @former kampagneSortDESC()
      */
-    private function sortDesc($a, $b): int
+    private function sortDesc(int $a, int $b): int
     {
-        if ($a == $b) {
-            return 0;
-        }
-
-        return ($a > $b) ? -1 : 1;
+        return $b <=> $a;
     }
 
     /**
@@ -399,13 +406,9 @@ class CampaignController extends AbstractBackendController
      * @param int $b
      * @return int
      */
-    private function sortAsc($a, $b): int
+    private function sortAsc(int $a, int $b): int
     {
-        if ($a == $b) {
-            return 0;
-        }
-
-        return ($a < $b) ? -1 : 1;
+        return $a <=> $b;
     }
 
     /**
@@ -439,13 +442,13 @@ class CampaignController extends AbstractBackendController
             $day = '0' . $day;
         }
 
-        switch ((int)$_SESSION['Kampagne']->nDetailAnsicht) {
+        switch ($_SESSION['Kampagne']->nDetailAnsicht) {
             case 1:    // Jahr
                 $whereSQL = " WHERE dErstellt BETWEEN '" . $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . '-' .
                     $_SESSION['Kampagne']->cFromDate_arr['nMonat'] . "-01' AND '" .
                     $_SESSION['Kampagne']->cToDate_arr['nJahr'] . '-' .
                     $_SESSION['Kampagne']->cToDate_arr['nMonat'] . '-' . $daysPerMonth . "'";
-                if ($_SESSION['Kampagne']->cFromDate_arr['nJahr'] == $_SESSION['Kampagne']->cToDate_arr['nJahr']) {
+                if ($_SESSION['Kampagne']->cFromDate_arr['nJahr'] === $_SESSION['Kampagne']->cToDate_arr['nJahr']) {
                     $whereSQL = " WHERE DATE_FORMAT(dErstellt, '%Y') = '" .
                         $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . "'";
                 }
@@ -455,8 +458,8 @@ class CampaignController extends AbstractBackendController
                     $_SESSION['Kampagne']->cFromDate_arr['nMonat'] .
                     "-01' AND '" . $_SESSION['Kampagne']->cToDate_arr['nJahr'] . '-' .
                     $_SESSION['Kampagne']->cToDate_arr['nMonat'] . '-' . $daysPerMonth . "'";
-                if ($_SESSION['Kampagne']->cFromDate_arr['nJahr'] == $_SESSION['Kampagne']->cToDate_arr['nJahr']
-                    && $_SESSION['Kampagne']->cFromDate_arr['nMonat'] == $_SESSION['Kampagne']->cToDate_arr['nMonat']
+                if ($_SESSION['Kampagne']->cFromDate_arr['nJahr'] === $_SESSION['Kampagne']->cToDate_arr['nJahr']
+                    && $_SESSION['Kampagne']->cFromDate_arr['nMonat'] === $_SESSION['Kampagne']->cToDate_arr['nMonat']
                 ) {
                     $whereSQL = " WHERE DATE_FORMAT(dErstellt, '%Y-%m') = '" .
                         $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . '-' . $month . "'";
@@ -472,14 +475,14 @@ class CampaignController extends AbstractBackendController
             case 4:    // Tag
                 $whereSQL = " WHERE dErstellt BETWEEN '" . $_SESSION['Kampagne']->cFromDate .
                     "' AND '" . $_SESSION['Kampagne']->cToDate . "'";
-                if ($_SESSION['Kampagne']->cFromDate == $_SESSION['Kampagne']->cToDate) {
+                if ($_SESSION['Kampagne']->cFromDate === $_SESSION['Kampagne']->cToDate) {
                     $whereSQL = " WHERE DATE_FORMAT(dErstellt, '%Y-%m-%d') = '" .
                         $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . '-' . $month . '-' . $day . "'";
                 }
                 break;
         }
 
-        switch ((int)$_SESSION['Kampagne']->nDetailAnsicht) {
+        switch ($_SESSION['Kampagne']->nDetailAnsicht) {
             case 1:    // Jahr
                 $selectSQL = "DATE_FORMAT(dErstellt, '%Y') AS cDatum";
                 $groupSQL  = 'GROUP BY YEAR(dErstellt)';
@@ -573,27 +576,33 @@ class CampaignController extends AbstractBackendController
     }
 
     /**
-     * @param int    $campaignID
-     * @param object $definition
-     * @param string $cStamp
-     * @param string $text
-     * @param array  $members
-     * @param string $sql
+     * @param int      $campaignID
+     * @param stdClass $definition
+     * @param string   $stamp
+     * @param string   $text
+     * @param array    $members
+     * @param string   $sql
      * @return array
      * @former holeKampagneDefDetailStats()
      */
-    private function getDefDetailStats(int $campaignID, $definition, $cStamp, &$text, &$members, $sql): array
-    {
+    private function getDefDetailStats(
+        int      $campaignID,
+        stdClass $definition,
+        string   $stamp,
+        string   &$text,
+        array    &$members,
+        string   $sql
+    ): array {
         $cryptoService = Shop::Container()->getCryptoService();
         $currency      = Frontend::getCurrency();
         $data          = [];
         $defID         = (int)$definition->kKampagneDef;
-        if ($campaignID <= 0 || $defID <= 0 || \mb_strlen($cStamp) === 0) {
+        if ($campaignID <= 0 || $defID <= 0 || \mb_strlen($stamp) === 0) {
             return $data;
         }
         $select = '';
         $where  = '';
-        $this->generateDetailSelectWhere($select, $where, $cStamp);
+        $this->generateDetailSelectWhere($select, $where, $stamp);
 
         $stats = $this->db->getObjects(
             'SELECT kKampagne, kKampagneDef, kKey ' . $select . '
@@ -609,7 +618,7 @@ class CampaignController extends AbstractBackendController
                     $text = $stats[0]->cStampText;
                     break;
                 case 2:    // Monat
-                    $textParts = \explode('.', $stats[0]->cStampText);
+                    $textParts = \explode('.', $stats[0]->cStampText ?? '');
                     $month     = $textParts [0] ?? '';
                     $year      = $textParts [1] ?? '';
                     $text      = $this->getMonthName($month) . ' ' . $year;
@@ -656,9 +665,9 @@ class CampaignController extends AbstractBackendController
                     break;
                 }
                 foreach ($data as $item) {
-                    $customDataParts       = \explode(';', $item->cCustomData);
-                    $item->cEinstiegsseite = Text::filterXSS($customDataParts [0] ?? '');
-                    $item->cReferer        = Text::filterXSS($customDataParts [1] ?? '');
+                    $customDataParts       = \explode(';', $item->cCustomData ?? '');
+                    $item->cEinstiegsseite = Text::filterXSS($customDataParts[0] ?? '');
+                    $item->cReferer        = Text::filterXSS($customDataParts[1] ?? '');
                 }
                 $members = [
                     'cIP'                 => \__('detailHeadIP'),
@@ -1083,7 +1092,7 @@ class CampaignController extends AbstractBackendController
                         $item->fVKNetto = Preise::getLocalizedPriceString($item->fVKNetto, $currency);
                     }
                     if (isset($item->fMwSt) && $item->fMwSt > 0) {
-                        $item->fMwSt = \number_format($item->fMwSt, 2) . '%';
+                        $item->fMwSt = \number_format((float)$item->fMwSt, 2) . '%';
                     }
                 }
 
@@ -1146,10 +1155,10 @@ class CampaignController extends AbstractBackendController
      * @param string $stamp
      * @former baueDefDetailSELECTWHERE()
      */
-    private function generateDetailSelectWhere(&$select, &$where, $stamp): void
+    private function generateDetailSelectWhere(string &$select, string &$where, string $stamp): void
     {
         $stamp = $this->db->escape($stamp);
-        switch ((int)$_SESSION['Kampagne']->nDetailAnsicht) {
+        switch ($_SESSION['Kampagne']->nDetailAnsicht) {
             case 1:    // Jahr
                 $select = ", DATE_FORMAT(tkampagnevorgang.dErstellt, '%Y') AS cStampText";
                 $where  = " WHERE DATE_FORMAT(tkampagnevorgang.dErstellt, '%Y') = '" . $stamp . "'";
@@ -1180,7 +1189,7 @@ class CampaignController extends AbstractBackendController
         $timeSpan               = [];
         $timeSpan['cDatum']     = [];
         $timeSpan['cDatumFull'] = [];
-        switch ((int)$_SESSION['Kampagne']->nDetailAnsicht) {
+        switch ($_SESSION['Kampagne']->nDetailAnsicht) {
             case 1:    // Jahr
                 $nFromStamp  = \mktime(
                     0,
@@ -1359,17 +1368,17 @@ class CampaignController extends AbstractBackendController
      * @return string
      * @former gibStamp()
      */
-    private function getStamp($stamp, int $direction, int $view): string
+    private function getStamp(string $stamp, int $direction, int $view): string
     {
         if (\mb_strlen($stamp) === 0 || !\in_array($direction, [1, -1], true) || !\in_array($view, [1, 2, 3], true)) {
             return $stamp;
         }
-
         $interval = match ($view) {
             1       => 'month',
             2       => 'week',
             default => 'day',
         };
+
         $now     = \date_create();
         $newDate = \date_create($stamp)->modify(($direction === 1 ? '+' : '-') . '1 ' . $interval);
 
@@ -1386,17 +1395,17 @@ class CampaignController extends AbstractBackendController
     private function save(Campaign $campaign): int
     {
         // Standardkampagnen (Interne) Werte herstellen
-        if (isset($campaign->kKampagne) && $campaign->kKampagne > 0) {
+        if ($campaign->kKampagne > 0) {
             $data = $this->db->getSingleObject(
                 'SELECT *
                     FROM tkampagne
                     WHERE kKampagne = :cid AND nInternal = 1',
-                ['cid' => (int)$campaign->kKampagne]
+                ['cid' => $campaign->kKampagne]
             );
             if ($data !== null) {
                 $campaign->cName      = $data->cName;
                 $campaign->cWert      = $data->cWert;
-                $campaign->nDynamisch = $data->nDynamisch;
+                $campaign->nDynamisch = (int)$data->nDynamisch;
             }
         }
         if (\mb_strlen($campaign->cName) === 0) {
@@ -1405,7 +1414,11 @@ class CampaignController extends AbstractBackendController
         if (\mb_strlen($campaign->cParameter) === 0) {
             return self::ERR_EMPTY_PARAM;
         }
-        if (\mb_strlen($campaign->cWert) === 0 && (int)$campaign->nDynamisch !== 1) {
+        $reserved = ['a', 'k', 's', 'h', 'l', 'm', 't', 'hf', 'kf', 'qf', 'show', 'suche'];
+        if (\in_array($campaign->cParameter, $reserved, true)) {
+            return self::ERR_PARAM_RESERVED;
+        }
+        if ($campaign->nDynamisch !== 1 && \mb_strlen($campaign->cWert) === 0) {
             return self::ERR_EMPTY_VALUE;
         }
         // Name schon vorhanden?
@@ -1417,12 +1430,12 @@ class CampaignController extends AbstractBackendController
         );
         if ($data !== null
             && $data->kKampagne > 0
-            && (!isset($campaign->kKampagne) || (int)$campaign->kKampagne === 0)
+            && (!isset($campaign->kKampagne) || $campaign->kKampagne === 0)
         ) {
             return self::ERR_NAME_EXISTS;
         }
         // Parameter schon vorhanden?
-        if (isset($campaign->nDynamisch) && (int)$campaign->nDynamisch === 1) {
+        if ($campaign->nDynamisch === 1) {
             $data = $this->db->getSingleObject(
                 'SELECT kKampagne
                     FROM tkampagne
@@ -1431,13 +1444,13 @@ class CampaignController extends AbstractBackendController
             );
             if ($data !== null
                 && $data->kKampagne > 0
-                && (!isset($campaign->kKampagne) || (int)$campaign->kKampagne === 0)
+                && (!isset($campaign->kKampagne) || $campaign->kKampagne === 0)
             ) {
                 return self::ERR_PARAM_EXISTS;
             }
         }
         // Editieren?
-        if (isset($campaign->kKampagne) && $campaign->kKampagne > 0) {
+        if ($campaign->kKampagne > 0) {
             $campaign->updateInDB();
         } else {
             $campaign->insertInDB();
@@ -1455,12 +1468,13 @@ class CampaignController extends AbstractBackendController
     private function getErrorMessage(int $code): string
     {
         return match ($code) {
-            self::ERR_EMPTY_NAME   => \__('errorCampaignNameMissing'),
-            self::ERR_EMPTY_PARAM  => \__('errorCampaignParameterMissing'),
-            self::ERR_EMPTY_VALUE  => \__('errorCampaignValueMissing'),
-            self::ERR_NAME_EXISTS  => \__('errorCampaignNameDuplicate'),
-            self::ERR_PARAM_EXISTS => \__('errorCampaignParameterDuplicate'),
-            default                => '',
+            self::ERR_EMPTY_NAME     => \__('errorCampaignNameMissing'),
+            self::ERR_EMPTY_PARAM    => \__('errorCampaignParameterMissing'),
+            self::ERR_EMPTY_VALUE    => \__('errorCampaignValueMissing'),
+            self::ERR_NAME_EXISTS    => \__('errorCampaignNameDuplicate'),
+            self::ERR_PARAM_EXISTS   => \__('errorCampaignParameterDuplicate'),
+            self::ERR_PARAM_RESERVED => \__('errorCampaignParameterReserved'),
+            default                  => '',
         };
     }
 
@@ -1525,19 +1539,19 @@ class CampaignController extends AbstractBackendController
                 $_SESSION['Kampagne']->cFromDate_arr['nJahr']  = Request::postInt('cFromYear');
                 $_SESSION['Kampagne']->cFromDate_arr['nMonat'] = Request::postInt('cFromMonth');
                 $_SESSION['Kampagne']->cFromDate_arr['nTag']   = Request::postInt('cFromDay');
-                $_SESSION['Kampagne']->cFromDate               = Request::postInt('cFromYear') . '-' .
-                    Request::postInt('cFromMonth') . '-' .
-                    Request::postInt('cFromDay');
+                $_SESSION['Kampagne']->cFromDate               = Request::postInt('cFromYear')
+                    . '-' . Request::postInt('cFromMonth')
+                    . '-' . Request::postInt('cFromDay');
             }
             if (Request::postInt('cToDay') > 0 && Request::postInt('cToMonth') > 0 && Request::postInt('cToYear') > 0) {
                 $_SESSION['Kampagne']->cToDate_arr['nJahr']  = Request::postInt('cToYear');
                 $_SESSION['Kampagne']->cToDate_arr['nMonat'] = Request::postInt('cToMonth');
                 $_SESSION['Kampagne']->cToDate_arr['nTag']   = Request::postInt('cToDay');
-                $_SESSION['Kampagne']->cToDate               = Request::postInt('cToYear') . '-' .
-                    Request::postInt('cToMonth') . '-' . Request::postInt('cToDay');
+                $_SESSION['Kampagne']->cToDate               = Request::postInt('cToYear')
+                    . '-' . Request::postInt('cToMonth')
+                    . '-' . Request::postInt('cToDay');
             }
         }
-
         $this->checkGesamtStatZeitParam();
     }
 
@@ -1552,7 +1566,7 @@ class CampaignController extends AbstractBackendController
             return $stamp;
         }
         $span      = \base64_decode(Request::verifyGPDataString('cZeitParam'));
-        $spanParts = \explode(' - ', $span);
+        $spanParts = \explode(' - ', $span ?: '');
         $dateStart = $spanParts[0] ?? '';
         $dateEnd   = $spanParts[1] ?? '';
 
@@ -1565,15 +1579,15 @@ class CampaignController extends AbstractBackendController
         $_SESSION['Kampagne']->cToDate_arr['nJahr']    = (int)$endYear;
         $_SESSION['Kampagne']->cToDate_arr['nMonat']   = (int)$endMonth;
         $_SESSION['Kampagne']->cToDate_arr['nTag']     = (int)$endDay;
-        $_SESSION['Kampagne']->cToDate                 = (int)$endYear . '-' .
-            (int)$endMonth . '-' .
-            (int)$endDay;
+        $_SESSION['Kampagne']->cToDate                 = (int)$endYear . '-'
+            . (int)$endMonth . '-'
+            . (int)$endDay;
         $_SESSION['Kampagne']->cFromDate_arr['nJahr']  = (int)$startYear;
         $_SESSION['Kampagne']->cFromDate_arr['nMonat'] = (int)$startMonth;
         $_SESSION['Kampagne']->cFromDate_arr['nTag']   = (int)$startDay;
-        $_SESSION['Kampagne']->cFromDate               = (int)$startYear . '-' .
-            (int)$startMonth . '-' .
-            (int)$startDay;
+        $_SESSION['Kampagne']->cFromDate               = (int)$startYear . '-'
+            . (int)$startMonth . '-'
+            . (int)$startDay;
         // Int String Work Around
         $month = $_SESSION['Kampagne']->cFromDate_arr['nMonat'];
         if ($month < 10) {
@@ -1585,7 +1599,7 @@ class CampaignController extends AbstractBackendController
             $day = '0' . $day;
         }
 
-        switch ((int)$_SESSION['Kampagne']->nAnsicht) {
+        switch ($_SESSION['Kampagne']->nAnsicht) {
             case 1:    // Monat
                 $_SESSION['Kampagne']->nDetailAnsicht = 2;
 
@@ -1687,7 +1701,7 @@ class CampaignController extends AbstractBackendController
         $chart->setActive(true);
         $data = [];
         foreach ($stats as $date => $dates) {
-            if (\str_contains($date, 'Gesamt')) {
+            if (\is_string($date) && \str_contains($date, 'Gesamt')) {
                 continue;
             }
             $x = '';
@@ -1698,7 +1712,6 @@ class CampaignController extends AbstractBackendController
                 if ($key === $type) {
                     $obj    = new stdClass();
                     $obj->y = (float)$stat;
-
                     $chart->addAxis((string)$x);
                     $data[] = $obj;
                 }

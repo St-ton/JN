@@ -73,7 +73,14 @@ class DBMigrationHelper
         $versionInfo->innodb = new stdClass();
 
         $versionInfo->innodb->support = $innodbSupport && \in_array($innodbSupport->SUPPORT, ['YES', 'DEFAULT'], true);
-        $versionInfo->innodb->version = $db->getSingleObject("SHOW VARIABLES LIKE 'innodb_version'")->Value;
+        /*
+         * Since MariaDB 10.0, the default InnoDB implementation is based on InnoDB from MySQL 5.6.
+         * Since MariaDB 10.3.7 and later, the InnoDB implementation has diverged substantially from the
+         * InnoDB in MySQL and the InnoDB Version is no longer reported.
+         */
+        $versionInfo->innodb->version = $db->getSingleObject(
+            "SHOW VARIABLES LIKE 'innodb_version'"
+        )->Value ?? '';
         $versionInfo->innodb->size    = $innodbSize;
         $versionInfo->collation_utf8  = $utf8Support && \mb_convert_case(
             $utf8Support->IS_COMPILED,
@@ -309,7 +316,7 @@ class DBMigrationHelper
         $mysqlVersion = self::getMySQLVersion();
 
         return \version_compare($mysqlVersion->innodb->version, '5.6', '<')
-            ? "ALTER TABLE `{$table->TABLE_NAME}` COMMENT = '{$table->TABLE_COMMENT}:Migrating'"
+            ? "ALTER TABLE `$table->TABLE_NAME` COMMENT = '$table->TABLE_COMMENT:Migrating'"
             : '';
     }
 
@@ -322,7 +329,7 @@ class DBMigrationHelper
         $mysqlVersion = self::getMySQLVersion();
 
         return \version_compare($mysqlVersion->innodb->version, '5.6', '<')
-            ? "ALTER TABLE `{$table->TABLE_NAME}` COMMENT = '{$table->TABLE_COMMENT}'"
+            ? "ALTER TABLE `$table->TABLE_NAME` COMMENT = '$table->TABLE_COMMENT'"
             : '';
     }
 
@@ -368,11 +375,11 @@ class DBMigrationHelper
             $table->Migration = self::isTableNeedMigration($table);
         }
         if (($table->Migration & self::MIGRATE_TABLE) === self::MIGRATE_TABLE) {
-            $sql = "ALTER TABLE `{$table->TABLE_NAME}` CHARACTER SET='utf8' COLLATE='utf8_unicode_ci' ENGINE='InnoDB'";
+            $sql = "ALTER TABLE `$table->TABLE_NAME` CHARACTER SET='utf8' COLLATE='utf8_unicode_ci' ENGINE='InnoDB'";
         } elseif (($table->Migration & self::MIGRATE_INNODB) === self::MIGRATE_INNODB) {
-            $sql = "ALTER TABLE `{$table->TABLE_NAME}` ENGINE='InnoDB'";
+            $sql = "ALTER TABLE `$table->TABLE_NAME` ENGINE='InnoDB'";
         } elseif (($table->Migration & self::MIGRATE_UTF8) === self::MIGRATE_UTF8) {
-            $sql = "ALTER TABLE `{$table->TABLE_NAME}` CHARACTER SET='utf8' COLLATE='utf8_unicode_ci'";
+            $sql = "ALTER TABLE `$table->TABLE_NAME` CHARACTER SET='utf8' COLLATE='utf8_unicode_ci'";
         } else {
             return '';
         }
@@ -395,12 +402,11 @@ class DBMigrationHelper
         if (\count($columns) === 0) {
             return $sql;
         }
-        $sql = "ALTER TABLE `{$table->TABLE_NAME}`$lineBreak";
+        $sql = "ALTER TABLE `$table->TABLE_NAME`$lineBreak";
 
         $columnChange = [];
-        foreach ($columns as $key => $col) {
+        foreach ($columns as $col) {
             $characterSet = "CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci'";
-
             /* Workaround for quoted values in MariaDB >= 10.2.7 Fix: SHOP-2593 */
             if ($col->COLUMN_DEFAULT === 'NULL' || $col->COLUMN_DEFAULT === "'NULL'") {
                 $col->COLUMN_DEFAULT = null;
@@ -416,11 +422,11 @@ class DBMigrationHelper
                 $characterSet = '';
             }
 
-            $columnChange[] = "    CHANGE COLUMN `{$col->COLUMN_NAME}` `{$col->COLUMN_NAME}` "
-                . "{$col->COLUMN_TYPE} $characterSet"
+            $columnChange[] = "    CHANGE COLUMN `$col->COLUMN_NAME` `$col->COLUMN_NAME` "
+                . "$col->COLUMN_TYPE $characterSet"
                 . ($col->IS_NULLABLE === 'YES' ? ' NULL' : ' NOT NULL')
                 . ($col->IS_NULLABLE === 'NO' && $col->COLUMN_DEFAULT === null ? '' : ' DEFAULT '
-                    . ($col->COLUMN_DEFAULT === null ? 'NULL' : "'{$col->COLUMN_DEFAULT}'"))
+                    . ($col->COLUMN_DEFAULT === null ? 'NULL' : "'$col->COLUMN_DEFAULT'"))
                 . (!empty($col->EXTRA) ? ' ' . $col->EXTRA : '');
         }
 
@@ -566,8 +572,8 @@ class DBMigrationHelper
     public static function doMigrateToInnoDB_utf8(
         string $status = 'start',
         string $tableName = '',
-        int $step = 1,
-        array $exclude = []
+        int    $step = 1,
+        array  $exclude = []
     ): stdClass {
         Shop::Container()->getGetText()->loadAdminLocale('pages/dbcheck');
 
@@ -577,7 +583,7 @@ class DBMigrationHelper
         $db           = Shop::Container()->getDB();
         $doSingle     = false;
 
-        switch (mb_convert_case($status, MB_CASE_LOWER)) {
+        switch (\mb_convert_case($status, \MB_CASE_LOWER)) {
             case 'stop':
                 $result->nextTable = '';
                 $result->status    = 'all done';
@@ -687,10 +693,8 @@ class DBMigrationHelper
                 // Objektcache leeren
                 try {
                     $cache = Shop::Container()->getCache();
-                    if ($cache !== null) {
-                        $cache->setJtlCacheConfig($db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING));
-                        $cache->flushAll();
-                    }
+                    $cache->setJtlCacheConfig($db->selectAll('teinstellungen', 'kEinstellungenSektion', \CONF_CACHING));
+                    $cache->flushAll();
                 } catch (Exception $e) {
                     Shop::Container()->getLogService()->error(\sprintf(\__('errorEmptyCache'), $e->getMessage()));
                 }
@@ -706,10 +710,8 @@ class DBMigrationHelper
                 };
                 $templateDir = Shop::Container()->getTemplateService()->getActiveTemplate()->getDir();
                 $dirMan      = new DirManager();
-                $dirMan->getData(PFAD_ROOT . PFAD_COMPILEDIR . $templateDir, $callback);
-                $dirMan->getData(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR, $callback);
-                // Clear special category session array
-                unset($_SESSION['oKategorie_arr_new']);
+                $dirMan->getData(\PFAD_ROOT . \PFAD_COMPILEDIR . $templateDir, $callback);
+                $dirMan->getData(\PFAD_ROOT . \PFAD_ADMIN . \PFAD_COMPILEDIR, $callback);
                 // Reset Fulltext search if version is lower than 5.6
                 if (\version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
                     $db->query(
@@ -747,7 +749,7 @@ class DBMigrationHelper
 
         if ($clearCache) {
             if ($cache->isActive()) {
-                $cache->flushTags([CACHING_GROUP_CORE . '_getDBStruct']);
+                $cache->flushTags([\CACHING_GROUP_CORE . '_getDBStruct']);
             } else {
                 Backend::set('getDBStruct_extended', false);
                 Backend::set('getDBStruct_normal', false);
@@ -852,7 +854,7 @@ class DBMigrationHelper
                 $cache->set(
                     $cacheID,
                     $dbStructure,
-                    [CACHING_GROUP_CORE, CACHING_GROUP_CORE . '_getDBStruct']
+                    [\CACHING_GROUP_CORE, \CACHING_GROUP_CORE . '_getDBStruct']
                 );
             } else {
                 Backend::set($cacheID, $dbStructure);
@@ -872,7 +874,7 @@ class DBMigrationHelper
      */
     public static function getDBFileStruct(): array
     {
-        $version    = Parser::parse(APPLICATION_VERSION);
+        $version    = Parser::parse(\APPLICATION_VERSION);
         $versionStr = $version->getMajor() . '-' . $version->getMinor() . '-' . $version->getPatch();
         if ($version->hasPreRelease()) {
             $preRelease  = $version->getPreRelease();
@@ -882,7 +884,7 @@ class DBMigrationHelper
             }
         }
 
-        $fileList = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_SHOPMD5 . 'dbstruct_' . $versionStr . '.json';
+        $fileList = \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . \PFAD_SHOPMD5 . 'dbstruct_' . $versionStr . '.json';
         if (!\file_exists($fileList)) {
             return [];
         }

@@ -37,7 +37,8 @@
                         <input type="hidden" name="kPlugin" value="{$kPlugin}" />
                     {/if}
                     {if $link->getParent() === 0}
-                        <select title="{__('linkGroupMove')}" class="custom-select" name="kLinkgruppe" onchange="document.forms['aenderlinkgruppe_{$link->getID()}_{$id}'].submit();">
+                        <select title="{__('linkGroupMove')}" class="custom-select" name="kLinkgruppe"
+                                onchange="confirmLinkAction(this, 'aenderlinkgruppe_{$link->getID()}_{$id}','{__('linkGroupMove')}');">
                             <option value="-1">{__('linkGroupMove')}</option>
                             {foreach $linkgruppen as $linkgruppeTMP}
                                 {if $linkgruppeTMP->getID() != $id && $linkgruppeTMP->getID() > 0}
@@ -60,7 +61,8 @@
                     {/if}
                     {if $id > 0}
                         {if $link->getParent() === 0}
-                            <select title="{__('linkGroupCopy')}" class="custom-select" name="kLinkgruppe" onchange="document.forms['kopiereinlinkgruppe_{$link->getID()}_{$id}'].submit();">
+                            <select title="{__('linkGroupCopy')}" class="custom-select" name="kLinkgruppe"
+                                    onchange="confirmLinkAction(this, 'kopiereinlinkgruppe_{$link->getID()}_{$id}','{__('linkGroupCopy')}');">
                                 <option value="-1">{__('linkGroupCopy')}</option>
                                 {foreach $linkgruppen as $linkgruppeTMP}
                                     {if $linkgruppeTMP->getID() !== $id && $linkgruppeTMP->getID() > 0}
@@ -75,7 +77,7 @@
                         {/if}
                     {/if}
                 </form>
-                <form class="navbar-form2 col-lg-4 col-md-12 left px-1" method="post" action="{$adminURL}{$route}" name="aenderlinkvater_{$link->getID()}_{$id}">
+                <form class="col-lg-4 col-md-12 left px-1" method="post" action="{$adminURL}{$route}" name="aenderlinkvater_{$link->getID()}_{$id}">
                     {$jtl_token}
                     <input type="hidden" name="action" value="change-parent" />
                     <input type="hidden" name="kLink" value="{$link->getID()}" />
@@ -84,15 +86,27 @@
                         <input type="hidden" name="kPlugin" value="{$kPlugin}" />
                     {/if}
                     {if $id > 0}
-                        <select title="{__('linkMove')}" class="custom-select" name="kVaterLink" onchange="document.forms['aenderlinkvater_{$link->getID()}_{$id}'].submit();">
-                            <option value="-1">{__('linkMove')}</option>
-                            <option value="0">-- Root --</option>
-                            {foreach $list as $linkTMP}
-                                {if $linkTMP->getID() !== $link->getID() && $linkTMP->getID() !== $link->getParent()}
-                                    <option value="{$linkTMP->getID()}">{$linkTMP->getDisplayName()}</option>
-                                {/if}
-                            {/foreach}
-                        </select>
+                        {if count($list) < 20}
+                            <select title="{__('linkMove')}" class="custom-select" name="kVaterLink"
+                                    onchange="confirmLinkAction(this, 'aenderlinkvater_{$link->getID()}_{$id}','{__('linkMove')}');">
+                                <option value="-1">{__('linkMove')}</option>
+                                <option value="0">-- Root --</option>
+                                {foreach $list as $linkTMP}
+                                    {if $linkTMP->getID() !== $link->getID() && $linkTMP->getID() !== $link->getParent()}
+                                        <option value="{$linkTMP->getID()}">{$linkTMP->getDisplayName()}</option>
+                                    {/if}
+                                {/foreach}
+                            </select>
+                        {else}
+                            <input title="{__('linkMove')}" class="form-control" id="kVaterLink-{$link->getID()}"
+                                   value="" aria-label="{__('linkMove')}" placeholder="{__('linkMove')}"
+                                   onchange="confirmLinkAction(this, 'aenderlinkvater_{$link->getID()}_{$id}','{__('linkMove')}');">
+                            <input type="hidden" name="kVaterLink" value="">
+                            <script>
+                                enableTypeahead('#kVaterLink-{$link->getID()}', 'getPagesByLinkGroup', 'cName', null,
+                                    onSelectVaterLink, null, 500, [{$id}], '{__("noData")}');
+                            </script>
+                        {/if}
                     {/if}
                 </form>
             </div>

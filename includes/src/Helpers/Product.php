@@ -12,6 +12,8 @@ use JTL\CheckBox;
 use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
 use JTL\DB\SqlObject;
+use JTL\Exceptions\CircularReferenceException;
+use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Extensions\Config\Configurator;
 use JTL\Extensions\Config\Group;
 use JTL\Extensions\Config\Item;
@@ -21,6 +23,7 @@ use JTL\Mail\Mailer;
 use JTL\Optin\Optin;
 use JTL\Optin\OptinAvailAgain;
 use JTL\Optin\OptinRefData;
+use JTL\RateLimit\AvailabilityMessage as Limiter;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\SimpleMail;
@@ -174,8 +177,8 @@ class Product
      * @return array
      */
     public static function getPossibleVariationCombinations(
-        int $parentID,
-        int $customerGroupID = 0,
+        int  $parentID,
+        int  $customerGroupID = 0,
         bool $group = false
     ): array {
         if (!$customerGroupID) {
@@ -587,7 +590,7 @@ class Product
     {
         if ($productID > 0) {
             $data = Shop::Container()->getDB()->select('tstueckliste', 'kArtikel', $productID);
-            if (isset($data->kStueckliste) && $data->kStueckliste > 0) {
+            if ($data !== null && $data->kStueckliste > 0) {
                 return $info ? $data : true;
             }
         }
@@ -958,13 +961,15 @@ class Product
      * @param array       $conf
      */
     private static function getXSellingPurchases(
-        stdClass $xSelling,
+        stdClass    $xSelling,
         DbInterface $db,
-        int $productID,
-        bool $isParent,
-        array $conf
+        int         $productID,
+        bool        $isParent,
+        array       $conf
     ): void {
-        if ($conf['artikeldetails_xselling_kauf_anzeigen'] !== 'Y') {
+        if ($conf['artikeldetails_xselling_kauf_anzeigen'] !== 'Y'
+            || (int)$conf['artikeldetails_xselling_kauf_anzahl'] === 0
+        ) {
             return;
         }
         $limit = (int)$conf['artikeldetails_xselling_kauf_anzahl'];
@@ -1033,6 +1038,16 @@ class Product
      */
     public static function buildXSellersFromIDs($xSelling, int $productID): stdClass
     {
+        if ($xSelling === null) {
+            return (object)[
+                'kArtikelXSellerKey_arr' => [],
+                'oArtikelArr'            => [],
+                'Standard'               => null,
+                'Kauf'                   => (object)[
+                    'Artikel' => [],
+                ],
+            ];
+        }
         $xSelling   = (object)$xSelling;
         $options    = Artikel::getDefaultOptions();
         $db         = Shop::Container()->getDB();
@@ -1059,7 +1074,7 @@ class Product
                 $xSelling->Kauf->Artikel[] = $product;
             }
         }
-        $xSelling->Kauf->Artikel = self::separateByAvailability($xSelling->Kauf->Artikel);
+        $xSelling->Kauf->Artikel = self::separateByAvailability($xSelling->Kauf->Artikel ?? []);
         unset($xSelling->Kauf->productIDs);
 
         \executeHook(\HOOK_ARTIKEL_INC_XSELLING, [
@@ -1314,7 +1329,7 @@ class Product
 
         \executeHook(\HOOK_ARTIKEL_INC_BENACHRICHTIGUNG_PLAUSI);
         if ($resultCode) {
-            if (!self::checkAvailibityFormFloodProtection($conf['benachrichtigung_sperre_minuten'])) {
+            if (!self::checkAvailibityFormRateLimit($conf['benachrichtigung_sperre_minuten'])) {
                 $dbHandler = Shop::Container()->getDB();
                 $refData   = (new OptinRefData())
                     ->setSalutation('')
@@ -1323,6 +1338,7 @@ class Product
                     ->setProductId(Request::postInt('a'))
                     ->setEmail(Text::filterXSS($dbHandler->escape(\strip_tags($_POST['email']))) ?: '')
                     ->setLanguageID(Shop::getLanguageID())
+                    ->setCustomerGroupID(Frontend::getCustomer()->getGroupID())
                     ->setRealIP(Request::getRealIP());
 
                 $inquiry            = self::getAvailabilityFormDefaults();
@@ -1413,6 +1429,7 @@ class Product
      * @param int $min
      * @return bool
      * @former floodSchutzBenachrichtigung()
+     * @deprecated
      * @since 5.0.0
      */
     public static function checkAvailibityFormFloodProtection(int $min): bool
@@ -1432,9 +1449,38 @@ class Product
     }
 
     /**
+     * checkAvailibityFormFloodProtection is public and therefore cannot be dismissed
+     * This method uses RateLimiter to check for multiple requests from the specified IP
+     * @param int $min
+     * @return bool
+     * @former floodSchutzBenachrichtigung()
+     * @since 5.2.3
+     */
+    public static function checkAvailibityFormRateLimit(int $min): bool
+    {
+        if (!$min) {
+            return false;
+        }
+        $limiter = new Limiter(Shop::Container()->getDB());
+        $limiter->init(Request::getRealIP());
+        $limiter->setLimit(1);
+        $limiter->setFloodMinutes($min);
+        $limiter->setCleanupMinutes($min + 5);
+        if ($limiter->check() !== true) {
+            return true;
+        }
+        $limiter->persist();
+        $limiter->cleanup();
+
+        return false;
+    }
+
+    /**
      * @param int $productID
      * @param int $categoryID
      * @return stdClass
+     * @throws CircularReferenceException
+     * @throws ServiceNotFoundException
      * @former gibNaviBlaettern()
      * @since 5.0.0
      */
@@ -1778,7 +1824,7 @@ class Product
      * @former fasseVariVaterUndKindZusammen()
      * @since 5.0.0
      */
-    public static function combineParentAndChild(Artikel $parent, Artikel $child)
+    public static function combineParentAndChild(Artikel $parent, Artikel $child): Artikel
     {
         $product                              = $child;
         $variChildID                          = (int)$child->kArtikel;
@@ -1794,6 +1840,7 @@ class Product
         $product->oVariationKombiVorschau_arr = $parent->oVariationKombiVorschau_arr ?? [];
         $product->oVariationDetailPreis_arr   = $parent->oVariationDetailPreis_arr;
         $product->cVaterURL                   = $parent->cURL;
+        $product->cVaterURLFull               = $parent->cURLFull;
         $product->VaterFunktionsAttribute     = $parent->FunktionsAttribute;
 
         \executeHook(\HOOK_ARTIKEL_INC_FASSEVARIVATERUNDKINDZUSAMMEN, ['article' => $product]);
@@ -2012,7 +2059,7 @@ class Product
         $config->fGesamtpreis = [
             Tax::getGross(
                 $product->gibPreis($amount, $selectedProperties),
-                Tax::getSalesTax($product->kSteuerklasse)
+                Tax::getSalesTax($product->kSteuerklasse ?? 0)
             ) * $_amount,
             $product->gibPreis($amount, $selectedProperties) * $_amount
         ];
@@ -2153,7 +2200,7 @@ class Product
             [$customerID, $productID, Shop::getLanguageID()]
         );
 
-        return !empty($ratings->kBewertung);
+        return $ratings !== null && !empty($ratings->kBewertung);
     }
 
     /**

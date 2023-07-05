@@ -305,6 +305,16 @@ $(document).ready(function () {
 
     $('.accordion-toggle').on('click', function () {
         $(this).find('i').toggleClass('fa-minus fa-plus');
+        let parent = $(this).data("parent");
+        if (parent.length > 0) {
+            let clicked = $(this);
+            $(".accordion-toggle[data-parent='" + parent + "']").each(function() {
+                // Remove minus and add a plus sign for all accordion-toggles with same destination except the clicked one
+                if ($(this).attr("href") !== clicked.attr("href")) {
+                    $(this).find('i').removeClass('fa-minus').addClass('fa-plus');
+                }
+            });
+        }
     });
 
     $('.help').each(function () {
@@ -440,6 +450,60 @@ $(document).ready(function () {
     onChangeFormSubmit();
     getSettingListeners();
     deleteConfirmation();
+
+    // Add top scrollbar to tables when they are scrollable.
+    $('.table-responsive').topScrollbar();
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function () {
+        $(this).closest('.tabs').find('.tab-content .table-responsive').topScrollbar();
+    });
+    $('.collapse').on('shown.bs.collapse', function () {
+        $(this).find('.table-responsive').topScrollbar();
+    });
+    $('img[loading="lazy"]').on('load',function(){
+        $(this).closest('.table-responsive').topScrollbar();
+    });
+    let windowResizeTimeout = null;
+    function windowResized() {
+        $('.table-responsive').topScrollbar();
+    }
+    $(window).on('resize', function () {
+        if (windowResizeTimeout) {
+            $('.jquery-top-scrollbar').remove();
+            clearTimeout(windowResizeTimeout);
+        }
+        windowResizeTimeout = setTimeout(windowResized, 500);
+    });
+
+    function toggleCardWidget(elem, $widgetContent, widget) {
+        if ($widgetContent.is(':hidden')) {
+            $widgetContent.slideDown('fast');
+            $('i', elem).attr('class', 'fa fa-chevron-up');
+            $(widget).find('.card-header hr').removeClass('d-none');
+        } else {
+            $widgetContent.slideUp('fast');
+            $('i', elem).attr('class', 'fa fa-chevron-down');
+            $(widget).find('.card-header hr').addClass('d-none');
+        }
+    }
+
+    // Add widget functionality to elements with class card-widget
+    $('.card-widget').each(function (i, widget) {
+        let $widgetContent = $('.card-body', widget),
+            $title = $(widget).find('.card-header > *:first-child');
+
+        // add click handler for widgets collapse button
+        if ($(widget).find('.card-header').length && $(widget).find('.card-body').length && $title.length) {
+            let chevron = $title.html('<a href="#" class="text-decoration-none">' + $title.html() + '<span class="btn-sm chevronToggle"><i class="fa fa-chevron-' + 'down' + '"></i></span></a>')
+                .on('click', function (e) {
+                    toggleCardWidget(this, $widgetContent, widget);
+                    e.preventDefault();
+                })
+                .appendTo($(widget).find('.card-header > *:first-child'));
+            if ($('.body-hidden', widget).length > 0) {
+                chevron.trigger('click');
+            }
+        }
+    });
 });
 
 $(window).on('load', () => {
@@ -624,32 +688,46 @@ function ioManagedCall(adminPath, funcname, params, callback)
  * @param suggestion (default: null) a callback function to customize the sugesstion entry. Takes the item object and
  *      returns a HTML string
  * @param onSelect
+ * @param spinnerElm
+ * @param delay
+ * @param args
+ * @param noDataAvailable
  */
-function enableTypeahead(selector, funcName, display, suggestion, onSelect, spinnerElm)
+function enableTypeahead(selector, funcName, display, suggestion, onSelect, spinnerElm, delay = 0,
+                         args = [], noDataAvailable = '')
 {
     var pendingRequest = null;
+    var timeout;
+    var templates = noDataAvailable === '' ? {suggestion: suggestion} : {
+        suggestion: suggestion,
+        notFound: '<div class="tt-suggestion">' + noDataAvailable + '</div>'
+    }
 
     $(selector)
         .typeahead(
             {
                 highlight: true,
-                hint: true
+                hint: true,
+                minLength: 1
             },
             {
                 limit: 50,
                 source: function (query, syncResults, asyncResults) {
-                    if (pendingRequest !== null) {
-                        pendingRequest.abort();
+                    if (timeout) {
+                        clearTimeout(timeout);
                     }
-                    pendingRequest = ioCall(funcName, [query, 100], function (data) {
-                        pendingRequest = null;
-                        asyncResults(data);
-                    });
+                    timeout = setTimeout(function () {
+                        if (pendingRequest !== null) {
+                            pendingRequest.abort();
+                        }
+                        pendingRequest = ioCall(funcName, [query, 50].concat(args), function (data) {
+                            pendingRequest = null;
+                            asyncResults(data);
+                        });
+                    }, delay);
                 },
                 display: display,
-                templates: {
-                    suggestion: suggestion
-                }
+                templates: templates
             }
         )
         .on('typeahead:select', onSelect)

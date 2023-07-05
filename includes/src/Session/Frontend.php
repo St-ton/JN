@@ -46,15 +46,15 @@ class Frontend extends AbstractSession
     private bool $mustUpdate = false;
 
     /**
-     * @param bool   $start       - call session_start()?
-     * @param bool   $force       - force new instance?
+     * @param bool   $start - call session_start()?
+     * @param bool   $force - force new instance?
      * @param string $sessionName - if null, then default to current session name
      * @return Frontend
      * @throws Exception
      */
     public static function getInstance(
-        bool $start = true,
-        bool $force = false,
+        bool   $start = true,
+        bool   $force = false,
         string $sessionName = self::DEFAULT_SESSION
     ): self {
         return ($force === true || self::$instance === null || self::$sessionName !== $sessionName)
@@ -226,7 +226,6 @@ class Frontend extends AbstractSession
      */
     private function updateGlobals(): void
     {
-
         unset($_SESSION['oKategorie_arr_new']);
         $_SESSION['ks']       = [];
         $_SESSION['Sprachen'] = LanguageHelper::getInstance()->gibInstallierteSprachen();
@@ -282,14 +281,25 @@ class Frontend extends AbstractSession
             }
         }
         // EXPERIMENTAL_MULTILANG_SHOP
-        foreach ($_SESSION['Sprachen'] as $lang) {
-            if (isset($_SERVER['HTTP_HOST']) && \defined('URL_SHOP_' . \mb_convert_case($lang->cISO, \MB_CASE_UPPER))) {
-                $shopLangURL = \constant('URL_SHOP_' . \mb_convert_case($lang->cISO, \MB_CASE_UPPER));
-                if (\str_contains($shopLangURL, ($_SERVER['HTTP_HOST'] ?? ' '))) {
-                    $_SESSION['kSprache']    = $lang->kSprache;
-                    $_SESSION['cISOSprache'] = \trim($lang->cISO);
+        if (Shop::$forceHost[0]['host'] === $_SERVER['HTTP_HOST']) {
+            foreach ($_SESSION['Sprachen'] as $lang) {
+                if (Shop::$forceHost[0]['id'] === $lang->getId()) {
+                    $_SESSION['kSprache']    = $lang->getId();
+                    $_SESSION['cISOSprache'] = \trim($lang->getCode());
                     Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
                     break;
+                }
+            }
+        } else {
+            foreach ($_SESSION['Sprachen'] as $lang) {
+                if (isset($_SERVER['HTTP_HOST']) && \defined('URL_SHOP_' . \mb_convert_case($lang->cISO, \MB_CASE_UPPER))) {
+                    $shopLangURL = \constant('URL_SHOP_' . \mb_convert_case($lang->cISO, \MB_CASE_UPPER));
+                    if (\str_contains($shopLangURL, ($_SERVER['HTTP_HOST'] ?? ' '))) {
+                        $_SESSION['kSprache']    = $lang->kSprache;
+                        $_SESSION['cISOSprache'] = \trim($lang->cISO);
+                        Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
+                        break;
+                    }
                 }
             }
         }
@@ -542,10 +552,6 @@ class Frontend extends AbstractSession
     public static function checkReset(string $langISO = ''): void
     {
         if ($langISO !== '') {
-            if ($langISO !== Shop::getLanguageCode()) {
-                $_SESSION['oKategorie_arr']     = [];
-                $_SESSION['oKategorie_arr_new'] = [];
-            }
             $lang = first(LanguageHelper::getAllLanguages(), static function (LanguageModel $l) use ($langISO): bool {
                 return $l->getCode() === $langISO;
             });

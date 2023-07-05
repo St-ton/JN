@@ -16,8 +16,8 @@ class BootChecker
     private static array $bootstrapper = [];
 
     /**
-     * @param string|null     $dir
-     * @param Model|null $model
+     * @param string|null $dir
+     * @param Model|null  $model
      * @return BootstrapperInterface|null
      */
     public static function bootstrap(?string $dir, ?Model $model = null): ?BootstrapperInterface

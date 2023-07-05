@@ -37,7 +37,7 @@ abstract class GenericModelController extends AbstractBackendController
     /**
      * @var DataModelInterface|null
      */
-    protected ? DataModelInterface $item = null;
+    protected ?DataModelInterface $item = null;
 
     /**
      * @var string
@@ -123,7 +123,6 @@ abstract class GenericModelController extends AbstractBackendController
             ->assign('action', $this->getAction())
             ->assign('pagination', $pagination)
             ->assign('childModel', $this->child)
-            ->assign('settings', $this->getAdminSectionSettings(\CONF_CONSENTMANAGER))
             ->assign('tab', $this->tab)
             ->getResponse($template);
     }

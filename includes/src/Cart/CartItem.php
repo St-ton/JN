@@ -200,6 +200,31 @@ class CartItem
     public $oEstimatedDelivery;
 
     /**
+     * @var array
+     */
+    public array $kLieferschein_arr = [];
+
+    /**
+     * @var int
+     */
+    public int $nAusgeliefert = 0;
+
+    /**
+     * @var int
+     */
+    public int $nAusgeliefertGesamt = 0;
+
+    /**
+     * @var int
+     */
+    public int $nOffenGesamt = 0;
+
+    /**
+     * @var bool
+     */
+    public bool $bAusgeliefert = false;
+
+    /**
      *
      */
     public function __wakeup()

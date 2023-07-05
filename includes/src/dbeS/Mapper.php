@@ -669,7 +669,11 @@ final class Mapper
             'cIdentCode',
             'cHinweis',
             'dErstellt'
-        ]
+        ],
+
+        'mCustomerDiscount' => [
+            'discount'
+        ],
     ];
 
     /**

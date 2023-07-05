@@ -12,6 +12,7 @@ use JTL\Catalog\Warehouse;
 use JTL\Checkout\Versandart;
 use JTL\Contracts\RoutableInterface;
 use JTL\Country\Country;
+use JTL\Customer\Customer;
 use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
 use JTL\DB\SqlObject;
@@ -5348,17 +5349,19 @@ class Artikel implements RoutableInterface
     /**
      * Get the maximum discount available for this product respecting current user group + user + category discount
      *
-     * @param int $customerGroupID
-     * @param int $productID
-     * @return float|int maximum discount
+     * @param int           $customerGroupId
+     * @param int           $productId
+     * @param Customer|null $customer
+     * @return float maximum discount
      */
-    public function getDiscount(int $customerGroupID = 0, int $productID = 0)
+    public function getDiscount(int $customerGroupId = 0, int $productId = 0, ?Customer $customer = null):float
     {
-        $productID       = $productID ?: $this->kArtikel;
-        $customerGroupID = $customerGroupID ?: ($this->kKundengruppe ?? $this->customerGroup->getID());
+        $productId       = $productId !== 0 ? $productId : ($this->kArtikel ?? 0);
+        $customerGroupId = $customerGroupId ?: ($this->kKundengruppe ?? $this->customerGroup->getID());
+        $customer        = $customer ?: Frontend::getCustomer();
         $discounts       = [];
-        $maxDiscount     = 0;
-        $cacheID         = 'checkCategoryDiscount' . $customerGroupID;
+        $maxDiscount     = 0.0;
+        $cacheID         = 'checkCategoryDiscount' . $customerGroupId;
         if (!Shop::has($cacheID)) {
             Shop::set(
                 $cacheID,
@@ -5367,43 +5370,59 @@ class Artikel implements RoutableInterface
                         FROM tartikelkategorierabatt
                         WHERE kKundengruppe = :cgid',
                     'cnt',
-                    ['cgid' => $customerGroupID]
+                    ['cgid' => $customerGroupId]
                 ) > 0
             );
         }
         // Existiert für diese Kundengruppe ein Kategorierabatt?
         if (Shop::get($cacheID)) {
-            if ($this->kEigenschaftKombi > 0) {
-                $categoryDiscount = $this->getDB()->select(
-                    'tartikelkategorierabatt',
-                    'kArtikel',
-                    $this->kVaterArtikel,
-                    'kKundengruppe',
-                    $customerGroupID
-                );
-            } else {
-                $categoryDiscount = $this->getDB()->select(
-                    'tartikelkategorierabatt',
-                    'kArtikel',
-                    $productID,
-                    'kKundengruppe',
-                    $customerGroupID
-                );
+            $categoryDiscount = $this->getDB()->getSingleObject(
+                'SELECT MAX(GREATEST(
+                        COALESCE(category_customerdiscount.discount, 0),
+                        COALESCE(tartikelkategorierabatt.fRabatt, 0))
+                        ) AS discount
+                    FROM tkategorieartikel
+                    LEFT JOIN category_customerdiscount ON category_customerdiscount.customerId = :customerId
+                        AND tkategorieartikel.kKategorie = category_customerdiscount.categoryId
+                    LEFT JOIN tartikelkategorierabatt ON tkategorieartikel.kArtikel = tartikelkategorierabatt.kArtikel
+                        AND tkategorieartikel.kKategorie = tartikelkategorierabatt.kKategorie
+                        AND tartikelkategorierabatt.kKundengruppe = :customerGroupId
+                    WHERE tkategorieartikel.kArtikel = :productId',
+                [
+                    'customerId'      => $customer->getID(),
+                    'customerGroupId' => $customerGroupId,
+                    'productId'       => $this->kEigenschaftKombi > 0 ? $this->kVaterArtikel : $productId,
+                ]
+            );
+            if ($categoryDiscount !== null && (float)$categoryDiscount->discount > 0.0) {
+                $discounts[] = (float)$categoryDiscount->discount;
             }
-            if ($categoryDiscount !== null && $categoryDiscount->kArtikel > 0) {
-                $discounts[] = $categoryDiscount->fRabatt;
+        } elseif ($customer->getID() > 0) {
+            // Existiert für den Kunden ein individueller Kategorierabatt
+            $categoryDiscount = $this->getDB()->getSingleObject(
+                'SELECT discount
+                    FROM tkategorieartikel
+                    INNER JOIN category_customerdiscount ON category_customerdiscount.customerId = :customerId
+                        AND tkategorieartikel.kKategorie = category_customerdiscount.categoryId
+                    WHERE tkategorieartikel.kArtikel = :productId',
+                [
+                    'customerId' => $customer->getID(),
+                    'productId'  => $this->kEigenschaftKombi > 0 ? $this->kVaterArtikel : $productId,
+                ]
+            );
+            if ($categoryDiscount !== null && (float)$categoryDiscount->discount > 0.0) {
+                $discounts[] = (float)$categoryDiscount->discount;
             }
         }
         // Existiert für diese Kundengruppe ein Rabatt?
-        $customerGroup = $this->customerGroup->getID() === $customerGroupID
+        $customerGroup = $this->customerGroup->getID() === $customerGroupId
             ? $this->customerGroup
-            : new CustomerGroup($customerGroupID);
-        if ($customerGroup->getDiscount() != 0) {
+            : new CustomerGroup($customerGroupId);
+        if ($customerGroup->getDiscount() !== 0.0) {
             $discounts[] = $customerGroup->getDiscount();
         }
         // Existiert für diesen Kunden ein Rabatt?
-        $customer = Frontend::getCustomer();
-        if ($customer->getID() > 0 && $customer->fRabatt != 0) {
+        if ($customer->fRabatt !== 0.0 && $customer->getID() > 0) {
             $discounts[] = $customer->fRabatt;
         }
         // Maximalen Rabatt setzen

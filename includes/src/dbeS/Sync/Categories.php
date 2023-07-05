@@ -30,6 +30,8 @@ final class Categories extends AbstractSync
             }
             if (\str_contains($file, 'katdel.xml')) {
                 $this->handleDeletes($xml);
+            } elseif (\str_contains($file, 'customer_discount.xml')) {
+                $this->handleCustomerDiscount($xml);
             } else {
                 $categoryIDs[] = $this->handleInserts($xml);
             }
@@ -136,6 +138,29 @@ final class Categories extends AbstractSync
         $this->setAttributes($xml, $category->kKategorie);
 
         return $category->kKategorie;
+    }
+
+    /**
+     * @param array $xml
+     * @return void
+     */
+    private function handleCustomerDiscount(array $xml): void
+    {
+        $catId = (int)($xml['tkategorie attr']['kKategorie'] ?? 0);
+        if ($catId <= 0) {
+            $this->logger->error('kKategorie fehlt! XML: ' . \print_r($xml, true));
+
+            return;
+        }
+
+        $customerDiscounts = $this->mapper->mapArray($xml['tkategorie'], 'category_userdiscount', 'mCustomerDiscount');
+        foreach ($customerDiscounts as $customerDiscount) {
+            if (isset($customerDiscount->delete) || (float)$customerDiscount->discount === 0.0) {
+                $this->deleteCustomerDiscount($catId, (int)$customerDiscount->kKunde);
+            } else {
+                $this->saveCustomerDiscount($catId, (int)$customerDiscount->kKunde, (float)$customerDiscount->discount);
+            }
+        }
     }
 
     /**
@@ -369,5 +394,33 @@ final class Categories extends AbstractSync
                     AND tsicht.kKategorie IS NULL',
             ['categoryID' => $categoryID]
         );
+    }
+
+    /**
+     * @param int $categoryId
+     * @param int $customerId
+     * @return void
+     */
+    private function deleteCustomerDiscount(int $categoryId, int $customerId): void
+    {
+        $this->db->delete('category_customerdiscount', ['categoryId', 'customerId'], [$categoryId, $customerId]);
+    }
+
+    /**
+     * @param int   $categoryId
+     * @param int   $customerId
+     * @param float $discount
+     * @return void
+     */
+    private function saveCustomerDiscount(int $categoryId, int $customerId, float $discount): void
+    {
+        $this->db->upsert('category_customerdiscount', (object)[
+            'categoryId' => $categoryId,
+            'customerId' => $customerId,
+            'discount'   => $discount,
+        ], [
+            'categoryId',
+            'customerId'
+        ]);
     }
 }

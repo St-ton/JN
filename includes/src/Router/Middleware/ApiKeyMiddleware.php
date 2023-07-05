@@ -6,6 +6,7 @@ use Exception;
 use JTL\DB\DbInterface;
 use JTL\REST\Models\ApiKeyModel;
 use JTL\REST\Permissions;
+use JTL\Router\Exception\PermissionException;
 use JTL\Shop;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
@@ -37,12 +38,16 @@ class ApiKeyMiddleware implements MiddlewareInterface
             return false;
         }
         try {
-            $model = ApiKeyModel::loadByAttributes(['key' => $key], $this->db);
-
-            return (new Permissions($model->getPermissions()))->methodAllowed($request->getMethod());
+            $model   = ApiKeyModel::loadByAttributes(['key' => $key], $this->db);
+            $allowed = (new Permissions($model->getPermissions()))->methodAllowed($request->getMethod());
         } catch (Exception) {
-            return false;
+            $allowed = false;
         }
+        if ($allowed === false) {
+            throw new PermissionException('No permissions for this operation');
+        }
+
+        return true;
     }
 
     /**
@@ -50,9 +55,14 @@ class ApiKeyMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        if (!$this->validateApiKey($request)) {
-            return new JsonResponse('Invalid api key', 403);
+        try {
+            if (!$this->validateApiKey($request)) {
+                return new JsonResponse('Invalid api key', 403);
+            }
+        } catch (PermissionException $e) {
+            return new JsonResponse($e->getMessage(), 403);
         }
+
         return $handler->handle($request);
     }
 }

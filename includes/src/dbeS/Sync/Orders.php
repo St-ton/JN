@@ -145,10 +145,12 @@ final class Orders extends AbstractSync
         if (\is_numeric($source)) {
             $source = [$source];
         }
+        $passwordService = Shop::Container()->getPasswordService();
+        $mailer          = Shop::Container()->get(Mailer::class);
         foreach (\array_filter(\array_map('\intval', $source)) as $orderID) {
             $module   = $this->getPaymentMethod($orderID);
-            $tmpOrder = new Bestellung($orderID);
-            $customer = new Customer($tmpOrder->kKunde);
+            $tmpOrder = new Bestellung($orderID, false, $this->db);
+            $customer = new Customer($tmpOrder->kKunde, $passwordService, $this->db);
             $tmpOrder->fuelleBestellung();
             if ($module) {
                 $module->cancelOrder($orderID);
@@ -158,8 +160,7 @@ final class Orders extends AbstractSync
                     $data->tkunde      = $customer;
                     $data->tbestellung = $tmpOrder;
 
-                    $mailer = Shop::Container()->get(Mailer::class);
-                    $mail   = new Mail();
+                    $mail = new Mail();
                     $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_BESTELLUNG_STORNO, $data));
                 }
                 $this->db->update(
@@ -186,21 +187,22 @@ final class Orders extends AbstractSync
         if (\is_numeric($source)) {
             $source = [$source];
         }
+        $passwordService = Shop::Container()->getPasswordService();
+        $mailer          = Shop::Container()->get(Mailer::class);
         foreach (\array_filter(\array_map('\intval', $source)) as $orderID) {
             $module = $this->getPaymentMethod($orderID);
             if ($module) {
                 $module->reactivateOrder($orderID);
             } else {
-                $tmpOrder = new Bestellung($orderID);
-                $customer = new Customer($tmpOrder->kKunde);
+                $tmpOrder = new Bestellung($orderID, false, $this->db);
+                $customer = new Customer($tmpOrder->kKunde, $passwordService, $this->db);
                 $tmpOrder->fuelleBestellung();
                 if (($tmpOrder->Zahlungsart->nMailSenden & \ZAHLUNGSART_MAIL_STORNO) && \strlen($customer->cMail) > 0) {
                     $data              = new stdClass();
                     $data->tkunde      = $customer;
                     $data->tbestellung = $tmpOrder;
 
-                    $mailer = Shop::Container()->get(Mailer::class);
-                    $mail   = new Mail();
+                    $mail = new Mail();
                     $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_BESTELLUNG_RESTORNO, $data));
                 }
                 $this->db->update(
@@ -471,7 +473,7 @@ final class Orders extends AbstractSync
             } else {
                 $data              = new stdClass();
                 $data->tkunde      = $customer;
-                $data->tbestellung = new Bestellung((int)$oldOrder->kBestellung, true);
+                $data->tbestellung = new Bestellung((int)$oldOrder->kBestellung, true, $this->db);
 
                 $mailer = Shop::Container()->get(Mailer::class);
                 $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_BESTELLUNG_AKTUALISIERT, $data));
@@ -587,7 +589,7 @@ final class Orders extends AbstractSync
         if (isset($order->dVersandt) && \strlen($order->dVersandt) > 0) {
             $state = \BESTELLUNG_STATUS_VERSANDT;
         }
-        $updatedOrder = new Bestellung($shopOrder->kBestellung, true);
+        $updatedOrder = new Bestellung($shopOrder->kBestellung, true, $this->db);
         if ((int)($order->nKomplettAusgeliefert ?? -1) === 0 && \count($updatedOrder->oLieferschein_arr) > 0) {
             $state = \BESTELLUNG_STATUS_TEILVERSANDT;
         }
@@ -657,7 +659,7 @@ final class Orders extends AbstractSync
 
         $this->db->update('tbestellung', 'kBestellung', $order->kBestellung, $upd);
 
-        return new Bestellung($shopOrder->kBestellung, true);
+        return new Bestellung($shopOrder->kBestellung, true, $this->db);
     }
 
     /**
@@ -731,7 +733,7 @@ final class Orders extends AbstractSync
             if ($module) {
                 $module->sendMail($order->kBestellung, \MAILTEMPLATE_BESTELLUNG_BEZAHLT);
             } else {
-                $updatedOrder = new Bestellung((int)$shopOrder->kBestellung, true);
+                $updatedOrder = new Bestellung((int)$shopOrder->kBestellung, true, $this->db);
                 if (($updatedOrder->Zahlungsart->nMailSenden & \ZAHLUNGSART_MAIL_EINGANG)
                     && \strlen($customer->cMail) > 0
                 ) {
@@ -752,14 +754,14 @@ final class Orders extends AbstractSync
      */
     private function handleSet(array $xml): void
     {
-        $orders = $this->mapper->mapArray($xml['tbestellungen'], 'tbestellung', 'mBestellung');
+        $orders  = $this->mapper->mapArray($xml['tbestellungen'], 'tbestellung', 'mBestellung');
+        $service = Shop::Container()->getPasswordService();
         foreach ($orders as $order) {
             $order->kBestellung = (int)$order->kBestellung;
             $shopOrder          = $this->getShopOrder($order->kBestellung);
             if ($shopOrder === null) {
                 continue;
             }
-
             $state = $this->getOrderState($shopOrder, $order);
             \executeHook(\HOOK_BESTELLUNGEN_XML_BESTELLSTATUS, [
                 'status'      => &$state,
@@ -775,11 +777,11 @@ final class Orders extends AbstractSync
                     ['oid' => $order->kBestellung]
                 );
                 if ($tmp !== null) {
-                    $customer = new Customer((int)$tmp->kKunde);
+                    $customer = new Customer((int)$tmp->kKunde, $service, $this->db);
                 }
             }
             if ($customer === null) {
-                $customer = new Customer($shopOrder->kKunde);
+                $customer = new Customer($shopOrder->kKunde, $service, $this->db);
             }
             $this->sendStatusMail($updatedOrder, $shopOrder, $state, $customer);
             $this->sendPaymentMail($shopOrder, $order, $customer);

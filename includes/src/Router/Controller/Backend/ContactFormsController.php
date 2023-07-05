@@ -3,6 +3,7 @@
 namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\Permissions;
+use JTL\Customer\CustomerGroup;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -226,8 +227,8 @@ class ContactFormsController extends AbstractBackendController
                     if (!\is_numeric($customerGroupID)) {
                         continue;
                     }
-                    $kndgrp  = $this->db->select('tkundengruppe', 'kKundengruppe', (int)$customerGroupID);
-                    $groups .= ' ' . ($kndgrp->cName ?? '');
+                    $kndgrp  = new CustomerGroup((int)$customerGroupID, $this->db);
+                    $groups .= ' ' . ($kndgrp->getName() ?? '');
                 }
             }
             $subject->Kundengruppen = $groups;

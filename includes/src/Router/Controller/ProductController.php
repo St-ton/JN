@@ -215,7 +215,7 @@ class ProductController extends AbstractController
             $this->state->productID = $this->state->childProductID > 0
                 ? $this->state->childProductID
                 : $this->currentProduct->kArtikel;
-            $priceHistory           = new Preisverlauf();
+            $priceHistory           = new Preisverlauf(0, $this->db, $this->cache);
             $priceHistory           = $priceHistory->gibPreisverlauf(
                 $this->state->productID,
                 $this->currentProduct->Preise->kKundengruppe,

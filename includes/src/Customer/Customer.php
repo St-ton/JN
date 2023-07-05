@@ -274,18 +274,17 @@ class Customer
 
     /**
      * Customer constructor.
-     * @param int|null $id
+     * @param int|null                      $id
      * @param PasswordServiceInterface|null $passwordService
-     * @param DbInterface|null $db
+     * @param DbInterface|null              $db
      */
     public function __construct(
-        int $id = null,
+        ?int                              $id = null,
         private ?PasswordServiceInterface $passwordService = null,
-        private ?DbInterface $db = null
+        private ?DbInterface              $db = null
     ) {
         $this->passwordService = $passwordService ?? Shop::Container()->getPasswordService();
         $this->db              = $db ?? Shop::Container()->getDB();
-
         if ($id > 0) {
             $this->loadFromDB($id);
         }
@@ -703,8 +702,8 @@ class Customer
         $this->cAnredeLocalized   = self::mapSalutation($this->cAnrede, $this->kSprache);
         $this->cGuthabenLocalized = $this->gibGuthabenLocalized();
         $this->dErstellt_DE       = $this->dErstellt !== null
-                ? \date_format(\date_create($this->dErstellt), 'd.m.Y')
-                : null;
+            ? \date_format(\date_create($this->dErstellt), 'd.m.Y')
+            : null;
 
         return $return;
     }
@@ -978,9 +977,9 @@ class Customer
      */
     public function deleteAccount(
         string $issuerType,
-        int $issuerID,
-        bool $force = false,
-        bool $confirmationMail = false
+        int    $issuerID,
+        bool   $force = false,
+        bool   $confirmationMail = false
     ): int {
         $customerID = $this->getID();
         if (empty($customerID)) {

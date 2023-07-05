@@ -31,7 +31,7 @@ class TestHydrator extends DefaultsHydrator
         $langID        = $language->getId();
         $msg           = $this->getMessage();
         $customerBonus = $this->getBonus();
-        $customerGroup = (new CustomerGroup())->loadDefaultGroup();
+        $customerGroup = (new CustomerGroup(0, $this->db))->loadDefaultGroup();
         $order         = $this->getOrder($langID);
         $customer      = $this->getCustomer($langID, $customerGroup->getID());
         $checkbox      = $this->getCheckbox();

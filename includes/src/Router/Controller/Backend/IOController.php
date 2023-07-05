@@ -566,7 +566,7 @@ class IOController extends AbstractBackendController
                 $surchargeZip->cPLZBis = $zipValidator->validateZip($area->getZIPTo());
             }
         }
-
+        /** @var ?ShippingSurcharge $zipMatchSurcharge */
         $zipMatchSurcharge = $shippingMethod->getShippingSurchargesForCountry($surcharge->getISO())
             ->first(static function (ShippingSurcharge $surchargeTMP) use ($surchargeZip): bool {
                 return ($surchargeTMP->hasZIPCode($surchargeZip->cPLZ)

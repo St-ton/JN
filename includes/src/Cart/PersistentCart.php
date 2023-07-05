@@ -121,12 +121,12 @@ class PersistentCart
             ) {
                 $idx    = $i;
                 $exists = true;
-                foreach ($properties as $oEigenschaftwerte) {
+                foreach ($properties as $property) {
                     // kEigenschaftsWert is not set when using free text variations
                     if (!$item->istEigenschaftEnthalten(
-                        $oEigenschaftwerte->kEigenschaft,
-                        $oEigenschaftwerte->kEigenschaftWert ?? null,
-                        $oEigenschaftwerte->cFreifeldWert ?? ''
+                        $property->kEigenschaft,
+                        $property->kEigenschaftWert ?? null,
+                        $property->cFreifeldWert ?? ''
                     )) {
                         $exists = false;
                         break;
@@ -308,6 +308,8 @@ class PersistentCart
         if (!isset($_SESSION['Steuersatz'])) {
             Tax::setTaxRates();
         }
+        $customerGroup = Frontend::getCustomerGroup();
+        $currency      = Frontend::getCurrency();
         // Hole alle Eigenschaften für eine Position
         foreach ($cartItems as $item) {
             $item->kWarenkorbPersPos = (int)$item->kWarenkorbPersPos;
@@ -347,7 +349,7 @@ class PersistentCart
                 );
             }
             if ($addProducts) {
-                $persItem->Artikel = new Artikel($this->db);
+                $persItem->Artikel = new Artikel($this->db, $customerGroup, $currency);
                 $persItem->Artikel->fuelleArtikel($persItem->kArtikel, $defaultOptions);
                 $persItem->cArtikelName = $persItem->Artikel->cName;
 
@@ -395,19 +397,19 @@ class PersistentCart
                         ) {
                             continue;
                         }
-                        foreach ($item->oWarenkorbPersPosEigenschaft_arr as $oWarenkorbPersPosEigenschaft) {
-                            if ($oWarenkorbPersPosEigenschaft->kEigenschaft !== $attribute->kEigenschaft) {
+                        foreach ($item->oWarenkorbPersPosEigenschaft_arr as $property) {
+                            if ($property->kEigenschaft !== $attribute->kEigenschaft) {
                                 continue;
                             }
                             $exists = $this->db->select(
                                 'teigenschaftwert',
                                 'kEigenschaftWert',
-                                $oWarenkorbPersPosEigenschaft->kEigenschaftWert,
+                                $property->kEigenschaftWert,
                                 'kEigenschaft',
                                 (int)$attribute->kEigenschaft
                             );
                             // Prüfe ob die Eigenschaft vorhanden ist
-                            if (!isset($exists->kEigenschaftWert) || !$exists->kEigenschaftWert) {
+                            if ($exists === null || !$exists->kEigenschaftWert) {
                                 $this->db->delete(
                                     'twarenkorbperspos',
                                     'kWarenkorbPersPos',

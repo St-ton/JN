@@ -293,7 +293,7 @@ class JSONAPI
                         AND `TABLE_NAME` = :tn',
                 [
                     'sma' => \DB_NAME,
-                    'tn' => $table
+                    'tn'  => $table
                 ]
             );
             $rows = [];

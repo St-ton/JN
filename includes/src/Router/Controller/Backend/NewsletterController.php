@@ -44,13 +44,8 @@ class NewsletterController extends AbstractBackendController
 
         $inactiveSearchSQL        = new SqlObject();
         $activeSearchSQL          = new SqlObject();
-        $cgID                     = $this->db->getSingleInt(
-            'SELECT kKundengruppe 
-                FROM tkundengruppe
-                WHERE cStandard = \'Y\'',
-            'kKundengruppe'
-        );
-        $_SESSION['Kundengruppe'] = new CustomerGroup($cgID);
+        $cgID                     = CustomerGroup::getDefaultGroupID(true);
+        $_SESSION['Kundengruppe'] = new CustomerGroup($cgID, $this->db);
         $instance                 = new Newsletter($this->db, $conf);
         $postData                 = Text::filterXSS($_POST);
         if (Form::validateToken()) {
@@ -375,8 +370,9 @@ class NewsletterController extends AbstractBackendController
                     LIMIT ' . $pagiInactive->getLimitSQL(),
                 $inactiveSearchSQL->getParams()
             );
+            $service            = Shop::Container()->getPasswordService();
             foreach ($inactiveRecipients as $recipient) {
-                $customer                = new Customer(isset($recipient->kKunde) ? (int)$recipient->kKunde : null);
+                $customer                = new Customer((int)($recipient->kKunde ?? 0), $service, $this->db);
                 $recipient->cNachname    = Text::filterXSS($customer->cNachname);
                 $recipient->newsVorname  = Text::filterXSS($recipient->newsVorname);
                 $recipient->newsNachname = Text::filterXSS($recipient->newsNachname);

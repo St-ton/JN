@@ -213,7 +213,7 @@ abstract class AbstractSync
         if ($product->kArtikel === null) {
             return;
         }
-        $campaign = new Campaign(\KAMPAGNE_INTERN_VERFUEGBARKEIT);
+        $campaign = new Campaign(\KAMPAGNE_INTERN_VERFUEGBARKEIT, $this->db);
         if ($campaign->kKampagne > 0) {
             $sep            = !\str_contains($product->cURL, '.php') ? '?' : '&';
             $product->cURL .= $sep . $campaign->cParameter . '=' . $campaign->cWert;

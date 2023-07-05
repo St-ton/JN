@@ -295,7 +295,7 @@ class Method implements MethodInterface
         ], (array)$payment);
         $this->db->insert('tzahlungseingang', $model);
 
-        executeHook(HOOK_PAYMENT_METHOD_ADDINCOMINGPAYMENT, ['oBestellung' => $order, 'oZahlungseingang' => $model]);
+        \executeHook(\HOOK_PAYMENT_METHOD_ADDINCOMINGPAYMENT, ['oBestellung' => $order, 'oZahlungseingang' => $model]);
 
         return $this;
     }
@@ -609,9 +609,9 @@ class Method implements MethodInterface
      */
     public function sendMail(int $orderID, string $type, $additional = null)
     {
-        $order = new Bestellung($orderID);
+        $order = new Bestellung($orderID, false, $this->db);
         $order->fuelleBestellung(false);
-        $customer = new Customer($order->kKunde);
+        $customer = new Customer($order->kKunde, null, $this->db);
         $data     = new stdClass();
         $mailer   = Shop::Container()->get(Mailer::class);
         $mail     = new Mail();

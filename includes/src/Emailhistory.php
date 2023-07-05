@@ -60,15 +60,15 @@ class Emailhistory
     /**
      * Emailhistory constructor.
      * @param null|int         $id
-     * @param null|object      $data
+     * @param null|stdClass    $data
      * @param null|DbInterface $db
      */
-    public function __construct(int $id = null, $data = null, DbInterface $db = null)
+    public function __construct(int $id = null, ?stdClass $data = null, DbInterface $db = null)
     {
         $this->db = $db ?? Shop::Container()->getDB();
         if ($id > 0) {
             $this->loadFromDB($id);
-        } elseif ($data !== null && \is_object($data)) {
+        } elseif ($data !== null) {
             foreach (\array_keys(\get_object_vars($data)) as $member) {
                 $methodName = 'set' . \mb_substr($member, 1);
                 if (\method_exists($this, $methodName)) {

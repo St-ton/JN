@@ -140,7 +140,7 @@ class Alert
             case self::TYPE_ERROR:
             case self::TYPE_WARNING:
                 $this->setDismissable(true)
-                     ->setIcon(self::ICON_WARNING);
+                    ->setIcon(self::ICON_WARNING);
                 break;
             case self::TYPE_INFO:
             case self::TYPE_NOTE:
@@ -148,7 +148,7 @@ class Alert
                 break;
             case self::TYPE_SUCCESS:
                 $this->setFadeOut(self::FADE_SLOW)
-                     ->setIcon(self::ICON_CHECK);
+                    ->setIcon(self::ICON_CHECK);
                 break;
             default:
                 break;

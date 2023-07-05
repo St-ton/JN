@@ -144,14 +144,14 @@ class SyncCronjob extends NetSyncHandler
     {
         $languageID = (int)($_SESSION['kSprache'] ?? 0);
         if (!$languageID) {
-            $tmp = $this->db->select('tsprache', 'cShopStandard', 'Y');
-            if ($tmp !== null && $tmp->kSprache > 0) {
-                $languageID = (int)$tmp->kSprache;
+            $tmp = LanguageHelper::getDefaultLanguage();
+            if ($tmp !== null && $tmp->getId() > 0) {
+                $languageID = $tmp->getId();
             } else {
                 return false;
             }
         }
-        $languages = Shop::Lang()->getAllLanguages(1);
+        $languages = LanguageHelper::getAllLanguages(1);
         $queues    = $this->db->getObjects(
             "SELECT texportformat.cName, texportformat.cDateiname, texportformatqueuebearbeitet.*,
             DATE_FORMAT(texportformatqueuebearbeitet.dZuletztGelaufen, '%d.%m.%Y %H:%i') AS dZuletztGelaufen_DE,

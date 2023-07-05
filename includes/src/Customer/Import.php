@@ -281,8 +281,9 @@ class Import
      */
     public function notifyCustomers(array $customerIds): void
     {
+        $service = Shop::Container()->getPasswordService();
         foreach ($customerIds as $customerId) {
-            $customer = new Customer($customerId);
+            $customer = new Customer($customerId, $service, $this->db);
             $this->notifyCustomer($customer);
         }
     }

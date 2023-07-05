@@ -942,7 +942,7 @@ class AccountController
      */
     private function viewOrder(int $customerID): string
     {
-        $order = new Bestellung(Request::verifyGPCDataInt('bestellung'), true);
+        $order = new Bestellung(Request::verifyGPCDataInt('bestellung'), true, $this->db);
         if ($order->kKunde === null || (int)$order->kKunde !== $customerID) {
             return 'login';
         }

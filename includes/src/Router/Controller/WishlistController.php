@@ -314,7 +314,7 @@ class WishlistController extends AbstractController
         $this->preRender();
 
         if ($wishlist->getID() > 0) {
-            $campaign = new Campaign(\KAMPAGNE_INTERN_OEFFENTL_WUNSCHZETTEL);
+            $campaign = new Campaign(\KAMPAGNE_INTERN_OEFFENTL_WUNSCHZETTEL, $this->db);
             if (isset($campaign->kKampagne, $campaign->cWert)
                 && \mb_convert_case($campaign->cWert, \MB_CASE_LOWER) ===
                 \strtolower(Request::verifyGPDataString($campaign->cParameter))

@@ -120,18 +120,19 @@ class Controller
                     }
                 }
             }
-            if (\class_exists($className)) {
-                /** @var AbstractWidget $instance */
-                $instance = new $className($this->smarty, $this->db, $widget->plugin);
-                if ($getAll
-                    || \in_array($instance->getPermission(), ['DASHBOARD_ALL', ''], true)
-                    || $this->account->permission($instance->getPermission())
-                ) {
-                    $widget->cContent = $instance->getContent();
-                    $widget->hasBody  = $instance->hasBody;
-                } else {
-                    unset($widgets[$key]);
-                }
+            if (!\class_exists($className)) {
+                continue;
+            }
+            /** @var AbstractWidget $instance */
+            $instance = new $className($this->smarty, $this->db, $widget->plugin);
+            if ($getAll
+                || \in_array($instance->getPermission(), ['DASHBOARD_ALL', ''], true)
+                || $this->account->permission($instance->getPermission())
+            ) {
+                $widget->cContent = $instance->getContent();
+                $widget->hasBody  = $instance->hasBody;
+            } else {
+                unset($widgets[$key]);
             }
         }
 

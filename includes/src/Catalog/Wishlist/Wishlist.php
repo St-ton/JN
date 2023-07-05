@@ -250,7 +250,7 @@ class Wishlist
         if ($exists) {
             $this->CWunschlistePos_arr[$index]->setQty($this->CWunschlistePos_arr[$index]->getQty() + $qty);
             $this->CWunschlistePos_arr[$index]->updateDB();
-            $kWunschlistePos = $this->CWunschlistePos_arr[$index]->getID();
+            $itemID = $this->CWunschlistePos_arr[$index]->getID();
         } else {
             $item = new WishlistItem(
                 $productID,
@@ -260,7 +260,7 @@ class Wishlist
             );
             $item->setDateAdded(\date('Y-m-d H:i:s'));
             $item->schreibeDB();
-            $kWunschlistePos = $item->getID();
+            $itemID = $item->getID();
             $item->erstellePosEigenschaften($attributes);
             $product = new Artikel();
             try {
@@ -274,7 +274,7 @@ class Wishlist
 
         \executeHook(\HOOK_WUNSCHLISTE_CLASS_FUEGEEIN);
 
-        return $kWunschlistePos;
+        return $itemID;
     }
 
     /**
@@ -748,20 +748,19 @@ class Wishlist
     public static function checkeParameters(): int
     {
         $urlID = (string)Text::filterXSS(Request::verifyGPDataString('wlid'));
-
-        if ($urlID !== '') {
-            $campaign = new Campaign(\KAMPAGNE_INTERN_OEFFENTL_WUNSCHZETTEL);
-            $id       = $campaign->kKampagne > 0
-                ? ($urlID . '&' . $campaign->cParameter . '=' . $campaign->cWert)
-                : $urlID;
-            $keys     = ['nOeffentlich', 'cURLID'];
-            $values   = [1, $id];
-            $wishList = Shop::Container()->getDB()
-                ->select('twunschliste', $keys, $values, null, null, null, null, false, 'kWunschliste');
-
-            if ($wishList !== null && $wishList->kWunschliste > 0) {
-                return (int)$wishList->kWunschliste;
-            }
+        if ($urlID === '') {
+            return 0;
+        }
+        $db       = Shop::Container()->getDB();
+        $campaign = new Campaign(\KAMPAGNE_INTERN_OEFFENTL_WUNSCHZETTEL, $db);
+        $id       = $campaign->kKampagne > 0
+            ? ($urlID . '&' . $campaign->cParameter . '=' . $campaign->cWert)
+            : $urlID;
+        $keys     = ['nOeffentlich', 'cURLID'];
+        $values   = [1, $id];
+        $wishList = $db->select('twunschliste', $keys, $values, null, null, null, null, false, 'kWunschliste');
+        if ($wishList !== null && $wishList->kWunschliste > 0) {
+            return (int)$wishList->kWunschliste;
         }
 
         return 0;
@@ -1295,7 +1294,7 @@ class Wishlist
     {
         if ($public === true) {
             $urlID    = \uniqid('', true);
-            $campaign = new Campaign(\KAMPAGNE_INTERN_OEFFENTL_WUNSCHZETTEL);
+            $campaign = new Campaign(\KAMPAGNE_INTERN_OEFFENTL_WUNSCHZETTEL, $this->db);
             if ($campaign->kKampagne > 0) {
                 $urlID .= '&' . $campaign->cParameter . '=' . $campaign->cWert;
             }
@@ -1329,15 +1328,16 @@ class Wishlist
      */
     public static function setPublic(int $id): string
     {
+        $db       = Shop::Container()->getDB();
         $urlID    = \uniqid('', true);
-        $campaign = new Campaign(\KAMPAGNE_INTERN_OEFFENTL_WUNSCHZETTEL);
+        $campaign = new Campaign(\KAMPAGNE_INTERN_OEFFENTL_WUNSCHZETTEL, $db);
         if ($campaign->kKampagne > 0) {
             $urlID .= '&' . $campaign->cParameter . '=' . $campaign->cWert;
         }
         $upd               = new stdClass();
         $upd->nOeffentlich = 1;
         $upd->cURLID       = $urlID;
-        Shop::Container()->getDB()->update('twunschliste', 'kWunschliste', $id, $upd);
+        $db->update('twunschliste', 'kWunschliste', $id, $upd);
         self::updateInSesssion($id);
 
         return $urlID;

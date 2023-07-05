@@ -22,7 +22,7 @@ final class SemVer extends AbstractItem
             Version::parse($baseNode['Version']);
             Version::parse($baseNode['MinShopVersion'] ?? $baseNode['ShopVersion']);
             Version::parse($baseNode['MaxShopVersion'] ?? '1.0.0');
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             return InstallCode::INVALID_VERSION_NUMBER;
         }
 

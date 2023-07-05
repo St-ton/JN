@@ -48,12 +48,12 @@ final class PluginValidator extends AbstractValidator
         if (isset($baseNode['MinShopVersion'])) {
             try {
                 $minShopVersion = Version::parse($baseNode['MinShopVersion']);
-            } catch (InvalidArgumentException $e) {
+            } catch (InvalidArgumentException) {
             }
         } elseif (isset($baseNode['ShopVersion'])) {
             try {
                 $minShopVersion = Version::parse($baseNode['ShopVersion']);
-            } catch (InvalidArgumentException $e) {
+            } catch (InvalidArgumentException) {
             }
         }
         if ($shopVersion === null || $minShopVersion === null || $minShopVersion->greaterThan($shopVersion)) {

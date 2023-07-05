@@ -2,6 +2,7 @@
 
 namespace JTL;
 
+use JTL\DB\DbInterface;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Customer\Visitor;
@@ -59,11 +60,12 @@ class Campaign
     public int $nInternal = 1;
 
     /**
-     * Kampagne constructor.
-     * @param int $id
+     * @param int              $id
+     * @param DbInterface|null $db
      */
-    public function __construct(int $id = 0)
+    public function __construct(int $id = 0, private ?DbInterface $db = null)
     {
+        $this->db = $this->db ?? Shop::Container()->getDB();
         if ($id > 0) {
             $this->loadFromDB($id);
         }
@@ -75,7 +77,7 @@ class Campaign
      */
     public function loadFromDB(int $id): self
     {
-        $data = Shop::Container()->getDB()->getSingleObject(
+        $data = $this->db->getSingleObject(
             "SELECT tkampagne.*, DATE_FORMAT(tkampagne.dErstellt, '%d.%m.%Y %H:%i:%s') AS dErstellt_DE
                 FROM tkampagne
                 WHERE tkampagne.kKampagne = :cid",
@@ -109,7 +111,7 @@ class Campaign
         $obj->nDynamisch = $this->nDynamisch;
         $obj->nAktiv     = $this->nAktiv;
         $obj->dErstellt  = $this->dErstellt;
-        $this->kKampagne = Shop::Container()->getDB()->insert('tkampagne', $obj);
+        $this->kKampagne = $this->db->insert('tkampagne', $obj);
         if (\mb_convert_case($this->dErstellt, \MB_CASE_LOWER) === 'now()') {
             $this->dErstellt = \date_format(\date_create(), 'Y-m-d H:i:s');
         }
@@ -132,7 +134,7 @@ class Campaign
         $obj->dErstellt  = $this->dErstellt;
         $obj->kKampagne  = $this->kKampagne;
 
-        $res = Shop::Container()->getDB()->update('tkampagne', 'kKampagne', $obj->kKampagne, $obj);
+        $res = $this->db->update('tkampagne', 'kKampagne', $obj->kKampagne, $obj);
         if (\mb_convert_case($this->dErstellt, \MB_CASE_LOWER) === 'now()') {
             $this->dErstellt = \date_format(\date_create(), 'Y-m-d H:i:s');
         }
@@ -150,7 +152,7 @@ class Campaign
             return false;
         }
         // only external campaigns are deletable
-        Shop::Container()->getDB()->queryPrepared(
+        $this->db->queryPrepared(
             'DELETE tkampagne, tkampagnevorgang
                 FROM tkampagne
                 LEFT JOIN tkampagnevorgang 
@@ -175,6 +177,12 @@ class Campaign
                 1,
                 '*, DATE_FORMAT(dErstellt, \'%d.%m.%Y %H:%i:%s\') AS dErstellt_DE'
             );
+            foreach ($campaigns as $campaign) {
+                $campaign->kKampagne  = (int)$campaign->kKampagne;
+                $campaign->nDynamisch = (int)$campaign->nDynamisch;
+                $campaign->nAktiv     = (int)$campaign->nAktiv;
+                $campaign->nInternal  = (int)$campaign->nInternal;
+            }
             Shop::Container()->getCache()->set($cacheID, $campaigns, [\CACHING_GROUP_CORE]);
         }
 
@@ -266,7 +274,7 @@ class Campaign
                 );
 
                 if (!isset($event->kKampagneVorgang)) {
-                    $campaign            = new self(\KAMPAGNE_INTERN_GOOGLE);
+                    $campaign            = new self(\KAMPAGNE_INTERN_GOOGLE, $db);
                     $event               = new stdClass();
                     $event->kKampagne    = \KAMPAGNE_INTERN_GOOGLE;
                     $event->kKampagneDef = \KAMPAGNE_DEF_HIT;

@@ -11,6 +11,7 @@ use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\Customer\Customer;
 use JTL\Customer\CustomerGroup;
+use JTL\DB\DbInterface;
 use JTL\Extensions\Download\Download;
 use JTL\Extensions\Upload\Upload;
 use JTL\Helpers\ShippingMethod;
@@ -381,12 +382,13 @@ class Bestellung
     public int $nLongestMaxDelivery = 0;
 
     /**
-     * Bestellung constructor.
-     * @param int  $id
-     * @param bool $init
+     * @param int              $id
+     * @param bool             $init
+     * @param DbInterface|null $db
      */
-    public function __construct(int $id = 0, bool $init = false)
+    public function __construct(int $id = 0, bool $init = false, private ?DbInterface $db = null)
     {
+        $this->db = $this->db ?? Shop::Container()->getDB();
         if ($id > 0) {
             $this->loadFromDB($id);
             if ($init) {
@@ -401,7 +403,7 @@ class Bestellung
      */
     public function loadFromDB(int $id): self
     {
-        $obj = Shop::Container()->getDB()->select('tbestellung', 'kBestellung', $id);
+        $obj = $this->db->select('tbestellung', 'kBestellung', $id);
         if ($obj !== null && $obj->kBestellung > 0) {
             $this->kBestellung          = (int)$obj->kBestellung;
             $this->kWarenkorb           = (int)$obj->kWarenkorb;
@@ -463,11 +465,10 @@ class Bestellung
             return $this;
         }
         $customer         = null;
-        $db               = Shop::Container()->getDB();
-        $this->Positionen = $db->selectAll(
+        $this->Positionen = $this->db->selectAll(
             'twarenkorbpos',
             'kWarenkorb',
-            (int)$this->kWarenkorb,
+            $this->kWarenkorb,
             '*',
             'kWarenkorbPos'
         );
@@ -500,20 +501,20 @@ class Bestellung
             }
         }
 
-        $orderState             = $db->select(
+        $orderState             = $this->db->select(
             'tbestellstatus',
             'kBestellung',
-            (int)$this->kBestellung
+            $this->kBestellung
         );
         $this->BestellstatusURL = Shop::Container()->getLinkService()->getStaticRoute('status.php')
             . '?uid=' . ($orderState->cUID ?? '');
-        $sum                    = $db->getSingleObject(
+        $sum                    = $this->db->getSingleObject(
             'SELECT SUM(((fPreis * fMwSt)/100 + fPreis) * nAnzahl) AS wert
                 FROM twarenkorbpos
                 WHERE kWarenkorb = :cid',
-            ['cid' => (int)$this->kWarenkorb]
+            ['cid' => $this->kWarenkorb]
         );
-        $date                   = $db->getSingleObject(
+        $date                   = $this->db->getSingleObject(
             "SELECT date_format(dVersandDatum,'%d.%m.%Y') AS dVersanddatum_de,
                 date_format(dBezahltDatum,'%d.%m.%Y') AS dBezahldatum_de,
                 date_format(dErstellt,'%d.%m.%Y %H:%i:%s') AS dErstelldatum_de,
@@ -521,9 +522,9 @@ class Bestellung
                 date_format(dBezahltDatum,'%D %M %Y') AS dBezahldatum_en,
                 date_format(dErstellt,'%D %M %Y') AS dErstelldatum_en
                 FROM tbestellung WHERE kBestellung = :oid",
-            ['oid' => (int)$this->kBestellung]
+            ['oid' => $this->kBestellung]
         );
-        if ($date !== null && \is_object($date)) {
+        if ($date !== null) {
             $this->dVersanddatum_de = $date->dVersanddatum_de;
             $this->dBezahldatum_de  = $date->dBezahldatum_de;
             $this->dErstelldatum_de = $date->dErstelldatum_de;
@@ -534,7 +535,7 @@ class Bestellung
         // Hole Netto- oder Bruttoeinstellung der Kundengruppe
         $nNettoPreis = false;
         if ($this->kBestellung > 0) {
-            $netOrderData = $db->getSingleObject(
+            $netOrderData = $this->db->getSingleObject(
                 'SELECT tkundengruppe.nNettoPreise
                     FROM tkundengruppe
                     JOIN tbestellung 
@@ -583,13 +584,13 @@ class Bestellung
         $defaultOptions           = Artikel::getDefaultOptions();
         $languageID               = Shop::getLanguageID();
         $customerGroupID          = $customer?->getGroupID() ?? 0;
-        $customerGroup            = new CustomerGroup($customerGroupID);
+        $customerGroup            = new CustomerGroup($customerGroupID, $this->db);
         if ($customerGroup->getID() === 0) {
             $customerGroup->loadDefaultGroup();
         }
         if (!$languageID) {
             $language             = LanguageHelper::getDefaultLanguage();
-            $languageID           = (int)$language->kSprache;
+            $languageID           = $language->getId();
             $_SESSION['kSprache'] = $languageID;
         }
         foreach ($this->Positionen as $item) {
@@ -620,38 +621,34 @@ class Bestellung
 
             if ($item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL) {
                 if ($initProduct) {
-                    $item->Artikel = (new Artikel($db, $customerGroup, $this->Waehrung))
+                    $item->Artikel = (new Artikel($this->db, $customerGroup, $this->Waehrung))
                         ->fuelleArtikel($item->kArtikel, $defaultOptions, $customerGroupID, $languageID);
                 }
-                if ($this->kBestellung > 0) {
-                    $this->oDownload_arr = Download::getDownloads(['kBestellung' => $this->kBestellung], $languageID);
-                    $this->oUpload_arr   = Upload::gibBestellungUploads($this->kBestellung);
-                }
                 if ($item->kWarenkorbPos > 0) {
-                    $item->WarenkorbPosEigenschaftArr = $db->selectAll(
+                    $item->WarenkorbPosEigenschaftArr = $this->db->selectAll(
                         'twarenkorbposeigenschaft',
                         'kWarenkorbPos',
                         (int)$item->kWarenkorbPos
                     );
                     foreach ($item->WarenkorbPosEigenschaftArr as $attribute) {
-                        if ($attribute->fAufpreis) {
-                            $attribute->cAufpreisLocalized[0] = Preise::getLocalizedPriceString(
-                                Tax::getGross(
-                                    $attribute->fAufpreis,
-                                    $item->fMwSt
-                                ),
-                                $this->Waehrung,
-                                $htmlCurrency
-                            );
-                            $attribute->cAufpreisLocalized[1] = Preise::getLocalizedPriceString(
-                                $attribute->fAufpreis,
-                                $this->Waehrung,
-                                $htmlCurrency
-                            );
+                        if (!$attribute->fAufpreis) {
+                            continue;
                         }
+                        $attribute->cAufpreisLocalized[0] = Preise::getLocalizedPriceString(
+                            Tax::getGross(
+                                $attribute->fAufpreis,
+                                $item->fMwSt
+                            ),
+                            $this->Waehrung,
+                            $htmlCurrency
+                        );
+                        $attribute->cAufpreisLocalized[1] = Preise::getLocalizedPriceString(
+                            $attribute->fAufpreis,
+                            $this->Waehrung,
+                            $htmlCurrency
+                        );
                     }
                 }
-
                 CartItem::setEstimatedDelivery(
                     $item,
                     $item->nLongestMinDelivery,
@@ -734,7 +731,10 @@ class Bestellung
             $item->bAusgeliefert       = false;
             $item->nOffenGesamt        = $item->nAnzahl;
         }
-
+        if ($this->kBestellung > 0) {
+            $this->oDownload_arr = Download::getDownloads(['kBestellung' => $this->kBestellung], $languageID);
+            $this->oUpload_arr   = Upload::gibBestellungUploads($this->kBestellung);
+        }
         $this->WarensummeLocalized[0]     = Preise::getLocalizedPriceString(
             $this->fGesamtsumme,
             $this->Waehrung,
@@ -745,6 +745,7 @@ class Bestellung
             $this->Waehrung,
             $htmlCurrency
         );
+        $this->oLieferschein_arr          = [];
         $this->fGesamtsummeNetto          = $summe + $this->fGuthaben;
         $this->fWarensummeKundenwaehrung  = ($this->fWarensumme + $this->fGuthaben) * $this->fWaehrungsFaktor;
         $this->fVersandKundenwaehrung     = $this->fVersand * $this->fWaehrungsFaktor;
@@ -752,85 +753,8 @@ class Bestellung
         $this->fGesamtsummeKundenwaehrung = CartHelper::roundOptional(
             $this->fWarensummeKundenwaehrung + $this->fVersandKundenwaehrung
         );
-
-        $sData                   = new stdClass();
-        $sData->cPLZ             = $this->oRechnungsadresse->cPLZ ?? ($this->Lieferadresse->cPLZ ?? '');
-        $this->oLieferschein_arr = [];
-        if ((int)$this->kBestellung > 0) {
-            $deliveryNotes = $db->selectAll(
-                'tlieferschein',
-                'kInetBestellung',
-                (int)$this->kBestellung,
-                'kLieferschein'
-            );
-            foreach ($deliveryNotes as $note) {
-                $note                = new Lieferschein((int)$note->kLieferschein, $sData);
-                $note->oPosition_arr = [];
-                /** @var Lieferscheinpos $lineItem */
-                foreach ($note->oLieferscheinPos_arr as $lineItem) {
-                    foreach ($this->Positionen as &$orderItem) {
-                        $orderItem->nPosTyp     = (int)$orderItem->nPosTyp;
-                        $orderItem->kBestellpos = (int)$orderItem->kBestellpos;
-                        if (\in_array(
-                            $orderItem->nPosTyp,
-                            [\C_WARENKORBPOS_TYP_ARTIKEL, \C_WARENKORBPOS_TYP_GRATISGESCHENK],
-                            true
-                        )
-                            && $lineItem->getBestellPos() === $orderItem->kBestellpos
-                        ) {
-                            $orderItem->kLieferschein_arr[]  = $note->getLieferschein();
-                            $orderItem->nAusgeliefert        = $lineItem->getAnzahl();
-                            $orderItem->nAusgeliefertGesamt += $orderItem->nAusgeliefert;
-                            $orderItem->nOffenGesamt        -= $orderItem->nAusgeliefert;
-                            $note->oPosition_arr[]           = &$orderItem;
-                            if (!isset($lineItem->oPosition) || !\is_object($lineItem->oPosition)) {
-                                $lineItem->oPosition = &$orderItem;
-                            }
-                            if ((int)$orderItem->nOffenGesamt === 0) {
-                                $orderItem->bAusgeliefert = true;
-                            }
-                        }
-                    }
-                    unset($orderItem);
-                    // Charge, MDH & Seriennummern
-                    if (isset($lineItem->oPosition) && \is_object($lineItem->oPosition)) {
-                        /** @var Lieferscheinposinfo $_lieferscheinPosInfo */
-                        foreach ($lineItem->oLieferscheinPosInfo_arr as $_lieferscheinPosInfo) {
-                            $mhd    = $_lieferscheinPosInfo->getMHD();
-                            $serial = $_lieferscheinPosInfo->getSeriennummer();
-                            $charge = $_lieferscheinPosInfo->getChargeNr();
-                            if (\mb_strlen($charge) > 0) {
-                                $lineItem->oPosition->cChargeNr = $charge;
-                            }
-                            if ($mhd !== null && \mb_strlen($mhd) > 0) {
-                                $lineItem->oPosition->dMHD    = $mhd;
-                                $lineItem->oPosition->dMHD_de = \date_format(\date_create($mhd), 'd.m.Y');
-                            }
-                            if (\mb_strlen($serial) > 0) {
-                                $lineItem->oPosition->cSeriennummer = $serial;
-                            }
-                        }
-                    }
-                }
-                $this->oLieferschein_arr[] = $note;
-            }
-            // Wenn Konfig-Vater, alle Kinder ueberpruefen
-            foreach ($this->oLieferschein_arr as $deliveryNote) {
-                foreach ($deliveryNote->oPosition_arr as $deliveryItem) {
-                    if ($deliveryItem->kKonfigitem === 0 && !empty($deliveryItem->cUnique)) {
-                        $bAlleAusgeliefert = true;
-                        foreach ($this->Positionen as $child) {
-                            if ($child->cUnique === $deliveryItem->cUnique
-                                && $child->kKonfigitem > 0
-                                && !$child->bAusgeliefert
-                            ) {
-                                $bAlleAusgeliefert = false;
-                            }
-                        }
-                        $deliveryItem->bAusgeliefert = $bAlleAusgeliefert;
-                    }
-                }
-            }
+        if ($this->kBestellung > 0) {
+            $this->addDeliveryNotes();
         }
         // Fallback for Non-Beta
         if ((int)$this->cStatus === \BESTELLUNG_STATUS_VERSANDT) {
@@ -840,35 +764,13 @@ class Bestellung
                 $item->nOffenGesamt        = 0;
             }
         }
-
         if (empty($this->oEstimatedDelivery->localized)) {
             $this->berechneEstimatedDelivery();
         }
-
         $this->OrderAttributes = [];
-        if ((int)$this->kBestellung > 0) {
-            $OrderAttributes = $db->selectAll(
-                'tbestellattribut',
-                'kbestellung',
-                (int)$this->kBestellung
-            );
-            foreach ($OrderAttributes as $attribute) {
-                $attr                   = new stdClass();
-                $attr->kBestellattribut = (int)$attribute->kBestellattribut;
-                $attr->kBestellung      = (int)$attribute->kBestellung;
-                $attr->cName            = $attribute->cName;
-                $attr->cValue           = $attribute->cValue;
-                if ($attribute->cName === 'Finanzierungskosten') {
-                    $attr->cValue = Preise::getLocalizedPriceString(
-                        \str_replace(',', '.', $attribute->cValue),
-                        $this->Waehrung,
-                        $htmlCurrency
-                    );
-                }
-                $this->OrderAttributes[] = $attr;
-            }
+        if ($this->kBestellung > 0) {
+            $this->addOrderAttributes($htmlCurrency);
         }
-
         $this->setKampagne();
 
         \executeHook(\HOOK_BESTELLUNG_CLASS_FUELLEBESTELLUNG, [
@@ -876,6 +778,115 @@ class Bestellung
         ]);
 
         return $this;
+    }
+
+    /**
+     * @param bool $htmlCurrency
+     * @return void
+     */
+    private function addOrderAttributes(bool $htmlCurrency = true): void
+    {
+        $orderAttributes = $this->db->selectAll(
+            'tbestellattribut',
+            'kbestellung',
+            $this->kBestellung
+        );
+        foreach ($orderAttributes as $data) {
+            $attr                   = new stdClass();
+            $attr->kBestellattribut = (int)$data->kBestellattribut;
+            $attr->kBestellung      = (int)$data->kBestellung;
+            $attr->cName            = $data->cName;
+            $attr->cValue           = $data->cValue;
+            if ($data->cName === 'Finanzierungskosten') {
+                $attr->cValue = Preise::getLocalizedPriceString(
+                    \str_replace(',', '.', $data->cValue),
+                    $this->Waehrung,
+                    $htmlCurrency
+                );
+            }
+            $this->OrderAttributes[] = $attr;
+        }
+    }
+
+    private function addDeliveryNotes(): void
+    {
+        $sData         = new stdClass();
+        $sData->cPLZ   = $this->oRechnungsadresse->cPLZ ?? ($this->Lieferadresse->cPLZ ?? '');
+        $deliveryNotes = $this->db->selectAll(
+            'tlieferschein',
+            'kInetBestellung',
+            $this->kBestellung,
+            'kLieferschein'
+        );
+        foreach ($deliveryNotes as $note) {
+            $note                = new Lieferschein((int)$note->kLieferschein, $sData);
+            $note->oPosition_arr = [];
+            /** @var Lieferscheinpos $lineItem */
+            foreach ($note->oLieferscheinPos_arr as $lineItem) {
+                foreach ($this->Positionen as &$orderItem) {
+                    $orderItem->nPosTyp     = (int)$orderItem->nPosTyp;
+                    $orderItem->kBestellpos = (int)$orderItem->kBestellpos;
+                    if (\in_array(
+                            $orderItem->nPosTyp,
+                            [\C_WARENKORBPOS_TYP_ARTIKEL, \C_WARENKORBPOS_TYP_GRATISGESCHENK],
+                            true
+                        )
+                        && $lineItem->getBestellPos() === $orderItem->kBestellpos
+                    ) {
+                        $orderItem->kLieferschein_arr[]  = $note->getLieferschein();
+                        $orderItem->nAusgeliefert        = $lineItem->getAnzahl();
+                        $orderItem->nAusgeliefertGesamt += $orderItem->nAusgeliefert;
+                        $orderItem->nOffenGesamt        -= $orderItem->nAusgeliefert;
+                        $note->oPosition_arr[]           = &$orderItem;
+                        if (!isset($lineItem->oPosition) || !\is_object($lineItem->oPosition)) {
+                            $lineItem->oPosition = &$orderItem;
+                        }
+                        if ((int)$orderItem->nOffenGesamt === 0) {
+                            $orderItem->bAusgeliefert = true;
+                        }
+                    }
+                }
+                unset($orderItem);
+                // Charge, MDH & Seriennummern
+                if (isset($lineItem->oPosition) && \is_object($lineItem->oPosition)) {
+                    foreach ($lineItem->oLieferscheinPosInfo_arr as $info) {
+                        $mhd    = $info->getMHD();
+                        $serial = $info->getSeriennummer();
+                        $charge = $info->getChargeNr();
+                        if (\mb_strlen($charge) > 0) {
+                            $lineItem->oPosition->cChargeNr = $charge;
+                        }
+                        if ($mhd !== null && \mb_strlen($mhd) > 0) {
+                            $lineItem->oPosition->dMHD    = $mhd;
+                            $lineItem->oPosition->dMHD_de = \date_format(\date_create($mhd), 'd.m.Y');
+                        }
+                        if (\mb_strlen($serial) > 0) {
+                            $lineItem->oPosition->cSeriennummer = $serial;
+                        }
+                    }
+                }
+            }
+            $this->oLieferschein_arr[] = $note;
+        }
+        // Wenn Konfig-Vater, alle Kinder ueberpruefen
+        foreach ($this->oLieferschein_arr as $deliveryNote) {
+            foreach ($deliveryNote->oPosition_arr as $deliveryItem) {
+                if ($deliveryItem->kKonfigitem !== 0 || empty($deliveryItem->cUnique)) {
+                    continue;
+                }
+                $allDelivered = true;
+                foreach ($this->Positionen as $child) {
+                    if ($child->cUnique === $deliveryItem->cUnique
+                        && $child->kKonfigitem > 0
+                        && !$child->bAusgeliefert
+                    ) {
+                        $allDelivered = false;
+                        break;
+                    }
+                }
+                $deliveryItem->bAusgeliefert = $allDelivered;
+            }
+        }
     }
 
     /**
@@ -930,7 +941,7 @@ class Bestellung
         $obj->fWaehrungsFaktor     = $this->fWaehrungsFaktor;
         $obj->cPUIZahlungsdaten    = $this->cPUIZahlungsdaten;
 
-        $this->kBestellung = Shop::Container()->getDB()->insert('tbestellung', $obj);
+        $this->kBestellung = $this->db->insert('tbestellung', $obj);
 
         return $this->kBestellung;
     }
@@ -972,7 +983,7 @@ class Bestellung
         $obj->dErstellt            = $this->dErstellt;
         $obj->cPUIZahlungsdaten    = $this->cPUIZahlungsdaten;
 
-        return Shop::Container()->getDB()->update('tbestellung', 'kBestellung', $obj->kBestellung, $obj);
+        return $this->db->update('tbestellung', 'kBestellung', $obj->kBestellung, $obj);
     }
 
     /**
@@ -982,9 +993,9 @@ class Bestellung
      * @return array
      */
     public static function getOrderPositions(
-        int $orderID,
+        int  $orderID,
         bool $assoc = true,
-        int $posType = \C_WARENKORBPOS_TYP_ARTIKEL
+        int  $posType = \C_WARENKORBPOS_TYP_ARTIKEL
     ): array {
         $items = [];
         if ($orderID <= 0) {
@@ -1129,7 +1140,7 @@ class Bestellung
 
     public function setKampagne(): void
     {
-        $this->oKampagne = Shop::Container()->getDB()->getSingleObject(
+        $this->oKampagne = $this->db->getSingleObject(
             'SELECT tkampagne.kKampagne, tkampagne.cName, tkampagne.cParameter, tkampagnevorgang.dErstellt,
                     tkampagnevorgang.kKey AS kBestellung, tkampagnevorgang.cParamWert AS cWert
                 FROM tkampagnevorgang
@@ -1158,7 +1169,7 @@ class Bestellung
             return new Collection();
         }
 
-        $result = Shop::Container()->getDB()->getCollection(
+        $result = $this->db->getCollection(
             'SELECT kZahlungseingang, cZahlungsanbieter, fBetrag, cISO, dZeit
                 FROM tzahlungseingang
                 WHERE kBestellung = :orderId

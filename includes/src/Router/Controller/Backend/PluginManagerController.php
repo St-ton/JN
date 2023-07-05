@@ -399,27 +399,27 @@ class PluginManagerController extends AbstractBackendController
         });
         foreach (Shop::Lang()->gibInstallierteSprachen() as $lang) {
             foreach (Helper::getLanguageVariables($pluginID) as $langVar) {
-                $kPluginSprachvariable = $langVar->kPluginSprachvariable;
-                $cSprachvariable       = $langVar->cName;
-                $iso                   = \mb_convert_case($lang->cISO, \MB_CASE_UPPER);
-                $idx                   = $kPluginSprachvariable . '_' . $iso;
+                $varID   = $langVar->kPluginSprachvariable;
+                $varName = $langVar->cName;
+                $iso     = \mb_convert_case($lang->cISO, \MB_CASE_UPPER);
+                $idx     = $varID . '_' . $iso;
                 if (!isset($_POST[$idx])) {
                     continue;
                 }
                 $this->db->delete(
                     'tpluginsprachvariablecustomsprache',
                     ['kPlugin', 'cSprachvariable', 'cISO'],
-                    [$pluginID, $cSprachvariable, $iso]
+                    [$pluginID, $varName, $iso]
                 );
                 $customLang                        = new stdClass();
                 $customLang->kPlugin               = $pluginID;
-                $customLang->cSprachvariable       = $cSprachvariable;
+                $customLang->cSprachvariable       = $varName;
                 $customLang->cISO                  = $iso;
-                $customLang->kPluginSprachvariable = $kPluginSprachvariable;
+                $customLang->kPluginSprachvariable = $varID;
                 $customLang->cName                 = $_POST[$idx];
                 $match                             = first(
                     select(
-                        $original[$kPluginSprachvariable],
+                        $original[$varID],
                         static function ($e) use ($customLang): bool {
                             return $e->cISO === $customLang->cISO;
                         }
@@ -430,12 +430,11 @@ class PluginManagerController extends AbstractBackendController
                 }
                 if ($match === null) {
                     $pluginLang                        = new stdClass();
-                    $pluginLang->kPluginSprachvariable = $kPluginSprachvariable;
+                    $pluginLang->kPluginSprachvariable = $varID;
                     $pluginLang->cISO                  = $iso;
                     $pluginLang->cName                 = '';
                     $this->db->insert('tpluginsprachvariablesprache', $pluginLang);
                 }
-
                 $this->db->insert('tpluginsprachvariablecustomsprache', $customLang);
             }
         }

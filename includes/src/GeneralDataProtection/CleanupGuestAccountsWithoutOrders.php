@@ -62,7 +62,7 @@ class CleanupGuestAccountsWithoutOrders extends Method implements MethodInterfac
         $workCount           = count($guestAccounts);
         $this->lastProductID = $workCount > 0 ? (int)$guestAccounts[$workCount - 1]->kKunde : 0;
         foreach ($guestAccounts as $guestAccount) {
-            $customer = new Customer((int)$guestAccount->kKunde);
+            $customer = new Customer((int)$guestAccount->kKunde, null, $this->db);
             $delRes   = $customer->deleteAccount(Journal::ISSUER_TYPE_APPLICATION, 0);
             if ($delRes === Customer::CUSTOMER_DELETE_DEACT ||
                 $delRes === Customer::CUSTOMER_DELETE_DONE) {

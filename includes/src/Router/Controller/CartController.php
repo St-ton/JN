@@ -202,7 +202,7 @@ class CartController extends PageController
             // Kupon darf nicht im leeren Warenkorb eingelöst werden
             return;
         }
-        $coupon            = new Kupon();
+        $coupon            = new Kupon(0, $this->db);
         $coupon            = $coupon->getByCode($_POST['Kuponcode']);
         $invalidCouponCode = 11;
         if ($coupon !== false && $coupon->kKupon > 0) {

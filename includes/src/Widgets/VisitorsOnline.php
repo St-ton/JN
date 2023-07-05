@@ -81,11 +81,9 @@ class VisitorsOnline extends AbstractWidget
         $info            = new stdClass();
         $info->nCustomer = 0;
         $info->nAll      = \count($visitors);
-        if ($info->nAll > 0) {
-            foreach ($visitors as $oVisitor) {
-                if ($oVisitor->kKunde > 0) {
-                    $info->nCustomer++;
-                }
+        foreach ($visitors as $visitor) {
+            if ($visitor->kKunde > 0) {
+                $info->nCustomer++;
             }
         }
         $info->nUnknown = $info->nAll - $info->nCustomer;

@@ -34,8 +34,8 @@ interface AlertServiceInterface
     public function addError(string $message, string $key, array $options = null): ?Alert;
 
     /**
-     * @param string $message
-     * @param string $key
+     * @param string     $message
+     * @param string     $key
      * @param array|null $options
      * @return Alert|null
      */
@@ -58,8 +58,8 @@ interface AlertServiceInterface
     public function addSuccess(string $message, string $key, array $options = null): ?Alert;
 
     /**
-     * @param string $message
-     * @param string $key
+     * @param string     $message
+     * @param string     $key
      * @param array|null $options
      * @return Alert|null
      */

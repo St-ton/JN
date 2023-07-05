@@ -104,13 +104,13 @@ class ReviewReminder
         $logger         = Shop::Container()->getLogService();
         foreach ($this->orders as $orderData) {
             $openReviews = [];
-            $order       = new Bestellung((int)$orderData->kBestellung);
+            $order       = new Bestellung((int)$orderData->kBestellung, false, $db);
             $order->fuelleBestellung(false);
-            $customer         = new Customer($order->kKunde ?? 0);
+            $customer         = new Customer($order->kKunde ?? 0, null, $db);
             $obj              = new stdClass();
             $obj->tkunde      = $customer;
             $obj->tbestellung = $order;
-            $customerGroup    = new CustomerGroup($customer->getGroupID());
+            $customerGroup    = new CustomerGroup($customer->getGroupID(), $db);
             foreach ($order->Positionen as $item) {
                 if ($item->kArtikel <= 0) {
                     continue;
@@ -201,17 +201,18 @@ class ReviewReminder
         $this->sqlPartCustomerGroups = '';
         if (\is_array($this->customerGroups) && \count($this->customerGroups) > 0) {
             foreach ($this->customerGroups as $i => $groupID) {
-                if (\is_numeric($groupID)) {
-                    if ($i > 0) {
-                        $this->sqlPartCustomerGroups .= ' OR tkunde.kKundengruppe = ' . (int)$groupID;
-                    } else {
-                        $this->sqlPartCustomerGroups .= ' tkunde.kKundengruppe = ' . (int)$groupID;
-                    }
+                if (!\is_numeric($groupID)) {
+                    continue;
+                }
+                if ($i > 0) {
+                    $this->sqlPartCustomerGroups .= ' OR tkunde.kKundengruppe = ' . (int)$groupID;
+                } else {
+                    $this->sqlPartCustomerGroups .= ' tkunde.kKundengruppe = ' . (int)$groupID;
                 }
             }
         } else {
             // Hole standard Kundengruppe
-            $defaultGroup = Shop::Container()->getDB()->select('tkundengruppe', 'cStandard', 'Y');
+            $defaultGroup = CustomerGroup::getDefault();
             if ($defaultGroup !== null && $defaultGroup->kKundengruppe > 0) {
                 $this->sqlPartCustomerGroups = ' tkunde.kKundengruppe = ' . (int)$defaultGroup->kKundengruppe;
             }

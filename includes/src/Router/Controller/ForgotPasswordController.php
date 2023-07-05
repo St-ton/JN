@@ -98,7 +98,7 @@ class ForgotPasswordController extends AbstractController
         if ($_POST['pw_new'] === $_POST['pw_new_confirm']) {
             $resetItem = $this->db->select('tpasswordreset', 'cKey', $_POST['fpwh']);
             if ($resetItem !== null && new DateTime($resetItem->dExpires) >= new DateTime()) {
-                $customer = new Customer((int)$resetItem->kKunde);
+                $customer = new Customer((int)$resetItem->kKunde, null, $this->db);
                 if ($customer->kKunde > 0 && $customer->cSperre !== 'Y') {
                     $customer->updatePassword($_POST['pw_new']);
                     $this->db->delete('tpasswordreset', 'kKunde', $customer->kKunde);
@@ -153,7 +153,7 @@ class ForgotPasswordController extends AbstractController
                 $hasError = true;
             } elseif ($customerID > 0 && $customerData !== null && $customerData->cSperre !== 'Y') {
                 $this->step = 'passwort versenden';
-                $customer   = new Customer($customerID);
+                $customer   = new Customer($customerID, null, $this->db);
                 $customer->prepareResetPassword();
                 $this->smarty->assign('Kunde', $customer);
             } elseif ($customerID > 0 && $customerData !== null && $customerData->cSperre === 'Y') {

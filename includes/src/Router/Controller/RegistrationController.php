@@ -109,7 +109,7 @@ class RegistrationController extends PageController
      * @former kundeSpeichern()
      * @since 5.2.0
      */
-    public function saveCustomer(array $post)
+    public function saveCustomer(array $post): array|int
     {
         unset($_SESSION['Lieferadresse'], $_SESSION['Versandart'], $_SESSION['Zahlungsart']);
         $conf = $this->config['global']['global_kundenkonto_aktiv'];
@@ -117,17 +117,13 @@ class RegistrationController extends PageController
         $cart->loescheSpezialPos(\C_WARENKORBPOS_TYP_VERSANDPOS)
             ->loescheSpezialPos(\C_WARENKORBPOS_TYP_ZAHLUNGSART);
 
-        $edit         = (int)$post['editRechnungsadresse'];
+        $edit         = (int)$post['editRechnungsadresse'] > 0;
         $this->step   = 'formular';
         $form         = new CustomerForm();
         $filteredPost = Text::filterXSS($post);
-        /* dependent on different contexts cPost_arr and cPost_var will be used synonymously
-        TODO: Remove duplicate assign in course of template refactoring */
-        $this->smarty->assign('cPost_arr', $filteredPost);
-        $this->smarty->assign('cPost_var', $filteredPost);
-        $missingData        = (!$edit)
-            ? $form->checkKundenFormular(true)
-            : $form->checkKundenFormular(true, false);
+        $this->smarty->assign('cPost_arr', $filteredPost)
+            ->assign('cPost_var', $filteredPost);
+        $missingData        = $form->checkKundenFormular(true, !$edit);
         $customerData       = $form->getCustomerData($post, true, false);
         $customerAttributes = $form->getCustomerAttributes($post);
         $checkbox           = new CheckBox(0, $this->db);
@@ -178,7 +174,7 @@ class RegistrationController extends PageController
                 // Update Kundenattribute
                 $customerAttributes->save();
 
-                $_SESSION['Kunde'] = new Customer($_SESSION['Kunde']->kKunde);
+                $_SESSION['Kunde'] = new Customer($_SESSION['Kunde']->kKunde, null, $this->db);
                 $_SESSION['Kunde']->getCustomerAttributes()->load($_SESSION['Kunde']->kKunde);
             } else {
                 $customerData->kKundengruppe     = $this->customerGroupID;
@@ -186,21 +182,22 @@ class RegistrationController extends PageController
                 $customerData->cAbgeholt         = 'N';
                 $customerData->cSperre           = 'N';
                 $customerData->cAktiv            = $conf === 'A' ? 'N' : 'Y';
-                $cPasswortKlartext               = $customerData->cPasswort;
-                $customerData->cPasswort         = Shop::Container()->getPasswordService()->hash($cPasswortKlartext);
+                $cleartextPassword               = $customerData->cPasswort;
+                $customerData->cPasswort         = Shop::Container()->getPasswordService()->hash($cleartextPassword);
                 $customerData->dErstellt         = 'NOW()';
                 $customerData->nRegistriert      = 1;
                 $customerData->angezeigtesLand   = LanguageHelper::getCountryCodeByCountryName($customerData->cLand);
-                $cLand                           = $customerData->cLand;
-                $customerData->cPasswortKlartext = $cPasswortKlartext;
+                $country                         = $customerData->cLand;
+                $customerData->cPasswortKlartext = $cleartextPassword;
                 $obj                             = new stdClass();
                 $obj->tkunde                     = $customerData;
 
                 $mailer = Shop::Container()->get(Mailer::class);
                 $mail   = new Mail();
+                $mail->setCustomerGroupID($this->customerGroupID);
                 $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_NEUKUNDENREGISTRIERUNG, $obj));
 
-                $customerData->cLand = $cLand;
+                $customerData->cLand = $country;
                 unset($customerData->cPasswortKlartext, $customerData->Anrede);
 
                 $customerData->kKunde = $customerData->insertInDB();
@@ -217,7 +214,7 @@ class RegistrationController extends PageController
                 $customerAttributes->setCustomerID($customerData->kKunde);
                 $customerAttributes->save();
                 if ($conf !== 'A') {
-                    $_SESSION['Kunde'] = new Customer($customerData->kKunde);
+                    $_SESSION['Kunde'] = new Customer($customerData->kKunde, null, $this->db);
                     $_SESSION['Kunde']->getCustomerAttributes()->load($customerData->kKunde);
                 } else {
                     $this->step = 'formular eingegangen';
@@ -228,35 +225,29 @@ class RegistrationController extends PageController
                 $cart->gibGesamtsummeWarenLocalized();
             }
             if ((int)$post['checkout'] === 1) {
-                //weiterleitung zum chekout
                 \header('Location: ' . Shop::Container()->getLinkService()
-                        ->getStaticRoute('bestellvorgang.php', true) . '?reg=1', true, 303);
+                        ->getStaticRoute('bestellvorgang.php') . '?reg=1', true, 303);
                 exit;
             }
             if (isset($post['ajaxcheckout_return']) && (int)$post['ajaxcheckout_return'] === 1) {
                 return 1;
             }
             if ($conf !== 'A') {
-                //weiterleitung zu mein Konto
                 \header('Location: ' . Shop::Container()->getLinkService()
-                        ->getStaticRoute('jtl.php', true) . '?reg=1', true, 303);
+                        ->getStaticRoute('jtl.php') . '?reg=1', true, 303);
                 exit;
             }
         } else {
             $customerData->getCustomerAttributes()->assign($customerAttributes);
             if ((int)$post['checkout'] === 1) {
-                //weiterleitung zum checkout
                 $_SESSION['checkout.register']        = 1;
                 $_SESSION['checkout.fehlendeAngaben'] = $missingData;
                 $_SESSION['checkout.cPost_arr']       = $post;
-
-                //keep shipping address on error
                 if (isset($post['register']['shipping_address'])) {
                     $_SESSION['Lieferadresse'] = Lieferadresse::createFromPost($post['register']['shipping_address']);
                 }
-
                 \header('Location: ' . Shop::Container()->getLinkService()
-                        ->getStaticRoute('bestellvorgang.php', true) . '?reg=1', true, 303);
+                        ->getStaticRoute('bestellvorgang.php') . '?reg=1', true, 303);
                 exit;
             }
             $this->smarty->assign('fehlendeAngaben', $missingData);

@@ -41,7 +41,7 @@ interface CountryServiceInterface
     public function getIsoByCountryName(string $countryName): ?string;
 
     /**
-     * @param bool $getEU
+     * @param bool  $getEU
      * @param array $selectedCountries
      * @return array
      */

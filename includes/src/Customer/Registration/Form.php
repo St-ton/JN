@@ -69,13 +69,14 @@ class Form
         $customerID = Frontend::getCustomer()->getID();
         $customer   = new Customer($customerID);
         foreach ($mapping as $external => $internal) {
-            if (isset($post[$external])) {
-                $val = $external === 'pass' ? $post[$external] : Text::filterXSS($post[$external]);
-                if ($htmlentities === true) {
-                    $val = Text::htmlentities($val);
-                }
-                $customer->$internal = $val;
+            if (!isset($post[$external])) {
+                continue;
             }
+            $val = $external === 'pass' ? $post[$external] : Text::filterXSS($post[$external]);
+            if ($htmlentities === true) {
+                $val = Text::htmlentities($val);
+            }
+            $customer->$internal = $val;
         }
 
         $customer->cMail                 = \mb_convert_case($customer->cMail, \MB_CASE_LOWER);
@@ -151,7 +152,6 @@ class Form
      * @param array         $post
      * @param int|null      $customerGroupId
      * @param CheckBox|null $checkBox
-     *
      * @return array
      */
     public function getMissingInput(array $post, ?int $customerGroupId = null, ?CheckBox $checkBox = null): array

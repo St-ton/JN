@@ -11,6 +11,7 @@ use JTL\Helpers\Request;
 use JTL\Helpers\Seo;
 use JTL\Helpers\Text;
 use JTL\Pagination\Pagination;
+use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -333,12 +334,13 @@ class ActivationController extends AbstractBackendController
                 LEFT JOIN tkunde 
                     ON tkunde.kKunde = tnewskommentar.kKunde
                 WHERE tnewskommentar.nAktiv = 0
-                    AND t.languageID = :lid" .
-                    $searchSQL->getWhere() . $sql,
+                    AND t.languageID = :lid"
+            . $searchSQL->getWhere() . $sql,
             $searchSQL->getParams()
         );
+        $service      = Shop::Container()->getPasswordService();
         foreach ($newsComments as $comment) {
-            $customer           = new Customer(isset($comment->kKunde) ? (int)$comment->kKunde : null);
+            $customer           = new Customer((int)($comment->kKunde ?? 0), $service, $this->db);
             $comment->cNachname = $customer->cNachname;
         }
 
@@ -407,25 +409,26 @@ class ActivationController extends AbstractBackendController
                     WHERE kSuchanfrage = :qid',
                 ['qid' => $qid]
             );
-            if ($query !== null && $query->kSuchanfrage > 0) {
-                $db->delete(
-                    'tseo',
-                    ['cKey', 'kKey', 'kSprache'],
-                    ['kSuchanfrage', $qid, (int)$query->kSprache]
-                );
-                $seo           = new stdClass();
-                $seo->cSeo     = Seo::checkSeo(Seo::getSeo($query->cSuche));
-                $seo->cKey     = 'kSuchanfrage';
-                $seo->kKey     = $qid;
-                $seo->kSprache = (int)$query->kSprache;
-                $db->insert('tseo', $seo);
-                $db->update(
-                    'tsuchanfrage',
-                    'kSuchanfrage',
-                    $qid,
-                    (object)['nAktiv' => 1, 'cSeo' => $seo->cSeo]
-                );
+            if ($query === null || $query->kSuchanfrage <= 0) {
+                continue;
             }
+            $db->delete(
+                'tseo',
+                ['cKey', 'kKey', 'kSprache'],
+                ['kSuchanfrage', $qid, (int)$query->kSprache]
+            );
+            $seo           = new stdClass();
+            $seo->cSeo     = Seo::checkSeo(Seo::getSeo($query->cSuche));
+            $seo->cKey     = 'kSuchanfrage';
+            $seo->kKey     = $qid;
+            $seo->kSprache = (int)$query->kSprache;
+            $db->insert('tseo', $seo);
+            $db->update(
+                'tsuchanfrage',
+                'kSuchanfrage',
+                $qid,
+                (object)['nAktiv' => 1, 'cSeo' => $seo->cSeo]
+            );
         }
 
         return true;

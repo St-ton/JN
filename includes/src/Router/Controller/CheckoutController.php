@@ -199,7 +199,7 @@ class CheckoutController extends RegistrationController
                     $shippingID = Order::getLastOrderRefIDs($this->customer->getID())->kLieferadresse;
                 }
                 $form->pruefeLieferdaten([
-                    'kLieferadresse' => max($shippingID, 0)
+                    'kLieferadresse' => \max($shippingID, 0)
                 ]);
                 if (isset($_SESSION['Lieferadresse']) && $_SESSION['Lieferadresse']->kLieferadresse > 0) {
                     $_GET['editLieferadresse'] = 1;
@@ -1436,11 +1436,12 @@ class CheckoutController extends RegistrationController
         $packagings      = ShippingMethod::getPossiblePackagings($this->customerGroupID);
         if (!empty($packagings) && $this->cart->posTypEnthalten(\C_WARENKORBPOS_TYP_VERPACKUNG)) {
             foreach ($this->cart->PositionenArr as $item) {
-                if ($item->nPosTyp === \C_WARENKORBPOS_TYP_VERPACKUNG) {
-                    foreach ($packagings as $packaging) {
-                        if ($packaging->cName === $item->cName[$packaging->cISOSprache]) {
-                            $packaging->bWarenkorbAktiv = true;
-                        }
+                if ($item->nPosTyp !== \C_WARENKORBPOS_TYP_VERPACKUNG) {
+                    continue;
+                }
+                foreach ($packagings as $packaging) {
+                    if ($packaging->cName === $item->cName[$packaging->cISOSprache]) {
+                        $packaging->bWarenkorbAktiv = true;
                     }
                 }
             }
@@ -1496,11 +1497,12 @@ class CheckoutController extends RegistrationController
         $packagings      = ShippingMethod::getPossiblePackagings($this->customerGroupID);
         if (!empty($packagings) && $this->cart->posTypEnthalten(\C_WARENKORBPOS_TYP_VERPACKUNG)) {
             foreach ($this->cart->PositionenArr as $item) {
-                if ($item->nPosTyp === \C_WARENKORBPOS_TYP_VERPACKUNG) {
-                    foreach ($packagings as $oPack) {
-                        if ($oPack->cName === $item->cName[$oPack->cISOSprache]) {
-                            $oPack->bWarenkorbAktiv = true;
-                        }
+                if ($item->nPosTyp !== \C_WARENKORBPOS_TYP_VERPACKUNG) {
+                    continue;
+                }
+                foreach ($packagings as $oPack) {
+                    if ($oPack->cName === $item->cName[$oPack->cISOSprache]) {
+                        $oPack->bWarenkorbAktiv = true;
                     }
                 }
             }
@@ -1640,8 +1642,8 @@ class CheckoutController extends RegistrationController
         }
         $specialItem               = new stdClass();
         $specialItem->cGebuehrname = [];
-        foreach (Frontend::getLanguages() as $lang) {
-            if ($paymentMethod->kZahlungsart > 0) {
+        if ($paymentMethod->kZahlungsart <= 0) {
+            foreach (Frontend::getLanguages() as $lang) {
                 $loc = $this->db->select(
                     'tzahlungsartsprache',
                     'kZahlungsart',

@@ -151,11 +151,11 @@ if (strlen($cSh) > 0) {
             }
         }
     } else {
-        $order = new Bestellung($paymentSession->kBestellung);
+        $order = new Bestellung($paymentSession->kBestellung, false, $db);
         $order->fuelleBestellung(false);
         $logger->debug(
             'Session Hash {hash} hat kBestellung. Modul {module} wird aufgerufen.',
-            ['hash' => $cSh, 'module' =>  $order->Zahlungsart->cModulId]
+            ['hash' => $cSh, 'module' => $order->Zahlungsart->cModulId]
         );
 
         $paymentMethod = LegacyMethod::create($order->Zahlungsart->cModulId);
@@ -192,7 +192,7 @@ if (strlen($cPh) > 0) {
     }
     // Load Order
     $moduleId = $paymentId->cModulId;
-    $order    = new Bestellung($paymentId->kBestellung);
+    $order    = new Bestellung($paymentId->kBestellung, false, $db);
     $order->fuelleBestellung(false);
 
     if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {

@@ -172,13 +172,14 @@ class SitemapExportController extends AbstractBackendController
             ['yr' => $yearReports]
         );
         foreach ($sitemapReports as $report) {
-            if (isset($report->kSitemapReport) && $report->kSitemapReport > 0) {
-                $report->oSitemapReportFile_arr = $this->db->selectAll(
-                    'tsitemapreportfile',
-                    'kSitemapReport',
-                    (int)$report->kSitemapReport
-                );
+            if ($report->kSitemapReport <= 0) {
+                continue;
             }
+            $report->oSitemapReportFile_arr = $this->db->selectAll(
+                'tsitemapreportfile',
+                'kSitemapReport',
+                (int)$report->kSitemapReport
+            );
         }
         $this->getAdminSectionSettings(\CONF_SITEMAP);
 

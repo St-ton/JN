@@ -906,10 +906,12 @@ class LinkController extends AbstractBackendController
      */
     private function actionOverview(): void
     {
+        /** @var Collection $specialLinks */
         foreach ($this->linkAdmin->getDuplicateSpecialLinks()->groupBy(static function (LinkInterface $l): int {
             return $l->getLinkType();
         }) as $specialLinks) {
-            /** @var Collection $specialLinks */
+            /** @var LinkInterface $first */
+            $first = $specialLinks->first();
             $this->alertService->addError(
                 \sprintf(
                     \__('hasDuplicateSpecialLink'),
@@ -917,7 +919,7 @@ class LinkController extends AbstractBackendController
                         return $l->getName();
                     })->implode('/')
                 ),
-                'hasDuplicateSpecialLink-' . $specialLinks->first()->getLinkType()
+                'hasDuplicateSpecialLink-' . $first->getLinkType()
             );
         }
         $this->smarty->assign('linkGroupCountByLinkID', $this->getLinkGroupCountForLinkIDs())

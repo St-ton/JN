@@ -9,6 +9,7 @@ use JTL\Checkout\KuponBestellung;
 use JTL\Customer\Customer;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
+use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -96,9 +97,10 @@ class CouponStatsController extends AbstractBackendController
         $couponAmountAll       = 0;
         $tmpUser               = [];
         $date                  = [];
+        $service               = Shop::Container()->getPasswordService();
         foreach ($usedCouponsOrder as $key => $usedCouponOrder) {
             $usedCouponOrder['kKunde']           = (int)($usedCouponOrder['kKunde'] ?? 0);
-            $customer                            = new Customer($usedCouponOrder['kKunde']);
+            $customer                            = new Customer($usedCouponOrder['kKunde'], $service, $this->db);
             $usedCouponsOrder[$key]['cUserName'] = $customer->cVorname . ' ' . $customer->cNachname;
             unset($customer);
             $usedCouponsOrder[$key]['nCouponValue']        =

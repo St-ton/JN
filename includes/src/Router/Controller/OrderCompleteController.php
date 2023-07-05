@@ -5,7 +5,6 @@ namespace JTL\Router\Controller;
 use InvalidArgumentException;
 use JTL\Cart\Cart;
 use JTL\Cart\CartHelper;
-use JTL\CheckBox;
 use JTL\Checkbox\CheckboxService;
 use JTL\Checkbox\CheckboxValidationDataObject;
 use JTL\Checkout\Bestellung;
@@ -66,7 +65,7 @@ class OrderCompleteController extends CheckoutController
             $bestellid = $this->db->select('tbestellid', 'cId', $_GET['i']);
             if ($bestellid !== null && $bestellid->kBestellung > 0) {
                 $bestellid->kBestellung = (int)$bestellid->kBestellung;
-                $order                  = new Bestellung($bestellid->kBestellung);
+                $order                  = new Bestellung($bestellid->kBestellung, false, $this->db);
                 $order->fuelleBestellung(false);
                 $handler->saveUploads($order);
                 $this->db->delete('tbestellid', 'kBestellung', $bestellid->kBestellung);
@@ -175,7 +174,7 @@ class OrderCompleteController extends CheckoutController
     protected function handlePayAgain(int $orderID): ResponseInterface
     {
         $linkHelper = Shop::Container()->getLinkService();
-        $order      = new Bestellung($orderID, true);
+        $order      = new Bestellung($orderID, true, $this->db);
         //abfragen, ob diese Bestellung dem Kunden auch gehoert
         //bei Gastbestellungen ist ggf das Kundenobjekt bereits entfernt bzw nRegistriert = 0
         if ($order->oKunde !== null

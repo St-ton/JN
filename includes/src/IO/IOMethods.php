@@ -1072,8 +1072,8 @@ class IOMethods
                             OR cPageId LIKE CONCAT('%\"id\":', :father_id,'%'))",
                     'count',
                     [
-                        'id' => (int)$tmpProduct->kArtikel,
-                        'last_id' => $childProductID,
+                        'id'        => (int)$tmpProduct->kArtikel,
+                        'last_id'   => $childProductID,
                         'father_id' => $parentProductID
                     ]
                 ) > 0;

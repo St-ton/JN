@@ -103,8 +103,8 @@ class SearchController extends AbstractBackendController
             foreach ($menu->items as $subMenuName => $subMenu) {
                 if (\is_array($subMenu)) {
                     foreach ($subMenu as $itemName => $item) {
-                        if (\is_object($item) && (
-                                \stripos($itemName, $query) !== false
+                        if (\is_object($item)
+                            && (\stripos($itemName, $query) !== false
                                 || \stripos($subMenuName, $query) !== false
                                 || \stripos($menuName, $query) !== false
                             )
@@ -230,10 +230,10 @@ class SearchController extends AbstractBackendController
                     GROUP BY za.kZahlungsart',
                 ['search' => '%' . $string . '%']
             );
-            foreach ($data as $paymentMethodByName) {
-                $paymentMethodByName->kZahlungsart = (int)$paymentMethodByName->kZahlungsart;
+            foreach ($data as $item) {
+                $item->kZahlungsart = (int)$item->kZahlungsart;
 
-                $paymentMethodsByName[$paymentMethodByName->kZahlungsart] = $paymentMethodByName;
+                $paymentMethodsByName[$item->kZahlungsart] = $item;
             }
         }
 

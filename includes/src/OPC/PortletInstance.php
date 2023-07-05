@@ -281,16 +281,15 @@ class PortletInstance implements \JsonSerializable
     public function getStyles(): array
     {
         foreach ($this->portlet->getStylesPropertyDesc() as $propname => $propdesc) {
-            if ($this->hasProperty($propname)) {
-                if ($propname === 'box-styles') {
-                    $boxStyles = $this->getProperty($propname);
-
-                    foreach ($boxStyles as $styleName => $styleValue) {
-                        $this->setStyle($styleName, $styleValue);
-                    }
-                } elseif ($propname !== 'custom-class' && !Text::startsWith($propname, 'hidden-')) {
-                    $this->setStyle($propname, $this->getProperty($propname));
+            if ($this->hasProperty($propname) === false) {
+                continue;
+            }
+            if ($propname === 'box-styles') {
+                foreach ($this->getProperty($propname) as $styleName => $styleValue) {
+                    $this->setStyle($styleName, $styleValue);
                 }
+            } elseif ($propname !== 'custom-class' && !Text::startsWith($propname, 'hidden-')) {
+                $this->setStyle($propname, $this->getProperty($propname));
             }
         }
 
@@ -343,16 +342,17 @@ class PortletInstance implements \JsonSerializable
         $styleString = '';
 
         foreach ($this->getStyles() as $styleName => $styleValue) {
-            if ($styleValue !== '') {
-                if (\mb_stripos($styleName, 'margin-') === 0
-                    || \mb_stripos($styleName, 'padding-') === 0
-                    || \mb_stripos($styleName, '-width') !== false
-                    || \mb_stripos($styleName, '-height') !== false
-                ) {
-                    $styleString .= $styleName . ':' . \htmlspecialchars($styleValue, \ENT_QUOTES) . 'px; ';
-                } else {
-                    $styleString .= $styleName . ':' . \htmlspecialchars($styleValue, \ENT_QUOTES) . '; ';
-                }
+            if ($styleValue === '') {
+                continue;
+            }
+            if (\mb_stripos($styleName, 'margin-') === 0
+                || \mb_stripos($styleName, 'padding-') === 0
+                || \mb_stripos($styleName, '-width') !== false
+                || \mb_stripos($styleName, '-height') !== false
+            ) {
+                $styleString .= $styleName . ':' . \htmlspecialchars($styleValue, \ENT_QUOTES) . 'px; ';
+            } else {
+                $styleString .= $styleName . ':' . \htmlspecialchars($styleValue, \ENT_QUOTES) . '; ';
             }
         }
 
@@ -560,33 +560,34 @@ class PortletInstance implements \JsonSerializable
         $srcset = \mb_substr($srcset, 0, -1); // remove trailing comma
 
         foreach ($this->widthHeuristics as $breakpoint => $col) {
-            if (!empty($col)) {
-                $factor = 1;
+            if (empty($col)) {
+                continue;
+            }
+            $factor = 1;
 
-                if (\is_array($divisor) && !empty($divisor[$breakpoint])) {
-                    $factor = (float)($divisor[$breakpoint] / 12);
-                }
+            if (\is_array($divisor) && !empty($divisor[$breakpoint])) {
+                $factor = (float)($divisor[$breakpoint] / 12);
+            }
 
-                switch ($breakpoint) {
-                    case 'xs':
-                        $srcsizes .= '(max-width: 767px) '
-                            . (int)($col * 100 * $factor) . 'vw, ';
-                        break;
-                    case 'sm':
-                        $srcsizes .= '(max-width: 991px) '
-                            . (int)($col * 100 * $factor) . 'vw, ';
-                        break;
-                    case 'md':
-                        $srcsizes .= '(max-width: 1299px) '
-                            . (int)($col * 100 * $factor) . 'vw, ';
-                        break;
-                    case 'lg':
-                        $srcsizes .= '(min-width: 1300px) '
-                            . (int)($col * 100 * $factor) . 'vw, ';
-                        break;
-                    default:
-                        break;
-                }
+            switch ($breakpoint) {
+                case 'xs':
+                    $srcsizes .= '(max-width: 767px) '
+                        . (int)($col * 100 * $factor) . 'vw, ';
+                    break;
+                case 'sm':
+                    $srcsizes .= '(max-width: 991px) '
+                        . (int)($col * 100 * $factor) . 'vw, ';
+                    break;
+                case 'md':
+                    $srcsizes .= '(max-width: 1299px) '
+                        . (int)($col * 100 * $factor) . 'vw, ';
+                    break;
+                case 'lg':
+                    $srcsizes .= '(min-width: 1300px) '
+                        . (int)($col * 100 * $factor) . 'vw, ';
+                    break;
+                default:
+                    break;
             }
         }
 

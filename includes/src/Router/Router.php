@@ -147,11 +147,11 @@ class Router
      * @param array                 $config
      */
     public function __construct(
-        protected DbInterface $db,
-        protected JTLCacheInterface $cache,
-        protected State $state,
+        protected DbInterface           $db,
+        protected JTLCacheInterface     $cache,
+        protected State                 $state,
         protected AlertServiceInterface $alert,
-        private readonly array $config
+        private readonly array          $config
     ) {
         $this->defaultController = new DefaultController($db, $cache, $state, $this->config, $alert);
 

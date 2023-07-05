@@ -22,8 +22,8 @@ class JobFactory
      * @param JTLCacheInterface $cache
      */
     public function __construct(
-        protected DbInterface $db,
-        protected LoggerInterface $logger,
+        protected DbInterface       $db,
+        protected LoggerInterface   $logger,
         protected JTLCacheInterface $cache
     ) {
     }

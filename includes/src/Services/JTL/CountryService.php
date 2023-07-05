@@ -102,7 +102,7 @@ class CountryService implements CountryServiceInterface
 
     /**
      * @param array $ISOToFilter
-     * @param bool $getAllIfEmpty
+     * @param bool  $getAllIfEmpty
      * @return Collection
      */
     public function getFilteredCountryList(array $ISOToFilter, bool $getAllIfEmpty = false): Collection
@@ -123,7 +123,8 @@ class CountryService implements CountryServiceInterface
      */
     public function getIsoByCountryName(string $countryName): ?string
     {
-        $name  = \strtolower($countryName);
+        $name = \strtolower($countryName);
+        /** @var Country $match */
         $match = $this->getCountryList()->first(static function (Country $country) use ($name): bool {
             foreach ($country->getNames() as $tmpName) {
                 if (\strtolower($tmpName) === $name || $name === \strtolower($country->getNameDE())) {
@@ -134,7 +135,7 @@ class CountryService implements CountryServiceInterface
             return false;
         });
 
-        return $match ? $match->getISO() : null;
+        return $match?->getISO();
     }
 
     /**
@@ -153,17 +154,18 @@ class CountryService implements CountryServiceInterface
             if ($countrySelected) {
                 $continentsSelectedCountryTMP[$country->getContinent()][] = $country;
             }
-            if ($getEU) {
-                if ($country->isEU()) {
-                    $continentsTMP[\__('europeanUnion')][] = $country;
-                    if ($countrySelected) {
-                        $continentsSelectedCountryTMP[\__('europeanUnion')][] = $country;
-                    }
-                } elseif ($country->getContinent() === \__('Europa')) {
-                    $continentsTMP[\__('notEuropeanUnionEurope')][] = $country;
-                    if ($countrySelected) {
-                        $continentsSelectedCountryTMP[\__('notEuropeanUnionEurope')][] = $country;
-                    }
+            if (!$getEU) {
+                continue;
+            }
+            if ($country->isEU()) {
+                $continentsTMP[\__('europeanUnion')][] = $country;
+                if ($countrySelected) {
+                    $continentsSelectedCountryTMP[\__('europeanUnion')][] = $country;
+                }
+            } elseif ($country->getContinent() === \__('Europa')) {
+                $continentsTMP[\__('notEuropeanUnionEurope')][] = $country;
+                if ($countrySelected) {
+                    $continentsSelectedCountryTMP[\__('notEuropeanUnionEurope')][] = $country;
                 }
             }
         }

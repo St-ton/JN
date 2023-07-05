@@ -1802,7 +1802,7 @@ class Artikel implements RoutableInterface
                 WHERE tstueckliste.kArtikel = :kArtikel
                     AND t.kArtikel IS NULL',
             [
-                'kArtikel' => $this->kArtikel,
+                'kArtikel'        => $this->kArtikel,
                 'customerGroupId' => $this->getCustomerGroupID()
             ]
         );
@@ -3316,12 +3316,10 @@ class Artikel implements RoutableInterface
         if (!$productID) {
             return null;
         }
-        $options = $options ?? self::getDefaultOptions();
-        if ($customerGroupID) {
+        $options         = $options ?? self::getDefaultOptions();
+        $customerGroupID = $customerGroupID ?: $this->customerGroup->getID();
+        if ($this->customerGroup->getID() !== $customerGroupID) {
             $this->customerGroup = CustomerGroup::reset($customerGroupID);
-        } else {
-            $this->customerGroup = Frontend::getCustomerGroup();
-            $customerGroupID     = $this->customerGroup->getID();
         }
         $langID = $langID ?: Shop::getLanguageID();
         if (!$langID) {
@@ -5397,7 +5395,7 @@ class Artikel implements RoutableInterface
         // Existiert für diese Kundengruppe ein Rabatt?
         $customerGroup = $this->customerGroup->getID() === $customerGroupID
             ? $this->customerGroup
-            : new CustomerGroup($customerGroupID);
+            : new CustomerGroup($customerGroupID, $this->getDB());
         if ($customerGroup->getDiscount() != 0) {
             $discounts[] = $customerGroup->getDiscount();
         }
@@ -5442,7 +5440,7 @@ class Artikel implements RoutableInterface
     public function gibMwStVersandString($net): string
     {
         if (!isset($_SESSION['Kundengruppe'])) {
-            $_SESSION['Kundengruppe'] = (new CustomerGroup())->loadDefaultGroup();
+            $_SESSION['Kundengruppe'] = (new CustomerGroup(0, $this->getDB()))->loadDefaultGroup();
             $net                      = $this->customerGroup->isMerchant();
         }
         $customerGroupID = $this->kKundengruppe ?? $this->customerGroup->getID();
@@ -5536,7 +5534,7 @@ class Artikel implements RoutableInterface
             return $asString ? '' : [];
         }
         if (!isset($_SESSION['Kundengruppe'])) {
-            $_SESSION['Kundengruppe'] = (new CustomerGroup())->loadDefaultGroup();
+            $_SESSION['Kundengruppe'] = (new CustomerGroup(0, $this->getDB()))->loadDefaultGroup();
         }
         $customerGroupID       = $customerGroupID ?? $this->kKundengruppe ?? Frontend::getCustomer()->getGroupID();
         $helper                = ShippingMethod::getInstance();
@@ -5798,7 +5796,7 @@ class Artikel implements RoutableInterface
     public function getShippingAndTaxData(): array
     {
         if (!isset($_SESSION['Kundengruppe']) || !\is_a($_SESSION['Kundengruppe'], CustomerGroup::class)) {
-            $_SESSION['Kundengruppe'] = (new CustomerGroup())->loadDefaultGroup();
+            $_SESSION['Kundengruppe'] = (new CustomerGroup(0, $this->getDB()))->loadDefaultGroup();
         }
         if (!isset($_SESSION['Link_Versandseite'])) {
             Frontend::setSpecialLinks();

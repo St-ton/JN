@@ -413,8 +413,9 @@ final class LinkService implements LinkServiceInterface
         $meta->cTitle    = '';
         $meta->cDesc     = '';
         $meta->cKeywords = '';
+        /** @var LinkGroupInterface $linkGroup */
         foreach ($this->linkGroupList->getLinkGroups() as $linkGroup) {
-            /** @var LinkGroupInterface $linkGroup */
+            /** @var ?LinkInterface $first */
             $first = $linkGroup->getLinks()->first(static function (LinkInterface $link) use ($type): bool {
                 return $link->getLinkType() === $type;
             });
@@ -556,7 +557,7 @@ final class LinkService implements LinkServiceInterface
             $data = $this->db->select(
                 'ttext',
                 'kKundengruppe',
-                (new CustomerGroup())->loadDefaultGroup()->getID(),
+                (new CustomerGroup(0, $this->db))->loadDefaultGroup()->getID(),
                 'kSprache',
                 $langID
             );
@@ -574,7 +575,7 @@ final class LinkService implements LinkServiceInterface
             $data = $this->db->select(
                 'ttext',
                 'kKundengruppe',
-                (new CustomerGroup())->loadDefaultGroup()->getID(),
+                (new CustomerGroup(0, $this->db))->loadDefaultGroup()->getID(),
                 'kSprache',
                 LanguageHelper::getDefaultLanguage()->getId()
             );

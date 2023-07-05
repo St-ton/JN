@@ -8,6 +8,7 @@ use JTL\Backend\Settings\SectionFactory;
 use JTL\Backend\Settings\Sections\Subsection;
 use JTL\Cache\JTLCacheInterface;
 use JTL\Campaign;
+use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
 use JTL\DB\SqlObject;
 use JTL\Exceptions\PermissionException;
@@ -179,14 +180,14 @@ abstract class AbstractBackendController implements ControllerInterface
      * @param array $settingsIDs
      * @param array $post
      * @param array $tags
-     * @param bool $byName
+     * @param bool  $byName
      * @return string
      */
     public function saveAdminSettings(
         array $settingsIDs,
         array $post,
         array $tags = [\CACHING_GROUP_OPTION],
-        bool $byName = false
+        bool  $byName = false
     ): string {
         $manager = new Manager($this->db, $this->smarty, $this->account, $this->getText, $this->alertService);
         if (Request::postVar('resetSetting') !== null) {
@@ -275,7 +276,7 @@ abstract class AbstractBackendController implements ControllerInterface
             }
         } elseif ($valueName === 'bewertungserinnerung_kundengruppen') {
             // Leere Kundengruppen Work Around
-            $customerGroup = $this->db->select('tkundengruppe', 'cStandard', 'Y');
+            $customerGroup = CustomerGroup::getDefault($this->db);
             if ($customerGroup !== null && $customerGroup->kKundengruppe > 0) {
                 $this->db->delete(
                     'teinstellungen',
@@ -400,6 +401,7 @@ abstract class AbstractBackendController implements ControllerInterface
         bool         $activeOnly = true,
         ?DbInterface $db = null
     ): array {
+        $db         = $db ?? Shop::Container()->getDB();
         $activeSQL  = $activeOnly ? ' WHERE nAktiv = 1' : '';
         $interalSQL = '';
         if (!$getInternal && $activeOnly) {
@@ -408,7 +410,7 @@ abstract class AbstractBackendController implements ControllerInterface
             $interalSQL = ' WHERE nInternal = 0';
         }
         $campaigns = [];
-        $items     = ($db ?? Shop::Container()->getDB())->getInts(
+        $items     = $db->getInts(
             'SELECT kKampagne
                 FROM tkampagne
                 ' . $activeSQL . '
@@ -417,7 +419,7 @@ abstract class AbstractBackendController implements ControllerInterface
             'kKampagne'
         );
         foreach ($items as $campaignID) {
-            $campaign = new Campaign($campaignID);
+            $campaign = new Campaign($campaignID, $db);
             if ($campaign->kKampagne > 0) {
                 $campaigns[$campaign->kKampagne] = $campaign;
             }

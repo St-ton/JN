@@ -167,10 +167,10 @@ final class Model extends DataModel
         }
         if ($this->customerGroupID > 0) {
             try {
-                $this->customerGroup = new CustomerGroup($this->customerGroupID);
+                $this->customerGroup = new CustomerGroup($this->customerGroupID, $this->getDB());
             } catch (Exception) {
                 $this->setHasError(1);
-                $this->customerGroup = (new CustomerGroup())->loadDefaultGroup();
+                $this->customerGroup = (new CustomerGroup(0, $this->getDB()))->loadDefaultGroup();
             }
         }
     }

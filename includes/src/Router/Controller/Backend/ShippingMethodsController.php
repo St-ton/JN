@@ -201,14 +201,15 @@ class ShippingMethodsController extends AbstractBackendController
         foreach ($objects as $obj) {
             $arr  = \get_object_vars($obj);
             $keys = \array_keys($arr);
-            if (\in_array($key, $keys, true)) {
-                $res[$obj->$key]           = new stdClass();
-                $res[$obj->$key]->checked  = 'checked';
-                $res[$obj->$key]->selected = 'selected';
-                foreach ($keys as $k) {
-                    if ($key !== $k) {
-                        $res[$obj->$key]->$k = $obj->$k;
-                    }
+            if (!\in_array($key, $keys, true)) {
+                continue;
+            }
+            $res[$obj->$key]           = new stdClass();
+            $res[$obj->$key]->checked  = 'checked';
+            $res[$obj->$key]->selected = 'selected';
+            foreach ($keys as $k) {
+                if ($key !== $k) {
+                    $res[$obj->$key]->$k = $obj->$k;
                 }
             }
         }
@@ -224,10 +225,11 @@ class ShippingMethodsController extends AbstractBackendController
     public function transformItem($arr): array
     {
         $newArr = [];
-        if (\is_array($arr)) {
-            foreach ($arr as $ele) {
-                $newArr = $this->buildObjectData($newArr, $ele);
-            }
+        if (!\is_array($arr)) {
+            return $newArr;
+        }
+        foreach ($arr as $ele) {
+            $newArr = $this->buildObjectData($newArr, $ele);
         }
 
         return $newArr;
@@ -331,8 +333,8 @@ class ShippingMethodsController extends AbstractBackendController
         $groups       = Text::parseSSKint($customerGroupsString);
         $groupData    = $this->db->getInts(
             'SELECT kKundengruppe
-            FROM tkundengruppe
-            ORDER BY kKundengruppe',
+                FROM tkundengruppe
+                ORDER BY kKundengruppe',
             'kKundengruppe'
         );
         foreach ($groupData as $id) {
@@ -850,15 +852,15 @@ class ShippingMethodsController extends AbstractBackendController
             }
             if (\is_array($postData['bis']) && \is_array($postData['preis'])) {
                 foreach ($postData['bis'] as $i => $fBis) {
-                    if (isset($postData['preis'][$i]) && \mb_strlen($fBis) > 0) {
-                        unset($oVersandstaffel);
-                        $oVersandstaffel         = new stdClass();
-                        $oVersandstaffel->fBis   = (float)\str_replace(',', '.', $fBis);
-                        $oVersandstaffel->fPreis = (float)\str_replace(',', '.', $postData['preis'][$i]);
-
-                        $shippingScales[] = $oVersandstaffel;
-                        $lastScaleTo      = $oVersandstaffel->fBis;
+                    if (!isset($postData['preis'][$i]) || \mb_strlen($fBis) === 0) {
+                        continue;
                     }
+                    $scale         = new stdClass();
+                    $scale->fBis   = (float)\str_replace(',', '.', $fBis);
+                    $scale->fPreis = (float)\str_replace(',', '.', $postData['preis'][$i]);
+
+                    $shippingScales[] = $scale;
+                    $lastScaleTo      = $scale->fBis;
                 }
             }
             // Dummy Versandstaffel hinzufuegen,
@@ -868,10 +870,10 @@ class ShippingMethodsController extends AbstractBackendController
             ) {
                 $this->shippingMethod->fVersandkostenfreiAbX = $lastScaleTo + 0.01;
 
-                $oVersandstaffel         = new stdClass();
-                $oVersandstaffel->fBis   = 999999999;
-                $oVersandstaffel->fPreis = 0.0;
-                $shippingScales[]        = $oVersandstaffel;
+                $scale            = new stdClass();
+                $scale->fBis      = 999999999;
+                $scale->fPreis    = 0.0;
+                $shippingScales[] = $scale;
             }
         }
         // Kundengruppe

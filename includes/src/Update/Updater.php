@@ -482,12 +482,13 @@ class Updater
     public function setVersion(Version $targetVersion): void
     {
         foreach ($this->db->getObjects('SHOW COLUMNS FROM `tversion`') as $column) {
-            if ($column->Field === 'nVersion') {
-                if ($column->Type !== 'varchar(20)') {
-                    $newVersion = \sprintf('%d%02d', $targetVersion->getMajor(), $targetVersion->getMinor());
-                } else {
-                    $newVersion = $targetVersion->getOriginalVersion();
-                }
+            if ($column->Field !== 'nVersion') {
+                continue;
+            }
+            if ($column->Type !== 'varchar(20)') {
+                $newVersion = \sprintf('%d%02d', $targetVersion->getMajor(), $targetVersion->getMinor());
+            } else {
+                $newVersion = $targetVersion->getOriginalVersion();
             }
         }
 

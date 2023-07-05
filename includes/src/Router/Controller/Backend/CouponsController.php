@@ -267,7 +267,6 @@ class CouponsController extends AbstractBackendController
                 ['dLastUse', \__('lastUsed')]
             ];
 
-
             $nKuponStandardCount  = $this->getCouponCount(Kupon::TYPE_STANDARD, $filterDefault->getWhereSQL());
             $nKuponVersandCount   = $this->getCouponCount(Kupon::TYPE_SHIPPING, $filterShipping->getWhereSQL());
             $nKuponNeukundenCount = $this->getCouponCount(Kupon::TYPE_NEWCUSTOMER, $filterCustomers->getWhereSQL());
@@ -559,7 +558,7 @@ class CouponsController extends AbstractBackendController
      */
     private function getCoupon(int $id): Kupon
     {
-        $coupon = new Kupon($id);
+        $coupon = new Kupon($id, $this->db);
         $coupon->augment();
 
         return $coupon;
@@ -573,7 +572,7 @@ class CouponsController extends AbstractBackendController
      */
     private function createNewCoupon(string $type): Kupon
     {
-        $coupon                        = new Kupon();
+        $coupon                        = new Kupon(0, $this->db);
         $coupon->cKuponTyp             = $type;
         $coupon->cName                 = '';
         $coupon->fWert                 = 0.0;
@@ -610,7 +609,7 @@ class CouponsController extends AbstractBackendController
     private function createCouponFromInput(): Kupon
     {
         $input                         = Text::filterXSS($_POST);
-        $coupon                        = new Kupon(Request::postInt('kKuponBearbeiten'));
+        $coupon                        = new Kupon(Request::postInt('kKuponBearbeiten'), $this->db);
         $coupon->cKuponTyp             = $input['cKuponTyp'];
         $coupon->cName                 = \htmlspecialchars($input['cName'], \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET);
         $coupon->fWert                 = !empty($input['fWert'])
@@ -748,27 +747,13 @@ class CouponsController extends AbstractBackendController
             $res = $coupon->kKupon;
         }
 
-        if ($res > 0) {
-            // Kupon-Sprachen aktualisieren
-            if (\is_array($coupon->kKupon)) {
-                foreach ($coupon->kKupon as $couponID) {
-                    $this->db->delete('tkuponsprache', 'kKupon', $couponID);
-                    foreach ($languages as $language) {
-                        $code          = $language->getIso();
-                        $postVarName   = 'cName_' . $code;
-                        $localizedName = Request::postVar($postVarName, '') !== ''
-                            ? \htmlspecialchars($_POST[$postVarName], \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET)
-                            : $coupon->cName;
-
-                        $localized              = new stdClass();
-                        $localized->kKupon      = $couponID;
-                        $localized->cISOSprache = $code;
-                        $localized->cName       = Text::filterXSS($localizedName);
-                        $this->db->insert('tkuponsprache', $localized);
-                    }
-                }
-            } else {
-                $this->db->delete('tkuponsprache', 'kKupon', $coupon->kKupon);
+        if ($res <= 0) {
+            return $res;
+        }
+        // Kupon-Sprachen aktualisieren
+        if (\is_array($coupon->kKupon)) {
+            foreach ($coupon->kKupon as $couponID) {
+                $this->db->delete('tkuponsprache', 'kKupon', $couponID);
                 foreach ($languages as $language) {
                     $code          = $language->getIso();
                     $postVarName   = 'cName_' . $code;
@@ -777,11 +762,26 @@ class CouponsController extends AbstractBackendController
                         : $coupon->cName;
 
                     $localized              = new stdClass();
-                    $localized->kKupon      = $coupon->kKupon;
+                    $localized->kKupon      = $couponID;
                     $localized->cISOSprache = $code;
                     $localized->cName       = Text::filterXSS($localizedName);
                     $this->db->insert('tkuponsprache', $localized);
                 }
+            }
+        } else {
+            $this->db->delete('tkuponsprache', 'kKupon', $coupon->kKupon);
+            foreach ($languages as $language) {
+                $code          = $language->getIso();
+                $postVarName   = 'cName_' . $code;
+                $localizedName = Request::postVar($postVarName, '') !== ''
+                    ? \htmlspecialchars($_POST[$postVarName], \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET)
+                    : $coupon->cName;
+
+                $localized              = new stdClass();
+                $localized->kKupon      = $coupon->kKupon;
+                $localized->cISOSprache = $code;
+                $localized->cName       = Text::filterXSS($localizedName);
+                $this->db->insert('tkuponsprache', $localized);
             }
         }
 
@@ -845,11 +845,12 @@ class CouponsController extends AbstractBackendController
                 $sql->getParams()
             );
         }
+        $service = Shop::Container()->getPasswordService();
         foreach ($customerData as $customerID) {
-            $customer   = new Customer($customerID);
+            $customer   = new Customer($customerID, $service, $this->db);
             $langID     = $customer->kSprache;
             $cgID       = $customer->kKundengruppe;
-            $cGroup     = new CustomerGroup($cgID);
+            $cGroup     = new CustomerGroup($cgID, $this->db);
             $language   = $allLanguages[$langID] ?? $defaultLang;
             $localized  = $this->db->select(
                 'tkuponsprache',

@@ -38,7 +38,7 @@ class Lieferscheinpos
     protected ?float $fAnzahl = null;
 
     /**
-     * @var array
+     * @var Lieferscheinposinfo[]
      */
     public array $oLieferscheinPosInfo_arr = [];
 

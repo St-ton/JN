@@ -158,7 +158,7 @@ final class Export
         $_SESSION['cISOSprache'] = $defaultLang->getCode();
         Tax::setTaxRates();
         if (!isset($_SESSION['Kundengruppe'])) {
-            $_SESSION['Kundengruppe'] = new CustomerGroup();
+            $_SESSION['Kundengruppe'] = new CustomerGroup(0, $this->db);
         }
         $_SESSION['Kundengruppe']->setID(first($customerGroupIDs));
     }

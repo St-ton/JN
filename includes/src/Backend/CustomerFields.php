@@ -156,12 +156,12 @@ class CustomerFields
         $this->db->delete('tkundenfeldwert', 'kKundenfeld', $customerFieldID);
 
         foreach ($customerFieldValues as $customerFieldValue) {
-            $entitie              = new stdClass();
-            $entitie->kKundenfeld = $customerFieldID;
-            $entitie->cWert       = $customerFieldValue['cWert'];
-            $entitie->nSort       = (int)$customerFieldValue['nSort'];
+            $entity              = new stdClass();
+            $entity->kKundenfeld = $customerFieldID;
+            $entity->cWert       = $customerFieldValue['cWert'];
+            $entity->nSort       = (int)$customerFieldValue['nSort'];
 
-            $this->db->insert('tkundenfeldwert', $entitie);
+            $this->db->insert('tkundenfeldwert', $entity);
         }
 
         // Delete all customer values that are not in value list

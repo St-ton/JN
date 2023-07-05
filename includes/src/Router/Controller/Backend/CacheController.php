@@ -282,47 +282,48 @@ class CacheController extends AbstractBackendController
             if ($item['id'] !== 'caching_method') {
                 continue;
             }
-            if ($item['value'] === 'auto') {
-                $value            = new stdClass();
-                $availableMethods = [];
-                foreach ($this->cache->checkAvailability() as $name => $state) {
-                    if (isset($state['available'], $state['functional'])
-                        && $state['available'] === true
-                        && $state['functional'] === true
-                    ) {
-                        $availableMethods[] = $name;
-                    }
+            if ($item['value'] !== 'auto') {
+                continue;
+            }
+            $value            = new stdClass();
+            $availableMethods = [];
+            foreach ($this->cache->checkAvailability() as $name => $state) {
+                if (isset($state['available'], $state['functional'])
+                    && $state['available'] === true
+                    && $state['functional'] === true
+                ) {
+                    $availableMethods[] = $name;
                 }
-                $value->cWert = 'null';
-                if (\count($availableMethods) > 0) {
-                    if (\in_array('redis', $availableMethods, true)) {
-                        $value->cWert = 'redis';
-                    } elseif (\in_array('memcache', $availableMethods, true)) {
-                        $value->cWert = 'memcache';
-                    } elseif (\in_array('memcached', $availableMethods, true)) {
-                        $value->cWert = 'memcached';
-                    } elseif (\in_array('apc', $availableMethods, true)) {
-                        $value->cWert = 'apc';
-                    } elseif (\in_array('advancedfile', $availableMethods, true)) {
-                        $value->cWert = 'advancedfile';
-                    } elseif (\in_array('file', $availableMethods, true)) {
-                        $value->cWert = 'file';
-                    }
+            }
+            $value->cWert = 'null';
+            if (\count($availableMethods) > 0) {
+                if (\in_array('redis', $availableMethods, true)) {
+                    $value->cWert = 'redis';
+                } elseif (\in_array('memcache', $availableMethods, true)) {
+                    $value->cWert = 'memcache';
+                } elseif (\in_array('memcached', $availableMethods, true)) {
+                    $value->cWert = 'memcached';
+                } elseif (\in_array('apc', $availableMethods, true)) {
+                    $value->cWert = 'apc';
+                } elseif (\in_array('advancedfile', $availableMethods, true)) {
+                    $value->cWert = 'advancedfile';
+                } elseif (\in_array('file', $availableMethods, true)) {
+                    $value->cWert = 'file';
                 }
-                $this->db->update(
-                    'teinstellungen',
-                    ['kEinstellungenSektion', 'cName'],
-                    [\CONF_CACHING, 'caching_method'],
-                    $value
+            }
+            $this->db->update(
+                'teinstellungen',
+                ['kEinstellungenSektion', 'cName'],
+                [\CONF_CACHING, 'caching_method'],
+                $value
+            );
+            if ($value->cWert !== 'null') {
+                $this->alertService->addSuccess(
+                    '<strong>' . $value->cWert . '</strong>' . \__('successCacheMethodSave'),
+                    'successCacheDelete'
                 );
-                if ($value->cWert !== 'null') {
-                    $this->alertService->addSuccess(
-                        '<strong>' . $value->cWert . '</strong>' . \__('successCacheMethodSave'),
-                        'successCacheDelete'
-                    );
-                } else {
-                    $this->alertService->addError(\__('errorCacheMethodSelect'), 'errorCacheMethodSelect');
-                }
+            } else {
+                $this->alertService->addError(\__('errorCacheMethodSelect'), 'errorCacheMethodSelect');
             }
         }
         $this->cache->flushAll();

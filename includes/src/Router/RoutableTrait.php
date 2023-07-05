@@ -108,20 +108,21 @@ trait RoutableTrait
         $languages = LanguageHelper::getAllLanguages();
         foreach ($this->getSlugs() as $langID => $slug) {
             foreach ($languages as $languageModel) {
-                if ($languageModel->getId() === $langID) {
-                    $locale = $languageModel->getIso639();
-                    $route  = $router->getPathByType(
-                        $this->getRouteType(),
-                        \array_merge(['lang' => $locale, 'name' => $slug, 'id' => $fallbackID], $additional)
-                    );
-                    $this->setURLPath($route, $langID);
-                    $url = $router->getURLByType(
-                        $this->getRouteType(),
-                        \array_merge(['lang' => $locale, 'name' => $slug, 'id' => $fallbackID], $additional)
-                    );
-                    $this->setURL($url, $langID);
-                    break;
+                if ($languageModel->getId() !== $langID) {
+                    continue;
                 }
+                $locale = $languageModel->getIso639();
+                $route  = $router->getPathByType(
+                    $this->getRouteType(),
+                    \array_merge(['lang' => $locale, 'name' => $slug, 'id' => $fallbackID], $additional)
+                );
+                $this->setURLPath($route, $langID);
+                $url = $router->getURLByType(
+                    $this->getRouteType(),
+                    \array_merge(['lang' => $locale, 'name' => $slug, 'id' => $fallbackID], $additional)
+                );
+                $this->setURL($url, $langID);
+                break;
             }
         }
         if ($fallbackID === null || \count($this->slugs) >= \count($languages)) {

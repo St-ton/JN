@@ -3,9 +3,11 @@
 namespace JTL\Export;
 
 use DateTime;
+use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
 use JTL\Helpers\Text;
 use JTL\Helpers\URL;
+use JTL\Language\LanguageHelper;
 use JTL\Shop;
 use Psr\Log\LoggerInterface;
 
@@ -41,10 +43,10 @@ class RSS
         }
         $shopURL = Shop::getURL();
 
-        $language                = $this->db->select('tsprache', 'cShopStandard', 'Y');
-        $stdKundengruppe         = $this->db->select('tkundengruppe', 'cStandard', 'Y');
-        $_SESSION['kSprache']    = (int)($language->kSprache ?? 0);
-        $_SESSION['cISOSprache'] = $language->cISO ?? 'ger';
+        $language                = LanguageHelper::getDefaultLanguage();
+        $customerGroup           = CustomerGroup::getDefault($this->db);
+        $_SESSION['kSprache']    = $language->getId();
+        $_SESSION['cISOSprache'] = $language->getCode();
         // ISO-8859-1
         $xml = '<?xml version="1.0" encoding="' . \JTL_CHARSET . '"?>
                 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
@@ -52,7 +54,7 @@ class RSS
                         <title>' . $conf['rss_titel'] . '</title>
                         <link>' . $shopURL . '</link>
                         <description>' . $conf['rss_description'] . '</description>
-                        <language>' . Text::convertISO2ISO639($language->cISO) . '</language>
+                        <language>' . Text::convertISO2ISO639($language->getCode()) . '</language>
                         <copyright>' . $conf['rss_copyright'] . '</copyright>
                         <pubDate>' . \date('r') . '</pubDate>
                         <atom:link href="' . $shopURL . '/rss.xml" rel="self" type="application/rss+xml" />
@@ -86,7 +88,7 @@ class RSS
                         AND cNeu = 'Y' 
                         AND DATE_SUB(now(), INTERVAL :ds DAY) < dErstellt
                     ORDER BY dLetzteAktualisierung DESC",
-                ['lid' => $_SESSION['kSprache'], 'cgid' => $stdKundengruppe->kKundengruppe, 'ds' => $days]
+                ['lid' => $_SESSION['kSprache'], 'cgid' => $customerGroup->kKundengruppe ?? 0, 'ds' => $days]
             );
             foreach ($products as $product) {
                 $url  = URL::buildURL($product, \URLART_ARTIKEL, true, $shopURL . '/');

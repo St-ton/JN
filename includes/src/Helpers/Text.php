@@ -242,7 +242,7 @@ class Text
      */
     public static function htmlentitiesOnce(
         string $input,
-        int $flags = \ENT_COMPAT,
+        int    $flags = \ENT_COMPAT,
         string $enc = \JTL_CHARSET
     ): string {
         return \htmlentities($input, $flags, $enc, false);

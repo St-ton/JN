@@ -79,6 +79,7 @@ final class ConsentModel extends DataModel
                 } catch (Exception) {
                     continue;
                 }
+                /** @var ConsentModel $existing */
                 $existing = $res->first(static function ($e) use ($loc): bool {
                     return $e->consentID === $loc->consentID && $e->languageID === $loc->languageID;
                 });

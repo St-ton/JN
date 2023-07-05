@@ -438,7 +438,6 @@ class Cart
         }
         $this->setzeKonfig($cartItem, false);
         if (\is_array($cartItem->Artikel->Variationen) && \count($cartItem->Artikel->Variationen) > 0) {
-            //foreach ($ewerte as $eWert)
             foreach ($cartItem->Artikel->Variationen as $variation) {
                 $variation->kEigenschaft = (int)$variation->kEigenschaft;
                 foreach ($attributeValues as $aValue) {

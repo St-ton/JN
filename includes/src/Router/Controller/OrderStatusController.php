@@ -61,7 +61,7 @@ class OrderStatusController extends PageController
 
                 return new RedirectResponse($linkHelper->getStaticRoute('jtl.php'), 303);
             }
-            $order    = new Bestellung((int)$status->kBestellung, true);
+            $order    = new Bestellung((int)$status->kBestellung, true, $this->db);
             $plzValid = false;
 
             if (Form::validateToken()) {
@@ -89,7 +89,7 @@ class OrderStatusController extends PageController
                 $this->db->update('tbestellstatus', 'cUID', $uid, (object)[
                     'failedAttempts' => 0,
                 ]);
-                $this->smarty->assign('Kunde', new Customer($order->kKunde))
+                $this->smarty->assign('Kunde', new Customer($order->kKunde, null, $this->db))
                     ->assign('Lieferadresse', $order->Lieferadresse)
                     ->assign('billingAddress', $order->oRechnungsadresse)
                     ->assign('incommingPayments', $order->getIncommingPayments());

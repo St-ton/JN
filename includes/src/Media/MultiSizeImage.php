@@ -188,7 +188,7 @@ trait MultiSizeImage
     }
 
     /**
-     * @param int $number
+     * @param int         $number
      * @param string|null $source
      * @return array
      */

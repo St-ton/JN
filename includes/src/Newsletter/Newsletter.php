@@ -178,7 +178,7 @@ class Newsletter
         $productIDs             = $this->getKeys($template->cArtikel, true);
         $manufacturerIDs        = $this->getKeys($template->cHersteller);
         $categoryIDs            = $this->getKeys($template->cKategorie);
-        $campaign               = new Campaign((int)$template->kKampagne);
+        $campaign               = new Campaign((int)$template->kKampagne, $this->db);
         $products               = $this->getProducts($productIDs, $campaign);
         $manufacturers          = $this->getManufacturers($manufacturerIDs, $campaign);
         $categories             = $this->getCategories($categoryIDs, $campaign);

@@ -27,7 +27,7 @@ class EmailHistoryController extends AbstractBackendController
         $this->getText->loadAdminLocale('pages/emailhistory');
 
         $step    = 'uebersicht';
-        $history = new Emailhistory();
+        $history = new Emailhistory(null, null, $this->db);
         $action  = (isset($_POST['a']) && Form::validateToken()) ? $_POST['a'] : '';
         if ($action === 'delete') {
             if (isset($_POST['remove_all'])) {

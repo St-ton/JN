@@ -49,7 +49,6 @@ class TableCleaner
      */
     private $lastProductID;
 
-
     /**
      * anonymize methods
      * (NOTE: the order of this methods is not insignificant and "can be configured")

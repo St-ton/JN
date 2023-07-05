@@ -30,7 +30,7 @@ final class Customer extends AbstractSync
 {
     /**
      * @param Starter $starter
-     * @return array|mixed|null
+     * @return array|null
      */
     public function handle(Starter $starter)
     {
@@ -62,6 +62,7 @@ final class Customer extends AbstractSync
     private function activate(array $xml): void
     {
         $customers = $this->mapper->mapArray($xml['aktiviere_kunden'], 'tkunde', '');
+        $service   = Shop::Container()->getPasswordService();
         foreach ($customers as $customerData) {
             if (!($customerData->kKunde > 0 && $customerData->kKundenGruppe > 0)) {
                 continue;
@@ -69,7 +70,7 @@ final class Customer extends AbstractSync
             $customerData->kKunde        = (int)$customerData->kKunde;
             $customerData->kKundenGruppe = (int)$customerData->kKundenGruppe;
 
-            $customer = new CustomerClass($customerData->kKunde);
+            $customer = new CustomerClass($customerData->kKunde, $service, $this->db);
             if ($customer->kKunde > 0 && $customer->kKundengruppe !== $customerData->kKundenGruppe) {
                 $this->db->update(
                     'tkunde',
@@ -96,11 +97,12 @@ final class Customer extends AbstractSync
     private function generatePasswords(array $xml): void
     {
         $customers = $this->mapper->mapArray($xml['passwort_kunden'], 'tkunde', '');
+        $service   = Shop::Container()->getPasswordService();
         foreach ($customers as $customerData) {
             if (empty($customerData->kKunde)) {
                 continue;
             }
-            $customer = new CustomerClass((int)$customerData->kKunde);
+            $customer = new CustomerClass((int)$customerData->kKunde, $service, $this->db);
             if ($customer->nRegistriert === 1 && $customer->cMail) {
                 $customer->prepareResetPassword();
             } else {
@@ -124,8 +126,10 @@ final class Customer extends AbstractSync
         if (!\is_array($source)) {
             $source = [$source];
         }
+        $service = Shop::Container()->getPasswordService();
         foreach (\array_filter($source, '\is_numeric') as $customerID) {
-            (new CustomerClass((int)$customerID))->deleteAccount(Journal::ISSUER_TYPE_DBES, 0, true);
+            $customer = new CustomerClass((int)$customerID, $service, $this->db);
+            $customer->deleteAccount(Journal::ISSUER_TYPE_DBES, 0, true);
         }
     }
 

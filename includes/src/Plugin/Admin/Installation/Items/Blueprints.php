@@ -65,44 +65,44 @@ class Blueprints extends AbstractItem
      */
     protected function copyBlueprintImages(string $base, array &$instanceData): void
     {
-        $class   = $instanceData['class'];
-        $portlet = Shop::Container()->getOPC()->createPortletInstance($class);
-        $props   = $portlet->getPortlet()->getDeepPropertyDesc();
-
-        foreach ($props as $name => $prop) {
-            if (isset($instanceData['properties'][$name], $prop['type'])) {
-                if ($prop['type'] === InputType::IMAGE) {
-                    if (\is_file($base . $instanceData['properties'][$name])) {
-                        $oldname = $instanceData['properties'][$name];
-                        $newname = $this->plugin->cVerzeichnis . '_' . $oldname;
-                        \copy(
-                            $base . $oldname,
-                            \PFAD_ROOT . \STORAGE_OPC . $newname
-                        );
-                        $instanceData['properties'][$name] = $newname;
-                    }
-                } elseif ($prop['type'] === InputType::IMAGE_SET) {
-                    foreach ($instanceData['properties'][$name] as &$image) {
-                        if (\is_file($base . $image['url'])) {
-                            $oldname = $image['url'];
-                            $newname = $this->plugin->cVerzeichnis . '_' . $oldname;
-                            \copy(
-                                $base . $oldname,
-                                \PFAD_ROOT . \STORAGE_OPC . $newname
-                            );
-                            $image['url'] = $newname;
-                        }
-                    }
-                    unset($image);
+        $portlet = Shop::Container()->getOPC()->createPortletInstance($instanceData['class']);
+        foreach ($portlet->getPortlet()->getDeepPropertyDesc() as $name => $prop) {
+            if (!isset($instanceData['properties'][$name], $prop['type'])) {
+                continue;
+            }
+            if ($prop['type'] === InputType::IMAGE) {
+                if (!\is_file($base . $instanceData['properties'][$name])) {
+                    continue;
                 }
+                $oldname = $instanceData['properties'][$name];
+                $newname = $this->plugin->cVerzeichnis . '_' . $oldname;
+                \copy(
+                    $base . $oldname,
+                    \PFAD_ROOT . \STORAGE_OPC . $newname
+                );
+                $instanceData['properties'][$name] = $newname;
+            } elseif ($prop['type'] === InputType::IMAGE_SET) {
+                foreach ($instanceData['properties'][$name] as &$image) {
+                    if (!\is_file($base . $image['url'])) {
+                        continue;
+                    }
+                    $oldname = $image['url'];
+                    $newname = $this->plugin->cVerzeichnis . '_' . $oldname;
+                    \copy(
+                        $base . $oldname,
+                        \PFAD_ROOT . \STORAGE_OPC . $newname
+                    );
+                    $image['url'] = $newname;
+                }
+                unset($image);
             }
         }
-
-        if (isset($instanceData['subareas'])) {
-            foreach ($instanceData['subareas'] as &$subarea) {
-                foreach ($subarea['content'] as &$subportlet) {
-                    $this->copyBlueprintImages($base, $subportlet);
-                }
+        if (!isset($instanceData['subareas'])) {
+            return;
+        }
+        foreach ($instanceData['subareas'] as &$subarea) {
+            foreach ($subarea['content'] as &$subportlet) {
+                $this->copyBlueprintImages($base, $subportlet);
             }
         }
     }

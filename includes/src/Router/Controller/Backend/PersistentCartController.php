@@ -10,6 +10,7 @@ use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Pagination\Pagination;
+use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -106,13 +107,13 @@ class PersistentCartController extends AbstractBackendController
                 LIMIT ' . $customerPagination->getLimitSQL(),
             $searchSQL->getParams()
         );
+        $service   = Shop::Container()->getPasswordService();
         foreach ($customers as $item) {
-            $customer = new Customer((int)$item->kKunde);
+            $customer = new Customer((int)$item->kKunde, $service, $this->db);
 
             $item->cNachname = $customer->cNachname;
             $item->cFirma    = $customer->cFirma;
         }
-
         $this->smarty->assign('oKunde_arr', $customers)
             ->assign('oPagiKunden', $customerPagination);
     }
@@ -136,7 +137,7 @@ class PersistentCartController extends AbstractBackendController
             ->setItemCount($persCartCount)
             ->assemble();
 
-        $carts = $this->db->getObjects(
+        $carts   = $this->db->getObjects(
             "SELECT tkunde.kKunde AS kKundeTMP, tkunde.cVorname, tkunde.cNachname, twarenkorbperspos.kArtikel, 
                 twarenkorbperspos.cArtikelName, twarenkorbpers.kKunde, twarenkorbperspos.fAnzahl, 
                 DATE_FORMAT(twarenkorbperspos.dHinzugefuegt, '%d.%m.%Y  %H:%i') AS Datum
@@ -149,8 +150,9 @@ class PersistentCartController extends AbstractBackendController
                 LIMIT " . $cartPagination->getLimitSQL(),
             ['cid' => $customerID]
         );
+        $service = Shop::Container()->getPasswordService();
         foreach ($carts as $cart) {
-            $customer = new Customer((int)$cart->kKundeTMP);
+            $customer = new Customer((int)$cart->kKundeTMP, $service, $this->db);
 
             $cart->cNachname = $customer->cNachname;
             $cart->cFirma    = $customer->cFirma;

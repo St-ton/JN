@@ -250,8 +250,9 @@ class Helper
      */
     public static function updatePaymentMethodState($plugin, int $state): void
     {
+        $db = Shop::Container()->getDB();
         foreach (\array_keys($plugin->getPaymentMethods()->getMethodsAssoc()) as $moduleID) {
-            Shop::Container()->getDB()->update(
+            $db->update(
                 'tzahlungsart',
                 'cModulId',
                 $moduleID,
@@ -515,7 +516,7 @@ class Helper
         int                $id,
         ?DbInterface       $db = null,
         ?JTLCacheInterface $cache = null
-    ) : LoaderInterface {
+    ): LoaderInterface {
         $cache = $cache ?? Shop::Container()->getCache();
         $db    = $db ?? Shop::Container()->getDB();
         $data  = $db->select('tplugin', 'kPlugin', $id);

@@ -125,7 +125,7 @@ class Download
         return Nice::getInstance()->checkErweiterung(\SHOP_ERWEITERUNG_DOWNLOADS);
     }
 
-    /**
+    /**;
      * @param int  $id
      * @param int  $languageID
      * @param bool $info
@@ -192,6 +192,7 @@ class Download
      */
     public static function getDownloads(array $keys = [], int $languageID = 0): array
     {
+        Shop::dbg($keys, false, 'getting for lang ' . $languageID);
         $productID  = (int)($keys['kArtikel'] ?? 0);
         $orderID    = (int)($keys['kBestellung'] ?? 0);
         $customerID = (int)($keys['kKunde'] ?? 0);

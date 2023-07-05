@@ -338,22 +338,22 @@ class Versandart
      */
     private static function cloneShippingSection(array $objects, $table, $key, int $value, $unsetKey = null): void
     {
-        if ($value > 0 && \count($objects) > 0 && \mb_strlen($key) > 0) {
-            $db = Shop::Container()->getDB();
-            foreach ($objects as $item) {
-                $primary = $item->$unsetKey;
-                if ($unsetKey !== null) {
-                    unset($item->$unsetKey);
-                }
-                $item->$key = $value;
-                if ($table === 'tversandartzahlungsart' && empty($item->fAufpreis)) {
-                    $item->fAufpreis = 0;
-                }
-                $id = $db->insert($table, $item);
-
-                if ($id > 0 && $table === 'tversandzuschlag') {
-                    self::cloneShippingSectionSpecial($primary, $id);
-                }
+        if ($value <= 0 || \count($objects) === 0 || \mb_strlen($key) === 0) {
+            return;
+        }
+        $db = Shop::Container()->getDB();
+        foreach ($objects as $item) {
+            $primary = $item->$unsetKey;
+            if ($unsetKey !== null) {
+                unset($item->$unsetKey);
+            }
+            $item->$key = $value;
+            if ($table === 'tversandartzahlungsart' && empty($item->fAufpreis)) {
+                $item->fAufpreis = 0;
+            }
+            $id = $db->insert($table, $item);
+            if ($id > 0 && $table === 'tversandzuschlag') {
+                self::cloneShippingSectionSpecial($primary, $id);
             }
         }
     }
@@ -364,17 +364,17 @@ class Versandart
      */
     private static function cloneShippingSectionSpecial(int $oldKey, int $newKey): void
     {
-        if ($oldKey > 0 && $newKey > 0) {
-            $sections = [
-                'tversandzuschlagplz'     => 'kVersandzuschlagPlz',
-                'tversandzuschlagsprache' => 'kVersandzuschlag'
-            ];
+        if ($oldKey <= 0 || $newKey <= 0) {
+            return;
+        }
+        $sections = [
+            'tversandzuschlagplz'     => 'kVersandzuschlagPlz',
+            'tversandzuschlagsprache' => 'kVersandzuschlag'
+        ];
+        foreach ($sections as $section => $subKey) {
+            $subSections = self::getShippingSection($section, 'kVersandzuschlag', $oldKey);
 
-            foreach ($sections as $section => $subKey) {
-                $subSections = self::getShippingSection($section, 'kVersandzuschlag', $oldKey);
-
-                self::cloneShippingSection($subSections, $section, 'kVersandzuschlag', $newKey, $subKey);
-            }
+            self::cloneShippingSection($subSections, $section, 'kVersandzuschlag', $newKey, $subKey);
         }
     }
 

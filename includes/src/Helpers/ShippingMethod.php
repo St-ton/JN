@@ -92,7 +92,6 @@ class ShippingMethod
         );
     }
 
-
     /**
      * @param float|int $freeFromX
      * @return array

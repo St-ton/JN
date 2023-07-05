@@ -126,6 +126,7 @@ abstract class AbstractStep implements StepInterface
      */
     public function answerQuestionByID(int $questionID, $value): QuestionInterface
     {
+        /** @var QuestionInterface $question */
         $question = $this->questions->first(function (QuestionInterface $question) use ($questionID): bool {
             return $question->getID() === $questionID;
         });

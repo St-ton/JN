@@ -52,11 +52,11 @@ class Visitors extends AbstractWidget
     {
         $currentMonth = $this->getVisitorsOfCurrentMonth();
         $lastMonth    = $this->getVisitorsOfLastMonth();
-        foreach ($currentMonth as $oCurrentMonth) {
-            $oCurrentMonth->dZeit = \mb_substr($oCurrentMonth->dZeit, 0, 2);
+        foreach ($currentMonth as $item) {
+            $item->dZeit = \mb_substr($item->dZeit, 0, 2);
         }
-        foreach ($lastMonth as $oLastMonth) {
-            $oLastMonth->dZeit = \mb_substr($oLastMonth->dZeit, 0, 2);
+        foreach ($lastMonth as $item) {
+            $item->dZeit = \mb_substr($item->dZeit, 0, 2);
         }
 
         $series = [

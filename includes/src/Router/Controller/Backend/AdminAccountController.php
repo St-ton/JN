@@ -7,6 +7,7 @@ use Exception;
 use JTL\Backend\Menu;
 use JTL\Backend\Permissions;
 use JTL\Backend\TwoFA;
+use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -242,7 +243,7 @@ class AdminAccountController extends AbstractBackendController
             } else {
                 $shortText = Text::filterXSS($value);
             }
-            if ($this->db->queryPrepared(
+            $res = $this->db->queryPrepared(
                 'INSERT INTO tadminloginattribut (kAdminlogin, cName, cAttribValue, cAttribText)
                     VALUES (:loginID, :loginName, :attribVal, :attribText)
                     ON DUPLICATE KEY UPDATE
@@ -253,8 +254,10 @@ class AdminAccountController extends AbstractBackendController
                     'loginName'  => $key,
                     'attribVal'  => $shortText,
                     'attribText' => $longText ?? null
-                ]
-            ) === 0) {
+                ],
+                ReturnType::LAST_INSERTED_ID
+            );
+            if ($res === 0) {
                 $this->addError(\sprintf(\__('errorKeyChange'), $key));
             }
             $handledKeys[] = $key;
@@ -325,7 +328,7 @@ class AdminAccountController extends AbstractBackendController
     }
 
     /**
-     * @param array $tmpFile
+     * @param array  $tmpFile
      * @param string $attribName
      * @return bool|string
      */

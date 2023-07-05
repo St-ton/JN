@@ -344,7 +344,7 @@ class Metadata implements MetadataInterface
         array                  $products,
         SearchResultsInterface $searchResults,
         array                  $globalMeta,
-        $category = null
+        ?Kategorie             $category = null
     ): string {
         \executeHook(\HOOK_FILTER_INC_GIBNAVIMETADESCRIPTION);
         $maxLength = !empty($this->conf['metaangaben']['global_meta_maxlaenge_description'])

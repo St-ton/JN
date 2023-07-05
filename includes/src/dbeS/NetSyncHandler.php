@@ -190,19 +190,20 @@ class NetSyncHandler
                 continue;
             }
             $pathName = $baseDir . \DIRECTORY_SEPARATOR . $file;
-            if (\is_file($pathName)) {
-                $pathinfo = \pathinfo($pathName);
-                $files[]  = new SystemFile(
-                    $index++,
-                    $pathName,
-                    \str_replace([\PFAD_DOWNLOADS_PREVIEW, \PFAD_DOWNLOADS], '', $pathName),
-                    $pathinfo['filename'],
-                    $pathinfo['dirname'],
-                    $pathinfo['extension'] ?? '',
-                    \filemtime($pathName) ?: 0,
-                    \filesize($pathName)
-                );
+            if (!\is_file($pathName)) {
+                continue;
             }
+            $pathinfo = \pathinfo($pathName);
+            $files[]  = new SystemFile(
+                $index++,
+                $pathName,
+                \str_replace([\PFAD_DOWNLOADS_PREVIEW, \PFAD_DOWNLOADS], '', $pathName),
+                $pathinfo['filename'],
+                $pathinfo['dirname'],
+                $pathinfo['extension'] ?? '',
+                \filemtime($pathName) ?: 0,
+                \filesize($pathName)
+            );
         }
 
         return $files;

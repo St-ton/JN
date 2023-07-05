@@ -43,18 +43,19 @@ class WarehousesController extends AbstractBackendController
                 foreach ($postData['cNameSprache'] as $id => $assocLang) {
                     $this->db->delete('twarenlagersprache', 'kWarenlager', (int)$id);
                     foreach ($assocLang as $languageID => $name) {
-                        if (\mb_strlen(\trim($name)) > 1) {
-                            $data = (object)[
-                                'kWarenlager' => (int)$id,
-                                'kSprache'    => (int)$languageID,
-                                'cName'       => \htmlspecialchars(
-                                    \trim($name),
-                                    \ENT_COMPAT | \ENT_HTML401,
-                                    \JTL_CHARSET
-                                )
-                            ];
-                            $this->db->insert('twarenlagersprache', $data);
+                        if (\mb_strlen(\trim($name)) < 2) {
+                            continue;
                         }
+                        $data = (object)[
+                            'kWarenlager' => (int)$id,
+                            'kSprache'    => (int)$languageID,
+                            'cName'       => \htmlspecialchars(
+                                \trim($name),
+                                \ENT_COMPAT | \ENT_HTML401,
+                                \JTL_CHARSET
+                            )
+                        ];
+                        $this->db->insert('twarenlagersprache', $data);
                     }
                 }
             }

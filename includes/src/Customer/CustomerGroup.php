@@ -3,6 +3,7 @@
 namespace JTL\Customer;
 
 use InvalidArgumentException;
+use JTL\DB\DbInterface;
 use JTL\MagicCompatibilityTrait;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -87,11 +88,12 @@ class CustomerGroup
     ];
 
     /**
-     * CustomerGroup constructor.
-     * @param int $id
+     * @param int              $id
+     * @param DbInterface|null $db
      */
-    public function __construct(int $id = 0)
+    public function __construct(int $id = 0, private ?DbInterface $db = null)
     {
+        $this->db = $this->db ?? Shop::Container()->getDB();
         if ($id > 0) {
             $this->loadFromDB($id);
         }
@@ -102,25 +104,26 @@ class CustomerGroup
      */
     public function loadDefaultGroup(): self
     {
-        $item = Shop::Container()->getDB()->select('tkundengruppe', 'cStandard', 'Y');
-        if ($item !== null) {
-            $conf = Shop::getSettingValue(\CONF_GLOBAL, 'global_sichtbarkeit');
-            $this->setID((int)$item->kKundengruppe)
-                ->setName($item->cName)
-                ->setDiscount($item->fRabatt)
-                ->setDefault($item->cStandard)
-                ->setShopLogin($item->cShopLogin)
-                ->setIsMerchant((int)$item->nNettoPreise);
-            if ($this->isDefault()) {
-                if ((int)$conf === 2) {
-                    $this->mayViewPrices = 0;
-                } elseif ((int)$conf === 3) {
-                    $this->mayViewPrices     = 0;
-                    $this->mayViewCategories = 0;
-                }
-            }
-            $this->localize()->initAttributes();
+        $item = self::getDefault($this->db);
+        if ($item === null) {
+            return $this;
         }
+        $conf = Shop::getSettingValue(\CONF_GLOBAL, 'global_sichtbarkeit');
+        $this->setID((int)$item->kKundengruppe)
+            ->setName($item->cName)
+            ->setDiscount($item->fRabatt)
+            ->setDefault($item->cStandard)
+            ->setShopLogin($item->cShopLogin)
+            ->setIsMerchant((int)$item->nNettoPreise);
+        if ($this->isDefault()) {
+            if ((int)$conf === 2) {
+                $this->mayViewPrices = 0;
+            } elseif ((int)$conf === 3) {
+                $this->mayViewPrices     = 0;
+                $this->mayViewCategories = 0;
+            }
+        }
+        $this->localize()->initAttributes();
 
         return $this;
     }
@@ -131,7 +134,7 @@ class CustomerGroup
     private function localize(): self
     {
         if ($this->id > 0 && $this->languageID > 0) {
-            $localized = Shop::Container()->getDB()->select(
+            $localized = $this->db->select(
                 'tkundengruppensprache',
                 'kKundengruppe',
                 (int)$this->id,
@@ -153,7 +156,7 @@ class CustomerGroup
      */
     private function loadFromDB(int $id = 0): self
     {
-        $item = Shop::Container()->getDB()->select('tkundengruppe', 'kKundengruppe', $id);
+        $item = $this->db->select('tkundengruppe', 'kKundengruppe', $id);
         if ($item === null) {
             throw new InvalidArgumentException('Cannot load customer group with id ' . $id);
         }
@@ -179,7 +182,7 @@ class CustomerGroup
         $ins->cStandard    = \mb_convert_case($this->default, \MB_CASE_UPPER);
         $ins->cShopLogin   = $this->cShopLogin;
         $ins->nNettoPreise = (int)$this->isMerchant;
-        $kPrim             = Shop::Container()->getDB()->insert('tkundengruppe', $ins);
+        $kPrim             = $this->db->insert('tkundengruppe', $ins);
         if ($kPrim > 0) {
             return $primary ? $kPrim : true;
         }
@@ -199,7 +202,7 @@ class CustomerGroup
         $upd->cShopLogin   = $this->cShopLogin;
         $upd->nNettoPreise = $this->isMerchant;
 
-        return Shop::Container()->getDB()->update('tkundengruppe', 'kKundengruppe', (int)$this->id, $upd);
+        return $this->db->update('tkundengruppe', 'kKundengruppe', (int)$this->id, $upd);
     }
 
     /**
@@ -207,7 +210,7 @@ class CustomerGroup
      */
     public function delete(): int
     {
-        return Shop::Container()->getDB()->delete('tkundengruppe', 'kKundengruppe', (int)$this->id);
+        return $this->db->delete('tkundengruppe', 'kKundengruppe', (int)$this->id);
     }
 
     /**
@@ -432,21 +435,31 @@ class CustomerGroup
      */
     public static function getGroups(): array
     {
-        return Shop::Container()->getDB()->getCollection(
+        $db = Shop::Container()->getDB();
+
+        return $db->getCollection(
             'SELECT kKundengruppe AS id
                 FROM tkundengruppe
                 WHERE kKundengruppe > 0'
-        )->map(static function ($e): self {
-            return new self((int)$e->id);
+        )->map(static function (stdClass $e) use ($db): self {
+            return new self((int)$e->id, $db);
         })->toArray();
     }
 
     /**
-     * @return stdClass|false
+     * @param DbInterface|null $db
+     * @return stdClass|null
      */
-    public static function getDefault()
+    public static function getDefault(?DbInterface $db = null): ?stdClass
     {
-        return Shop::Container()->getDB()->select('tkundengruppe', 'cStandard', 'Y');
+        $res = ($db ?? Shop::Container()->getDB())->select('tkundengruppe', 'cStandard', 'Y');
+        if ($res === null) {
+            return null;
+        }
+        $res->kKundengruppe = (int)$res->kKundengruppe;
+        $res->nNettoPreise  = (int)$res->nNettoPreise;
+
+        return $res;
     }
 
     /**
@@ -484,19 +497,21 @@ class CustomerGroup
     }
 
     /**
+     * @param bool $ignoreSession
      * @return int
      */
-    public static function getDefaultGroupID(): int
+    public static function getDefaultGroupID(bool $ignoreSession = false): int
     {
-        if (isset($_SESSION['Kundengruppe'])
+        if ($ignoreSession === false
+            && isset($_SESSION['Kundengruppe'])
             && $_SESSION['Kundengruppe'] instanceof self
             && $_SESSION['Kundengruppe']->getID() > 0
         ) {
             return $_SESSION['Kundengruppe']->getID();
         }
         $customerGroup = self::getDefault();
-        if (isset($customerGroup->kKundengruppe) && $customerGroup->kKundengruppe > 0) {
-            return (int)$customerGroup->kKundengruppe;
+        if ($customerGroup !== null && $customerGroup->kKundengruppe > 0) {
+            return $customerGroup->kKundengruppe;
         }
 
         return 0;
@@ -557,7 +572,7 @@ class CustomerGroup
     {
         if ($this->id > 0) {
             $this->Attribute = [];
-            $attributes      = Shop::Container()->getDB()->selectAll(
+            $attributes      = $this->db->selectAll(
                 'tkundengruppenattribut',
                 'kKundengruppe',
                 (int)$this->id

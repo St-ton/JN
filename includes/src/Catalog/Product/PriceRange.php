@@ -390,42 +390,33 @@ class PriceRange
         $minPrices = [];
         $maxPrices = [];
 
-        foreach ($configGroups as $configGroup) {
-            \sort($configGroup->prices->min);
-            \rsort($configGroup->prices->max);
+        foreach ($configGroups as $group) {
+            \sort($group->prices->min);
+            \rsort($group->prices->max);
             $minPrice = 0;
             $maxPrice = 0;
 
             // Für den kleinsten Preis werden zuerst alle kleinsten Preise bis zur Mindestanzahl addiert...
-            foreach (\array_slice($configGroup->prices->min, 0, $configGroup->nMin) as $price) {
+            foreach (\array_slice($group->prices->min, 0, $group->nMin) as $price) {
                 $minPrice += $price;
             }
             // ...und zusätzlich - bis zur Maximalanzahl - alle Preise < 0, also alle Abschläge
-            foreach (\array_slice(
-                $configGroup->prices->min,
-                $configGroup->nMin,
-                $configGroup->nMax - $configGroup->nMin
-            ) as $price) {
+            foreach (\array_slice($group->prices->min, $group->nMin, $group->nMax - $group->nMin) as $price) {
                 if ($price < 0) {
                     $minPrice += $price;
                 }
             }
 
             // Für den größten Preis werden zuerst alle größten Preise bis zur Mindestanzahl addiert...
-            foreach (\array_slice($configGroup->prices->max, 0, $configGroup->nMin) as $price) {
+            foreach (\array_slice($group->prices->max, 0, $group->nMin) as $price) {
                 $maxPrice += $price;
             }
             // ...und danach - bis zur Maximalanzahl - nur noch Preise > 0, also keine Abschläge
-            foreach (\array_slice(
-                $configGroup->prices->max,
-                $configGroup->nMin,
-                $configGroup->nMax - $configGroup->nMin
-            ) as $price) {
+            foreach (\array_slice($group->prices->max, $group->nMin, $group->nMax - $group->nMin) as $price) {
                 if ($price > 0) {
                     $maxPrice += $price;
                 }
             }
-
             $minPrices[] = $minPrice;
             $maxPrices[] = $maxPrice;
         }
@@ -444,27 +435,28 @@ class PriceRange
     public function setDiscount(float $discount): void
     {
         $discount /= 100;
-        if ($discount !== $this->discount) {
-            if (!$this->isMinSpecialPrice) {
-                $this->minNettoPrice /= (1 - $this->discount);
-            }
-            if (!$this->isMaxSpecialPrice) {
-                $this->maxNettoPrice /= (1 - $this->discount);
-            }
-
-            $this->discount = $discount;
-
-            $ust = Tax::getSalesTax($this->productData->kSteuerklasse);
-
-            if (!$this->isMinSpecialPrice) {
-                $this->minNettoPrice *= (1 - $this->discount);
-            }
-            if (!$this->isMaxSpecialPrice) {
-                $this->maxNettoPrice *= (1 - $this->discount);
-            }
-            $this->minBruttoPrice = Tax::getGross($this->minNettoPrice, $ust, 4);
-            $this->maxBruttoPrice = Tax::getGross($this->maxNettoPrice, $ust, 4);
+        if ($discount === $this->discount) {
+            return;
         }
+        if (!$this->isMinSpecialPrice) {
+            $this->minNettoPrice /= (1 - $this->discount);
+        }
+        if (!$this->isMaxSpecialPrice) {
+            $this->maxNettoPrice /= (1 - $this->discount);
+        }
+
+        $this->discount = $discount;
+
+        $ust = Tax::getSalesTax($this->productData->kSteuerklasse);
+
+        if (!$this->isMinSpecialPrice) {
+            $this->minNettoPrice *= (1 - $this->discount);
+        }
+        if (!$this->isMaxSpecialPrice) {
+            $this->maxNettoPrice *= (1 - $this->discount);
+        }
+        $this->minBruttoPrice = Tax::getGross($this->minNettoPrice, $ust, 4);
+        $this->maxBruttoPrice = Tax::getGross($this->maxNettoPrice, $ust, 4);
     }
 
     /**
@@ -512,8 +504,6 @@ class PriceRange
     }
 
     /**
-     * get localized min strings
-     *
      * @param int|null $netto
      * @return string|string[]
      */
@@ -534,8 +524,6 @@ class PriceRange
     }
 
     /**
-     * get localized max strings
-     *
      * @param int|null $netto
      * @return string|string[]
      */
@@ -556,8 +544,6 @@ class PriceRange
     }
 
     /**
-     * get product data
-     *
      * @return stdClass
      */
     public function getProductData(): stdClass

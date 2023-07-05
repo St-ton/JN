@@ -103,41 +103,42 @@ class Product
             }
             $combinations[$i] = self::getSelectedVariationValue($i);
         }
-        if ($valid) {
-            $attributes      = [];
-            $attributeValues = [];
-            if (\count($combinations) > 0) {
-                foreach ($combinations as $i => $kVariationKombi) {
-                    $attributes[]      = $i;
-                    $attributeValues[] = (int)$kVariationKombi;
-                }
-                $product = Shop::Container()->getDB()->getSingleObject(
-                    'SELECT tartikel.kArtikel
-                        FROM teigenschaftkombiwert
-                        JOIN tartikel
-                            ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
-                        LEFT JOIN tartikelsichtbarkeit
-                            ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                            AND tartikelsichtbarkeit.kKundengruppe = :cgid
-                        WHERE teigenschaftkombiwert.kEigenschaft IN (' . \implode(',', $attributes) . ')
-                            AND teigenschaftkombiwert.kEigenschaftWert IN (' . \implode(',', $attributeValues) . ')
-                            AND tartikelsichtbarkeit.kArtikel IS NULL
-                            AND tartikel.kVaterArtikel = :pid
-                        GROUP BY tartikel.kArtikel
-                        HAVING COUNT(*) = ' . \count($combinations),
-                    ['cgid' => $customerGroupID, 'pid' => $productID]
-                );
-                if ($product !== null && $product->kArtikel > 0) {
-                    return (int)$product->kArtikel;
-                }
+        if (!$valid) {
+            return 0;
+        }
+        $attributes      = [];
+        $attributeValues = [];
+        if (\count($combinations) > 0) {
+            foreach ($combinations as $i => $kVariationKombi) {
+                $attributes[]      = $i;
+                $attributeValues[] = (int)$kVariationKombi;
             }
-            if (!isset($_SESSION['variBoxAnzahl_arr'])) {
-                \header('Location: ' . Shop::getURL() .
-                    '/?a=' . $productID .
-                    '&n=' . $_POST['anzahl'] .
-                    '&r=' . \R_VARWAEHLEN, true, 302);
-                exit();
+            $product = Shop::Container()->getDB()->getSingleObject(
+                'SELECT tartikel.kArtikel
+                    FROM teigenschaftkombiwert
+                    JOIN tartikel
+                        ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
+                    LEFT JOIN tartikelsichtbarkeit
+                        ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                        AND tartikelsichtbarkeit.kKundengruppe = :cgid
+                    WHERE teigenschaftkombiwert.kEigenschaft IN (' . \implode(',', $attributes) . ')
+                        AND teigenschaftkombiwert.kEigenschaftWert IN (' . \implode(',', $attributeValues) . ')
+                        AND tartikelsichtbarkeit.kArtikel IS NULL
+                        AND tartikel.kVaterArtikel = :pid
+                    GROUP BY tartikel.kArtikel
+                    HAVING COUNT(*) = ' . \count($combinations),
+                ['cgid' => $customerGroupID, 'pid' => $productID]
+            );
+            if ($product !== null && $product->kArtikel > 0) {
+                return (int)$product->kArtikel;
             }
+        }
+        if (!isset($_SESSION['variBoxAnzahl_arr'])) {
+            \header('Location: ' . Shop::getURL() .
+                '/?a=' . $productID .
+                '&n=' . $_POST['anzahl'] .
+                '&r=' . \R_VARWAEHLEN, true, 302);
+            exit();
         }
 
         return 0;

@@ -68,7 +68,7 @@ final class Newsletter extends Job
         $manufacturerIDs = $instance->getKeys($jobData->cHersteller);
         $categoryIDs     = $instance->getKeys($jobData->cKategorie);
         $customerGroups  = $instance->getKeys($jobData->cKundengruppe);
-        $campaign        = new Campaign((int)$jobData->kKampagne);
+        $campaign        = new Campaign((int)$jobData->kKampagne, $this->db);
         if (\count($customerGroups) === 0) {
             $this->setFinished(true);
 
@@ -82,36 +82,38 @@ final class Newsletter extends Job
         }
         $manufacturers = $instance->getManufacturers($manufacturerIDs, $campaign, (int)$jobData->kSprache);
         $recipients    = $this->getRecipients($jobData, $queueEntry, $customerGroups);
-        if (\count($recipients) > 0) {
-            $shopURL = Shop::getURL();
-            foreach ($recipients as $recipient) {
-                $recipient->cLoeschURL = $shopURL . '/?oc=' . $recipient->cLoeschCode;
-                $cgID                  = \max(0, $recipient->kKundengruppe);
-                $instance->send(
-                    $jobData,
-                    $recipient,
-                    $products[$cgID],
-                    $manufacturers,
-                    $categories[$cgID],
-                    $campaign,
-                    $recipient->kKunde > 0 ? new Customer($recipient->kKunde) : null
-                );
-                $this->db->update(
-                    'tnewsletterempfaenger',
-                    'kNewsletterEmpfaenger',
-                    $recipient->kNewsletterEmpfaenger,
-                    (object)['dLetzterNewsletter' => \date('Y-m-d H:i:s')]
-                );
-                ++$queueEntry->tasksExecuted;
-            }
-            $rowUpdate                = new stdClass();
-            $rowUpdate->dLastSendings = (new DateTime())->format('Y-m-d H:i:s');
-            $this->db->update('tnewsletter', 'kNewsletter', $this->getForeignKeyID(), $rowUpdate);
-            $this->setFinished(false);
-        } else {
+        if (\count($recipients) === 0) {
             $this->setFinished(true);
             $this->db->delete('tcron', 'cronID', $this->getCronID());
+
+            return $this;
         }
+        $service = Shop::Container()->getPasswordService();
+        $shopURL = Shop::getURL();
+        foreach ($recipients as $recipient) {
+            $recipient->cLoeschURL = $shopURL . '/?oc=' . $recipient->cLoeschCode;
+            $cgID                  = \max(0, $recipient->kKundengruppe);
+            $instance->send(
+                $jobData,
+                $recipient,
+                $products[$cgID],
+                $manufacturers,
+                $categories[$cgID],
+                $campaign,
+                $recipient->kKunde > 0 ? new Customer($recipient->kKunde, $service, $this->db) : null
+            );
+            $this->db->update(
+                'tnewsletterempfaenger',
+                'kNewsletterEmpfaenger',
+                $recipient->kNewsletterEmpfaenger,
+                (object)['dLetzterNewsletter' => \date('Y-m-d H:i:s')]
+            );
+            ++$queueEntry->tasksExecuted;
+        }
+        $rowUpdate                = new stdClass();
+        $rowUpdate->dLastSendings = (new DateTime())->format('Y-m-d H:i:s');
+        $this->db->update('tnewsletter', 'kNewsletter', $this->getForeignKeyID(), $rowUpdate);
+        $this->setFinished(false);
 
         return $this;
     }

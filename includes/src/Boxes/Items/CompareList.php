@@ -30,16 +30,17 @@ final class CompareList extends AbstractBox
             $extra       = '';
             $postData    = \array_keys($_REQUEST);
             foreach ($postData as $param) {
-                if ((int)$_REQUEST[$param] > 0 && \in_array($param, $validParams, true)) {
-                    if (\is_array($_REQUEST[$param])) {
-                        $extraTMP = '';
-                        foreach ($_REQUEST[$param] as $item) {
-                            $extraTMP .= '&' . $param . '%5B%5D=' . $item;
-                        }
-                        $extra .= $extraTMP;
-                    } else {
-                        $extra .= '&' . $param . '=' . $_REQUEST[$param];
+                if ((int)$_REQUEST[$param] <= 0 || !\in_array($param, $validParams, true)) {
+                    continue;
+                }
+                if (\is_array($_REQUEST[$param])) {
+                    $extraTMP = '';
+                    foreach ($_REQUEST[$param] as $item) {
+                        $extraTMP .= '&' . $param . '%5B%5D=' . $item;
                     }
+                    $extra .= $extraTMP;
+                } else {
+                    $extra .= '&' . $param . '=' . $_REQUEST[$param];
                 }
             }
             $extra          = Text::filterXSS($extra);

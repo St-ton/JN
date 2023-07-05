@@ -203,34 +203,35 @@ class MigrationManager
 
             foreach (\glob($path . '*.php') as $filePath) {
                 $baseName = \basename($filePath);
-                if (MigrationHelper::isValidMigrationFileName($baseName)) {
-                    $id    = MigrationHelper::getIdFromFileName($baseName);
-                    $info  = MigrationHelper::getInfoFromFileName($baseName);
-                    $class = MigrationHelper::mapFileNameToClassName($baseName);
-                    $date  = $executed[(int)$id] ?? null;
-
-                    require_once $filePath;
-
-                    if (!\class_exists($class)) {
-                        throw new InvalidArgumentException(\sprintf(
-                            'Could not find class "%s" in file "%s"',
-                            $class,
-                            $filePath
-                        ));
-                    }
-
-                    $migration = new $class($this->db, $info, $date);
-
-                    if (!\is_subclass_of($migration, IMigration::class)) {
-                        throw new InvalidArgumentException(\sprintf(
-                            'The class "%s" in file "%s" must implement IMigration interface',
-                            $class,
-                            $filePath
-                        ));
-                    }
-
-                    $migrations[$id] = $migration;
+                if (!MigrationHelper::isValidMigrationFileName($baseName)) {
+                    continue;
                 }
+                $id    = MigrationHelper::getIdFromFileName($baseName);
+                $info  = MigrationHelper::getInfoFromFileName($baseName);
+                $class = MigrationHelper::mapFileNameToClassName($baseName);
+                $date  = $executed[(int)$id] ?? null;
+
+                require_once $filePath;
+
+                if (!\class_exists($class)) {
+                    throw new InvalidArgumentException(\sprintf(
+                        'Could not find class "%s" in file "%s"',
+                        $class,
+                        $filePath
+                    ));
+                }
+
+                $migration = new $class($this->db, $info, $date);
+
+                if (!\is_subclass_of($migration, IMigration::class)) {
+                    throw new InvalidArgumentException(\sprintf(
+                        'The class "%s" in file "%s" must implement IMigration interface',
+                        $class,
+                        $filePath
+                    ));
+                }
+
+                $migrations[$id] = $migration;
             }
             \ksort($migrations);
             $this->setMigrations($migrations);

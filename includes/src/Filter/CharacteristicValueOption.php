@@ -4,7 +4,6 @@ namespace JTL\Filter;
 
 use JTL\Cache\JTLCacheInterface;
 use JTL\Media\Image;
-use JTL\Shop;
 
 /**
  * Class CharacteristicValueOption

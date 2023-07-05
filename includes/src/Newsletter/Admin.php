@@ -5,6 +5,7 @@ namespace JTL\Newsletter;
 use DateTime;
 use JTL\Backend\Revision;
 use JTL\Campaign;
+use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
 use JTL\DB\SqlObject;
 use JTL\Exceptions\EmptyResultSetException;
@@ -1070,7 +1071,7 @@ final class Admin
         $manufacturerIDs = $instance->getKeys($checks->cHersteller);
         $categoryIDs     = $instance->getKeys($checks->cKategorie);
         // Baue Kampagnenobjekt, falls vorhanden in der Newslettervorlage
-        $campaign = new Campaign($checks->kKampagne);
+        $campaign = new Campaign($checks->kKampagne, $this->db);
         // Baue Arrays von Objekten
         $products      = $instance->getProducts($productIDs, $campaign);
         $manufacturers = $instance->getManufacturers($manufacturerIDs, $campaign);
@@ -1096,20 +1097,20 @@ final class Admin
             $cgCount[1] = 0;     // Count Kundengruppenkeys
             foreach ($recipient->cKundengruppe_arr as $cKundengruppeTMP) {
                 if (!empty($cKundengruppeTMP)) {
-                    $tmpGroup = $this->db->select('tkundengruppe', 'kKundengruppe', (int)$cKundengruppeTMP);
-                    if ($tmpGroup !== null && \mb_strlen($tmpGroup->cName) > 0) {
+                    $tmpGroup = new CustomerGroup((int)$cKundengruppeTMP, $this->db);
+                    if (\mb_strlen($tmpGroup->getName() ?? '') > 0) {
                         if ($cgCount[0] > 0) {
-                            $groupString .= ', ' . $tmpGroup->cName;
+                            $groupString .= ', ' . $tmpGroup->getName();
                         } else {
-                            $groupString .= $tmpGroup->cName;
+                            $groupString .= $tmpGroup->getName();
                         }
                         $cgCount[0]++;
                     }
-                    if ((int)$tmpGroup->kKundengruppe > 0) {
+                    if ($tmpGroup->getID() > 0) {
                         if ($cgCount[1] > 0) {
-                            $cgroupKey .= ';' . $tmpGroup->kKundengruppe;
+                            $cgroupKey .= ';' . $tmpGroup->getID();
                         } else {
-                            $cgroupKey .= $tmpGroup->kKundengruppe;
+                            $cgroupKey .= $tmpGroup->getID();
                         }
                         $cgCount[1]++;
                     }
@@ -1181,7 +1182,7 @@ final class Admin
         $productIDs      = $instance->getKeys($checks->cArtikel, true);
         $manufacturerIDs = $instance->getKeys($checks->cHersteller);
         $categoryIDs     = $instance->getKeys($checks->cKategorie);
-        $campaign        = new Campaign($checks->kKampagne);
+        $campaign        = new Campaign($checks->kKampagne, $this->db);
         $products        = $instance->getProducts($productIDs, $campaign);
         $manufacturers   = $instance->getManufacturers($manufacturerIDs, $campaign);
         $categories      = $instance->getCategories($categoryIDs, $campaign);

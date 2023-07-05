@@ -66,16 +66,14 @@ class Session
             ? new Currency($model->getCurrencyID())
             : (new Currency())->getDefault();
         Tax::setTaxRates();
-        $net       = $db->select('tkundengruppe', 'kKundengruppe', $model->getCustomerGroupID());
         $languages = Shop::Lang()->gibInstallierteSprachen();
         $langISO   = first($languages, static function (LanguageModel $l) use ($languageID): bool {
             return $l->getId() === $languageID;
         });
 
-        $_SESSION['Kundengruppe']  = (new CustomerGroup($model->getCustomerGroupID()))
+        $_SESSION['Kundengruppe']  = (new CustomerGroup($model->getCustomerGroupID(), $db))
             ->setMayViewPrices(1)
-            ->setMayViewCategories(1)
-            ->setIsMerchant((int)($net->nNettoPreise ?? 0));
+            ->setMayViewCategories(1);
         $_SESSION['kKundengruppe'] = $model->getCustomerGroupID();
         $_SESSION['kSprache']      = $languageID;
         $_SESSION['Sprachen']      = $languages;

@@ -92,15 +92,16 @@ final class Listing
             $item->loadFromPlugin($plugin);
             /** @var ListingItem $available */
             foreach ($this->items as $available) {
-                if ($available->getPath() === $item->getPath()) {
-                    $added = true;
-                    $available->mergeWith($item);
-                    $available->setAvailable(true);
-                    $available->setInstalled(true);
-                    if ($currentVersion->greaterThan($plugin->getMeta()->getSemVer())) {
-                        $available->setUpdateAvailable($currentVersion);
-                        $available->setVersion($item->getVersion());
-                    }
+                if ($available->getPath() !== $item->getPath()) {
+                    continue;
+                }
+                $added = true;
+                $available->mergeWith($item);
+                $available->setAvailable(true);
+                $available->setInstalled(true);
+                if ($currentVersion->greaterThan($plugin->getMeta()->getSemVer())) {
+                    $available->setUpdateAvailable($currentVersion);
+                    $available->setVersion($item->getVersion());
                 }
             }
             if ($added === false) {

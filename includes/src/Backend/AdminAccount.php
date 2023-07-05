@@ -18,6 +18,7 @@ use JTL\Session\Backend;
 use JTL\Shop;
 use Psr\Log\LoggerInterface;
 use stdClass;
+use function Functional\pluck;
 use function Functional\reindex;
 
 /**
@@ -608,10 +609,7 @@ class AdminAccount
                 $groupID,
                 'cRecht'
             );
-            $group->oPermission_arr   = [];
-            foreach ($permissions as $permission) {
-                $group->oPermission_arr[] = $permission->cRecht;
-            }
+            $group->oPermission_arr   = pluck($permissions, 'cRecht');
 
             return $group;
         }

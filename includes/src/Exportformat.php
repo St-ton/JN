@@ -776,16 +776,14 @@ class Exportformat
             ? new Currency($this->kWaehrung)
             : (new Currency())->getDefault();
         Tax::setTaxRates();
-        $net       = $this->db->select('tkundengruppe', 'kKundengruppe', $this->getKundengruppe());
         $languages = Shop::Lang()->gibInstallierteSprachen();
         $langISO   = first($languages, function (LanguageModel $l): bool {
             return $l->getId() === $this->getSprache();
         });
 
-        $_SESSION['Kundengruppe']  = (new CustomerGroup($this->getKundengruppe()))
+        $_SESSION['Kundengruppe']  = (new CustomerGroup($this->getKundengruppe(), $this->db))
             ->setMayViewPrices(1)
-            ->setMayViewCategories(1)
-            ->setIsMerchant((int)($net->nNettoPreise ?? 0));
+            ->setMayViewCategories(1);
         $_SESSION['kKundengruppe'] = $this->getKundengruppe();
         $_SESSION['kSprache']      = $this->getSprache();
         $_SESSION['Sprachen']      = $languages;
@@ -1556,7 +1554,7 @@ class Exportformat
         try {
             return Shop::Smarty()->assign('exportformat', (object)['nFehlerhaft' => $error])
                 ->fetch('snippets/exportformat_state.tpl');
-        } catch (SmartyException | Exception $e) {
+        } catch (SmartyException | Exception) {
             return '';
         }
     }

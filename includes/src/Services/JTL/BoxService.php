@@ -397,16 +397,17 @@ class BoxService implements BoxServiceInterface
         $result   = [];
         foreach ($grouped as $i => $boxes) {
             $first = first($boxes);
-            if ($first->kContainer > 0) {
-                $box = $this->factory->getBoxByBaseType($first->kBoxvorlage, $first->eTyp);
-                $box->map($boxes);
-                $this->loadPluginBox($box);
-                if (!isset($children[$first->kContainer])) {
-                    $children[$first->kContainer] = [];
-                }
-                $children[$first->kContainer][] = $box;
-                unset($grouped[$i]);
+            if ($first->kContainer <= 0) {
+                continue;
             }
+            $box = $this->factory->getBoxByBaseType($first->kBoxvorlage, $first->eTyp);
+            $box->map($boxes);
+            $this->loadPluginBox($box);
+            if (!isset($children[$first->kContainer])) {
+                $children[$first->kContainer] = [];
+            }
+            $children[$first->kContainer][] = $box;
+            unset($grouped[$i]);
         }
         foreach ($grouped as $boxes) {
             $first = first($boxes);

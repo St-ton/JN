@@ -141,11 +141,11 @@ interface MetadataInterface
         array                  $products,
         SearchResultsInterface $searchResults,
         array                  $globalMeta,
-        $category = null
+        ?Kategorie             $category = null
     ): string;
 
     /**
-     * @param array               $products
+     * @param array          $products
      * @param Kategorie|null $category
      * @return string
      */

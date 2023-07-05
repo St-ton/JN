@@ -93,7 +93,7 @@ class ArtikelListe
     /**
      * Holt (max) $anzahl an Artikeln aus der angegebenen Kategorie in die Liste
      *
-     * @param int    $categoryID  Kategorie Key
+     * @param int    $categoryID - Kategorie Key
      * @param int    $limitStart
      * @param int    $limitAnzahl - wieviele Artikel geholt werden sollen. Sind nicht genug in der entsprechenden
      *                            Kategorie enthalten, wird die Maximalanzahl geholt.

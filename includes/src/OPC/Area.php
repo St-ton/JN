@@ -124,9 +124,9 @@ class Area implements \JsonSerializable
         $this->id = $data['id'];
         if (GeneralObject::hasCount('content', $data)) {
             $this->clear();
-
+            $opc = Shop::Container()->getOPC();
             foreach ($data['content'] as $portletData) {
-                $instance = Shop::Container()->getOPC()->getPortletInstance($portletData);
+                $instance = $opc->getPortletInstance($portletData);
                 $this->addPortlet($instance);
             }
         }

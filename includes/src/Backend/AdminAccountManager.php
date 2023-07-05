@@ -140,7 +140,7 @@ class AdminAccountManager
     }
 
     /**
-     * @param array $tmpFile
+     * @param array  $tmpFile
      * @param string $attribName
      * @return bool
      */

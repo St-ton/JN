@@ -45,7 +45,6 @@ class CheckboxValidationDataObject extends AbstractDataObject
      */
     protected bool $hasDownloads = false;
 
-
     /**
      * @var string[]
      */

@@ -3,6 +3,8 @@
 namespace JTL\Catalog\Product;
 
 use DateTime;
+use JTL\Cache\JTLCacheInterface;
+use JTL\DB\DbInterface;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Tax;
 use JTL\Session\Frontend;
@@ -45,12 +47,14 @@ class Preisverlauf
     public $dDate;
 
     /**
-     * Preisverlauf constructor.
-     *
-     * @param int $id
+     * @param int                    $id
+     * @param DbInterface|null       $db
+     * @param JTLCacheInterface|null $cache
      */
-    public function __construct(int $id = 0)
+    public function __construct(int $id = 0, private ?DbInterface $db = null, private ?JTLCacheInterface $cache = null)
     {
+        $this->db    = $this->db ?? Shop::Container()->getDB();
+        $this->cache = $this->cache ?? Shop::Container()->getCache();
         if ($id > 0) {
             $this->loadFromDB($id);
         }
@@ -65,8 +69,8 @@ class Preisverlauf
     public function gibPreisverlauf(int $productID, int $customerGroupID, int $month): array
     {
         $cacheID = 'gpv_' . $productID . '_' . $customerGroupID . '_' . $month;
-        if (($data = Shop::Container()->getCache()->get($cacheID)) === false) {
-            $data     = Shop::Container()->getDB()->getObjects(
+        if (($data = $this->cache->get($cacheID)) === false) {
+            $data     = $this->db->getObjects(
                 'SELECT tpreisverlauf.fVKNetto, tartikel.fMwst, UNIX_TIMESTAMP(tpreisverlauf.dDate) AS timestamp
                     FROM tpreisverlauf 
                     JOIN tartikel
@@ -81,16 +85,17 @@ class Preisverlauf
             $dt       = new DateTime();
             $merchant = Frontend::getCustomerGroup()->isMerchant();
             foreach ($data as $pv) {
-                if (isset($pv->timestamp)) {
-                    $dt->setTimestamp((int)$pv->timestamp);
-                    $pv->date     = $dt->format('d.m.Y');
-                    $pv->fPreis   = $merchant
-                        ? \round($pv->fVKNetto * $currency->getConversionFactor(), 2)
-                        : Tax::getGross($pv->fVKNetto * $currency->getConversionFactor(), $pv->fMwst);
-                    $pv->currency = $currency->getCode();
+                if (!isset($pv->timestamp)) {
+                    continue;
                 }
+                $dt->setTimestamp((int)$pv->timestamp);
+                $pv->date     = $dt->format('d.m.Y');
+                $pv->fPreis   = $merchant
+                    ? \round($pv->fVKNetto * $currency->getConversionFactor(), 2)
+                    : Tax::getGross($pv->fVKNetto * $currency->getConversionFactor(), $pv->fMwst);
+                $pv->currency = $currency->getCode();
             }
-            Shop::Container()->getCache()->set(
+            $this->cache->set(
                 $cacheID,
                 $data,
                 [\CACHING_GROUP_ARTICLE, \CACHING_GROUP_ARTICLE . '_' . $productID]
@@ -106,7 +111,7 @@ class Preisverlauf
      */
     public function loadFromDB(int $id): self
     {
-        $item = Shop::Container()->getDB()->select('tpreisverlauf', 'kPreisverlauf', $id);
+        $item = $this->db->select('tpreisverlauf', 'kPreisverlauf', $id);
         if ($item !== null) {
             foreach (\array_keys(\get_object_vars($item)) as $member) {
                 $this->$member = $item->$member;
@@ -126,7 +131,7 @@ class Preisverlauf
     {
         $ins = GeneralObject::copyMembers($this);
         unset($ins->kPreisverlauf);
-        $this->kPreisverlauf = Shop::Container()->getDB()->insert('tpreisverlauf', $ins);
+        $this->kPreisverlauf = $this->db->insert('tpreisverlauf', $ins);
 
         return $this->kPreisverlauf;
     }
@@ -138,6 +143,6 @@ class Preisverlauf
     {
         $upd = GeneralObject::copyMembers($this);
 
-        return Shop::Container()->getDB()->update('tpreisverlauf', 'kPreisverlauf', $upd->kPreisverlauf, $upd);
+        return $this->db->update('tpreisverlauf', 'kPreisverlauf', $upd->kPreisverlauf, $upd);
     }
 }

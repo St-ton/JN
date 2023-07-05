@@ -8,6 +8,7 @@ use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Hersteller;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
+use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Product;
@@ -445,15 +446,14 @@ class Kupon
             $this->cGueltigBisShort = \date_create($this->dGueltigBis)->format('d.m.Y');
             $this->cGueltigBisLong  = \date_create($this->dGueltigBis)->format('d.m.Y H:i');
         }
+        $this->kKundengruppe = (int)$this->kKundengruppe;
         $this->cKundengruppe = '';
-        if ((int)$this->kKundengruppe !== -1) {
-            $customerGroup       = $this->db->getSingleObject(
-                'SELECT cName 
-                    FROM tkundengruppe 
-                    WHERE kKundengruppe = :cgid',
-                ['cgid' => $this->kKundengruppe]
-            );
-            $this->cKundengruppe = $customerGroup->cName ?? '';
+        if ($this->kKundengruppe > 0) {
+            try {
+                $customerGroup       = new CustomerGroup($this->kKundengruppe, $this->db);
+                $this->cKundengruppe = $customerGroup->getName() ?? '';
+            } catch (\Exception) {
+            }
         }
 
         $artNos       = Text::parseSSKint($this->cArtikel);

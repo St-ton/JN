@@ -79,11 +79,12 @@ class OrderController extends AbstractBackendController
             $prep
         );
         foreach ($items as $orderID) {
-            if ($orderID > 0) {
-                $order = new Bestellung($orderID);
-                $order->fuelleBestellung(true, 0, false);
-                $orders[] = $order;
+            if ($orderID <= 0) {
+                continue;
             }
+            $order = new Bestellung($orderID, false, $this->db);
+            $order->fuelleBestellung(true, 0, false);
+            $orders[] = $order;
         }
 
         return $orders;

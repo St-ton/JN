@@ -38,9 +38,10 @@ if (Request::verifyGPCDataInt('kK') > 0
         $newTracking->kNewsletterEmpfaenger = $recipientID;
         $newTracking->dErstellt             = 'NOW()';
 
-        $id = Shop::Container()->getDB()->insert('tnewslettertrack', $newTracking);
+        $db = Shop::Container()->getDB();
+        $id = $db->insert('tnewslettertrack', $newTracking);
         if ($id > 0) {
-            $campaign = new Campaign($campaignID);
+            $campaign = new Campaign($campaignID, $db);
             // Kampagnenbesucher in die Session
             $_SESSION['Kampagnenbesucher'][$campaign->kKampagne] = $campaign;
 

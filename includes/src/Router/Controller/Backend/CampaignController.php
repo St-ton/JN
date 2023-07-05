@@ -80,7 +80,7 @@ class CampaignController extends AbstractBackendController
         } elseif (Request::verifyGPCDataInt('erstellen_speichern') === 1 && Form::validateToken()) {
             // Speichern / Editieren
             $postData             = Text::filterXSS($_POST);
-            $campaign             = new Campaign();
+            $campaign             = new Campaign(0, $this->db);
             $campaign->cName      = $postData['cName'] ?? '';
             $campaign->cParameter = $postData['cParameter'];
             $campaign->cWert      = $postData['cWert'] ?? '';
@@ -172,7 +172,7 @@ class CampaignController extends AbstractBackendController
         }
         if ($step === 'kampagne_erstellen') { // Erstellen / Editieren
             if ($campaignID > 0) {
-                $this->smarty->assign('oKampagne', new Campaign($campaignID));
+                $this->smarty->assign('oKampagne', new Campaign($campaignID, $this->db));
             }
 
             return;
@@ -197,7 +197,7 @@ class CampaignController extends AbstractBackendController
             }
             $this->smarty->assign('TypeNames', $this->getTypeNames())
                 ->assign('Charts', $charts)
-                ->assign('oKampagne', new Campaign($campaignID))
+                ->assign('oKampagne', new Campaign($campaignID, $this->db))
                 ->assign('oKampagneStat_arr', $stats)
                 ->assign('oKampagne_arr', $campaigns)
                 ->assign('oKampagneDef_arr', $definitions)
@@ -243,7 +243,7 @@ class CampaignController extends AbstractBackendController
                 );
 
                 $this->smarty->assign('oPagiDefDetail', $paginationDefinitionDetail)
-                    ->assign('oKampagne', new Campaign($campaignID))
+                    ->assign('oKampagne', new Campaign($campaignID, $this->db))
                     ->assign('oKampagneStat_arr', $campaignStats)
                     ->assign('oKampagneDef', $definition)
                     ->assign('cMember_arr', $members)
@@ -518,7 +518,6 @@ class CampaignController extends AbstractBackendController
                 if (!isset($statsAssoc[$timeSpan]['cDatum'])) {
                     $statsAssoc[$timeSpan]['cDatum'] = $timeSpans['cDatumFull'][$i];
                 }
-
                 foreach ($definitions as $definition) {
                     $statsAssoc[$timeSpan][$definition->kKampagneDef] = 0;
                 }
@@ -985,7 +984,6 @@ class CampaignController extends AbstractBackendController
                     if ($item->cFirma !== 'n.v.') {
                         $item->cFirma = \trim($cryptoService->decryptXTEA($item->cFirma));
                     }
-
                     if ($item->nRegistriert !== 'n.v.') {
                         $item->nRegistriert = ((int)$item->nRegistriert === 1)
                             ? \__('yes')
@@ -1037,7 +1035,6 @@ class CampaignController extends AbstractBackendController
                     if ($item->cFirma !== 'n.v.') {
                         $item->cFirma = \trim($cryptoService->decryptXTEA($item->cFirma));
                     }
-
                     if ($item->nRegistriert !== 'n.v.') {
                         $item->nRegistriert = ((int)$item->nRegistriert === 1)
                             ? \__('yes')
@@ -1489,7 +1486,7 @@ class CampaignController extends AbstractBackendController
             return false;
         }
         foreach (\array_map('\intval', $campaignIDs) as $campaignID) {
-            (new Campaign($campaignID))->deleteInDB();
+            (new Campaign($campaignID, $this->db))->deleteInDB();
         }
         $this->cache->flush('campaigns');
 

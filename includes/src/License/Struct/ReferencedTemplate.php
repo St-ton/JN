@@ -55,32 +55,33 @@ class ReferencedTemplate extends ReferencedItem
             $lstng = new Listing($db, new TemplateValidator($db));
             foreach ($lstng->getAll() as $template) {
                 /** @var ListingItem $template */
-                if ($template->getExsID() === $exsid) {
-                    $available        = $releases->getAvailable();
-                    $latest           = $releases->getLatest() ?? $available;
-                    $installedVersion = Version::parse($template->getVersion());
-                    $availableVersion = $available === null ? Version::parse('0.0.0') : $available->getVersion();
-                    $latestVersion    = $latest === null ? $availableVersion : $latest->getVersion();
-                    $this->setMaxInstallableVersion($installedVersion);
-                    $this->setHasUpdate(false);
-                    $this->setCanBeUpdated(false);
-                    if ($availableVersion->greaterThan($installedVersion)) {
-                        $this->setMaxInstallableVersion($availableVersion);
-                        $this->setHasUpdate(true);
-                        $this->setCanBeUpdated(true);
-                    } elseif ($latestVersion->greaterThan($availableVersion)) {
-                        $this->setMaxInstallableVersion($latestVersion);
-                        $this->setHasUpdate(true);
-                        $this->setCanBeUpdated(false);
-                    }
-                    $this->setID($template->getPath());
-                    $this->setHasUpdate($installedVersion->smallerThan($availableVersion));
-                    $this->setInstalled(true);
-                    $this->setInstalledVersion($installedVersion);
-                    $this->setActive(false);
-                    $this->setInitialized(true);
-                    break;
+                if ($template->getExsID() !== $exsid) {
+                    continue;
                 }
+                $available        = $releases->getAvailable();
+                $latest           = $releases->getLatest() ?? $available;
+                $installedVersion = Version::parse($template->getVersion());
+                $availableVersion = $available === null ? Version::parse('0.0.0') : $available->getVersion();
+                $latestVersion    = $latest === null ? $availableVersion : $latest->getVersion();
+                $this->setMaxInstallableVersion($installedVersion);
+                $this->setHasUpdate(false);
+                $this->setCanBeUpdated(false);
+                if ($availableVersion->greaterThan($installedVersion)) {
+                    $this->setMaxInstallableVersion($availableVersion);
+                    $this->setHasUpdate(true);
+                    $this->setCanBeUpdated(true);
+                } elseif ($latestVersion->greaterThan($availableVersion)) {
+                    $this->setMaxInstallableVersion($latestVersion);
+                    $this->setHasUpdate(true);
+                    $this->setCanBeUpdated(false);
+                }
+                $this->setID($template->getPath());
+                $this->setHasUpdate($installedVersion->smallerThan($availableVersion));
+                $this->setInstalled(true);
+                $this->setInstalledVersion($installedVersion);
+                $this->setActive(false);
+                $this->setInitialized(true);
+                break;
             }
         }
     }

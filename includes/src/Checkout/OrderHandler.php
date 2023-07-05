@@ -67,7 +67,7 @@ class OrderHandler
     public function persistOrder(bool $cleared = false, ?string $orderNo = null): void
     {
         $this->unhtmlSession();
-        $order             = new Bestellung();
+        $order             = new Bestellung(0, false, $this->db);
         $customer          = $this->customer;
         $deliveryAddress   = Frontend::getDeliveryAddress();
         $order->cBestellNr = $orderNo ?? $this->createOrderNo();
@@ -171,17 +171,18 @@ class OrderHandler
                     // da sonst eventuelle Aufpreise in der Wawi doppelt berechnet werden
                     if (isset($item->Artikel->kVaterArtikel) && $item->Artikel->kVaterArtikel > 0) {
                         foreach ($item->WarenkorbPosEigenschaftArr as $itm) {
-                            if ($itm->cTyp === 'FREIFELD' || $itm->cTyp === 'PFLICHT-FREIFELD') {
-                                $itm->kWarenkorbPos        = $item->kWarenkorbPos;
-                                $itm->cEigenschaftName     = \is_array($itm->cEigenschaftName)
-                                    ? $itm->cEigenschaftName[$idx]
-                                    : $itm->cEigenschaftName;
-                                $itm->cEigenschaftWertName = \is_array($itm->cEigenschaftWertName)
-                                    ? $itm->cEigenschaftWertName[$idx]
-                                    : $itm->cEigenschaftWertName;
-                                $itm->cFreifeldWert        = $itm->cEigenschaftWertName;
-                                $itm->insertInDB();
+                            if ($itm->cTyp !== 'FREIFELD' && $itm->cTyp !== 'PFLICHT-FREIFELD') {
+                                continue;
                             }
+                            $itm->kWarenkorbPos        = $item->kWarenkorbPos;
+                            $itm->cEigenschaftName     = \is_array($itm->cEigenschaftName)
+                                ? $itm->cEigenschaftName[$idx]
+                                : $itm->cEigenschaftName;
+                            $itm->cEigenschaftWertName = \is_array($itm->cEigenschaftWertName)
+                                ? $itm->cEigenschaftWertName[$idx]
+                                : $itm->cEigenschaftWertName;
+                            $itm->cFreifeldWert        = $itm->cEigenschaftWertName;
+                            $itm->insertInDB();
                         }
                     } else {
                         foreach ($item->WarenkorbPosEigenschaftArr as $itm) {
@@ -378,7 +379,7 @@ class OrderHandler
 
         $this->persistOrder(false, $orderNo);
 
-        $order  = (new Bestellung($_SESSION['kBestellung']))->fuelleBestellung(false);
+        $order  = (new Bestellung($_SESSION['kBestellung'], false, $this->db))->fuelleBestellung(false);
         $helper = new Order($order);
         $amount = $helper->getTotal(2);
 
@@ -469,7 +470,7 @@ class OrderHandler
             );
         }
         $customer                = $this->customer;
-        $order                   = new Bestellung();
+        $order                   = new Bestellung(0, false, $this->db);
         $order->kKunde           = $this->cart->kKunde;
         $order->kWarenkorb       = $this->cart->kWarenkorb;
         $order->kLieferadresse   = $this->cart->kLieferadresse;
@@ -689,7 +690,8 @@ class OrderHandler
         $customer->dGeburtstag   = Text::unhtmlentities($sessionCustomer->dGeburtstag);
         $customer->cBundesland   = Text::unhtmlentities($sessionCustomer->cBundesland);
 
-        $this->customer = $_SESSION['Kunde'] = $customer;
+        $_SESSION['Kunde'] = $customer;
+        $this->customer    = $customer;
 
         $shippingAddress = new Lieferadresse();
         $deliveryAddress = Frontend::getDeliveryAddress();

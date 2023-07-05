@@ -192,7 +192,7 @@ class KategorieListe
 
         $categoryList['kKategorieVonUnterkategorien_arr'][$categoryID] = [];
         foreach ($categories as $i => &$category) {
-            $category = new Kategorie((int)$category->kKategorie, $languageID, $customerGroupID);
+            $category = new Kategorie((int)$category->kKategorie, $languageID, $customerGroupID, false, $db);
             if (!$this->nichtLeer($category->getID(), $customerGroupID)) {
                 $categoryList['ks'][$category->getID()] = 2;
                 unset($categories[$i]);

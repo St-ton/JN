@@ -714,16 +714,17 @@ final class Installer
                     '',
                     $conf->cName
                 );
-                if (!isset($confData[$name])) {
-                    $confData[$name]          = new stdClass();
-                    $confData[$name]->kPlugin = $oldPluginID;
-                    $confData[$name]->cName   = \str_replace(
-                        'kPlugin_' . $pluginID . '_',
-                        'kPlugin_' . $oldPluginID . '_',
-                        $conf->cName
-                    );
-                    $confData[$name]->cWert   = $conf->cWert;
+                if (isset($confData[$name])) {
+                    continue;
                 }
+                $confData[$name]          = new stdClass();
+                $confData[$name]->kPlugin = $oldPluginID;
+                $confData[$name]->cName   = \str_replace(
+                    'kPlugin_' . $pluginID . '_',
+                    'kPlugin_' . $oldPluginID . '_',
+                    $conf->cName
+                );
+                $confData[$name]->cWert   = $conf->cWert;
             }
             $this->db->queryPrepared(
                 'DELETE FROM tplugineinstellungen
@@ -918,14 +919,15 @@ final class Installer
             );
         }
         foreach ($oldPaymentMethods as $method) {
-            if (!\in_array($method->cModulId, $updatedMethods, true)) {
-                $this->db->delete('tzahlungsart', 'kZahlungsart', $method->kZahlungsart);
-                $this->db->queryPrepared(
-                    'DELETE FROM tplugineinstellungen
-                        WHERE kPlugin = :pid AND cName LIKE :nm',
-                    ['pid' => $oldPluginID, 'nm' => \str_replace('_', '\_', $method->cModulId) . '\_%']
-                );
+            if (\in_array($method->cModulId, $updatedMethods, true)) {
+                continue;
             }
+            $this->db->delete('tzahlungsart', 'kZahlungsart', $method->kZahlungsart);
+            $this->db->queryPrepared(
+                'DELETE FROM tplugineinstellungen
+                    WHERE kPlugin = :pid AND cName LIKE :nm',
+                ['pid' => $oldPluginID, 'nm' => \str_replace('_', '\_', $method->cModulId) . '\_%']
+            );
         }
         $this->db->query(
             'DELETE FROM tzahlungsartsprache

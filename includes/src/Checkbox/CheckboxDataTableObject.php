@@ -427,7 +427,6 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
         $this->internal = $this->checkAndReturnBoolValue($internal);
     }
 
-
     /**
      * @return string
      */

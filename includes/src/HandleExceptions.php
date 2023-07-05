@@ -96,7 +96,7 @@ class HandleExceptions
     /**
      * Determine if the error type is fatal.
      *
-     * @param  int $type
+     * @param int $type
      * @return bool
      */
     protected function isFatal($type): bool

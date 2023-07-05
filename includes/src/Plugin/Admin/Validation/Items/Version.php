@@ -23,7 +23,7 @@ final class Version extends AbstractItem
         }
         try {
             SemVer::parse($baseNode['Version']);
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             return InstallCode::INVALID_VERSION_NUMBER;
         }
 

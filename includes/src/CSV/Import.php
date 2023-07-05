@@ -231,7 +231,7 @@ class Import
         if ($customerID === null || $customerID < 1) {
             return;
         }
-        $obj->customer = new Customer((int)$obj->kKunde);
+        $obj->customer = new Customer((int)$obj->kKunde, null, $this->db);
     }
 
     /**

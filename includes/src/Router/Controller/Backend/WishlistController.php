@@ -8,6 +8,7 @@ use JTL\Customer\Customer;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Pagination\Pagination;
+use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -83,11 +84,13 @@ class WishlistController extends AbstractBackendController
                 ORDER BY twunschlisteversand.dZeit DESC
                 LIMIT " . $friendsPagination->getLimitSQL()
         );
+        $service           = Shop::Container()->getPasswordService();
         foreach ($sentWishLists as $wishList) {
-            if ($wishList->kKunde !== null) {
-                $customer            = new Customer((int)$wishList->kKunde);
-                $wishList->cNachname = $customer->cNachname;
+            if ($wishList->kKunde === null) {
+                continue;
             }
+            $customer            = new Customer((int)$wishList->kKunde, $service, $this->db);
+            $wishList->cNachname = $customer->cNachname;
         }
         $wishLists = $this->db->getObjects(
             "SELECT tkunde.kKunde, tkunde.cNachname, tkunde.cVorname, twunschliste.kWunschliste, twunschliste.cName,
@@ -106,10 +109,11 @@ class WishlistController extends AbstractBackendController
                 LIMIT " . $posPagination->getLimitSQL()
         );
         foreach ($wishLists as $wishList) {
-            if ($wishList->kKunde !== null) {
-                $customer            = new Customer((int)$wishList->kKunde);
-                $wishList->cNachname = $customer->cNachname;
+            if ($wishList->kKunde === null) {
+                continue;
             }
+            $customer            = new Customer((int)$wishList->kKunde, $service, $this->db);
+            $wishList->cNachname = $customer->cNachname;
         }
         $wishListPositions = $this->db->getObjects(
             "SELECT kArtikel, cArtikelName, COUNT(kArtikel) AS Anzahl,

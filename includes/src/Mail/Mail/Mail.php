@@ -660,7 +660,7 @@ class Mail implements MailInterface
      * @param string               $id
      * @return TemplateInterface
      */
-    public function getTemplateFromID(?TemplateFactory $factory, string $id): TemplateInterface
+    protected function getTemplateFromID(?TemplateFactory $factory, string $id): TemplateInterface
     {
         $factory  = $factory ?? new TemplateFactory(Shop::Container()->getDB());
         $template = $factory->getTemplate($id);

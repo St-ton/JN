@@ -3,6 +3,7 @@
 namespace JTL\Cron;
 
 use JTL\Abstracts\AbstractService;
+use JTL\Cron\Type;
 
 /**
  * Class CronService
@@ -51,8 +52,8 @@ class CronService extends AbstractService
     public static function getPermanentJobTypes(): array
     {
         return [
-            'licensecheck',
-            'sendMailQueue',
+            Type::LICENSE_CHECK,
+            Type::MAILQUEUE,
         ];
     }
 

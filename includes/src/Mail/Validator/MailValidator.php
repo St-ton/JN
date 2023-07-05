@@ -29,7 +29,7 @@ final class MailValidator implements ValidatorInterface
     public function validate(MailInterface $mail): bool
     {
         $template  = $mail->getTemplate();
-        $activated = !($template !== null) || $this->isTemplateActivated($template->getModel());
+        $activated = $template !== null ? $this->isTemplateActivated($template->getModel()) : true;
 
         return $activated && $this->checkBody($mail) === true && !$this->isBlacklisted($mail->getToMail());
     }

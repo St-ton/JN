@@ -49,7 +49,7 @@ class Migration_20230126150145 extends Migration implements IMigration
               PRIMARY KEY (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;");
 
-        $this->execute("CREATE TABLE `emailAttachments` (
+        $this->execute("CREATE TABLE `email_attachments` (
               `id` int(11) NOT NULL AUTO_INCREMENT,
               `mailID` int(11) unsigned NOT NULL,
               `mime` varchar(100) NOT NULL DEFAULT 'application/pdf',
@@ -88,7 +88,7 @@ class Migration_20230126150145 extends Migration implements IMigration
      */
     public function down()
     {
-        $this->execute('DROP TABLE `emailAttachments`');
+        $this->execute('DROP TABLE `email_attachments`');
         $this->execute('DROP TABLE `emails`');
         $this->execute("DELETE FROM tjobqueue WHERE jobType = 'sendMailQueue'");
         $this->execute("DELETE FROM tcron WHERE jobType = 'sendMailQueue'");

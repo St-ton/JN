@@ -19,7 +19,7 @@ class RMAHistoryRepository extends AbstractRepository
      */
     public function getTableName(): string
     {
-        return 'rmahistory';
+        return 'rma_history';
     }
     
     /**

@@ -22,7 +22,7 @@
                                     <div class="input-group-append">
                                         {block name='account-rma-form-form-submit'}
                                             {button type="submit" value="1" block=true variant="primary"}
-                                            {lang key='continueOrder' section='account data'}
+                                                {lang key='continueOrder' section='account data'}
                                             {/button}
                                         {/block}
                                     </div>
@@ -214,7 +214,7 @@
 {block name='account-rma-form-script'}
     {inline_script}<script>
         var rmaID = parseInt("{$rma->getID()}"),
-            formData,
+            formData = [],
             updPosRequest;
 
         function initDataTable(tableID, rows = 5) {
@@ -263,14 +263,14 @@
             } );
         }
 
-        function setListenerForToggles(className='.ra-switch') {
-            $(className).off('change').on('change', function () {
+        function setListenerForToggles() {
+            $('.ra-switch').off('change').on('change', function () {
                 if ($(this).prop('checked')) {
                     $(this).closest('tr').find('.rmaFormPositions').removeClass("d-none").addClass('d-flex');
                 } else {
                     $(this).closest('tr').find('.rmaFormPositions').removeClass("d-flex").addClass('d-none');
                 }
-                updateStickyPositions();
+                $('#rma').submit();
             });
         }
 
@@ -292,24 +292,31 @@
                             tabindex: -1,
                             buttons: false
                         });
+                        return;
                     }
                 } else {
                     val -= step;
                     val = val < min ? min : val;
                 }
                 input.val(val.toFixed(input.data('decimals')).replace(',', '.'));
-                updateStickyPositions();
+                $('#rma').submit();
             });
-        }
-
-        function updateStickyPositions() {
-            $('#rma').submit();
         }
 
         function setListenerForListExpander() {
             $('.list-compressed a.listExpander').off('click').on('click', function (e) {
                 e.preventDefault();
                 $('.list-compressed').toggleClass('open');
+            });
+        }
+
+        function showMinItemsAlert() {
+            eModal.alert({
+                message: '{lang key='noItemsSelectedText' section='rma'}',
+                title: '{lang key='noItemsSelectedTitle' section='rma'}',
+                keyboard: true,
+                tabindex: -1,
+                buttons: false
             });
         }
 
@@ -340,11 +347,6 @@
             setListenerForToggles();
             setListenerForQuantities();
 
-            $('#backToStep1').on('click', function () {
-                $('.rma-step-1').removeClass('d-none');
-                $('.rma-step-2').addClass('d-none');
-            });
-
             $('#lieferadressen').on('submit', function (e) {
                 e.preventDefault();
                 $('#lieferadressen button[type="submit"]')
@@ -367,15 +369,32 @@
                             $('#lieferadressen button[type="submit"]')
                                 .removeClass('isLoading').attr('disabled', false);
                             $('#pickupAddressModal').modal('hide');
+                            $('#rma button[type="submit"]').trigger('click');
                         }
                     }
                 );
+            });
+
+            $('#rma button[type="submit"]').on('click', function (e) {
+                e.preventDefault();
+                if ($('#pickupAddress').val() === "-1") {
+                    $('#pickupAddressModal').modal('show');
+                } else {
+                    if (formData.filter(e => e.name === 'quantity').length === 0) {
+                        showMinItemsAlert();
+                        return;
+                    }
+                    $('#rma-summary').html('...');
+                    $('.rma-step-2').removeClass('d-none');
+                    $('.rma-step-1').addClass('d-none');
+                }
             });
 
             $('#rma').on('submit', function (e) {
                 e.preventDefault();
                 formData = $(this).serializeArray();
                 let inputs = [];
+
                 $table.rows().every(function () {
                     if ($(this.node()).find('input[name="returnItem"]').prop('checked')) {
                         $(this.node()).find('[data-snposid]').each(function () {
@@ -391,18 +410,10 @@
                         });
                     }
                 });
-                if (inputs.length === 0) {
-                    eModal.alert({
-                        message: '{lang key='noItemsSelectedText' section='rma'}',
-                        title: '{lang key='noItemsSelectedTitle' section='rma'}',
-                        keyboard: true,
-                        tabindex: -1,
-                        buttons: false
-                    });
-                    formData = [];
-                    return;
+
+                if (inputs.length > 0) {
+                    formData = formData.concat(inputs);
                 }
-                formData = formData.concat(inputs);
 
                 // Cancel AJAX request if it is still running
                 if (updPosRequest !== undefined) {
@@ -427,9 +438,6 @@
                         } else {
                             $('#rmaStickyPositions .rmaPosContainer').html(data['response']['html']);
                             setListenerForListExpander();
-                            if ($('#pickupAddress').val() === "-1") {
-                                $('#pickupAddressModal').modal('show');
-                            }
                         }
                     }
                 );

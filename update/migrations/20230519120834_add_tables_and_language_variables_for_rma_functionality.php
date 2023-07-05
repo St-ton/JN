@@ -148,7 +148,7 @@ class Migration_20230519120834 extends Migration implements IMigration
         ");
 
         $this->execute(
-            "CREATE TABLE IF NOT EXISTS `rmapos` (
+            "CREATE TABLE IF NOT EXISTS `rma_pos` (
                 `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
                 `rmaID` INT(10) UNSIGNED NOT NULL,
                 `shippingNotePosID` INT(10) UNSIGNED NOT NULL,
@@ -173,12 +173,12 @@ class Migration_20230519120834 extends Migration implements IMigration
                 INDEX (`productID`),
                 INDEX (`reasonID`),
                 INDEX (`status`),
-                CONSTRAINT `fk_rmapos_rmaID`
+                CONSTRAINT `fk_rma_pos_rmaID`
                     FOREIGN KEY (`rmaID`)
                         REFERENCES `rma`(`id`)
                         ON DELETE CASCADE
                         ON UPDATE CASCADE,
-                CONSTRAINT `fk_rmapos_shippingNotePosID`
+                CONSTRAINT `fk_rma_pos_shippingNotePosID`
                     FOREIGN KEY (`shippingNotePosID`)
                         REFERENCES `tlieferscheinpos`(`kLieferscheinPos`)
                         ON DELETE CASCADE
@@ -191,7 +191,7 @@ class Migration_20230519120834 extends Migration implements IMigration
         ");
         
         $this->execute(
-            "CREATE TABLE IF NOT EXISTS `rmahistory` (
+            "CREATE TABLE IF NOT EXISTS `rma_history` (
                 `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
                 `rmaPosID` INT(10) UNSIGNED NOT NULL,
                 `title` VARCHAR(20) NOT NULL,
@@ -200,9 +200,9 @@ class Migration_20230519120834 extends Migration implements IMigration
                 PRIMARY KEY (`id`),
                 INDEX (`rmaPosID`),
                 INDEX (`title`),
-                CONSTRAINT `fk_rmahistory_rmaPosID`
+                CONSTRAINT `fk_rma_history_rmaPosID`
                     FOREIGN KEY (`rmaPosID`)
-                        REFERENCES `rmapos`(`id`)
+                        REFERENCES `rma_pos`(`id`)
                         ON DELETE CASCADE
                         ON UPDATE CASCADE
             )
@@ -213,7 +213,7 @@ class Migration_20230519120834 extends Migration implements IMigration
         ");
         
         $this->execute(
-            "CREATE TABLE IF NOT EXISTS `pickupaddress` (
+            "CREATE TABLE IF NOT EXISTS `pickup_address` (
                 `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
                 `customerID` INT(10) UNSIGNED NOT NULL,
                 `salutation` VARCHAR(20) NOT NULL,
@@ -236,12 +236,12 @@ class Migration_20230519120834 extends Migration implements IMigration
                 `hash` VARCHAR(32) NOT NULL,
                 PRIMARY KEY (`id`),
                 INDEX (`customerID`),
-                CONSTRAINT `fk_pickupaddress_customerID`
+                CONSTRAINT `fk_pickup_address_customerID`
                     FOREIGN KEY (`customerID`)
                         REFERENCES `tkunde`(`kKunde`)
                         ON DELETE CASCADE
                         ON UPDATE CASCADE,
-                CONSTRAINT `fk_pickupaddress_pickupAddressID`
+                CONSTRAINT `fk_pickup_address_pickupAddressID`
                     FOREIGN KEY (`id`)
                         REFERENCES `rma`(`pickupAddressID`)
                         ON DELETE CASCADE
@@ -253,7 +253,7 @@ class Migration_20230519120834 extends Migration implements IMigration
         ");
         
         $this->execute(
-            "CREATE TABLE IF NOT EXISTS `rmareasons` (
+            "CREATE TABLE IF NOT EXISTS `rma_reasons` (
                 `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
                 `wawiID` INT(10) UNSIGNED NOT NULL,
                 PRIMARY KEY (`id`),
@@ -266,7 +266,7 @@ class Migration_20230519120834 extends Migration implements IMigration
         ");
         
         $this->execute(
-            "CREATE TABLE IF NOT EXISTS `rmareasonslang` (
+            "CREATE TABLE IF NOT EXISTS `rma_reasons_lang` (
                 `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
                 `reasonID` INT(10) UNSIGNED NOT NULL,
                 `langID` INT(10) UNSIGNED NOT NULL,
@@ -274,12 +274,12 @@ class Migration_20230519120834 extends Migration implements IMigration
                 PRIMARY KEY (`id`),
                 INDEX (`reasonID`),
                 INDEX (`langID`),
-                CONSTRAINT `fk_rmareasonslang_reasonID`
+                CONSTRAINT `fk_rma_reasons_lang_reasonID`
                     FOREIGN KEY (`reasonID`)
-                        REFERENCES `rmareasons`(`id`)
+                        REFERENCES `rma_reasons`(`id`)
                         ON DELETE CASCADE
                         ON UPDATE CASCADE,
-                CONSTRAINT `fk_rmareasonslang_langID`
+                CONSTRAINT `fk_rma_reasons_lang_langID`
                     FOREIGN KEY (`langID`)
                         REFERENCES `tsprache`(`kSprache`)
                         ON DELETE CASCADE
@@ -295,7 +295,7 @@ class Migration_20230519120834 extends Migration implements IMigration
         $this->execute('DROP TABLE IF EXISTS trmaartikel');
         $this->execute('DROP TABLE IF EXISTS trmagrund');
         $this->execute('DROP TABLE IF EXISTS trmastatus');
-        
+
         $newVars = $this->getLangData();
         
         foreach ($newVars as $sprachsektion => $arr) {
@@ -312,11 +312,11 @@ class Migration_20230519120834 extends Migration implements IMigration
      */
     public function down(): void
     {
-        $this->execute('DROP TABLE IF EXISTS pickupaddress');
-        $this->execute('DROP TABLE IF EXISTS rmahistory');
-        $this->execute('DROP TABLE IF EXISTS rmapos');
-        $this->execute('DROP TABLE IF EXISTS rmareasonslang');
-        $this->execute('DROP TABLE IF EXISTS rmareasons');
+        $this->execute('DROP TABLE IF EXISTS pickup_address');
+        $this->execute('DROP TABLE IF EXISTS rma_history');
+        $this->execute('DROP TABLE IF EXISTS rma_pos');
+        $this->execute('DROP TABLE IF EXISTS rma_reasons_lang');
+        $this->execute('DROP TABLE IF EXISTS rma_reasons');
         $this->execute('DROP TABLE IF EXISTS rma');
         
         $newVars = $this->getLangData();

@@ -82,7 +82,7 @@ class RMARepository extends AbstractRepository
         }
         if ($pickupAddressID !== null) {
             $filter['aID']            = $pickupAddressID;
-            $queries['pickupAddress'] = ' AND rma.pickupAddressID = :aID';
+            $queries['pickupAddress'] = ' AND rma.pickup_addressID = :aID';
         }
         if ($productID !== null) {
             $filter['pID']      = $productID;
@@ -120,48 +120,48 @@ class RMARepository extends AbstractRepository
                 positions.status AS rmaPosStatus,
                 positions.createDate AS rmaPosCreateDate,
     
-                pickupaddress.id AS addressID,
-                pickupaddress.salutation AS addressSalutation,
-                pickupaddress.firstName AS addressFirstName,
-                pickupaddress.lastName AS addressLastName,
-                pickupaddress.academicTitle AS addressAcademicTitle,
-                pickupaddress.companyName AS addressCompanyName,
-                pickupaddress.companyAdditional AS addressCompanyAdditional,
-                pickupaddress.street AS addressStreet,
-                pickupaddress.houseNumber AS addressHouseNumber,
-                pickupaddress.addressAdditional AS addressAddressAdditional,
-                pickupaddress.postalCode AS addressPostalCode,
-                pickupaddress.city AS addressCity,
-                pickupaddress.state AS addressState,
-                pickupaddress.country AS addressCountry,
-                pickupaddress.phone AS addressPhone,
-                pickupaddress.mobilePhone AS addressMobilePhone,
-                pickupaddress.fax AS addressFax,
-                pickupaddress.mail AS addressMail,
-                pickupaddress.hash AS addressHash,
+                pickup_address.id AS addressID,
+                pickup_address.salutation AS addressSalutation,
+                pickup_address.firstName AS addressFirstName,
+                pickup_address.lastName AS addressLastName,
+                pickup_address.academicTitle AS addressAcademicTitle,
+                pickup_address.companyName AS addressCompanyName,
+                pickup_address.companyAdditional AS addressCompanyAdditional,
+                pickup_address.street AS addressStreet,
+                pickup_address.houseNumber AS addressHouseNumber,
+                pickup_address.addressAdditional AS addressAddressAdditional,
+                pickup_address.postalCode AS addressPostalCode,
+                pickup_address.city AS addressCity,
+                pickup_address.state AS addressState,
+                pickup_address.country AS addressCountry,
+                pickup_address.phone AS addressPhone,
+                pickup_address.mobilePhone AS addressMobilePhone,
+                pickup_address.fax AS addressFax,
+                pickup_address.mail AS addressMail,
+                pickup_address.hash AS addressHash,
                 
-                rmareasons.wawiID AS reasonWawiID,
+                rma_reasons.wawiID AS reasonWawiID,
                 
-                rmareasonslang.title AS reasonLocalized,
+                rma_reasons_lang.title AS reasonLocalized,
                 
                 shippingNote.kLieferschein
             FROM
                 rma
-            RIGHT JOIN rmapos AS positions
+            RIGHT JOIN rma_pos AS positions
             ON
                 rma.id = positions.rmaID' . $queries['product'] . '
             JOIN tlieferscheinpos AS shippingNote
             ON
                 positions.shippingNotePosID = shippingNote.kLieferscheinPos' . $queries['shippingNote'] . '
-            LEFT JOIN rmareasons
+            LEFT JOIN rma_reasons
             ON
-                positions.reasonID = rmareasons.id
-            LEFT JOIN rmareasonslang
+                positions.reasonID = rma_reasons.id
+            LEFT JOIN rma_reasons_lang
             ON
-                positions.reasonID = rmareasonslang.reasonID AND rmareasonslang.langID = :langID
-            JOIN pickupaddress
+                positions.reasonID = rma_reasons_lang.reasonID AND rma_reasons_lang.langID = :langID
+            JOIN pickup_address
             ON
-                rma.pickupAddressID = pickupaddress.id
+                rma.pickupAddressID = pickup_address.id
             WHERE rma.customerID = :customerID'
             . $queries['id']
             . $queries['status']

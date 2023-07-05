@@ -16,7 +16,7 @@ class RMAReasonsRepository extends AbstractRepository
      */
     public function getTableName(): string
     {
-        return 'rmareasons';
+        return 'rma_reasons';
     }
     
     /**

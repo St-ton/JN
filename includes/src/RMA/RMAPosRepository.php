@@ -34,7 +34,7 @@ class RMAPosRepository extends AbstractRepository
      */
     public function getTableName(): string
     {
-        return 'rmapos';
+        return 'rma_pos';
     }
     
     /**

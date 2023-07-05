@@ -19,7 +19,7 @@ class RMAReasonsLangRepository extends AbstractRepository
      */
     public function getTableName(): string
     {
-        return 'rmareasonslang';
+        return 'rma_reasons_lang';
     }
     
     /**

@@ -5,13 +5,11 @@ namespace JTL\RMA;
 use JTL\Abstracts\AbstractService;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
-use JTL\Helpers\Product;
 use JTL\Interfaces\RepositoryInterface;
 use JTL\RMA\PickupAddress\PickupAddressRepository;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
-use stdClass;
 
 /**
  * Class RMAService

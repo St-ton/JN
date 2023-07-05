@@ -57,9 +57,9 @@ class RMADataTableObject extends AbstractDataObject implements DataTableObjectIn
     protected ?string $lastModified = null;
 
     /**
-     * @var RMAPosDataTableObject[]|null
+     * @var RMAPosDataTableObject[]
      */
-    private ?array $positions = null;
+    private array $positions = [];
 
     /**
      * @var PickupAddressDataTableObject|null

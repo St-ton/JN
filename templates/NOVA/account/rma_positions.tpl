@@ -17,7 +17,7 @@
                     <div class="pr-2">
                         <h6 class="my-0 line-clamp rmaPosOverviewTitle">{$pos->getName()}</h6>
                         <small class="text-muted rmaPosOverviewContent">
-                            {$pos->getQuantity()}{$pos->getUnit()} x {$pos->getPriceLocalized()}
+                            {$pos->getQuantity()}{$pos->getUnit()} x {$pos->getUnitPriceLocalized()}
                         </small>
                     </div>
                     <span class="text-muted text-nowrap rmaPosOverviewTotal">{$pos->getPriceLocalized()}</span>

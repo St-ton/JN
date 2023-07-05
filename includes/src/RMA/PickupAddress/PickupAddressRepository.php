@@ -15,7 +15,7 @@ class PickupAddressRepository extends AbstractRepository
      */
     public function getTableName(): string
     {
-        return 'pickupaddress';
+        return 'pickup_address';
     }
     
     /**

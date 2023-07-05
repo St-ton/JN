@@ -83,6 +83,12 @@ class CouponStatsController extends AbstractBackendController
             (int)Request::verifyGPDataString('kKupon')
         );
 
+        $countUsedCoupons      = (int)$this->db->getSingleObject(
+            'SELECT SUM(nVerwendungenBisher) AS nTotal
+                FROM tkupon
+                WHERE dErstellt BETWEEN :strt AND :nd',
+            ['strt' => $dStart, 'nd' => $dEnd]
+        )->nTotal;
         $orderCount            = (int)$this->db->getSingleObject(
             'SELECT COUNT(*) AS nCount
                 FROM tbestellung
@@ -135,9 +141,10 @@ class CouponStatsController extends AbstractBackendController
         \array_multisort($date, \SORT_DESC, $usedCouponsOrder);
 
         $percentCountUsedCoupons = $orderCount > 0
-            ? \number_format(100 / $orderCount * $countUsedCouponsOrder, 2)
+            ? \number_format(100 / $orderCount * $countUsedCoupons, 2)
             : 0;
         $overview                = [
+            'nCountUsedCoupons'        => $countUsedCoupons,
             'nCountUsedCouponsOrder'   => $countUsedCouponsOrder,
             'nCountCustomers'          => $countCustomers,
             'nCountOrder'              => $orderCount,

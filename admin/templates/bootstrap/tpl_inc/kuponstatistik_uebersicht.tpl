@@ -43,11 +43,11 @@
                 <table class="table">
                     <tr>
                         <td class="min-w-sm">{__('countUsedCoupons')}:</td>
-                        <td class="min-w-sm"><strong>{$overview_arr.nCountUsedCouponsOrder} ({$overview_arr.nPercentCountUsedCoupons}%)</strong></td>
+                        <td class="min-w-sm"><strong>{$overview_arr.nCountUsedCoupons} ({$overview_arr.nPercentCountUsedCoupons}%)</strong></td>
                     </tr>
                     <tr>
                         <td>{__('countOrders')}:</td>
-                        <td><strong>{$overview_arr.nCountOrder}</strong></td>
+                        <td><strong>{$overview_arr.nCountUsedCouponsOrder}</strong></td>
                     </tr>
                     <tr>
                         <td>{__('countCustomers')}:</td>

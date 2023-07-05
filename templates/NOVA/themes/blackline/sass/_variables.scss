@@ -185,7 +185,7 @@ $navbar-light-color:                $gray-dark !default;
 
 $input-bg:                          $white !default;
 $input-focus-border-color:          $primary !default;
-$input-focus-box-shadow:            none !default;
+$input-focus-box-shadow:            0 0 0 0 rgba(0,0,0,0) !default;
 $list-group-bg:                     $white !default;
 $list-group-disabled-bg:            $white !default;
 
@@ -366,7 +366,7 @@ $navbar-image-height-lg   : rem(49px) !default;
 
 /* modals */
 
-$modal-inner-padding			: $spacer 0 !default;
+$modal-inner-padding			: $spacer !default;
 
 $modal-content-padding			: $spacer map-get($spacers, 5) !default;
 $modal-content-padding-sm   	: $spacer !default;

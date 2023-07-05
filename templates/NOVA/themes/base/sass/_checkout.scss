@@ -1,6 +1,6 @@
 /* inc-billing-address-form */
 .direct-advertising {
-  margin-top: - map-get($spacers, 3);
+  margin-top: -(map-get($spacers, 3));
   margin-bottom: map-get($spacers, 3);
   color: $text-muted;
 }

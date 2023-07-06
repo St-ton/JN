@@ -38,6 +38,7 @@ class CacheRedis implements ICachingMethod
                 $options['redis_host'],
                 (int)$options['redis_port'],
                 $options['redis_pass'],
+                $options['redis_user'] ?? null,
                 (int)$options['redis_db'],
                 $options['redis_persistent']
             );
@@ -55,6 +56,7 @@ class CacheRedis implements ICachingMethod
      * @param string|null $host
      * @param int|null    $port
      * @param string|null $pass
+     * @param string|null $user
      * @param int|null    $database
      * @param bool        $persist
      * @return bool
@@ -63,6 +65,7 @@ class CacheRedis implements ICachingMethod
         ?string $host = null,
         ?int    $port = null,
         ?string $pass = null,
+        ?string $user = null,
         ?int    $database = null,
         bool    $persist = false
     ): bool {
@@ -81,7 +84,11 @@ class CacheRedis implements ICachingMethod
         }
         if ($pass !== null && $pass !== '') {
             try {
-                $res = $redis->auth($pass);
+                if ($user !== null && $user !== '') {
+                    $res = $redis->auth([$user, $pass]);
+                } else {
+                    $res = $redis->auth($pass);
+                }
             } catch (RedisException $e) {
                 $this->setError($e->getMessage());
                 $res = false;

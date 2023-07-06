@@ -15,7 +15,7 @@ class AttachmentsRepository extends AbstractRepository
      */
     public function getTableName(): string
     {
-        return 'emailAttachments';
+        return 'email_attachments';
     }
 
     /**

@@ -78,8 +78,8 @@ class Migration_20230519120834 extends Migration implements IMigration
                 ]
             , 'myReturns' =>
                 [
-                    'ger' => 'Meine Retouren.',
-                    'eng' => 'My returns.'
+                    'ger' => 'Meine Retouren',
+                    'eng' => 'My returns'
                 ]
             , 'allOrders' =>
                 [
@@ -100,6 +100,16 @@ class Migration_20230519120834 extends Migration implements IMigration
                 [
                     'ger' => 'Neue Abholadresse erstellen',
                     'eng' => 'Create new pickup address'
+                ]
+            , 'manageReturns' =>
+                [
+                    'ger' => 'Retouren verwalten',
+                    'eng' => 'Manage returns'
+                ]
+            , 'saveReturn' =>
+                [
+                    'ger' => 'Retoure speichern',
+                    'eng' => 'Save return'
                 ]
         ];
         $newVars->datatables = [

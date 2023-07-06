@@ -187,7 +187,7 @@
                             {row class="align-items-center-util"}
                                 {col}
                                     <span class="h3">
-                                        {lang key='rma_ruecksenden' section='rma'}
+                                        {lang key='saveReturn' section='rma'}
                                     </span>
                                 {/col}
                             {/row}

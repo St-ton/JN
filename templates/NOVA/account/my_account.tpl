@@ -250,27 +250,33 @@
             {col cols=12 lg=6 class="account-data-item account-data-item-rma"}
                 {block name='account-my-account-rma'}
                     {card no-body=true class="account-rma"}
+                        {assign var=rmas value=$RMAService->getRMAs()}
                         {cardheader}
                             {block name='account-my-account-comparelist-header'}
                                 {row class="align-items-center-util"}
                                     {col}
                                         <span class="h3">
-                                            {link class='text-decoration-none-util' href="$cCanonicalURL?rmas=1"}
-                                                Meine Retouren
-                                            {/link}
+                                            {if count($rmas) > 0}
+                                                {link class='text-decoration-none-util' href="$cCanonicalURL?rmas=1"}
+                                                    {lang key='myReturns' section='rma'}
+                                                {/link}
+                                            {else}
+                                                {lang key='myReturns' section='rma'}
+                                            {/if}
                                         </span>
                                     {/col}
-                                    {col class="col-auto font-size-sm"}
-                                        {link href="$cCanonicalURL?rmas=1"}
-                                            Retouren verwalten
-                                        {/link}
-                                    {/col}
+                                    {if count($rmas) > 0}
+                                        {col class="col-auto font-size-sm"}
+                                            {link href="$cCanonicalURL?rmas=1"}
+                                                {lang key='manageReturns' section='rma'}
+                                            {/link}
+                                        {/col}
+                                    {/if}
                                 {/row}
                             {/block}
                         {/cardheader}
                         {block name='account-my-account-comparelist-body'}
-                            {assign var=rmas value=$RMAService->getRMAs()}
-                            {if $rmas|count > 0}
+                            {if count($rmas) > 0}
                                 <div class="table-responsive">
                                     <table class="table table-vertical-middle table-hover">
                                         <tbody>
@@ -307,9 +313,14 @@
                                     </table>
                                 </div>
                             {else}
-                                <p>
-                                    Sie haben noch keine Warenrücksendungen.
-                                </p>
+                                {block name='account-my-account-rma-no-data'}
+                                    {cardbody class="d-flex justify-content-center align-items-center flex-column"}
+                                        <p>Sie haben noch keine Warenrücksendungen.</p>
+                                        {link class="btn btn-outline-secondary btn-sm" href="$cCanonicalURL?newRMA=1"}
+                                            {lang key='createRetoure' section='rma'}
+                                        {/link}
+                                    {/cardbody}
+                                {/block}
                             {/if}
                         {/block}
                     {/card}

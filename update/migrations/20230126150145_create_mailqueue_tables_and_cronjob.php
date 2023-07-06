@@ -88,10 +88,8 @@ class Migration_20230126150145 extends Migration implements IMigration
      */
     public function down()
     {
-        if($this->execute("SHOW TABLES LIKE 'email_attachments'") === 1) {
-            $this->execute('DROP TABLE `email_attachments`');
-        }
-        $this->execute('DROP TABLE `emails`');
+        $this->execute('DROP TABLE IF EXISTS `email_attachments`');
+        $this->execute('DROP TABLE IF EXISTS `emails`');
         $this->execute("DELETE FROM tjobqueue WHERE jobType = 'sendMailQueue'");
         $this->execute("DELETE FROM tcron WHERE jobType = 'sendMailQueue'");
     }

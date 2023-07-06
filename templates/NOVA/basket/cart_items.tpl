@@ -118,6 +118,11 @@
                                                     {/link}
                                                 </div>
                                             {else}
+                                                {if $oPosition->Artikel->fMindestbestellmenge}
+                                                    {assign var=mindestbestellmenge value=$oPosition->Artikel->fMindestbestellmenge}
+                                                {else}
+                                                    {assign var=mindestbestellmenge value=0}
+                                                {/if}
                                                 <div class="qty-wrapper dropdown max-w-sm">
                                                     {inputgroup id="quantity-grp{$oPosition@index}" class="form-counter choose_quantity"}
                                                         {inputgroupprepend}
@@ -128,7 +133,7 @@
                                                             {/button}
                                                         {/inputgroupprepend}
                                                         {input type="number"
-                                                            min="{if $oPosition->Artikel->fMindestbestellmenge}{$oPosition->Artikel->fMindestbestellmenge}{else}0{/if}"
+                                                            min="{$mindestbestellmenge}"
                                                             max=$oPosition->Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE]|default:''
                                                             required=($oPosition->Artikel->fAbnahmeintervall > 0)
                                                             step="{if $oPosition->Artikel->cTeilbar === 'Y' && $oPosition->Artikel->fAbnahmeintervall == 0}any{elseif $oPosition->Artikel->fAbnahmeintervall > 0}{$oPosition->Artikel->fAbnahmeintervall}{else}1{/if}"

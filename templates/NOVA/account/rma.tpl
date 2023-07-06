@@ -1,5 +1,5 @@
 {block name='account-rma-form'}
-    {row}
+    {row class="rma-step-1"}
         {col cols=12 md=5 lg=4 class='rma-positions-wrapper order-md-2'}
             {card no-body=true class="rma-step-1 sticky-card"}
                 <div id="rmaStickyPositions">
@@ -35,7 +35,7 @@
         {/col}
         {col cols=12 md=7 lg=8 class='rma-form-wrapper order-md-1'}
             {block name='account-my-account-rma'}
-                {card no-body=true id="rma-positions" class="rma-step-1"}
+                {card no-body=true id="rma-positions"}
                     {cardheader}
                         {block name='rma-positions-header'}
                             {row class="align-items-center-util"}
@@ -180,30 +180,35 @@
                         {/block}
                     {/cardbody}
                 {/card}
-
-                {card no-body=true class="rma-step-2 d-none"}
-                    {cardheader}
-                        {block name='rma-summary-header'}
-                            {row class="align-items-center-util"}
-                                {col}
-                                    <span class="h3">
-                                        {lang key='saveReturn' section='rma'}
-                                    </span>
-                                {/col}
-                            {/row}
-                        {/block}
-                    {/cardheader}
-                    {cardbody}
-                        {block name='rma-summary-body'}
-                            {block name='account-rma-summary'}
-                                <div id="rma-summary"></div>
-                            {/block}
-                        {/block}
-                    {/cardbody}
-                {/card}
             {/block}
 
         {/col}
+    {/row}
+
+    {row class="rma-step-2 d-none"}
+        {col}
+            {card no-body=true}
+                {cardheader}
+                    {block name='rma-summary-header'}
+                        {row class="align-items-center-util"}
+                            {col}
+                                <span class="h3">
+                                    {lang key='saveReturn' section='rma'}
+                                </span>
+                            {/col}
+                        {/row}
+                    {/block}
+                {/cardheader}
+                {cardbody}
+                    {block name='rma-summary-body'}
+                        {block name='account-rma-summary'}
+                            <div id="rma-summary"></div>
+                        {/block}
+                    {/block}
+                {/cardbody}
+            {/card}
+        {/col}
+
     {/row}
 {/block}
 {block name='account-rma-form-pickup-address-modal'}
@@ -215,7 +220,8 @@
     {inline_script}<script>
         var rmaID = parseInt("{$rma->getID()}"),
             formData = [],
-            updPosRequest;
+            updPosRequest,
+            goToStep = 1;
 
         function initDataTable(tableID, rows = 5) {
             let $table = $(tableID);
@@ -310,6 +316,13 @@
             });
         }
 
+        function setListenerForBackButton() {
+            $('#goBackOneStep').off('click').on('click', function (e) {
+                e.preventDefault();
+                step(1);
+            });
+        }
+
         function showMinItemsAlert() {
             eModal.alert({
                 message: '{lang key='noItemsSelectedText' section='rma'}',
@@ -318,6 +331,18 @@
                 tabindex: -1,
                 buttons: false
             });
+        }
+
+        function step(goTo) {
+            if (goTo === 1) {
+                $('.rma-step-1').removeClass('d-none');
+                $('.rma-step-2').addClass('d-none');
+                setListenerForListExpander();
+            } else if (goTo === 2) {
+                $('.rma-step-2').removeClass('d-none');
+                $('.rma-step-1').addClass('d-none');
+                setListenerForBackButton();
+            }
         }
 
         $(document).ready(function () {
@@ -384,9 +409,8 @@
                         showMinItemsAlert();
                         return;
                     }
-                    $('#rma-summary').html('...');
-                    $('.rma-step-2').removeClass('d-none');
-                    $('.rma-step-1').addClass('d-none');
+                    goToStep = 2;
+                    $('#rma').submit();
                 }
             });
 
@@ -424,7 +448,7 @@
 
                 updPosRequest = $.evo.io().request(
                         {
-                            'name': 'rmaPositions',
+                            'name': (goToStep === 2) ? 'rmaSummary' : 'rmaPositions',
                             'params': [formData]
                         },
                     { },
@@ -436,8 +460,15 @@
                         if (data['response']['result'] === false) {
                             alert(data['response']['msg']);
                         } else {
-                            $('#rmaStickyPositions .rmaPosContainer').html(data['response']['html']);
-                            setListenerForListExpander();
+                            if (goToStep === 1) {
+                                $('#rma-summary').html('');
+                                $('#rmaStickyPositions .rmaPosContainer').html(data['response']['html']);
+                                step(1);
+                            } else if (goToStep === 2) {
+                                $('#rma-summary').html(data['response']['html']);
+                                step(2);
+                                goToStep = 1;
+                            }
                         }
                     }
                 );

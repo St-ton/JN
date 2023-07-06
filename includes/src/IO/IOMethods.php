@@ -1647,12 +1647,8 @@ class IOMethods
 
             return $ioResponse;
         }
-        if (!isset($param['quantity']) || !isset($param['reason']) || !isset($param['comment'])) {
-            $response->result = false;
-            $response->msg    = Shop::Lang()->get('mandatoryFieldNotification', 'errorMessages');
-            $ioResponse->assignVar('response', $response);
-
-            return $ioResponse;
+        if (!isset($param['quantity'])) {
+            $param['quantity'] = [];
         }
 
         $rmaService = new RMAService();
@@ -1689,7 +1685,7 @@ class IOMethods
             $data->stockBeforePurchase = 0.00;
             $data->longestMinDelivery  = 0;
             $data->longestMaxDelivery  = 0;
-            $data->comment             = $param['comment'][$key]['value'];
+            $data->comment             = $param['comment'][$key]['value'] ?? '';
             $data->createDate          = date('Y-m-d H:i:s');
             $rmaPosDTO                 = new RMAPosDataTableObject();
             $rmaPosDTO->hydrateWithObject($data);

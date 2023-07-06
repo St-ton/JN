@@ -9,6 +9,10 @@ use JTL\Model\DataModel;
 /**
  * Class ShippingMethodModel
  *
+ * @OA\Schema(
+ *     title="ShippingMethodModel",
+ *     description="ShippingMethodModel",
+ * )
  * @package JTL\REST\Models
  * @property int    $kVersandart
  * @method int getKVersandart()

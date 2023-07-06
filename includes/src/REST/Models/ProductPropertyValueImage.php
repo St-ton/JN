@@ -106,4 +106,15 @@ final class ProductPropertyValueImage extends DataModel
 
         return $attributes;
     }
+
+    /**
+     * @return int
+     */
+    public function getNewID(): int
+    {
+        return ($this->getDB()?->getSingleInt(
+            'SELECT MAX(kEigenschaftWertPict) AS newID FROM ' . $this->getTableName(),
+            'newID'
+        )) + 1;
+    }
 }

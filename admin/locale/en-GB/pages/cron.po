@@ -57,4 +57,4 @@ msgid "exportformat"
 msgstr "Export"
 
 msgid "sendMailQueue"
-msgstr "Send mails delayed"
+msgstr "Send emails with a time delay"

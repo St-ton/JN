@@ -137,6 +137,25 @@ class RMAService extends AbstractService
         }
         return $result;
     }
+
+    /**
+     * @param array $orderIDs
+     * @return array
+     * @since 5.3.0
+     */
+    public function getOrderNos(array $orderIDs): array
+    {
+        $result = [];
+        Shop::Container()->getDB()->getCollection(
+            'SELECT tbestellung.kBestellung AS orderID, tbestellung.cBestellNr AS orderNo
+            FROM tbestellung
+            WHERE tbestellung.kBestellung IN (' . \implode(',', $orderIDs) . ')',
+            []
+        )->each(function ($obj) use (&$result) {
+            $result[(int)$obj->orderID] = $obj->orderNo;
+        });
+        return $result;
+    }
     
     /**
      * @param int $customerID
@@ -153,9 +172,10 @@ class RMAService extends AbstractService
        twarenkorbpos.cArtNr AS productNR, twarenkorbpos.fPreisEinzelNetto AS unitPriceNet, twarenkorbpos.fMwSt AS vat,
        twarenkorbpos.cName AS name, tbestellung.kKunde AS clientID,
        tbestellung.kLieferadresse AS shippingAddressID, tbestellung.cStatus AS orderStatus,
-       tbestellung.cBestellNr AS orderID, tlieferscheinpos.kLieferscheinPos AS shippingNotePosID,
-       tlieferscheinpos.kLieferschein AS shippingNoteID, tlieferscheinpos.fAnzahl AS quantity,
-       tartikel.cSeo AS seo, DATE_FORMAT(FROM_UNIXTIME(tversand.dErstellt), '%d-%m-%Y') AS createDate,
+       tbestellung.cBestellNr AS orderNo, tbestellung.kBestellung AS orderID,
+       tlieferscheinpos.kLieferscheinPos AS shippingNotePosID, tlieferscheinpos.kLieferschein AS shippingNoteID,
+       tlieferscheinpos.fAnzahl AS quantity, tartikel.cSeo AS seo,
+       DATE_FORMAT(FROM_UNIXTIME(tversand.dErstellt), '%d-%m-%Y') AS createDate,
        twarenkorbposeigenschaft.cEigenschaftName AS propertyName,
        twarenkorbposeigenschaft.cEigenschaftWertName AS propertyValue,
        teigenschaftsprache.cName AS propertyNameLocalized, teigenschaftwertsprache.cName AS propertyValueLocalized
@@ -198,6 +218,7 @@ class RMAService extends AbstractService
         )->map(static function ($product): \stdClass {
             $product->id                    = (int)$product->id;
             $product->vat                   = (float)$product->vat;
+            $product->orderID               = (int)$product->orderID;
             $product->clientID              = (int)$product->clientID;
             $product->shippingAddressID     = (int)$product->shippingAddressID;
             $product->shippingNotePosID     = (int)$product->shippingNotePosID;

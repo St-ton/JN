@@ -36,7 +36,12 @@ class RMAPosDataTableObject extends AbstractDataObject implements DataTableObjec
      * @var int
      */
     protected int $shippingNotePosID = 0;
-    
+
+    /**
+     * @var int
+     */
+    protected int $orderID = 0;
+
     /**
      * @var int
      */
@@ -121,6 +126,11 @@ class RMAPosDataTableObject extends AbstractDataObject implements DataTableObjec
      * @var object|null
      */
     private ?object $reason = null;
+
+    /**
+     * @var object|null
+     */
+    private ?object $property = null;
     
     /**
      * @var string[]
@@ -129,6 +139,7 @@ class RMAPosDataTableObject extends AbstractDataObject implements DataTableObjec
         'rmaPosID'            => 'id',
         'rmaID'               => 'rmaID',
         'shippingNotePosID'   => 'shippingNotePosID',
+        'orderID'             => 'orderID',
         'orderPosID'          => 'orderPosID',
         'productID'           => 'productID',
         'reasonID'            => 'reasonID',
@@ -230,6 +241,25 @@ class RMAPosDataTableObject extends AbstractDataObject implements DataTableObjec
     public function setShippingNotePosID(int|string $shippingNotePosID): self
     {
         $this->shippingNotePosID = (int)$shippingNotePosID;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getOrderID(): int
+    {
+        return $this->orderID;
+    }
+
+    /**
+     * @param int|string $orderID
+     * @return $this
+     */
+    public function setOrderID(int|string $orderID): self
+    {
+        $this->orderID = (int)$orderID;
 
         return $this;
     }
@@ -589,5 +619,29 @@ class RMAPosDataTableObject extends AbstractDataObject implements DataTableObjec
     public function getProduct(): ?Artikel
     {
         return $this->product;
+    }
+
+    /**
+     * @return object
+     */
+    public function getProperty(): object
+    {
+        if ($this->property === null) {
+            $this->property        = new \stdClass();
+            $this->property->name  = '';
+            $this->property->value = '';
+        }
+        return $this->property;
+    }
+
+    /**
+     * @param object $property
+     * @return $this
+     */
+    public function setProperty(object $property): self
+    {
+        $this->property = $property;
+
+        return $this;
     }
 }

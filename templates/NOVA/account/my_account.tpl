@@ -135,10 +135,12 @@
                                                             {$lieferadresse->cPLZ}
                                                             {$lieferadresse->cOrt}, {$lieferadresse->cLand}
                                                             <small class="text-muted-util d-block">
-                                                                Bestellungen
-                                                                <span class="badge badge-light">
-                                                                    {$lieferadresse->totalBestellungen}
-                                                                </span>
+                                                                {if $lieferadresse->cFirma}
+                                                                    <span class="font-weight-bold">
+                                                                        {$lieferadresse->cFirma}
+                                                                    </span>
+                                                                {/if}
+                                                                {$lieferadresse->cVorname} {$lieferadresse->cNachname}
                                                             </small>
                                                         </td>
                                                     {/block}

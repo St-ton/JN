@@ -42,12 +42,6 @@ class DeliveryAddressTemplate extends Adresse
     public int $nIstStandardLieferadresse = 0;
 
     /**
-     * @var int
-     * @since 5.3.0
-     */
-    public int $totalBestellungen = 0;
-
-    /**
      * @param DbInterface $db
      * @param int         $id
      */
@@ -66,10 +60,8 @@ class DeliveryAddressTemplate extends Adresse
     {
         //$data = $this->db->select('tlieferadressevorlage', 'kLieferadresse', $id);
         $data = $this->db->executeQueryPrepared(
-            'SELECT tlieferadressevorlage.*, COUNT(tbestellung.kBestellung) AS totalBestellungen
+            'SELECT tlieferadressevorlage.*
             FROM tlieferadressevorlage
-            LEFT JOIN tbestellung
-                ON tbestellung.kLieferadresse = tlieferadressevorlage.kLieferadresse
             WHERE tlieferadressevorlage.kLieferadresse LIKE :kLieferadresse
             GROUP BY tlieferadressevorlage.kLieferadresse',
             ['kLieferadresse' => $id],
@@ -99,7 +91,6 @@ class DeliveryAddressTemplate extends Adresse
         $this->kLieferadresse            = $id;
         $this->nIstStandardLieferadresse = (int)$data->nIstStandardLieferadresse;
         $this->cAnredeLocalized          = Customer::mapSalutation($this->cAnrede, 0, $this->kKunde);
-        $this->totalBestellungen         = (int)$data->totalBestellungen;
         // Workaround for WAWI-39370
         $this->cLand           = self::checkISOCountryCode($this->cLand);
         $this->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($this->cLand);
@@ -231,7 +222,6 @@ class DeliveryAddressTemplate extends Adresse
         $address->cMobil                    = $data->cMobil ?? null;
         $address->cFax                      = $data->cFax ?? null;
         $address->cMail                     = $data->cMail ?? null;
-        $address->totalBestellungen         = $data->totalBestellungen ?? 0;
         $address->nIstStandardLieferadresse = (int)$data->nIstStandardLieferadresse ?? 0;
 
         return $address;
@@ -261,7 +251,6 @@ class DeliveryAddressTemplate extends Adresse
         $address->cMobil            = $this->cMobil ?? null;
         $address->cFax              = $this->cFax ?? null;
         $address->cMail             = $this->cMail ?? null;
-        $address->totalBestellungen = $this->totalBestellungen ?? 0;
 
         return $address;
     }

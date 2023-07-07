@@ -49,6 +49,9 @@
                     {/cardheader}
                     {cardbody}
                         {block name='rma-positions-body'}
+                            <a href="#" class="w-100 select_all">
+                                SELECT ALL
+                            </a>
                             <div class="col-sm-12 col-md-4 dataTable-custom-filter">
                                 <label>
                                     {select name="orders" aria=["label"=>"Bestellnummer"]
@@ -72,7 +75,7 @@
                                     {foreach $returnableProducts as $product}
                                         {assign var=rmaPos value=$rma->getPos($product->shippingNotePosID)}
                                         <tr>
-                                            <td class="d-none">{$product->orderID}</td>
+                                            <td class="d-none">{$product->orderNo}</td>
                                             <td class="product">
                                                 <div class="d-flex flex-wrap">
                                                     <div class="d-flex flex-nowrap flex-grow-1">
@@ -99,7 +102,7 @@
                                                                 </div>
                                                             </div>
                                                             <small class="text-muted-util d-block">
-                                                                {lang key='orderNo' section='login'}: {$product->orderID}<br>
+                                                                {lang key='orderNo' section='login'}: {$product->orderNo}<br>
                                                                 {lang key='productNo'}: {link
                                                                     href=$product->Artikel->cURLFull target="_blank"}
                                                                     {$product->productNR}
@@ -187,28 +190,12 @@
 
     {row class="rma-step-2 d-none"}
         {col}
-            {card no-body=true}
-                {cardheader}
-                    {block name='rma-summary-header'}
-                        {row class="align-items-center-util"}
-                            {col}
-                                <span class="h3">
-                                    {lang key='saveReturn' section='rma'}
-                                </span>
-                            {/col}
-                        {/row}
-                    {/block}
-                {/cardheader}
-                {cardbody}
-                    {block name='rma-summary-body'}
-                        {block name='account-rma-summary'}
-                            <div id="rma-summary"></div>
-                        {/block}
-                    {/block}
-                {/cardbody}
-            {/card}
+            {block name='rma-summary-body'}
+                {block name='account-rma-summary'}
+                    <div id="rma-summary"></div>
+                {/block}
+            {/block}
         {/col}
-
     {/row}
 {/block}
 {block name='account-rma-form-pickup-address-modal'}
@@ -351,10 +338,10 @@
 
             // Filter by order id
             $.fn.dataTable.ext.search.push(function (settings, data) {
-                let orderID = customFilter.val(),
-                    orderIDs = data[0] || '';
+                let orderNo = customFilter.val(),
+                    orderNos = data[0] || '';
 
-                return orderID === orderIDs || orderID === '';
+                return orderNo === orderNos || orderNo === '';
             });
 
             const $table = initDataTable('#returnable-items');
@@ -472,6 +459,10 @@
                         }
                     }
                 );
+            });
+            $('.select_all').on('click', function (e) {
+                e.preventDefault();
+                $('.ra-switch').prop('checked', true);
             });
         });
     </script>{/inline_script}

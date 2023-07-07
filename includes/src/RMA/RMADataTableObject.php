@@ -303,12 +303,11 @@ class RMADataTableObject extends AbstractDataObject implements DataTableObjectIn
      */
     public function getPos(int $shippingNotePosID): RMAPosDataTableObject
     {
-        if ($shippingNotePosID === 0 || $this->positions === null) {
-            return new RMAPosDataTableObject();
-        }
-        foreach ($this->positions as $position) {
-            if ($position->getShippingNotePosID() === $shippingNotePosID) {
-                return $position;
+        if ($shippingNotePosID > 0) {
+            foreach ($this->getPositions() as $position) {
+                if ($position->getShippingNotePosID() === $shippingNotePosID) {
+                    return $position;
+                }
             }
         }
         return new RMAPosDataTableObject();
@@ -336,5 +335,38 @@ class RMADataTableObject extends AbstractDataObject implements DataTableObjectIn
             $total += $pos->getPriceNet();
         }
         return Preise::getLocalizedPriceString($total);
+    }
+
+    /**
+     * @param string $by
+     * @return array[]
+     */
+    public function groupPositions(string $by = 'order'): array
+    {
+        $allowedKeys = [
+            'order'   => 'orderID',
+            'product' => 'productID',
+            'reason'  => 'reasonID',
+            'status'  => 'status',
+            'date'    => 'createDate'
+        ];
+        $arrayKeys   = [];
+        $groupByKey  = $allowedKeys[$by] ?? 'orderID';
+        $positions   = [];
+        $getter      = 'get' . \ucfirst($groupByKey);
+        if (!\method_exists($this->getPositions()[0], $getter)) {
+            return [$this->getPositions()];
+        }
+        if ($by === 'order') {
+            $rmaService = new RMAService();
+            $arrayKeys  = $rmaService->getOrderNos(
+                $rmaService->getOrderIDs($this->getPositions())
+            );
+        }
+        foreach ($this->getPositions() as $pos) {
+            $groupBy               = $arrayKeys[$pos->{$getter}()] ?? $pos->{$getter}();
+            $positions[$groupBy][] = $pos;
+        }
+        return $positions;
     }
 }

@@ -1674,6 +1674,8 @@ class IOMethods
             $dbData                    = $returnableProducts[(int)$quantity['shippingNotePosID']];
             $data                      = new stdClass();
             $data->shippingNotePosID   = $dbData->shippingNotePosID;
+            $data->orderID             = $dbData->orderID;
+            $data->orderNo             = $dbData->orderNo;
             $data->orderPosID          = 0;
             $data->productID           = $dbData->Artikel->kArtikel;
             $data->reasonID            = $param['reason'][$key]['value'] ?? 0;
@@ -1687,6 +1689,7 @@ class IOMethods
             $data->longestMaxDelivery  = 0;
             $data->comment             = $param['comment'][$key]['value'] ?? '';
             $data->createDate          = date('Y-m-d H:i:s');
+            $data->property            = $dbData->property;
             $rmaPosDTO                 = new RMAPosDataTableObject();
             $rmaPosDTO->hydrateWithObject($data);
             $rmaPosDTO->setProduct(null, $dbData->Artikel);

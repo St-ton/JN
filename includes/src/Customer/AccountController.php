@@ -1108,6 +1108,7 @@ class AccountController
     }
 
     /**
+     * @param array $smartyAssign
      * @return \Illuminate\Support\Collection
      */
     private function getDeliveryAddresses(array $smartyAssign = []): \Illuminate\Support\Collection

@@ -51,6 +51,7 @@ table.dataTable  {
 		cursor: pointer;
 	}
 }
+
 table.dataTable.stripe>tbody>tr.odd>*, table.dataTable.display>tbody>tr.odd>* {
 	box-shadow: inset 0 0 0 9999px rgba(0,0,0,.023);
 }

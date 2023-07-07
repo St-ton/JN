@@ -9,6 +9,7 @@
                 <table class="list table table-sm table-hover">
                     <thead>
                     <tr>
+                        <th class="th-1">&nbsp;</th>
                         <th class="text-left">{__('template')}</th>
                         <th class="text-center">{__('type')}</th>
                         <th class="text-center">{__('active')}</th>

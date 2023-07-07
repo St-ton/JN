@@ -611,7 +611,7 @@ class CheckBox
         }
         $this->insertDB(null, null, $checkboxDTO);
         $this->fillProperties($checkboxDTO);
-        $this->cache->flushTags(['checkbox']);
+        $this->saveToCache('chkbx_' . $checkboxDTO->getID());
 
         return $this;
     }

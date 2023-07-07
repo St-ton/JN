@@ -8,13 +8,10 @@ use JTL\Backend\Permissions;
 use JTL\Backend\Settings\Manager;
 use JTL\Backend\Settings\SectionFactory;
 use JTL\Backend\Settings\Sections\SectionInterface;
-use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
-use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Minify\MinifyService;
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -33,23 +30,22 @@ class CacheController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::OBJECTCACHE_VIEW);
         $this->getText->loadAdminLocale('pages/cache');
 
-        $this->tab      = Request::postVar('tab', 'uebersicht');
+        $this->tab      = $this->request->post('tab', 'uebersicht');
         $options        = null;
-        $action         = Form::validateToken() ? Request::postVar('a') : null;
-        $cacheAction    = Request::postVar('cache-action', '');
-        $settingManager = new Manager($this->db, $smarty, $this->account, $this->getText, $this->alertService);
-        $postData       = Text::filterXSS($_POST);
+        $action         = $this->tokenIsValid ? $this->request->post('a') : null;
+        $cacheAction    = $this->request->post('cache-action', '');
+        $settingManager = new Manager($this->db, $this->smarty, $this->account, $this->getText, $this->alertService);
+        $postData       = Text::filterXSS($request->getParsedBody());
         $sectionFactory = new SectionFactory();
         $cacheSection   = $sectionFactory->getSection(\CONF_CACHING, $settingManager);
         $this->getText->loadConfigLocales();
-        if (0 < \mb_strlen(Request::verifyGPDataString('tab'))) {
-            $smarty->assign('tab', Request::verifyGPDataString('tab'));
+        if (0 < \mb_strlen($this->request->request('tab'))) {
+            $this->smarty->assign('tab', $this->request->requestInt('tab'));
         }
         try {
             $cache = $this->cache;
@@ -73,8 +69,8 @@ class CacheController extends AbstractBackendController
                 }
                 break;
             case 'settings':
-                if (Request::postVar('resetSetting') !== null) {
-                    $settingManager->resetSetting(Request::postVar('resetSetting'));
+                if ($this->request->post('resetSetting') !== null) {
+                    $settingManager->resetSetting($this->request->post('resetSetting'));
                     break;
                 }
                 $this->actionSettings($cacheSection);
@@ -90,7 +86,7 @@ class CacheController extends AbstractBackendController
         }
         if ($cache !== null) {
             $options = $cache->getOptions();
-            $smarty->assign('method', \ucfirst($options['method']))
+            $this->smarty->assign('method', \ucfirst($options['method']))
                 ->assign('all_methods', $cache->getAllMethods())
                 ->assign('stats', $cache->getStats());
         }
@@ -113,7 +109,7 @@ class CacheController extends AbstractBackendController
             $this->alertService->addError($cache->getError(), 'errorCache');
         }
 
-        return $smarty->assign('settings', $settings)
+        return $this->smarty->assign('settings', $settings)
             ->assign('caching_groups', $this->getGroups())
             ->assign('cache_enabled', isset($options['activated']) && $options['activated'] === true)
             ->assign('options', $options)
@@ -123,7 +119,6 @@ class CacheController extends AbstractBackendController
             ->assign('disabled_caches', $this->getDisabledTags())
             ->assign('step', 'uebersicht')
             ->assign('tab', $this->tab)
-            ->assign('route', $this->route)
             ->getResponse('cache.tpl');
     }
 
@@ -218,7 +213,7 @@ class CacheController extends AbstractBackendController
                 }
                 break;
             case 'activate':
-                if (\is_array(Request::postVar('cache-types'))) {
+                if (\is_array($this->request->post('cache-types'))) {
                     $currentlyDisabled = $this->getDisabledTags();
                     foreach ($postData['cache-types'] as $cacheType) {
                         $index = \array_search($cacheType, $currentlyDisabled, true);
@@ -278,7 +273,7 @@ class CacheController extends AbstractBackendController
      */
     private function actionSettings(SectionInterface $cacheSection): void
     {
-        foreach ($cacheSection->update($_POST) as $item) {
+        foreach ($cacheSection->update($this->request->getBody()) as $item) {
             if ($item['id'] !== 'caching_method') {
                 continue;
             }
@@ -391,8 +386,8 @@ class CacheController extends AbstractBackendController
     {
         $this->tab = 'benchmark';
         $methods   = 'all';
-        $repeat    = Request::postInt('repeat', 1);
-        $runCount  = Request::postInt($postData['runcount'], 1000);
+        $repeat    = $this->request->postInt('repeat', 1);
+        $runCount  = $this->request->postInt($postData['runcount'], 1000);
         switch ($postData['testdata'] ?? 'string') {
             case 'array':
                 $testData = ['test1' => 'string number one', 'test2' => 'string number two', 'test3' => 333];
@@ -408,7 +403,7 @@ class CacheController extends AbstractBackendController
                 $testData = 'simple short string';
                 break;
         }
-        if (\is_array(Request::postVar('methods'))) {
+        if (\is_array($this->request->post('methods'))) {
             $methods = $postData['methods'];
         }
         $benchResults = $this->cache->benchmark($methods, $testData, $runCount, $repeat, false, true);

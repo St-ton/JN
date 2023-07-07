@@ -6,10 +6,8 @@ use JTL\Backend\AuthToken;
 use JTL\Backend\Permissions;
 use JTL\Backend\Wizard\Controller;
 use JTL\Backend\Wizard\DefaultFactory;
-use JTL\Helpers\Request;
 use JTL\Router\Route;
 use JTL\Session\Backend;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -22,9 +20,8 @@ class WizardController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->getText->loadAdminLocale('pages/wizard');
         $factory      = new DefaultFactory(
             $this->db,
@@ -40,8 +37,8 @@ class WizardController extends AbstractBackendController
             : false;
 
         Backend::set('redirectedToWizard', true);
-        if (Request::getVar('action') === 'auth') {
-            Backend::set('wizard-authenticated', Request::getVar('wizard-authenticated'));
+        if ($this->request->get('action') === 'auth') {
+            Backend::set('wizard-authenticated', $this->request->get('wizard-authenticated'));
             $token->requestToken(
                 Backend::get('jtl_token'),
                 $this->baseURL . '/' . Route::CODE . '/wizard'
@@ -50,10 +47,9 @@ class WizardController extends AbstractBackendController
         unset($_SESSION['wizard-authenticated']);
         $this->checkPermissions(Permissions::WIZARD_VIEW);
 
-        return $smarty->assign('steps', $controller->getSteps())
+        return $this->smarty->assign('steps', $controller->getSteps())
             ->assign('authRedirect', $authRedirect)
             ->assign('hasAuth', $valid)
-            ->assign('route', $this->route)
             ->getResponse('wizard.tpl');
     }
 }

@@ -3,14 +3,12 @@
 namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\Permissions;
-use JTL\Helpers\Form;
 use JTL\Helpers\Text;
 use JTL\Media\Image;
 use JTL\Media\IMedia;
 use JTL\Media\Media;
 use JTL\Shop;
 use JTL\Shopsetting;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -23,15 +21,11 @@ class ImagesController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(
-        ServerRequestInterface $request,
-        array                  $args,
-        JTLSmarty              $smarty
-    ): ResponseInterface {
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    {
         $this->getText->loadAdminLocale('pages/bilder');
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::SETTINGS_SITEMAP_VIEW);
-        if (isset($_POST['speichern']) && Form::validateToken()) {
+        if ($this->tokenIsValid && $this->request->post('speichern') !== null) {
             $this->actionSaveConfig();
         }
 
@@ -49,11 +43,10 @@ class ImagesController extends AbstractBackendController
         ];
         $this->getAdminSectionSettings(\CONF_BILDER);
 
-        return $smarty->assign('indices', $indices)
+        return $this->smarty->assign('indices', $indices)
             ->assign('imgConf', Shop::getSettingSection(\CONF_BILDER))
             ->assign('sizes', ['mini', 'klein', 'normal', 'gross'])
             ->assign('dims', ['breite', 'hoehe'])
-            ->assign('route', $this->route)
             ->getResponse('bilder.tpl');
     }
 
@@ -66,7 +59,7 @@ class ImagesController extends AbstractBackendController
         $oldConfig    = $shopSettings->getSettings([\CONF_BILDER])['bilder'];
         $this->saveAdminSectionSettings(
             \CONF_BILDER,
-            Text::filterXSS($_POST),
+            Text::filterXSS($this->request->getBody()),
             [\CACHING_GROUP_OPTION, \CACHING_GROUP_ARTICLE, \CACHING_GROUP_CATEGORY]
         );
         $shopSettings->reset();

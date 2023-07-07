@@ -4,8 +4,6 @@ namespace JTL\Router\Controller\Backend;
 
 use Illuminate\Support\Collection;
 use JTL\Backend\Permissions;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Language\LanguageHelper;
 use JTL\Link\Admin\LinkAdmin;
 use JTL\Link\Link;
@@ -19,7 +17,6 @@ use JTL\PlausiCMS;
 use JTL\Services\JTL\LinkService;
 use JTL\Services\JTL\LinkServiceInterface;
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -55,19 +52,18 @@ class LinkController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::CONTENT_PAGE_VIEW);
         $this->getText->loadAdminLocale('pages/links');
 
         $this->step      = 'uebersicht';
         $this->linkAdmin = new LinkAdmin($this->db, $this->cache);
-        $action          = Request::verifyGPDataString('action');
-        $linkID          = Request::verifyGPCDataInt('kLink');
-        $linkGroupID     = Request::verifyGPCDataInt('kLinkgruppe');
+        $action          = $this->request->request('action');
+        $linkID          = $this->request->requestInt('kLink');
+        $linkGroupID     = $this->request->requestInt('kLinkgruppe');
         $this->linkAdmin->getMissingSystemPages();
-        if (Form::validateToken()) {
+        if ($this->tokenIsValid) {
             $this->handleAction($action, $linkGroupID, $linkID);
         }
         if ($this->step === 'loesch_linkgruppe' && $linkGroupID > 0) {
@@ -86,9 +82,8 @@ class LinkController extends AbstractBackendController
         }
 
         return $this->smarty->assign('step', $this->step)
-            ->assign('kPlugin', Request::verifyGPCDataInt('kPlugin'))
+            ->assign('kPlugin', $this->request->requestInt('kPlugin'))
             ->assign('linkAdmin', $this->linkAdmin)
-            ->assign('route', $this->route)
             ->getResponse('links.tpl');
     }
 
@@ -124,13 +119,13 @@ class LinkController extends AbstractBackendController
                 $this->actionSaveLinkGroup($linkGroupID);
                 break;
             case 'move-to-linkgroup':
-                $this->actionMoveToLinkGroup($linkID, Request::postInt('kLinkgruppeAlt'), $linkGroupID);
+                $this->actionMoveToLinkGroup($linkID, $this->request->postInt('kLinkgruppeAlt'), $linkGroupID);
                 break;
             case 'copy-to-linkgroup':
                 $this->actionCopyToLinkGroup($linkGroupID, $linkID);
                 break;
             case 'change-parent':
-                $this->actionChangeParent($linkID, Request::postInt('kVaterLink'));
+                $this->actionChangeParent($linkID, $this->request->postInt('kVaterLink'));
                 break;
             case 'edit-link':
                 $this->step = 'edit-link';
@@ -559,7 +554,7 @@ class LinkController extends AbstractBackendController
                 'errorLinkFromLinkGroupDelete'
             );
         }
-        unset($_POST['kLinkgruppe']);
+        $this->request->updateBody('kLinkgruppe', null);
         $this->step       = 'uebersicht';
         $this->clearCache = true;
     }
@@ -590,12 +585,12 @@ class LinkController extends AbstractBackendController
             $htmlContent[] = 'cContent_' . $lang->getIso();
         }
         $checks = new PlausiCMS();
-        $checks->setPostVar($_POST, $htmlContent, true);
+        $checks->setPostVar($this->request->getBody(), $htmlContent, true);
         $checks->doPlausi('lnk');
         if (\count($checks->getPlausiVar()) === 0) {
             $files = [];
-            $link  = $this->linkAdmin->createOrUpdateLink($_POST);
-            if (Request::postInt('kLink') === 0) {
+            $link  = $this->linkAdmin->createOrUpdateLink($this->request->getBody());
+            if ($this->request->postInt('kLink') === 0) {
                 $this->alertService->addSuccess(\__('successLinkCreate'), 'successLinkCreate');
             } else {
                 $this->alertService->addSuccess(
@@ -606,10 +601,10 @@ class LinkController extends AbstractBackendController
             $this->clearCache = true;
             $linkID           = $link->getID();
             $this->step       = 'uebersicht';
-            $continue         = Request::postInt('continue') === 1;
+            $continue         = $this->request->postInt('continue') === 1;
             if ($continue) {
-                $this->step     = 'neuer Link';
-                $_POST['kLink'] = $linkID;
+                $this->step = 'neuer Link';
+                $this->request->updateBody('kLink', $linkID);
             }
             // Bilder hochladen
             if (!\is_dir($this->uploadDir . $linkID)
@@ -674,8 +669,8 @@ class LinkController extends AbstractBackendController
         } else {
             $this->step = 'neuer Link';
             $link       = new Link($this->db);
-            $link->setLinkGroupID(Request::postInt('kLinkgruppe'));
-            $link->setLinkGroups([Request::postInt('kLinkgruppe')]);
+            $link->setLinkGroupID($this->request->postInt('kLinkgruppe'));
+            $link->setLinkGroups([$this->request->postInt('kLinkgruppe')]);
             $checkVars = $checks->getPlausiVar();
             if (isset($checkVars['nSpezialseite'])) {
                 $this->alertService->addError(\__('isDuplicateSpecialLink'), 'isDuplicateSpecialLink');
@@ -701,7 +696,6 @@ class LinkController extends AbstractBackendController
         }
         $this->clearCache = true;
         $this->step       = 'uebersicht';
-        $_POST            = [];
     }
 
     /**
@@ -729,7 +723,6 @@ class LinkController extends AbstractBackendController
         } else {
             $this->alertService->addError(\__('errorLinkGroupDelete'), 'errorLinkGroupDelete');
         }
-        $_POST = [];
     }
 
     /**
@@ -750,10 +743,10 @@ class LinkController extends AbstractBackendController
     private function actionSaveLinkGroup(int $linkGroupID): void
     {
         $checks = new PlausiCMS();
-        $checks->setPostVar($_POST);
+        $checks->setPostVar($this->request->getBody());
         $checks->doPlausi('grp');
         if (\count($checks->getPlausiVar()) === 0) {
-            $tplExists = $this->db->select('tlinkgruppe', 'cTemplatename', $_POST['cTemplatename']);
+            $tplExists = $this->db->select('tlinkgruppe', 'cTemplatename', $this->request->post('cTemplatename'));
             if ($tplExists !== null && $linkGroupID !== (int)$tplExists->kLinkgruppe) {
                 $this->step = 'neue Linkgruppe';
                 $linkGroup  = $linkGroupID > 0 ? (new LinkGroup($this->db))->load($linkGroupID) : null;
@@ -763,10 +756,10 @@ class LinkController extends AbstractBackendController
                     ->assign('linkGroup', $linkGroup);
             } else {
                 if ($linkGroupID === 0) {
-                    $this->createOrUpdateLinkGroup(0, $_POST);
+                    $this->createOrUpdateLinkGroup(0, $this->request->getBody());
                     $this->alertService->addSuccess(\__('successLinkGroupCreate'), 'successLinkGroupCreate');
                 } else {
-                    $linkGroup = $this->createOrUpdateLinkGroup($linkGroupID, $_POST);
+                    $linkGroup = $this->createOrUpdateLinkGroup($linkGroupID, $this->request->getBody());
                     $this->alertService->addSuccess(
                         \sprintf(\__('successLinkGroupEdit'), $linkGroup->cName),
                         'successLinkGroupEdit'
@@ -788,11 +781,10 @@ class LinkController extends AbstractBackendController
      */
     private function actionConfirm(): void
     {
-        if (Request::verifyGPCDataInt('confirmation') === 1) {
+        if ($this->request->requestInt('confirmation') === 1) {
             $this->step = 'loesch_linkgruppe';
         } else {
             $this->step = 'uebersicht';
-            $_POST      = [];
         }
     }
 
@@ -861,8 +853,8 @@ class LinkController extends AbstractBackendController
         $link->deref();
         $dirName = $this->uploadDir . $link->getID();
         $files   = [];
-        if (Request::verifyGPCDataInt('delpic') === 1) {
-            @\unlink($dirName . '/' . Request::verifyGPDataString('cName'));
+        if ($this->request->requestInt('delpic') === 1) {
+            @\unlink($dirName . '/' . $this->request->request('cName'));
         }
         if (\is_dir($dirName)) {
             $dirHandle = \opendir($dirName);

@@ -10,11 +10,8 @@ use JTL\Cron\JobInterface;
 use JTL\Cron\Type;
 use JTL\Events\Dispatcher;
 use JTL\Events\Event;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Mapper\JobTypeToJob;
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
@@ -49,37 +46,34 @@ class CronController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::CRON_VIEW);
-
         $deleted  = 0;
         $updated  = 0;
         $inserted = 0;
         $tab      = 'overview';
-        if (Form::validateToken()) {
-            if (isset($_POST['reset'])) {
-                $updated = $this->resetQueueEntry(Request::postInt('reset'));
-            } elseif (isset($_POST['delete'])) {
-                $deleted = $this->deleteQueueEntry(Request::postInt('delete'));
-            } elseif (Request::postInt('add-cron') === 1) {
-                $inserted = $this->addQueueEntry($_POST);
+        if ($this->tokenIsValid) {
+            if ($this->request->post('reset') !== null) {
+                $updated = $this->resetQueueEntry($this->request->postInt('reset'));
+            } elseif ($this->request->post('delete') !== null) {
+                $deleted = $this->deleteQueueEntry($this->request->postInt('delete'));
+            } elseif ($this->request->postInt('add-cron') === 1) {
+                $inserted = $this->addQueueEntry($request->getParsedBody());
                 $tab      = 'add-cron';
-            } elseif (Request::postVar('a') === 'saveSettings') {
+            } elseif ($this->request->post('a') === 'saveSettings') {
                 $tab = 'settings';
-                $this->saveAdminSectionSettings(\CONF_CRON, $_POST);
+                $this->saveAdminSectionSettings(\CONF_CRON, $request->getParsedBody());
             }
         }
         $this->getAdminSectionSettings(\CONF_CRON);
 
-        return $smarty->assign('jobs', $this->getJobs())
+        return $this->smarty->assign('jobs', $this->getJobs())
             ->assign('deleted', $deleted)
             ->assign('updated', $updated)
             ->assign('inserted', $inserted)
             ->assign('available', $this->getAvailableCronJobs())
             ->assign('tab', $tab)
-            ->assign('route', $this->route)
             ->getResponse('cron.tpl');
     }
 

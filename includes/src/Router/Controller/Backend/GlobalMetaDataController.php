@@ -3,10 +3,7 @@
 namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\Permissions;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Helpers\Text;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -20,14 +17,13 @@ class GlobalMetaDataController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::SETTINGS_GLOBAL_META_VIEW);
         $this->getText->loadAdminLocale('pages/globalemetaangaben');
         $this->setLanguage();
-        if (Request::postInt('einstellungen') === 1 && Form::validateToken()) {
-            $this->actionSaveConfig(Text::filterXSS($_POST));
+        if ($this->tokenIsValid && $this->request->postInt('einstellungen') === 1) {
+            $this->actionSaveConfig(Text::filterXSS($this->request->getBody()));
         }
         $meta     = $this->db->selectAll(
             'tglobalemetaangaben',
@@ -40,8 +36,7 @@ class GlobalMetaDataController extends AbstractBackendController
         }
         $this->getAdminSectionSettings(\CONF_METAANGABEN);
 
-        return $smarty->assign('oMetaangaben_arr', $metaData)
-            ->assign('route', $this->route)
+        return $this->smarty->assign('oMetaangaben_arr', $metaData)
             ->getResponse('globalemetaangaben.tpl');
     }
 
@@ -51,7 +46,7 @@ class GlobalMetaDataController extends AbstractBackendController
      */
     private function actionSaveConfig(array $postData): void
     {
-        $this->saveAdminSectionSettings(\CONF_METAANGABEN, $_POST);
+        $this->saveAdminSectionSettings(\CONF_METAANGABEN, $this->request->getBody());
         $title     = $postData['Title'];
         $desc      = $postData['Meta_Description'];
         $metaDescr = $postData['Meta_Description_Praefix'];

@@ -4,10 +4,7 @@ namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\Permissions;
 use JTL\Customer\CustomerGroup;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Recommendation\Manager;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -21,27 +18,25 @@ class TaCController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::ORDER_AGB_WRB_VIEW);
         $this->getText->loadAdminLocale('pages/agbwrb');
         $this->step = 'agbwrb_uebersicht';
         $this->setLanguage();
         $this->assignScrollPosition();
-
-        if (Request::verifyGPCDataInt('agbwrb') === 1 && Form::validateToken()) {
+        if ($this->tokenIsValid && $this->request->requestInt('agbwrb') === 1) {
             // Editieren
-            if (Request::verifyGPCDataInt('agbwrb_edit') === 1) {
-                $this->actionEdit(Request::verifyGPCDataInt('kKundengruppe'));
-            } elseif (Request::verifyGPCDataInt('agbwrb_editieren_speichern') === 1) {
+            if ($this->request->requestInt('agbwrb_edit') === 1) {
+                $this->actionEdit($this->request->requestInt('kKundengruppe'));
+            } elseif ($this->request->requestInt('agbwrb_editieren_speichern') === 1) {
                 $this->actionSave(
-                    Request::verifyGPCDataInt('kKundengruppe'),
-                    $_POST,
-                    Request::verifyGPCDataInt('kText')
+                    $this->request->requestInt('kKundengruppe'),
+                    $this->request->getBody(),
+                    $this->request->requestInt('kText')
                 );
-                if (Request::postVar('saveAndContinue')) {
-                    $this->actionEdit(Request::verifyGPCDataInt('kKundengruppe'));
+                if ($this->request->post('saveAndContinue')) {
+                    $this->actionEdit($this->request->requestInt('kKundengruppe'));
                 }
             }
         }
@@ -52,7 +47,6 @@ class TaCController extends AbstractBackendController
 
         return $this->smarty->assign('step', $this->step)
             ->assign('languageID', $this->currentLanguageID)
-            ->assign('route', $this->route)
             ->assign('recommendations', new Manager($this->alertService, Manager::SCOPE_BACKEND_LEGAL_TEXTS))
             ->getResponse('agbwrb.tpl');
     }

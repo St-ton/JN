@@ -4,11 +4,8 @@ namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\Permissions;
 use JTL\Catalog\Separator;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\PlausiTrennzeichen;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -21,36 +18,34 @@ class SeparatorController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::SETTINGS_SEPARATOR_VIEW);
         $this->getText->loadAdminLocale('pages/trennzeichen');
         $this->setLanguage();
 
         $step = 'trennzeichen_uebersicht';
-        if (Request::verifyGPCDataInt('save') === 1 && Form::validateToken()) {
+        if ($this->tokenIsValid && $this->request->requestInt('save') === 1) {
             $checks = new PlausiTrennzeichen();
-            $checks->setPostVar($_POST);
+            $checks->setPostVar($this->request->getBody());
             $checks->doPlausi();
             $checkItems = $checks->getPlausiVar();
             if (\count($checkItems) === 0) {
-                if ($this->save($_POST)) {
+                if ($this->save($this->request->getBody())) {
                     $this->alertService->addSuccess(\__('successConfigSave'), 'successConfigSave');
                     $this->cache->flushTags([\CACHING_GROUP_OPTION, \CACHING_GROUP_CORE]);
                 } else {
                     $this->alertService->addError(\__('errorConfigSave'), 'errorConfigSave');
-                    $smarty->assign('xPostVar_arr', $checks->getPostVar());
+                    $this->smarty->assign('xPostVar_arr', $checks->getPostVar());
                 }
             } else {
                 $this->alertService->addError(\__('errorFillRequired'), 'errorFillRequired');
-                $smarty->assign('xPlausiVar_arr', $checks->getPlausiVar())
+                $this->smarty->assign('xPlausiVar_arr', $checks->getPlausiVar())
                     ->assign('xPostVar_arr', $checks->getPostVar());
             }
         }
 
-        return $smarty->assign('step', $step)
-            ->assign('route', $this->route)
+        return $this->smarty->assign('step', $step)
             ->assign('oTrennzeichenAssoc_arr', Separator::getAll($this->currentLanguageID))
             ->getResponse('trennzeichen.tpl');
     }
@@ -62,20 +57,24 @@ class SeparatorController extends AbstractBackendController
      */
     private function save(array $post): bool
     {
-        $post = Text::filterXSS($post);
+        $filtered = Text::filterXSS($post);
         foreach ([\JTL_SEPARATOR_WEIGHT, \JTL_SEPARATOR_AMOUNT, \JTL_SEPARATOR_LENGTH] as $unt) {
-            if (!isset($post['nDezimal_' . $unt], $post['cDezZeichen_' . $unt], $post['cTausenderZeichen_' . $unt])) {
+            if (!isset(
+                $filtered['nDezimal_' . $unt],
+                $filtered['cDezZeichen_' . $unt],
+                $filtered['cTausenderZeichen_' . $unt]
+            )) {
                 continue;
             }
             $separator = new Separator();
             $separator->setSprache($this->currentLanguageID)
                 ->setEinheit($unt)
-                ->setDezimalstellen((int)$post['nDezimal_' . $unt])
-                ->setDezimalZeichen($post['cDezZeichen_' . $unt])
-                ->setTausenderZeichen($post['cTausenderZeichen_' . $unt]);
+                ->setDezimalstellen((int)$filtered['nDezimal_' . $unt])
+                ->setDezimalZeichen($filtered['cDezZeichen_' . $unt])
+                ->setTausenderZeichen($filtered['cTausenderZeichen_' . $unt]);
             $idx = 'kTrennzeichen_' . $unt;
-            if (isset($post[$idx])) {
-                $separator->setTrennzeichen((int)$post[$idx])->update();
+            if (isset($filtered[$idx])) {
+                $separator->setTrennzeichen((int)$filtered[$idx])->update();
             } elseif (!$separator->save()) {
                 return false;
             }

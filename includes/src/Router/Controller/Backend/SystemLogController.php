@@ -4,14 +4,11 @@ namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\Permissions;
 use JTL\Backend\Settings\Manager;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Jtllog;
 use JTL\Pagination\Filter;
 use JTL\Pagination\Operation;
 use JTL\Pagination\Pagination;
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
 use Monolog\Logger;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -25,21 +22,19 @@ class SystemLogController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::SYSTEMLOG_VIEW);
         $this->getText->loadAdminLocale('pages/systemlog');
 
         $minLogLevel    = Shop::getSettingValue(\CONF_GLOBAL, 'systemlog_flag');
-        $settingManager = new Manager($this->db, $smarty, $this->account, $this->getText, $this->alertService);
-
-        if (Form::validateToken()) {
-            if (Request::verifyGPDataString('action') === 'clearsyslog') {
+        $settingManager = new Manager($this->db, $this->smarty, $this->account, $this->getText, $this->alertService);
+        if ($this->tokenIsValid) {
+            if ($this->request->request('action') === 'clearsyslog') {
                 Jtllog::deleteAll();
                 $this->alertService->addSuccess(\__('successSystemLogReset'), 'successSystemLogReset');
-            } elseif (Request::verifyGPDataString('action') === 'save') {
-                $minLogLevel = (int)($_POST['minLogLevel'] ?? 0);
+            } elseif ($this->request->request('action') === 'save') {
+                $minLogLevel = $this->request->postInt('minLogLevel');
                 $this->db->update(
                     'teinstellungen',
                     'cName',
@@ -48,11 +43,11 @@ class SystemLogController extends AbstractBackendController
                 );
                 $this->cache->flushTags([\CACHING_GROUP_OPTION]);
                 $this->alertService->addSuccess(\__('successConfigSave'), 'successConfigSave');
-                $smarty->assign('cTab', 'config');
-            } elseif (Request::verifyGPDataString('action') === 'delselected') {
-                if (isset($_POST['selected'])) {
+                $this->smarty->assign('cTab', 'config');
+            } elseif ($this->request->request('action') === 'delselected') {
+                if ($this->request->post('selected') !== null) {
                     $this->alertService->addSuccess(
-                        Jtllog::deleteIDs($_POST['selected']) . \__('successEntriesDelete'),
+                        Jtllog::deleteIDs($this->request->post('selected')) . \__('successEntriesDelete'),
                         'successEntriesDelete'
                     );
                 }
@@ -107,7 +102,7 @@ class SystemLogController extends AbstractBackendController
             ->setItemCount($settingManager->getAllSettingLogsCount($settingLogsFilter->getWhereSQL()))
             ->assemble();
 
-        return $smarty->assign('oFilter', $filter)
+        return $this->smarty->assign('oFilter', $filter)
             ->assign('pagination', $pagination)
             ->assign('oLog_arr', $logData)
             ->assign('minLogLevel', $minLogLevel)
@@ -121,7 +116,6 @@ class SystemLogController extends AbstractBackendController
             ))
             ->assign('settingLogsPagination', $settingLogsPagination)
             ->assign('settingLogsFilter', $settingLogsFilter)
-            ->assign('route', $this->route)
             ->getResponse('systemlog.tpl');
     }
 }

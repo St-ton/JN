@@ -3,10 +3,7 @@
 namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\AdminFavorite;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Helpers\Text;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -19,18 +16,18 @@ class FavsController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->getText->loadAdminLocale('pages/favs');
 
         $adminID = $this->account->getID();
-        if (isset($_POST['title'], $_POST['url'])
-            && Form::validateToken()
-            && Request::verifyGPDataString('action') === 'save'
+        if ($this->tokenIsValid
+            && $this->request->post('title') !== null
+            && $this->request->post('url') !== null
+            && $this->request->request('action') === 'save'
         ) {
-            $titles = Text::filterXSS($_POST['title']);
-            $urls   = Text::filterXSS($_POST['url']);
+            $titles = Text::filterXSS($this->request->post('title'));
+            $urls   = Text::filterXSS($this->request->post('url'));
             if (\is_array($titles) && \is_array($urls) && \count($titles) === \count($urls)) {
                 $adminFav = new AdminFavorite($this->db);
                 $adminFav->remove($adminID);
@@ -40,8 +37,7 @@ class FavsController extends AbstractBackendController
             }
         }
 
-        return $smarty->assign('favorites', $this->account->favorites())
-            ->assign('route', $this->route)
+        return $this->smarty->assign('favorites', $this->account->favorites())
             ->getResponse('favs.tpl');
     }
 }

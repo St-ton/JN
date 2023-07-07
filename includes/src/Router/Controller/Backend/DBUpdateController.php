@@ -4,7 +4,6 @@ namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\Permissions;
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
 use JTL\Update\MigrationManager;
 use JTL\Update\Updater;
 use JTLShop\SemVer\Version;
@@ -20,12 +19,11 @@ class DBUpdateController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::SHOP_UPDATE_VIEW);
         $this->getText->loadAdminLocale('pages/dbupdater');
-        $smarty->clearCompiledTemplate();
+        $this->smarty->clearCompiledTemplate();
         $updater             = new Updater($this->db);
         $template            = Shop::Container()->getTemplateService()->getActiveTemplate(false);
         $fileVersion         = $updater->getCurrentFileVersion();
@@ -53,7 +51,7 @@ class DBUpdateController extends AbstractBackendController
             $this->cache->flushTags([\CACHING_GROUP_OPTION]);
         }
 
-        return $smarty->assign('updatesAvailable', $updater->hasPendingUpdates())
+        return $this->smarty->assign('updatesAvailable', $updater->hasPendingUpdates())
             ->assign('manager', ADMIN_MIGRATION ? new MigrationManager($this->db) : null)
             ->assign('isPluginManager', false)
             ->assign('migrationURL', $this->baseURL . $this->route)
@@ -65,7 +63,6 @@ class DBUpdateController extends AbstractBackendController
             ->assign('currentTemplateFileVersion', $template->getFileVersion())
             ->assign('currentTemplateDatabaseVersion', $template->getVersion())
             ->assign('hasMinUpdateVersion', $hasMinUpdateVersion)
-            ->assign('route', $this->route)
             ->getResponse('dbupdater.tpl');
     }
 }

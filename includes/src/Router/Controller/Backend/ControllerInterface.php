@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Router\RequestParser;
 use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -20,20 +21,21 @@ interface ControllerInterface
     /**
      * @param ServerRequestInterface $request
      * @param array                  $args
-     * @param JTLSmarty              $smarty
      * @return ResponseInterface
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface;
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface;
 
     /**
      * @param ServerRequestInterface $request
      * @param array                  $args
-     * @param JTLSmarty              $smarty
      * @return ResponseInterface
      */
-    public function notFoundResponse(
-        ServerRequestInterface $request,
-        array                  $args,
-        JTLSmarty              $smarty
-    ): ResponseInterface;
+    public function notFoundResponse(ServerRequestInterface $request, array $args): ResponseInterface;
+
+    /**
+     * @param ServerRequestInterface $request
+     * @param JTLSmarty              $smarty
+     * @return RequestParser
+     */
+    public function initController(ServerRequestInterface $request, JTLSmarty $smarty): RequestParser;
 }

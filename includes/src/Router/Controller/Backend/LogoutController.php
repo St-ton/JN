@@ -2,8 +2,6 @@
 
 namespace JTL\Router\Controller\Backend;
 
-use JTL\Helpers\Form;
-use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -17,10 +15,9 @@ class LogoutController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
-        if (Form::validateToken()) {
+        if ($this->tokenIsValid) {
             $this->account->logout();
         }
 

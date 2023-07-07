@@ -6,9 +6,7 @@ use Exception;
 use JTL\Backend\Permissions;
 use JTL\CSV\Export;
 use JTL\CSV\Import;
-use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
-use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Model\DataModelInterface;
 use JTL\Pagination\Pagination;
@@ -17,7 +15,6 @@ use JTL\Review\ReviewBonusModel;
 use JTL\Review\ReviewModel;
 use JTL\Router\Route;
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -62,30 +59,28 @@ class ReviewController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::MODULE_VOTESYSTEM_VIEW);
         $this->getText->loadAdminLocale('pages/bewertung');
         $this->setLanguage();
-        $tab  = \mb_strlen(Request::verifyGPDataString('tab')) > 0
-            ? Request::verifyGPDataString('tab')
+        $tab  = \mb_strlen($this->request->request('tab')) > 0
+            ? $this->request->request('tab')
             : 'freischalten';
         $step = $this->handleRequest();
 
-        if ($step === 'bewertung_editieren' || Request::getVar('a') === 'editieren') {
+        if ($step === 'bewertung_editieren' || $this->request->get('a') === 'editieren') {
             $step = 'bewertung_editieren';
-            $smarty->assign('review', $this->getReview(Request::verifyGPCDataInt('kBewertung')));
-            if (Request::verifyGPCDataInt('nFZ') === 1) {
-                $smarty->assign('nFZ', 1);
+            $this->smarty->assign('review', $this->getReview($this->request->requestInt('kBewertung')));
+            if ($this->request->requestInt('nFZ') === 1) {
+                $this->smarty->assign('nFZ', 1);
             }
         } elseif ($step === 'bewertung_uebersicht') {
             $this->getOverview();
         }
 
-        return $smarty->assign('step', $step)
+        return $this->smarty->assign('step', $step)
             ->assign('cTab', $tab)
-            ->assign('route', $this->route)
             ->getResponse('bewertung.tpl');
     }
 
@@ -95,19 +90,19 @@ class ReviewController extends AbstractBackendController
     public function handleRequest(): string
     {
         $step = 'bewertung_uebersicht';
-        if (!Form::validateToken()) {
+        if (!$this->tokenIsValid) {
             return $step;
         }
-        $action = Request::verifyGPDataString('action');
-        if (Request::verifyGPDataString('importcsv') === 'importRatings') {
+        $action = $this->request->request('action');
+        if ($this->request->request('importcsv') === 'importRatings') {
             $action = 'csvImport';
         }
-        if (Request::verifyGPCDataInt('bewertung_editieren') === 1) {
+        if ($this->request->requestInt('bewertung_editieren') === 1) {
             $step = 'bewertung_editieren';
-            if ($this->edit(Text::filterXSS($_POST))) {
+            if ($this->edit(Text::filterXSS($this->request->getBody()))) {
                 $step = 'bewertung_uebersicht';
                 $this->alertService->addSuccess(\__('successRatingEdit'), 'successRatingEdit');
-                if (Request::verifyGPCDataInt('nFZ') === 1) {
+                if ($this->request->requestInt('nFZ') === 1) {
                     \header('Location: ' . $this->baseURL . '/' . Route::ACTIVATE);
                     exit();
                 }
@@ -117,16 +112,16 @@ class ReviewController extends AbstractBackendController
 
             return $step;
         }
-        if (Request::verifyGPCDataInt('einstellungen') === 1) {
-            $this->setConfig($_POST);
-        } elseif (Request::verifyGPCDataInt('bewertung_nicht_aktiv') === 1) {
-            $this->handleInactive($_POST, $action);
-        } elseif (Request::verifyGPCDataInt('bewertung_aktiv') === 1) {
-            $this->handleActive($_POST, $action);
+        if ($this->request->requestInt('einstellungen') === 1) {
+            $this->setConfig($this->request->getBody());
+        } elseif ($this->request->requestInt('bewertung_nicht_aktiv') === 1) {
+            $this->handleInactive($this->request->getBody(), $action);
+        } elseif ($this->request->requestInt('bewertung_aktiv') === 1) {
+            $this->handleActive($this->request->getBody(), $action);
         } elseif ($action === 'csvExport') {
             $this->export();
         } elseif ($action === 'csvImport') {
-            $this->import(Request::verifyGPCDataInt('importType'));
+            $this->import($this->request->requestInt('importType'));
         }
 
         return $step;
@@ -277,8 +272,8 @@ class ReviewController extends AbstractBackendController
      */
     private function setConfig(array $data): void
     {
-        if (Request::verifyGPDataString('bewertung_guthaben_nutzen') === 'Y'
-            && Request::verifyGPDataString('bewertung_freischalten') !== 'Y'
+        if ($this->request->request('bewertung_guthaben_nutzen') === 'Y'
+            && $this->request->request('bewertung_freischalten') !== 'Y'
         ) {
             $this->alertService->addError(\__('errorCreditUnlock'), 'errorCreditUnlock');
             return;
@@ -302,7 +297,7 @@ class ReviewController extends AbstractBackendController
             );
         } elseif ($action === 'delete' && GeneralObject::hasCount('kBewertung', $data)) {
             $this->alertService->addSuccess(
-                $this->delete($_POST['kBewertung']) . \__('successRatingDelete'),
+                $this->delete($this->request->post('kBewertung')) . \__('successRatingDelete'),
                 'successRatingDelete'
             );
         }
@@ -341,8 +336,8 @@ class ReviewController extends AbstractBackendController
      */
     public function getOverview(): void
     {
-        if (Request::verifyGPDataString('a') === 'delreply' && Form::validateToken()) {
-            $this->removeReply(Request::verifyGPCDataInt('kBewertung'));
+        if ($this->tokenIsValid && $this->request->request('a') === 'delreply') {
+            $this->removeReply($this->request->requestInt('kBewertung'));
             $this->alertService->addSuccess(\__('successRatingCommentDelete'), 'successRatingCommentDelete');
         }
         $activePagination   = $this->getActivePagination();
@@ -489,7 +484,7 @@ class ReviewController extends AbstractBackendController
      */
     private function edit(array $data): bool
     {
-        $id = Request::verifyGPCDataInt('kBewertung');
+        $id = $this->request->requestInt('kBewertung');
         try {
             $review = ReviewModel::load(['id' => $id], $this->db, DataModelInterface::ON_NOTEXISTS_FAIL);
         } catch (Exception) {

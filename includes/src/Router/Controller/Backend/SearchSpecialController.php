@@ -3,11 +3,8 @@
 namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\Permissions;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Helpers\Seo;
 use JTL\Helpers\Text;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -21,16 +18,15 @@ class SearchSpecialController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::SETTINGS_SPECIALPRODUCTS_VIEW);
         $this->getText->loadAdminLocale('pages/suchspecials');
         $this->setLanguage();
-        if (Request::verifyGPCDataInt('einstellungen') === 1) {
-            $this->saveAdminSectionSettings(\CONF_SUCHSPECIAL, $_POST);
-        } elseif (Request::postInt('suchspecials') === 1 && Form::validateToken()) {
-            $this->actionSave(Text::filterXSS($_POST));
+        if ($this->request->requestInt('einstellungen') === 1) {
+            $this->saveAdminSectionSettings(\CONF_SUCHSPECIAL, $this->request->getBody());
+        } elseif ($this->tokenIsValid && $this->request->postInt('suchspecials') === 1) {
+            $this->actionSave(Text::filterXSS($this->request->getBody()));
         }
 
         $ssSeoData      = $this->db->selectAll(
@@ -46,9 +42,8 @@ class SearchSpecialController extends AbstractBackendController
         }
         $this->getAdminSectionSettings(\CONF_SUCHSPECIAL);
 
-        return $smarty->assign('oSuchSpecials_arr', $searchSpecials)
+        return $this->smarty->assign('oSuchSpecials_arr', $searchSpecials)
             ->assign('step', 'suchspecials')
-            ->assign('route', $this->route)
             ->getResponse('suchspecials.tpl');
     }
 

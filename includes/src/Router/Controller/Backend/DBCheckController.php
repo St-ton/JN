@@ -4,11 +4,8 @@ namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\Permissions;
 use JTL\Backend\Status;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Session\Backend;
-use JTL\Smarty\JTLSmarty;
 use JTL\Update\DBMigrationHelper;
 use JTLShop\SemVer\Parser;
 use Laminas\Diactoros\Response\TextResponse;
@@ -26,9 +23,8 @@ class DBCheckController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::DBCHECK_VIEW);
         $this->getText->loadAdminLocale('pages/dbcheck');
         $this->cache->flush(Status::CACHE_ID_DATABASE_STRUCT);
@@ -39,9 +35,8 @@ class DBCheckController extends AbstractBackendController
         $maintenanceResult = null;
         $engineUpdate      = null;
         $fulltextIndizes   = null;
-        $valid             = Form::validateToken();
-
-        if (Request::postVar('update') === 'script' && $valid) {
+        $valid             = $this->tokenIsValid;
+        if ($valid && $this->request->post('update') === 'script') {
             $scriptName = 'innodb_and_utf8_update_'
                 . \str_replace('.', '_', $this->db->getConfig()['host']) . '_'
                 . $this->db->getConfig()['database'] . '_'
@@ -57,11 +52,13 @@ class DBCheckController extends AbstractBackendController
         $dbStruct = $this->getDBStruct(true, true);
         if (empty($dbFileStruct)) {
             $errorMsg = \__('errorReadStructureFile');
-        } elseif ($valid && !empty($_POST['action']) && !empty($_POST['check'])) {
-            $ok                = every($_POST['check'], function ($elem) use ($dbFileStruct): bool {
+        } elseif ($valid && !empty($this->request->post('action')) && !empty($this->request->post('check'))) {
+            $ok                = every($this->request->post('check'), function ($elem) use ($dbFileStruct): bool {
                 return \array_key_exists($elem, $dbFileStruct);
             });
-            $maintenanceResult = $ok ? $this->doDBMaintenance($_POST['action'], $_POST['check']) : false;
+            $maintenanceResult = $ok
+                ? $this->doDBMaintenance($this->request->post('action'), $this->request->post('check'))
+                : false;
         }
 
         if ($errorMsg === '') {
@@ -79,16 +76,15 @@ class DBCheckController extends AbstractBackendController
         }
         $this->alertService->addError($errorMsg, 'errorDBCheck');
 
-        return $smarty->assign('cDBFileStruct_arr', $dbFileStruct)
+        return $this->smarty->assign('cDBFileStruct_arr', $dbFileStruct)
             ->assign('cDBStruct_arr', $dbStruct)
             ->assign('cDBError_arr', $dbErrors)
             ->assign('maintenanceResult', $maintenanceResult)
             ->assign('scriptGenerationAvailable', ADMIN_MIGRATION)
-            ->assign('tab', isset($_REQUEST['tab']) ? Text::filterXSS($_REQUEST['tab']) : '')
+            ->assign('tab', Text::filterXSS($this->request->request('tab')))
             ->assign('DB_Version', DBMigrationHelper::getMySQLVersion())
             ->assign('FulltextIndizes', $fulltextIndizes)
             ->assign('engineUpdate', $engineUpdate)
-            ->assign('route', $this->route)
             ->getResponse('dbcheck.tpl');
     }
 

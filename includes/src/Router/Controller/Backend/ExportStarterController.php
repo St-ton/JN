@@ -5,10 +5,7 @@ namespace JTL\Router\Controller\Backend;
 use InvalidArgumentException;
 use JTL\Cron\QueueEntry;
 use JTL\Export\ExporterFactory;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -22,14 +19,14 @@ class ExportStarterController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
         @\ini_set('max_execution_time', '0');
-        if (Request::getInt('e') < 1 || !Form::validateToken()) {
+        if (!$this->tokenIsValid || $this->request->getInt('e') < 1) {
             return $this->returnErrorCode(0);
         }
         $this->getText->loadAdminLocale('pages/exportformate');
-        $queue = $this->db->select('texportqueue', 'kExportqueue', Request::getInt('e'));
+        $queue = $this->db->select('texportqueue', 'kExportqueue', $this->request->getInt('e'));
         if ($queue === null || !$queue->kExportformat || !$queue->nLimit_m) {
             return $this->returnErrorCode(1);
         }
@@ -50,10 +47,10 @@ class ExportStarterController extends AbstractBackendController
             $ef->startExport(
                 $queue->kExportformat,
                 new QueueEntry($queue),
-                isset($_GET['ajax']),
-                Request::getVar('back') === 'admin',
+                $this->request->get('ajax') !== null,
+                $this->request->get('back') === 'admin',
                 false,
-                Request::getInt('max', null)
+                $this->request->getInt('max') ?: null
             );
         } catch (InvalidArgumentException) {
             return $this->returnErrorCode(2);

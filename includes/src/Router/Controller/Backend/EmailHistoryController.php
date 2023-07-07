@@ -4,10 +4,8 @@ namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\Permissions;
 use JTL\Emailhistory;
-use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Pagination\Pagination;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -20,22 +18,21 @@ class EmailHistoryController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::EMAILHISTORY_VIEW);
         $this->getText->loadAdminLocale('pages/emailhistory');
 
         $step    = 'uebersicht';
         $history = new Emailhistory();
-        $action  = (isset($_POST['a']) && Form::validateToken()) ? $_POST['a'] : '';
+        $action  = ($this->tokenIsValid && $this->request->post('a') !== null) ? $this->request->post('a') : '';
         if ($action === 'delete') {
-            if (isset($_POST['remove_all'])) {
+            if ($this->request->post('remove_all') !== null) {
                 if ($history->deleteAll() === 0) {
                     $this->alertService->addError(\__('errorHistoryDelete'), 'errorHistoryDelete');
                 }
-            } elseif (GeneralObject::hasCount('kEmailhistory', $_POST)) {
-                $history->deletePack($_POST['kEmailhistory']);
+            } elseif (GeneralObject::hasCount('kEmailhistory', $this->request->getBody())) {
+                $history->deletePack($this->request->post('kEmailhistory'));
                 $this->alertService->addSuccess(\__('successHistoryDelete'), 'successHistoryDelete');
             } else {
                 $this->alertService->addError(\__('errorSelectEntry'), 'errorSelectEntry');
@@ -46,10 +43,9 @@ class EmailHistoryController extends AbstractBackendController
             ->setItemCount($history->getCount())
             ->assemble();
 
-        return $smarty->assign('pagination', $pagination)
+        return $this->smarty->assign('pagination', $pagination)
             ->assign('oEmailhistory_arr', $history->getAll(' LIMIT ' . $pagination->getLimitSQL()))
             ->assign('step', $step)
-            ->assign('route', $this->route)
             ->getResponse('emailhistory.tpl');
     }
 }

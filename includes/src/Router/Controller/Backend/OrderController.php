@@ -4,11 +4,8 @@ namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\Permissions;
 use JTL\Checkout\Bestellung;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Pagination\Pagination;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -21,21 +18,22 @@ class OrderController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
         $this->getText->loadAdminLocale('pages/bestellungen');
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::ORDER_VIEW);
 
         $searchFilter = '';
-        if (Request::verifyGPCDataInt('zuruecksetzen') === 1 && Form::validateToken()) {
-            if (isset($_POST['kBestellung']) && $this->resetSyncStatus($_POST['kBestellung'])) {
+        if ($this->tokenIsValid && $this->request->requestInt('zuruecksetzen') === 1) {
+            if ($this->request->post('kBestellung') !== null
+                && $this->resetSyncStatus($this->request->post('kBestellung'))
+            ) {
                 $this->alertService->addSuccess(\__('successOrderReset'), 'successOrderReset');
             } else {
                 $this->alertService->addError(\__('errorAtLeastOneOrder'), 'errorAtLeastOneOrder');
             }
-        } elseif (Request::verifyGPCDataInt('Suche') === 1 && Form::validateToken()) {
-            $query = Text::filterXSS(Request::verifyGPDataString('cSuche'));
+        } elseif ($this->tokenIsValid && $this->request->requestInt('Suche') === 1) {
+            $query = Text::filterXSS($this->request->request('cSuche'));
             if (\mb_strlen($query) > 0) {
                 $searchFilter = $query;
             } else {
@@ -47,11 +45,10 @@ class OrderController extends AbstractBackendController
             ->setItemCount($this->getOrderCount($searchFilter))
             ->assemble();
 
-        return $smarty->assign('step', 'bestellungen_uebersicht')
+        return $this->smarty->assign('step', 'bestellungen_uebersicht')
             ->assign('orders', $this->getOrders(' LIMIT ' . $pagination->getLimitSQL(), $searchFilter))
             ->assign('pagination', $pagination)
             ->assign('cSuche', $searchFilter)
-            ->assign('route', $this->route)
             ->getResponse('bestellungen.tpl');
     }
 

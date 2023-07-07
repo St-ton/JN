@@ -4,13 +4,10 @@ namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\Permissions;
 use JTL\CSV\Export;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Language\LanguageHelper;
 use JTL\Pagination\Filter;
 use JTL\Pagination\Operation;
 use JTL\Pagination\Pagination;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -29,9 +26,8 @@ class LanguageController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::LANGUAGE_VIEW);
         $this->getText->loadAdminLocale('pages/sprache');
         $this->setLanguage();
@@ -39,9 +35,9 @@ class LanguageController extends AbstractBackendController
         $this->step   = 'overview';
         $this->helper = LanguageHelper::getInstance($this->db, $this->cache);
         $langActive   = false;
-        if (isset($_FILES['csvfile']['tmp_name'])
-            && Form::validateToken()
-            && Request::verifyGPDataString('importcsv') === 'langvars'
+        if ($this->tokenIsValid
+            && isset($_FILES['csvfile']['tmp_name'])
+            && $this->request->request('importcsv') === 'langvars'
         ) {
             $this->import($_FILES['csvfile']['tmp_name'], $this->currentLanguageCode);
         }
@@ -56,20 +52,19 @@ class LanguageController extends AbstractBackendController
                 break;
             }
         }
-        if (isset($_REQUEST['action']) && Form::validateToken()) {
-            $this->handleAction($_REQUEST['action']);
+        if ($this->tokenIsValid && $this->request->request('action', null) !== null) {
+            $this->handleAction($this->request->request('action'));
         }
 
         if ($this->step === 'newvar') {
-            $smarty->assign('oSektion_arr', $this->helper->getSections());
+            $this->smarty->assign('oSektion_arr', $this->helper->getSections());
         } elseif ($this->step === 'overview') {
             $this->getOverview($this->currentLanguageCode, $langActive);
         }
 
-        return $smarty->assign('tab', $_REQUEST['tab'] ?? 'variables')
+        return $this->smarty->assign('tab', $this->request->request('tab', 'variables'))
             ->assign('availableLanguages', $availableLanguages)
             ->assign('step', $this->step)
-            ->assign('route', $this->route)
             ->getResponse('sprache.tpl');
     }
 
@@ -108,7 +103,7 @@ class LanguageController extends AbstractBackendController
                 WHERE sw.kSprachISO = :liso ' . ($filterSQL !== '' ? 'AND ' . $filterSQL : ''),
             ['liso' => $langIsoID]
         );
-        if (Form::validateToken() && Request::verifyGPDataString('exportcsv') === 'langvars') {
+        if ($this->tokenIsValid && $this->request->request('exportcsv') === 'langvars') {
             $export = new Export();
             $export->export(
                 'langvars',
@@ -145,11 +140,11 @@ class LanguageController extends AbstractBackendController
     private function actionSave(): void
     {
         $variable                 = new stdClass();
-        $variable->kSprachsektion = (int)$_REQUEST['kSprachsektion'];
-        $variable->cName          = $_REQUEST['cName'];
-        $variable->cWert_arr      = $_REQUEST['cWert_arr'];
+        $variable->kSprachsektion = (int)$this->request->request('kSprachsektion');
+        $variable->cName          = $this->request->request('cName');
+        $variable->cWert_arr      = $this->request->request('cWert_arr');
         $variable->cWertAlt_arr   = [];
-        $variable->bOverwrite_arr = $_REQUEST['bOverwrite_arr'] ?? [];
+        $variable->bOverwrite_arr = $this->request->request('bOverwrite_arr', []);
         $errors                   = [];
         $variable->cSprachsektion = $this->db
             ->select(
@@ -227,11 +222,11 @@ class LanguageController extends AbstractBackendController
     private function actionSaveAll(string $langCode): void
     {
         $modified = [];
-        foreach ($_REQUEST['cWert_arr'] as $kSektion => $sectionValues) {
+        foreach ($this->request->request('cWert_arr') as $sectionID => $sectionValues) {
             foreach ($sectionValues as $name => $cWert) {
-                if ((int)$_REQUEST['bChanged_arr'][$kSektion][$name] === 1) {
+                if ((int)$this->request->request('bChanged_arr')[$sectionID][$name] === 1) {
                     $this->helper->setzeSprache($langCode)
-                        ->set((int)$kSektion, $name, $cWert);
+                        ->set((int)$sectionID, $name, $cWert);
                     $modified[] = $name;
                 }
             }
@@ -265,15 +260,15 @@ class LanguageController extends AbstractBackendController
                 );
                 $this->step               = 'newvar';
                 $variable                 = new stdClass();
-                $variable->kSprachsektion = (int)($_REQUEST['kSprachsektion'] ?? $customSectionId);
-                $variable->cName          = $_REQUEST['cName'] ?? '';
+                $variable->kSprachsektion = (int)($this->request->request('kSprachsektion', $customSectionId));
+                $variable->cName          = $this->request->request('cName');
                 $variable->cWert_arr      = [];
                 $this->smarty->assign('oVariable', $variable);
                 break;
             case 'delvar':
                 // Variable loeschen
-                $name = Request::getVar('cName');
-                $this->helper->loesche(Request::getInt('kSprachsektion'), $name);
+                $name = $this->request->get('cName');
+                $this->helper->loesche($this->request->getInt('kSprachsektion'), $name);
                 $this->db->query('UPDATE tglobals SET dLetzteAenderung = NOW()');
                 $this->alertService->addSuccess(\sprintf(\__('successVarRemove'), $name), 'successVarRemove');
                 break;
@@ -304,7 +299,7 @@ class LanguageController extends AbstractBackendController
      */
     private function import(string $file, string $langCode): void
     {
-        $res = $this->helper->import($file, $langCode, Request::verifyGPCDataInt('importType'));
+        $res = $this->helper->import($file, $langCode, $this->request->requestInt('importType'));
         if ($res !== false) {
             $this->alertService->addSuccess(\sprintf(\__('successImport'), $res), 'successImport');
         } else {

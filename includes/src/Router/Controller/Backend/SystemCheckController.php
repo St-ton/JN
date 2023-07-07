@@ -4,7 +4,6 @@ namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\Permissions;
 use JTL\phpQuery\phpQuery;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Systemcheck\Environment;
@@ -19,14 +18,15 @@ class SystemCheckController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::DIAGNOSTIC_VIEW);
         $this->getText->loadAdminLocale('pages/systemcheck');
 
         $phpInfo = '';
-        if (isset($_GET['phpinfo']) && !\in_array('phpinfo', \explode(',', \ini_get('disable_functions')), true)) {
+        if ($this->request->get('phpinfo') !== null
+            && !\in_array('phpinfo', \explode(',', \ini_get('disable_functions')), true)
+        ) {
             \ob_start();
             \phpinfo();
             $content = \ob_get_clean();
@@ -34,7 +34,7 @@ class SystemCheckController extends AbstractBackendController
         }
         $systemcheck = new Environment();
 
-        return $smarty->assign('tests', $systemcheck->executeTestGroup('Shop5'))
+        return $this->smarty->assign('tests', $systemcheck->executeTestGroup('Shop5'))
             ->assign('platform', new Hosting())
             ->assign('passed', $systemcheck->getIsPassed())
             ->assign('phpinfo', $phpInfo)

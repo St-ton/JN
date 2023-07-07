@@ -3,8 +3,6 @@
 namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\Permissions;
-use JTL\Helpers\Request;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -17,17 +15,15 @@ class PriceHistoryController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::MODULE_PRICECHART_VIEW);
         $this->getText->loadAdminLocale('pages/preisverlauf');
-        if (Request::postInt('einstellungen') === 1) {
-            $this->saveAdminSectionSettings(\CONF_PREISVERLAUF, $_POST);
+        if ($this->request->postInt('einstellungen') === 1) {
+            $this->saveAdminSectionSettings(\CONF_PREISVERLAUF, $this->request->getBody());
         }
         $this->getAdminSectionSettings(\CONF_PREISVERLAUF);
 
-        return $smarty->assign('route', $this->route)
-            ->getResponse('preisverlauf.tpl');
+        return $this->smarty->getResponse('preisverlauf.tpl');
     }
 }

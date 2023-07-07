@@ -19,7 +19,6 @@ use JTL\Checkout\ZipValidator;
 use JTL\Customer\Import;
 use JTL\Export\SyntaxChecker as ExportSyntaxChecker;
 use JTL\Filter\States\BaseSearchQuery;
-use JTL\Helpers\Form;
 use JTL\Helpers\Text;
 use JTL\IO\IOError;
 use JTL\IO\IOResponse;
@@ -32,7 +31,6 @@ use JTL\Plugin\Helper;
 use JTL\Redirect;
 use JTL\Shop;
 use JTL\Shopsetting;
-use JTL\Smarty\JTLSmarty;
 use JTL\Update\DBMigrationHelper;
 use JTL\Update\UpdateIO;
 use JTL\Widgets\Controller;
@@ -50,15 +48,14 @@ class IOController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         \ob_start();
         $io = AdminIO::getInstance();
         if (!$this->account->getIsAuthenticated()) {
             return $io->getResponse(new IOError('Not authenticated as admin.', 401));
         }
-        if (!Form::validateToken()) {
+        if (!$this->tokenIsValid) {
             return $io->getResponse(new IOError('CSRF validation failed.', 403));
         }
 
@@ -67,8 +64,14 @@ class IOController extends AbstractBackendController
         $images         = new Manager($this->db, $this->getText);
         $updateIO       = new UpdateIO($this->db, $this->getText);
         $wizardIO       = new WizardIO($this->db, $this->cache, $this->alertService, $this->getText);
-        $settings       = new SettingsManager($this->db, $smarty, $this->account, $this->getText, $this->alertService);
-        $widgets        = new Controller($this->db, $this->cache, $this->getText, $smarty, $this->account);
+        $settings       = new SettingsManager(
+            $this->db,
+            $this->smarty,
+            $this->account,
+            $this->getText,
+            $this->alertService
+        );
+        $widgets        = new Controller($this->db, $this->cache, $this->getText, $this->smarty, $this->account);
         $customerImport = new Import($this->db);
 
         $searchController = new SearchController(
@@ -78,7 +81,7 @@ class IOController extends AbstractBackendController
             $this->account,
             $this->getText
         );
-        $searchController->setSmarty($smarty);
+        $searchController->setSmarty($this->smarty);
 
         try {
             Shop::Container()->getOPC()->registerAdminIOFunctions($io);
@@ -177,7 +180,7 @@ class IOController extends AbstractBackendController
             return $io->getResponse(new IOError($e->getMessage(), $e->getCode()));
         }
 
-        $req = $_REQUEST['io'];
+        $req = $this->request->request('io');
 
         \executeHook(\HOOK_IO_HANDLE_REQUEST_ADMIN, [
             'io'      => &$io,

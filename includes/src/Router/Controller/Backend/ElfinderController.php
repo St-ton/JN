@@ -5,10 +5,7 @@ namespace JTL\Router\Controller\Backend;
 use elFinder;
 use elFinderConnector;
 use JTL\Backend\Permissions;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -22,32 +19,30 @@ class ElfinderController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::IMAGE_UPLOAD);
-        if (!Form::validateToken()) {
+        if (!$this->tokenIsValid) {
             $response = (new Response())->withStatus(200)->withAddedHeader('content-type', 'text/html');
             $response->getBody()->write('Invalid token.');
 
             return $response;
         }
         $mediafilesSubdir = \STORAGE_OPC;
-        $mediafilesType   = Request::verifyGPDataString('mediafilesType');
+        $mediafilesType   = $this->request->request('mediafilesType');
         if ($mediafilesType === 'video') {
             $mediafilesSubdir = \PFAD_MEDIA_VIDEO;
         }
         $mediafilesBaseUrlPath = Shop::getURL() . '/' . $mediafilesSubdir;
-        if (!empty(Request::verifyGPDataString('cmd'))) {
+        if (!empty($this->request->request('cmd'))) {
             $this->runConnector($mediafilesSubdir, $mediafilesBaseUrlPath);
         }
 
-        return $smarty->assign('mediafilesType', $mediafilesType)
+        return $this->smarty->assign('mediafilesType', $mediafilesType)
             ->assign('mediafilesSubdir', $mediafilesSubdir)
-            ->assign('isCKEditor', Request::verifyGPDataString('ckeditor') === '1')
-            ->assign('route', $this->route)
-            ->assign('CKEditorFuncNum', Request::verifyGPDataString('CKEditorFuncNum'))
-            ->assign('templateUrl', $this->baseURL . '/' . $smarty->getTemplateUrlPath())
+            ->assign('isCKEditor', $this->request->request('ckeditor') === '1')
+            ->assign('CKEditorFuncNum', $this->request->request('CKEditorFuncNum'))
+            ->assign('templateUrl', $this->baseURL . '/' . $this->smarty->getTemplateUrlPath())
             ->assign('mediafilesBaseUrlPath', $mediafilesBaseUrlPath)
             ->getResponse('elfinder.tpl');
     }

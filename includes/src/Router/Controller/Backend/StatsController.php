@@ -4,12 +4,10 @@ namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\Permissions;
 use JTL\Crawler\Controller;
-use JTL\Helpers\Request;
 use JTL\Linechart;
 use JTL\Pagination\Filter;
 use JTL\Pagination\Pagination;
 use JTL\Piechart;
-use JTL\Smarty\JTLSmarty;
 use JTL\Statistik;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -24,11 +22,10 @@ class StatsController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->getText->loadAdminLocale('pages/statistik');
-        $statsType = (int)($args['id'] ?? Request::verifyGPCDataInt('s'));
+        $statsType = (int)($args['id'] ?? $this->request->requestInt('s'));
         $crawler   = null;
         if ($statsType === 0) {
             $statsType = \STATS_ADMIN_TYPE_BESUCHER;
@@ -41,10 +38,11 @@ class StatsController extends AbstractBackendController
             default => Permissions::STATS_VISITOR_VIEW,
         };
         $this->checkPermissions($perm);
-        $this->route = \str_replace('[/{id}]', '/' . $statsType, $this->route);
-        $interval    = 0;
-        $filter      = new Filter('statistics');
-        $dateRange   = $filter->addDaterangefield(
+        $this->handledRoute = \str_replace('[/{id}]', '/' . $statsType, $this->route);
+
+        $interval  = 0;
+        $filter    = new Filter('statistics');
+        $dateRange = $filter->addDaterangefield(
             'Zeitraum',
             '',
             \date_create()->modify('-1 year')->modify('+1 day')->format('d.m.Y') . ' - ' . \date('d.m.Y')
@@ -61,10 +59,10 @@ class StatsController extends AbstractBackendController
             \STATS_ADMIN_TYPE_EINSTIEGSSEITEN
         ];
         if (\in_array($statsType, $pie, true)) {
-            $smarty->assign('piechart', $this->preparePieChartStats($stats, $statsTypeName, $axisNames));
+            $this->smarty->assign('piechart', $this->preparePieChartStats($stats, $statsTypeName, $axisNames));
         } else {
             $members = $this->getMappingByType($statsType);
-            $smarty->assign('linechart', $this->prepareLineChartStats($stats, $statsTypeName, $axisNames))
+            $this->smarty->assign('linechart', $this->prepareLineChartStats($stats, $statsTypeName, $axisNames))
                 ->assign('ylabel', $members['nCount'] ?? 0);
         }
         if ($statsType === 3) {
@@ -73,14 +71,12 @@ class StatsController extends AbstractBackendController
                 $crawlerPagination = (new Pagination('crawler'))
                     ->setItemArray($controller->getAllCrawlers())
                     ->assemble();
-                $smarty->assign('crawler_arr', $crawlerPagination->getPageItems())
+                $this->smarty->assign('crawler_arr', $crawlerPagination->getPageItems())
                     ->assign('crawlerPagination', $crawlerPagination);
             }
         }
-        $smarty->assign('route', $this->route);
-
         if ($statsType === 3 && \is_object($crawler)) {
-            return $smarty->assign('crawler', $crawler)
+            return $this->smarty->assign('crawler', $crawler)
                 ->getResponse('tpl_inc/crawler_edit.tpl');
         }
         $members = [];
@@ -91,9 +87,10 @@ class StatsController extends AbstractBackendController
             ->setItemCount(\count($stats))
             ->assemble();
 
-        return $smarty->assign('headline', $statsTypeName)
+        return $this->smarty->assign('headline', $statsTypeName)
             ->assign('nTyp', $statsType)
             ->assign('oStat_arr', $stats)
+            ->assign('route', $this->handledRoute)
             ->assign('cMember_arr', $this->mapData($members, $this->getMappingByType($statsType)))
             ->assign('nPosAb', $pagination->getFirstPageItem())
             ->assign('nPosBis', $pagination->getFirstPageItem() + $pagination->getPageItemCount())

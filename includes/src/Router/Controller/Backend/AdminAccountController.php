@@ -7,13 +7,10 @@ use Exception;
 use JTL\Backend\Menu;
 use JTL\Backend\Permissions;
 use JTL\Backend\TwoFA;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Media\Image;
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -377,7 +374,7 @@ class AdminAccountController extends AbstractBackendController
      */
     public function actionAccountLock(): string
     {
-        $adminID = Request::postInt('id');
+        $adminID = $this->request->postInt('id');
         $account = $this->db->select('tadminlogin', 'kAdminlogin', $adminID);
         if ($account !== null && (int)$account->kAdminlogin === (int)$_SESSION['AdminAccount']->kAdminlogin) {
             $this->addError(\__('errorSelfLock'));
@@ -410,7 +407,7 @@ class AdminAccountController extends AbstractBackendController
      */
     public function actionAccountUnLock(): string
     {
-        $adminID = Request::postInt('id');
+        $adminID = $this->request->postInt('id');
         $account = $this->db->select('tadminlogin', 'kAdminlogin', $adminID);
         if (\is_object($account)) {
             $result = true;
@@ -440,10 +437,10 @@ class AdminAccountController extends AbstractBackendController
     {
         $_SESSION['AdminAccount']->TwoFA_valid = true;
 
-        $adminID     = Request::postInt('id', null);
+        $adminID     = $this->request->postInt('id');
         $qrCode      = '';
         $knownSecret = '';
-        if ($adminID !== null) {
+        if ($adminID > 0) {
             $twoFA = new TwoFA($this->db);
             $twoFA->setUserByID($adminID);
             if ($twoFA->is2FAauthSecretExist() === true) {
@@ -454,27 +451,27 @@ class AdminAccountController extends AbstractBackendController
         $this->smarty->assign('QRcodeString', $qrCode)
             ->assign('cKnownSecret', $knownSecret);
 
-        if (isset($_POST['save'])) {
+        if ($this->request->post('save') !== null) {
             $errors              = [];
-            $language            = Text::filterXSS($_POST['language']);
+            $language            = Text::filterXSS($this->request->post('language'));
             $tmpAcc              = new stdClass();
-            $tmpAcc->kAdminlogin = Request::postInt('kAdminlogin');
-            $tmpAcc->cName       = Text::filterXSS(\trim($_POST['cName']));
-            $tmpAcc->cMail       = Text::filterXSS(\trim($_POST['cMail']));
+            $tmpAcc->kAdminlogin = $this->request->postInt('kAdminlogin');
+            $tmpAcc->cName       = Text::filterXSS(\trim($this->request->post('cName')));
+            $tmpAcc->cMail       = Text::filterXSS(\trim($this->request->post('cMail')));
             $tmpAcc->language    = \array_key_exists($language, $this->getText->getAdminLanguages())
                 ? $language
                 : 'de-DE';
-            $tmpAcc->cLogin      = Text::filterXSS(\trim($_POST['cLogin']));
-            $tmpAcc->cPass       = \trim($_POST['cPass']);
-            $tmpAcc->b2FAauth    = Request::postInt('b2FAauth');
-            $tmpAttribs          = $_POST['extAttribs'] ?? [];
-            if (0 < \mb_strlen($_POST['c2FAsecret'])) {
-                $tmpAcc->c2FAauthSecret = \trim($_POST['c2FAsecret']);
+            $tmpAcc->cLogin      = Text::filterXSS(\trim($this->request->post('cLogin')));
+            $tmpAcc->cPass       = \trim($this->request->post('cPass'));
+            $tmpAcc->b2FAauth    = $this->request->postInt('b2FAauth');
+            $tmpAttribs          = $this->request->post('extAttribs', []);
+            if (0 < \mb_strlen($this->request->post('c2FAsecret'))) {
+                $tmpAcc->c2FAauthSecret = \trim($this->request->post('c2FAsecret'));
             }
-            $validUntil = Request::postInt('dGueltigBisAktiv') === 1;
+            $validUntil = $this->request->postInt('dGueltigBisAktiv') === 1;
             if ($validUntil) {
                 try {
-                    $tmpAcc->dGueltigBis = new DateTime($_POST['dGueltigBis']);
+                    $tmpAcc->dGueltigBis = new DateTime($this->request->post('dGueltigBis'));
                 } catch (Exception) {
                     $tmpAcc->dGueltigBis = false;
                 }
@@ -482,7 +479,7 @@ class AdminAccountController extends AbstractBackendController
                     $tmpAcc->dGueltigBis = $tmpAcc->dGueltigBis->format('Y-m-d H:i:s');
                 }
             }
-            $tmpAcc->kAdminlogingruppe = Request::postInt('kAdminlogingruppe');
+            $tmpAcc->kAdminlogingruppe = $this->request->postInt('kAdminlogingruppe');
             if ((bool)$tmpAcc->b2FAauth && !isset($tmpAcc->c2FAauthSecret)) {
                 $errors['c2FAsecret'] = 1;
             }
@@ -650,7 +647,7 @@ class AdminAccountController extends AbstractBackendController
      */
     public function actionAccountDelete(): string
     {
-        $adminID    = Request::postInt('id');
+        $adminID    = $this->request->postInt('id');
         $groupCount = (int)$this->db->getSingleObject(
             'SELECT COUNT(*) AS cnt
                 FROM tadminlogin
@@ -690,15 +687,15 @@ class AdminAccountController extends AbstractBackendController
      */
     public function actionGroupEdit(): string
     {
-        $debug   = isset($_POST['debug']);
-        $groupID = Request::postInt('id', null);
-        if (isset($_POST['save'])) {
+        $debug   = $this->request->post('debug') !== null;
+        $groupID = $this->request->postInt('id');
+        if ($this->request->post('save') !== null) {
             $errors                        = [];
             $adminGroup                    = new stdClass();
-            $adminGroup->kAdminlogingruppe = Request::postInt('kAdminlogingruppe');
-            $adminGroup->cGruppe           = Text::filterXSS(\trim($_POST['cGruppe']));
-            $adminGroup->cBeschreibung     = Text::filterXSS(\trim($_POST['cBeschreibung']));
-            $groupPermissions              = Text::filterXSS($_POST['perm'] ?? []);
+            $adminGroup->kAdminlogingruppe = $this->request->postInt('kAdminlogingruppe');
+            $adminGroup->cGruppe           = Text::filterXSS(\trim($this->request->post('cGruppe')));
+            $adminGroup->cBeschreibung     = Text::filterXSS(\trim($this->request->post('cBeschreibung')));
+            $groupPermissions              = Text::filterXSS($this->request->post('perm', []));
             if (\mb_strlen($adminGroup->cGruppe) === 0) {
                 $errors['cGruppe'] = 1;
             }
@@ -755,7 +752,7 @@ class AdminAccountController extends AbstractBackendController
                 return 'group_redirect';
             }
         } elseif ($groupID > 0) {
-            if ((int)$groupID === 1) {
+            if ($groupID === 1) {
                 \header('Location:  ' . $this->url . '?action=group_view&token=' . $_SESSION['jtl_token']);
             }
             $this->smarty->assign('bDebug', $debug)
@@ -771,7 +768,7 @@ class AdminAccountController extends AbstractBackendController
      */
     public function actionGroupDelete(): string
     {
-        $groupID = Request::postInt('id');
+        $groupID = $this->request->postInt('id');
         $count   = (int)$this->db->getSingleObject(
             'SELECT COUNT(*) AS cnt
                 FROM tadminlogin
@@ -802,8 +799,8 @@ class AdminAccountController extends AbstractBackendController
     public function getNextAction(): string
     {
         $action = 'account_view';
-        if (isset($_REQUEST['action']) && Form::validateToken()) {
-            $action = $_REQUEST['action'];
+        if ($this->tokenIsValid && $this->request->request('action', null) !== null) {
+            $action = $this->request->request('action');
         }
         switch ($action) {
             case 'account_lock':
@@ -837,8 +834,8 @@ class AdminAccountController extends AbstractBackendController
      */
     public function actionQuickChangeLanguage(): void
     {
-        $this->changeAdminUserLanguage(Request::verifyGPDataString('language'));
-        $url = Request::verifyGPDataString('referer');
+        $this->changeAdminUserLanguage($this->request->request('language'));
+        $url = $this->request->request('referer');
         if (!\str_starts_with($url, $this->baseURL)) {
             return;
         }
@@ -889,7 +886,7 @@ class AdminAccountController extends AbstractBackendController
         }
         switch ($step) {
             case 'account_edit':
-                if (Request::postInt('id') > 0) {
+                if ($this->request->postInt('id') > 0) {
                     $this->alertService->addWarning(\__('warningPasswordResetAuth'), 'warningPasswordResetAuth');
                 }
                 $this->smarty->assign('oAdminGroup_arr', $this->getAdminGroups())
@@ -917,7 +914,7 @@ class AdminAccountController extends AbstractBackendController
         $this->alertService->addError($this->getError(), 'userManagementError');
 
         $this->smarty->assign('action', $step)
-            ->assign('cTab', Text::filterXSS(Request::verifyGPDataString('tab')));
+            ->assign('cTab', Text::filterXSS($this->request->request('tab')));
     }
 
     /**
@@ -955,19 +952,17 @@ class AdminAccountController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->url    = $this->baseURL . $this->route;
-        $this->smarty = $smarty;
-        if (Request::getVar('action') === 'quick_change_language') {
+        $this->url = $this->baseURL . $this->route;
+        if ($this->request->request('action') === 'quick_change_language') {
             $this->actionQuickChangeLanguage();
         }
         $this->checkPermissions(Permissions::ACCOUNT_VIEW);
         $this->getText->loadAdminLocale('pages/benutzerverwaltung');
         $this->finalize($this->getNextAction());
 
-        return $smarty->assign('route', $this->route)
-            ->assign('url', $this->url)
+        return $this->smarty->assign('url', $this->url)
             ->getResponse('benutzer.tpl');
     }
 }

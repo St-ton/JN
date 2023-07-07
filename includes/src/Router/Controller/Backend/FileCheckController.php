@@ -5,9 +5,6 @@ namespace JTL\Router\Controller\Backend;
 use JTL\Backend\FileCheck;
 use JTL\Backend\Permissions;
 use JTL\Backend\Status;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -22,9 +19,8 @@ class FileCheckController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::FILECHECK_VIEW);
         $this->getText->loadAdminLocale('pages/filecheck');
 
@@ -41,10 +37,9 @@ class FileCheckController extends AbstractBackendController
             );
         }
 
-        return $smarty->assign('modifiedFilesCheck', $hasModifiedFiles)
+        return $this->smarty->assign('modifiedFilesCheck', $hasModifiedFiles)
             ->assign('orphanedFilesCheck', $hasOrphanedFiles)
             ->assign('deleteScript', $fileCheck->generateBashScript())
-            ->assign('route', $this->route)
             ->getResponse('filecheck.tpl');
     }
 
@@ -92,7 +87,7 @@ class FileCheckController extends AbstractBackendController
             FileCheck::ERROR_NO_HASHES_FOUND    => \__('errorFileListEmpty'),
             default                             => '',
         };
-        if (Request::verifyGPCDataInt('delete-orphans') === 1 && Form::validateToken()) {
+        if ($this->tokenIsValid && $this->request->requestInt('delete-orphans') === 1) {
             $backup   = \PFAD_ROOT . \PFAD_EXPORT_BACKUP
                 . 'orphans_' . \date_format(\date_create(), 'Y-m-d_H:i:s')
                 . '.zip';

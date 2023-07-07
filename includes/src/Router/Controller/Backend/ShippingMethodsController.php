@@ -9,8 +9,6 @@ use JTL\Checkout\Versandart;
 use JTL\Country\Country;
 use JTL\Country\Manager;
 use JTL\Customer\CustomerGroup;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
@@ -20,7 +18,6 @@ use JTL\Plugin\Helper as PluginHelper;
 use JTL\Services\JTL\CountryService;
 use JTL\Services\JTL\CountryServiceInterface;
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -54,9 +51,8 @@ class ShippingMethodsController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::ORDER_SHIPMENT_VIEW);
         $this->getText->loadAdminLocale('pages/versandarten');
         Tax::setTaxRates();
@@ -66,35 +62,35 @@ class ShippingMethodsController extends AbstractBackendController
         $this->countryService  = Shop::Container()->getCountryService();
         $this->assignScrollPosition();
 
-        $postData                   = Text::filterXSS($_POST);
+        $postData                   = Text::filterXSS($this->request->getBody());
         $manager                    = new Manager(
             $this->db,
-            $smarty,
+            $this->smarty,
             $this->countryService,
             $this->cache,
             $this->alertService,
             $this->getText
         );
         $missingShippingClassCombis = $this->getMissingShippingClassCombi();
-        $smarty->assign('missingShippingClassCombis', $missingShippingClassCombis);
-        if (Form::validateToken()) {
-            if (Request::postInt('neu') === 1 && Request::postInt('kVersandberechnung') > 0) {
+        $this->smarty->assign('missingShippingClassCombis', $missingShippingClassCombis);
+        if ($this->tokenIsValid) {
+            if ($this->request->postInt('neu') === 1 && $this->request->postInt('kVersandberechnung') > 0) {
                 $this->step = 'neue Versandart';
             }
-            if (Request::postInt('kVersandberechnung') > 0) {
-                $this->shippingType = $this->getShippingTypes(Request::verifyGPCDataInt('kVersandberechnung'));
+            if ($this->request->postInt('kVersandberechnung') > 0) {
+                $this->shippingType = $this->getShippingTypes($this->request->requestInt('kVersandberechnung'));
             }
-            if (Request::postInt('del') > 0) {
+            if ($this->request->postInt('del') > 0) {
                 $oldShippingMethod = $this->db->select('tversandart', 'kVersandart', (int)$postData['del']);
                 Versandart::deleteInDB((int)$postData['del']);
                 $manager->updateRegistrationCountries(\explode(' ', \trim($oldShippingMethod->cLaender ?? '')));
                 $this->alertService->addSuccess(\__('successShippingMethodDelete'), 'successShippingMethodDelete');
                 $this->cache->flushTags([\CACHING_GROUP_OPTION, \CACHING_GROUP_ARTICLE]);
             }
-            if (Request::postInt('edit') > 0) {
+            if ($this->request->postInt('edit') > 0) {
                 $this->shippingType = $this->actionEdit();
             }
-            if (Request::postInt('clone') > 0) {
+            if ($this->request->postInt('clone') > 0) {
                 $this->step = 'uebersicht';
                 if (Versandart::cloneShipping((int)$postData['clone'])) {
                     $this->alertService->addSuccess(
@@ -110,23 +106,26 @@ class ShippingMethodsController extends AbstractBackendController
                 }
             }
 
-            if (isset($_GET['cISO']) && Request::getInt('zuschlag') === 1 && Request::getInt('kVersandart') > 0) {
+            if ($this->request->get('cISO') !== null
+                && $this->request->getInt('zuschlag') === 1
+                && $this->request->getInt('kVersandart') > 0
+            ) {
                 $this->step = 'Zuschlagsliste';
 
                 $pagination = (new Pagination('surchargeList'))
                     ->setRange(4)
-                    ->setItemArray((new Versandart(Request::getInt('kVersandart')))
-                        ->getShippingSurchargesForCountry($_GET['cISO']))
+                    ->setItemArray((new Versandart($this->request->getInt('kVersandart')))
+                        ->getShippingSurchargesForCountry($this->request->get('cISO')))
                     ->assemble();
 
-                $smarty->assign('surcharges', $pagination->getPageItems())
+                $this->smarty->assign('surcharges', $pagination->getPageItems())
                     ->assign('pagination', $pagination);
             }
 
-            if (Request::postInt('neueVersandart') > 0) {
+            if ($this->request->postInt('neueVersandart') > 0) {
                 $this->shippingMethod = $this->createOrUpdate($postData, $manager);
                 if (($this->shippingMethod->methodID ?? 0) > 0
-                    && Request::postVar('saveAndContinue')
+                    && $this->request->post('saveAndContinue')
                 ) {
                     $this->shippingType = $this->actionEdit($this->shippingMethod->methodID);
                 }
@@ -144,7 +143,7 @@ class ShippingMethodsController extends AbstractBackendController
         }
         $languages = LanguageHelper::getInstance()->gibInstallierteSprachen();
         $tmpID     = (int)($this->shippingMethod->kVersandart ?? 0);
-        return $smarty->assign('fSteuersatz', $_SESSION['Steuersatz'][$taxRateKeys[0]])
+        return $this->smarty->assign('fSteuersatz', $_SESSION['Steuersatz'][$taxRateKeys[0]])
             ->assign('waehrung', $this->defaultCurrency->cName)
             ->assign('oWaehrung', $this->db->select('twaehrung', 'cStandard', 'Y'))
             ->assign('continents', $this->countryService->getCountriesGroupedByContinent(
@@ -160,7 +159,6 @@ class ShippingMethodsController extends AbstractBackendController
                 ? $this->getActiveCustomerGroups($this->shippingMethod->cKundengruppen)
                 : null)
             ->assign('step', $this->step)
-            ->assign('route', $this->route)
             ->getResponse('versandarten.tpl');
     }
 
@@ -518,10 +516,10 @@ class ShippingMethodsController extends AbstractBackendController
      */
     private function actionSurchargeList(): void
     {
-        $iso      = $_GET['cISO'] ?? $postData['cISO'] ?? null;
-        $methodID = Request::getInt('kVersandart');
+        $iso      = $this->request->get('cISO', $postData['cISO'] ?? null);
+        $methodID = $this->request->getInt('kVersandart');
         if (isset($postData['kVersandart'])) {
-            $methodID = Request::postInt('kVersandart');
+            $methodID = $this->request->postInt('kVersandart');
         }
         $this->shippingMethod = $this->db->select('tversandart', 'kVersandart', $methodID);
         $fees                 = $this->db->selectAll(
@@ -742,7 +740,7 @@ class ShippingMethodsController extends AbstractBackendController
      */
     private function actionEdit(?int $shippingId = null)
     {
-        $shippingId           = $shippingId ?? Request::postInt('edit');
+        $shippingId           = $shippingId ?? $this->request->postInt('edit');
         $this->step           = 'neue Versandart';
         $this->shippingMethod = $this->db->select('tversandart', 'kVersandart', $shippingId);
         $mappedMethods        = $this->db->selectAll(
@@ -755,7 +753,7 @@ class ShippingMethodsController extends AbstractBackendController
         $shippingScales       = $this->db->selectAll(
             'tversandartstaffel',
             'kVersandart',
-            Request::postInt('edit'),
+            $this->request->postInt('edit'),
             '*',
             'fBis'
         );
@@ -790,23 +788,23 @@ class ShippingMethodsController extends AbstractBackendController
             \ENT_COMPAT | \ENT_HTML401,
             \JTL_CHARSET
         );
-        $this->shippingMethod->kVersandberechnung       = Request::postInt('kVersandberechnung');
+        $this->shippingMethod->kVersandberechnung       = $this->request->postInt('kVersandberechnung');
         $this->shippingMethod->cAnzeigen                = $postData['cAnzeigen'];
         $this->shippingMethod->cBild                    = $postData['cBild'];
-        $this->shippingMethod->nSort                    = Request::postInt('nSort');
-        $this->shippingMethod->nMinLiefertage           = Request::postInt('nMinLiefertage');
-        $this->shippingMethod->nMaxLiefertage           = Request::postInt('nMaxLiefertage');
+        $this->shippingMethod->nSort                    = $this->request->postInt('nSort');
+        $this->shippingMethod->nMinLiefertage           = $this->request->postInt('nMinLiefertage');
+        $this->shippingMethod->nMaxLiefertage           = $this->request->postInt('nMaxLiefertage');
         $this->shippingMethod->cNurAbhaengigeVersandart = $postData['cNurAbhaengigeVersandart'];
         $this->shippingMethod->cSendConfirmationMail    = $postData['cSendConfirmationMail'] ?? 'Y';
         $this->shippingMethod->cIgnoreShippingProposal  = $postData['cIgnoreShippingProposal'] ?? 'N';
         $this->shippingMethod->eSteuer                  = $postData['eSteuer'];
         $this->shippingMethod->fPreis                   = (float)\str_replace(',', '.', $postData['fPreis'] ?? '0');
         // Versandkostenfrei ab X
-        $this->shippingMethod->fVersandkostenfreiAbX = Request::postInt('versandkostenfreiAktiv') === 1
+        $this->shippingMethod->fVersandkostenfreiAbX = $this->request->postInt('versandkostenfreiAktiv') === 1
             ? (float)$postData['fVersandkostenfreiAbX']
             : 0;
         // Deckelung
-        $this->shippingMethod->fDeckelung = Request::postInt('versanddeckelungAktiv') === 1
+        $this->shippingMethod->fDeckelung = $this->request->postInt('versanddeckelungAktiv') === 1
             ? (float)$postData['fDeckelung']
             : 0;
 
@@ -816,7 +814,7 @@ class ShippingMethodsController extends AbstractBackendController
         }
 
         $mappedMethods = [];
-        foreach (Request::verifyGPDataIntegerArray('kZahlungsart') as $paymentMethodID) {
+        foreach ($this->request->requestIntArray('kZahlungsart') as $paymentMethodID) {
             $mappedMethod               = new stdClass();
             $mappedMethod->kZahlungsart = $paymentMethodID;
             if ($postData['fAufpreis_' . $paymentMethodID] != 0) {
@@ -864,7 +862,7 @@ class ShippingMethodsController extends AbstractBackendController
             // Dummy Versandstaffel hinzufuegen,
             // falls Versandart nach Warenwert und Versandkostenfrei ausgewaehlt wurde
             if ($this->shippingType->cModulId === 'vm_versandberechnung_warenwert_jtl'
-                && Request::postInt('versandkostenfreiAktiv') === 1
+                && $this->request->postInt('versandkostenfreiAktiv') === 1
             ) {
                 $this->shippingMethod->fVersandkostenfreiAbX = $lastScaleTo + 0.01;
 
@@ -897,7 +895,7 @@ class ShippingMethodsController extends AbstractBackendController
             && $this->shippingMethod->cName
             && $staffelDa
         ) {
-            if (Request::postInt('kVersandart') === 0) {
+            if ($this->request->postInt('kVersandart') === 0) {
                 $methodID = $this->db->insert('tversandart', $this->shippingMethod);
                 $this->alertService->addSuccess(
                     \sprintf(\__('successShippingMethodCreate'), $this->shippingMethod->cName),
@@ -905,7 +903,7 @@ class ShippingMethodsController extends AbstractBackendController
                 );
             } else {
                 //updaten
-                $methodID          = Request::postInt('kVersandart');
+                $methodID          = $this->request->postInt('kVersandart');
                 $oldShippingMethod = $this->db->select('tversandart', 'kVersandart', $methodID);
                 $this->db->update('tversandart', 'kVersandart', $methodID, $this->shippingMethod);
                 $this->db->delete('tversandartzahlungsart', 'kVersandart', $methodID);
@@ -994,11 +992,11 @@ class ShippingMethodsController extends AbstractBackendController
                     'errorShippingMethodPriceMissing'
                 );
             }
-            if (Request::postInt('kVersandart') > 0) {
+            if ($this->request->postInt('kVersandart') > 0) {
                 $this->shippingMethod = $this->db->select(
                     'tversandart',
                     'kVersandart',
-                    Request::postInt('kVersandart')
+                    $this->request->postInt('kVersandart')
                 );
             }
 

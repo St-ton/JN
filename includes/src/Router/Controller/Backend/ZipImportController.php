@@ -4,10 +4,7 @@ namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\Permissions;
 use JTL\CSV\Import;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -20,16 +17,15 @@ class ZipImportController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::PLZ_ORT_IMPORT_VIEW);
         $this->getText->loadAdminLocale('pages/plz_ort_import');
 
         $isoMap    = [];
         $itemBatch = [];
         $service   = Shop::Container()->getCountryService();
-        if (Request::verifyGPDataString('importcsv') === 'plz' && Form::validateToken()) {
+        if ($this->tokenIsValid && $this->request->request('importcsv') === 'plz') {
             $import = new Import($this->db);
             $import->import(
                 'plz',
@@ -88,8 +84,7 @@ class ZipImportController extends AbstractBackendController
             }
         }
 
-        return $smarty->assign('oPlzOrt_arr', $data)
-            ->assign('route', $this->route)
+        return $this->smarty->assign('oPlzOrt_arr', $data)
             ->getResponse('plz_ort_import.tpl');
     }
 }

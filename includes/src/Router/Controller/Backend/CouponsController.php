@@ -15,9 +15,7 @@ use JTL\CSV\Import;
 use JTL\Customer\Customer;
 use JTL\Customer\CustomerGroup;
 use JTL\DB\SqlObject;
-use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
-use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Language\LanguageModel;
@@ -27,7 +25,6 @@ use JTL\Pagination\Filter;
 use JTL\Pagination\Operation;
 use JTL\Pagination\Pagination;
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -41,20 +38,18 @@ class CouponsController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->getText->loadAdminLocale('pages/kupons');
         $this->checkPermissions(Permissions::ORDER_COUPON_VIEW);
         $this->assignScrollPosition();
-
-        $action    = Request::verifyGPDataString('action');
+        $action    = $this->request->request('action');
         $tab       = Kupon::TYPE_STANDARD;
         $languages = LanguageHelper::getAllLanguages(0, true);
         $coupon    = null;
-        $importer  = Request::verifyGPDataString('importcsv');
+        $importer  = $this->request->request('importcsv');
 
-        if (Form::validateToken()) {
+        if ($this->tokenIsValid) {
             if ($importer !== '') {
                 $import = new Import($this->db);
                 $import->import('kupon', function ($obj, &$importDeleteDone, $importType = 2): bool {
@@ -125,7 +120,7 @@ class CouponsController extends AbstractBackendController
                     }
 
                     return true;
-                }, [], null, Request::verifyGPCDataInt('importType'));
+                }, [], null, $this->request->requestInt('importType'));
                 $errorCount = $import->getErrorCount();
                 if ($errorCount > 0) {
                     foreach ($import->getErrors() as $key => $error) {
@@ -135,21 +130,23 @@ class CouponsController extends AbstractBackendController
                     $this->alertService->addSuccess(\__('successImportCSV'), 'successImportCSV');
                 }
             }
-            if (isset($_POST['action'])) {
-                if ($_POST['action'] === 'speichern') {
+            if ($this->request->post('action') !== null) {
+                if ($this->request->post('action') === 'speichern') {
                     $action = 'speichern';
-                } elseif ($_POST['action'] === 'loeschen') {
+                } elseif ($this->request->post('action') === 'loeschen') {
                     $action = 'loeschen';
                 }
-            } elseif (Request::getInt('kKupon', -1) >= 0) {
+            } elseif ($this->request->getInt('kKupon', -1) >= 0) {
                 $action = 'bearbeiten';
             }
         }
 
         if ($action === 'bearbeiten') {
-            $couponID = (int)($_GET['kKupon'] ?? $_POST['kKuponBearbeiten'] ?? 0);
-            $coupon   = $couponID > 0 ? $this->getCoupon($couponID) : $this->createNewCoupon($_REQUEST['cKuponTyp']);
-        } elseif ($action === 'speichern' || Request::postVar('saveAndContinue')) {
+            $couponID = $this->request->getInt('kKupon') ?: $this->request->postInt('kKuponBearbeiten') ?: 0;
+            $coupon   = $couponID > 0
+                ? $this->getCoupon($couponID)
+                : $this->createNewCoupon($this->request->request('cKuponTyp'));
+        } elseif ($action === 'speichern' || $this->request->post('saveAndContinue')) {
             $coupon       = $this->createCouponFromInput();
             $couponErrors = $coupon->validate();
             if (\count($couponErrors) > 0) {
@@ -165,15 +162,15 @@ class CouponsController extends AbstractBackendController
             } elseif (($couponId = $this->saveCoupon($coupon, $languages)) !== 0) {
                 // Validierung erfolgreich => Kupon speichern
                 // erfolgreich gespeichert => evtl. Emails versenden
-                if (isset($_POST['informieren'])
-                    && $_POST['informieren'] === 'Y'
+                if ($this->request->post('informieren') !== null
+                    && $this->request->post('informieren') === 'Y'
                     && ($coupon->cKuponTyp === Kupon::TYPE_STANDARD || $coupon->cKuponTyp === Kupon::TYPE_SHIPPING)
                     && $coupon->cAktiv === 'Y'
                 ) {
                     $this->informCouponCustomers($coupon);
                 }
                 $this->alertService->addSuccess(\__('successCouponSave'), 'successCouponSave');
-                if (Request::postVar('saveAndContinue')) {
+                if ($this->request->post('saveAndContinue')) {
                     $coupon = $this->getCoupon(\is_int($couponId) ? $couponId : $couponId[0]);
                 }
             } else {
@@ -181,8 +178,8 @@ class CouponsController extends AbstractBackendController
             }
         } elseif ($action === 'loeschen') {
             // Kupons loeschen
-            if (GeneralObject::hasCount('kKupon_arr', $_POST)) {
-                $couponIDs = \array_map('\intval', $_POST['kKupon_arr']);
+            if (GeneralObject::hasCount('kKupon_arr', $request->getParsedBody())) {
+                $couponIDs = \array_map('\intval', $this->request->post('kKupon_arr'));
                 if ($this->loescheKupons($couponIDs)) {
                     $this->alertService->addSuccess(\__('successCouponDelete'), 'successCouponDelete');
                 } else {
@@ -193,7 +190,7 @@ class CouponsController extends AbstractBackendController
             }
         }
         if ($action === 'bearbeiten'
-            || (Request::postVar('saveAndContinue') && $coupon instanceof Kupon)
+            || ($this->request->post('saveAndContinue') && $coupon instanceof Kupon)
         ) {
             $action      = 'bearbeiten';
             $taxClasses  = $this->db->getObjects('SELECT kSteuerklasse, cName FROM tsteuerklasse');
@@ -209,12 +206,12 @@ class CouponsController extends AbstractBackendController
                 $names = [];
                 foreach ($languages as $language) {
                     $postVarName                = 'cName_' . $language->getIso();
-                    $names[$language->getIso()] = Request::postVar($postVarName, '') !== ''
-                        ? Text::filterXSS($_POST[$postVarName])
+                    $names[$language->getIso()] = $this->request->post($postVarName, '') !== ''
+                        ? Text::filterXSS($this->request->post($postVarName))
                         : $coupon->cName;
                 }
             }
-            $smarty->assign('taxClasses', $taxClasses)
+            $this->smarty->assign('taxClasses', $taxClasses)
                 ->assign('customerGroups', CustomerGroup::getGroups())
                 ->assign('manufacturers', $this->getManufacturers($coupon->cHersteller))
                 ->assign('categories', $this->getCategories($coupon->cKategorien))
@@ -223,10 +220,10 @@ class CouponsController extends AbstractBackendController
                 ->assign('oKupon', $coupon);
         } else {
             // Seite: Uebersicht
-            if (Request::hasGPCData('tab')) {
-                $tab = Request::verifyGPDataString('tab');
-            } elseif (Request::hasGPCData('cKuponTyp')) {
-                $tab = Request::verifyGPDataString('cKuponTyp');
+            if ($this->request->request('tab', null) !== null) {
+                $tab = $this->request->request('tab');
+            } elseif ($this->request->request('cKuponTyp', null) !== null) {
+                $tab = $this->request->request('cKuponTyp');
             }
 
             $this->deactivateOutdatedCoupons();
@@ -278,8 +275,8 @@ class CouponsController extends AbstractBackendController
                 Kupon::TYPE_SHIPPING,
                 Kupon::TYPE_NEWCUSTOMER
             ];
-            $exportID         = Request::verifyGPDataString('exportcsv');
-            if ($action === 'csvExport' && \in_array($exportID, $validExportTypes, true) && Form::validateToken()) {
+            $exportID         = $this->request->request('exportcsv');
+            if ($this->tokenIsValid && $action === 'csvExport' && \in_array($exportID, $validExportTypes, true)) {
                 $export = new Export();
                 if ($exportID === Kupon::TYPE_STANDARD) {
                     $export->export(
@@ -348,7 +345,7 @@ class CouponsController extends AbstractBackendController
                 $paginationNeukunden->getLimitSQL()
             );
 
-            $smarty->assign('tab', $tab)
+            $this->smarty->assign('tab', $tab)
                 ->assign('oFilterStandard', $filterDefault)
                 ->assign('oFilterVersand', $filterShipping)
                 ->assign('oFilterNeukunden', $filterCustomers)
@@ -363,9 +360,8 @@ class CouponsController extends AbstractBackendController
                 ->assign('nKuponNeukundenCount', $nKuponNeukundenTotal);
         }
 
-        return $smarty->assign('action', $action)
+        return $this->smarty->assign('action', $action)
             ->assign('couponTypes', Kupon::getCouponTypes())
-            ->assign('route', $this->route)
             ->getResponse('kupons.tpl');
     }
 
@@ -607,8 +603,8 @@ class CouponsController extends AbstractBackendController
      */
     private function createCouponFromInput(): Kupon
     {
-        $input                         = Text::filterXSS($_POST);
-        $coupon                        = new Kupon(Request::postInt('kKuponBearbeiten'));
+        $input                         = Text::filterXSS($this->request->getBody());
+        $coupon                        = new Kupon($this->request->postInt('kKuponBearbeiten'));
         $coupon->cKuponTyp             = $input['cKuponTyp'];
         $coupon->cName                 = \htmlspecialchars($input['cName'], \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET);
         $coupon->fWert                 = !empty($input['fWert'])
@@ -616,32 +612,32 @@ class CouponsController extends AbstractBackendController
             : null;
         $coupon->cWertTyp              = !empty($input['cWertTyp']) ? $input['cWertTyp'] : null;
         $coupon->cZusatzgebuehren      = !empty($input['cZusatzgebuehren']) ? $input['cZusatzgebuehren'] : 'N';
-        $coupon->nGanzenWKRabattieren  = Request::postInt('nGanzenWKRabattieren');
+        $coupon->nGanzenWKRabattieren  = $this->request->postInt('nGanzenWKRabattieren');
         $coupon->kSteuerklasse         = !empty($input['kSteuerklasse']) ? (int)$input['kSteuerklasse'] : null;
         $coupon->fMindestbestellwert   = (float)\str_replace(',', '.', $input['fMindestbestellwert']);
         $coupon->cCode                 = !empty($input['cCode']) ? $input['cCode'] : '';
         $coupon->cLieferlaender        = !empty($input['cLieferlaender'])
             ? \mb_convert_case($input['cLieferlaender'], \MB_CASE_UPPER)
             : '';
-        $coupon->nVerwendungen         = Request::postInt('nVerwendungen');
-        $coupon->nVerwendungenProKunde = Request::postInt('nVerwendungenProKunde');
+        $coupon->nVerwendungen         = $this->request->postInt('nVerwendungen');
+        $coupon->nVerwendungenProKunde = $this->request->postInt('nVerwendungenProKunde');
         $coupon->cArtikel              = !empty($input['cArtikel'])
             ? ';' . \trim($input['cArtikel'], ";\t\n\r") . ';'
             : '';
         $coupon->cHersteller           = '-1';
-        $coupon->kKundengruppe         = Request::postInt('kKundengruppe');
+        $coupon->kKundengruppe         = $this->request->postInt('kKundengruppe');
         $coupon->dGueltigAb            = $this->normalizeDate(!empty($input['dGueltigAb'])
             ? $input['dGueltigAb']
             : \date_create()->format('Y-m-d H:i') . ':00');
         $coupon->dGueltigBis           = $this->normalizeDate(!empty($input['dGueltigBis'])
             ? $input['dGueltigBis']
             : '');
-        $coupon->cAktiv                = Request::postVar('cAktiv') === 'Y' ? 'Y' : 'N';
+        $coupon->cAktiv                = $this->request->post('cAktiv') === 'Y' ? 'Y' : 'N';
         $coupon->cKategorien           = '-1';
         if ($coupon->cKuponTyp !== Kupon::TYPE_NEWCUSTOMER) {
             $coupon->cKunden = '-1';
         }
-        if (Request::postVar('bOpenEnd') === 'Y') {
+        if ($this->request->post('bOpenEnd') === 'Y') {
             $coupon->dGueltigBis = null;
         } elseif (!empty($input['dDauerTage'])) {
             $coupon->dGueltigBis     = '';
@@ -663,7 +659,7 @@ class CouponsController extends AbstractBackendController
         }
         if (isset($input['couponCreation'])) {
             $massCreation                  = new stdClass();
-            $massCreation->cActiv          = Request::postInt('couponCreation');
+            $massCreation->cActiv          = $this->request->postInt('couponCreation');
             $massCreation->numberOfCoupons = ($massCreation->cActiv === 1 && !empty($input['numberOfCoupons']))
                 ? (int)$input['numberOfCoupons']
                 : 2;
@@ -721,7 +717,8 @@ class CouponsController extends AbstractBackendController
             if (isset($coupon->massCreationCoupon)) {
                 $massCreationCoupon = $coupon->massCreationCoupon;
                 $coupon->kKupon     = [];
-                unset($coupon->massCreationCoupon, $_POST['informieren']);
+                $this->request->updateBody('informieren', null);
+                unset($coupon->massCreationCoupon);
                 for ($i = 1; $i <= $massCreationCoupon->numberOfCoupons; $i++) {
                     if ($coupon->cKuponTyp !== Kupon::TYPE_NEWCUSTOMER) {
                         $coupon->cCode = $coupon->generateCode(
@@ -754,8 +751,12 @@ class CouponsController extends AbstractBackendController
                     foreach ($languages as $language) {
                         $code          = $language->getIso();
                         $postVarName   = 'cName_' . $code;
-                        $localizedName = Request::postVar($postVarName, '') !== ''
-                            ? \htmlspecialchars($_POST[$postVarName], \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET)
+                        $localizedName = $this->request->post($postVarName, '') !== ''
+                            ? \htmlspecialchars(
+                                $this->request->post($postVarName),
+                                \ENT_COMPAT | \ENT_HTML401,
+                                \JTL_CHARSET
+                            )
                             : $coupon->cName;
 
                         $localized              = new stdClass();
@@ -770,8 +771,12 @@ class CouponsController extends AbstractBackendController
                 foreach ($languages as $language) {
                     $code          = $language->getIso();
                     $postVarName   = 'cName_' . $code;
-                    $localizedName = Request::postVar($postVarName, '') !== ''
-                        ? \htmlspecialchars($_POST[$postVarName], \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET)
+                    $localizedName = $this->request->post($postVarName, '') !== ''
+                        ? \htmlspecialchars(
+                            $this->request->post($postVarName),
+                            \ENT_COMPAT | \ENT_HTML401,
+                            \JTL_CHARSET
+                        )
                         : $coupon->cName;
 
                     $localized              = new stdClass();

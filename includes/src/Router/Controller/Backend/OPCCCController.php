@@ -3,11 +3,8 @@
 namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\Permissions;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Pagination\Pagination;
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -20,13 +17,12 @@ class OPCCCController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::OPC_VIEW);
         $this->getText->loadAdminLocale('pages/opc-controlcenter');
 
-        $action    = Request::verifyGPDataString('action');
+        $action    = $this->request->request('action');
         $opc       = Shop::Container()->getOPC();
         $opcPage   = Shop::Container()->getOPCPageService();
         $opcPageDB = Shop::Container()->getOPCPageDB();
@@ -34,19 +30,19 @@ class OPCCCController extends AbstractBackendController
             ->setItemCount($opcPageDB->getPageCount())
             ->assemble();
 
-        if (Form::validateToken()) {
+        if ($this->tokenIsValid) {
             if ($action === 'restore') {
-                $pageId = Request::verifyGPDataString('pageId');
+                $pageId = $this->request->request('pageId');
                 $opcPage->deletePage($pageId);
                 $this->alertService->addNotice(\__('opcNoticePageReset'), 'opcNoticePageReset');
             } elseif ($action === 'discard') {
-                $pageKey = Request::verifyGPCDataInt('pageKey');
+                $pageKey = $this->request->requestInt('pageKey');
                 $opcPage->deleteDraft($pageKey);
                 $this->alertService->addNotice(\__('opcNoticeDraftDelete'), 'opcNoticeDraftDelete');
             }
         }
 
-        return $smarty->assign('opc', $opc)
+        return $this->smarty->assign('opc', $opc)
             ->assign('opcPageDB', $opcPageDB)
             ->assign('pagesPagi', $pagesPagi)
             ->getResponse('opc-controlcenter.tpl');

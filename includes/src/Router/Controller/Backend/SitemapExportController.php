@@ -4,8 +4,6 @@ namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\Permissions;
 use JTL\Customer\CustomerGroup;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Language\LanguageHelper;
 use JTL\Pagination\Pagination;
 use JTL\Shop;
@@ -13,7 +11,6 @@ use JTL\Sitemap\Config\DefaultConfig;
 use JTL\Sitemap\Export;
 use JTL\Sitemap\ItemRenderers\DefaultRenderer;
 use JTL\Sitemap\SchemaRenderers\DefaultSchemaRenderer;
-use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\Response;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
@@ -28,14 +25,11 @@ class SitemapExportController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::EXPORT_SITEMAP_VIEW);
         $this->getText->loadAdminLocale('pages/sitemapexport');
-
-        $this->smarty->assign('route', $this->route);
-        if (Request::postVar('action') === 'export') {
+        if ($this->request->post('action') === 'export') {
             return $this->actionExport();
         }
         $exportDir = \PFAD_ROOT . \PFAD_EXPORT;
@@ -49,17 +43,17 @@ class SitemapExportController extends AbstractBackendController
                 \sprintf(\__('errorSitemapCreatePermission'), '<i>' . $exportDir . 'sitemap_index.xml</i>'),
                 'errorSitemapCreatePermission'
             );
-        } elseif (isset($_REQUEST['update']) && (int)$_REQUEST['update'] === 1) {
+        } elseif ((int)$this->request->request('update', 0) === 1) {
             $this->alertService->addSuccess(
                 \sprintf(\__('successSave'), '<i>' . $exportDir . 'sitemap_index.xml</i>'),
                 'successSubjectDelete'
             );
         }
 
-        if (Request::postInt('einstellungen') > 0) {
-            $this->saveAdminSectionSettings(\CONF_SITEMAP, $_POST);
-        } elseif (Request::verifyGPCDataInt('download_edit') === 1) {
-            $trackers = \array_map('\intval', Request::postVar('kSitemapTracker', []));
+        if ($this->request->postInt('einstellungen') > 0) {
+            $this->saveAdminSectionSettings(\CONF_SITEMAP, $this->request->getBody());
+        } elseif ($this->request->requestInt('download_edit') === 1) {
+            $trackers = \array_map('\intval', $this->request->post('kSitemapTracker', []));
             if (\count($trackers) > 0) {
                 $this->db->query(
                     'DELETE
@@ -68,8 +62,8 @@ class SitemapExportController extends AbstractBackendController
                 );
             }
             $this->alertService->addSuccess(\__('successSitemapDLDelete'), 'successSitemapDLDelete');
-        } elseif (Request::verifyGPCDataInt('report_edit') === 1) {
-            $reports = \array_map('\intval', Request::postVar('kSitemapReport', []));
+        } elseif ($this->request->requestInt('report_edit') === 1) {
+            $reports = \array_map('\intval', $this->request->post('kSitemapReport', []));
             if (\count($reports) > 0) {
                 $this->db->query(
                     'DELETE
@@ -80,10 +74,10 @@ class SitemapExportController extends AbstractBackendController
             $this->alertService->addSuccess(\__('successSitemapReportDelete'), 'successSitemapReportDelete');
         }
 
-        $yearDownloads = Request::verifyGPCDataInt('nYear_downloads');
-        $yearReports   = Request::verifyGPCDataInt('nYear_reports');
+        $yearDownloads = $this->request->requestInt('nYear_downloads');
+        $yearReports   = $this->request->requestInt('nYear_reports');
 
-        if (Request::postVar('action') === 'year_downloads_delete' && Form::validateToken()) {
+        if ($this->tokenIsValid && $this->request->post('action') === 'year_downloads_delete') {
             $this->db->queryPrepared(
                 'DELETE FROM tsitemaptracker
                     WHERE YEAR(tsitemaptracker.dErstellt) = :yr',
@@ -95,8 +89,7 @@ class SitemapExportController extends AbstractBackendController
             );
             $yearDownloads = 0;
         }
-
-        if (Request::postVar('action') === 'year_reports_delete' && Form::validateToken()) {
+        if ($this->tokenIsValid && $this->request->post('action') === 'year_reports_delete') {
             $this->db->queryPrepared(
                 'DELETE FROM tsitemapreport
                      WHERE YEAR(tsitemapreport.dErstellt) = :yr',
@@ -182,7 +175,7 @@ class SitemapExportController extends AbstractBackendController
         }
         $this->getAdminSectionSettings(\CONF_SITEMAP);
 
-        return $smarty->assign('nSitemapDownloadYear', $yearDownloads)
+        return $this->smarty->assign('nSitemapDownloadYear', $yearDownloads)
             ->assign('oSitemapDownloadYears_arr', $downloadsPerYear)
             ->assign('oSitemapDownloadPagination', $downloadPagination)
             ->assign('oSitemapDownload_arr', $sitemapDownloads)
@@ -214,7 +207,7 @@ class SitemapExportController extends AbstractBackendController
             $exportConfig->getFactories()
         );
 
-        if (isset($_REQUEST['update']) && (int)$_REQUEST['update'] === 1) {
+        if ((int)$this->request->request('update', 0) === 1) {
             return new RedirectResponse($this->baseURL . $this->route . '?update=1');
         }
         $response = (new Response())->withStatus(200)

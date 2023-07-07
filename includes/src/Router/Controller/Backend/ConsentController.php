@@ -4,7 +4,6 @@ namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\Permissions;
 use JTL\Consent\ConsentModel;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -17,16 +16,14 @@ class ConsentController extends GenericModelController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::CONSENT_MANAGER);
         $this->getText->loadAdminLocale('pages/consent');
-        $this->smarty->assign('route', $this->route);
 
         $this->modelClass    = ConsentModel::class;
         $this->adminBaseFile = \ltrim($this->route, '/');
-        $smarty->assign('settings', $this->getAdminSectionSettings(\CONF_CONSENTMANAGER));
+        $this->smarty->assign('settings', $this->getAdminSectionSettings(\CONF_CONSENTMANAGER));
 
         return $this->handle('consent.tpl');
     }

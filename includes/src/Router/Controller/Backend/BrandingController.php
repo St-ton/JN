@@ -3,12 +3,10 @@
 namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\Permissions;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Media\Image;
 use JTL\Media\IMedia;
 use JTL\Media\Media;
-use JTL\Smarty\JTLSmarty;
+use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -22,39 +20,35 @@ class BrandingController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::DISPLAY_BRANDING_VIEW);
         $this->getText->loadAdminLocale('pages/branding');
-
-        $currentID   = (int)($args['id'] ?? 1);
-        $this->route = \str_replace('[/{id}]', '', $this->route);
-        $step        = 'branding_uebersicht';
-        if (Request::verifyGPDataString('action') === 'delete' && Form::validateToken()) {
-            $id = Request::postInt('id');
+        $currentID = (int)($args['id'] ?? 1);
+        $step      = 'branding_uebersicht';
+        if ($this->tokenIsValid && $this->request->post('action') === 'delete') {
+            $id = $this->request->postInt('id');
             $this->deleteImage($id);
-            die(\json_encode((object)['id' => $id, 'status' => 'OK'], \JSON_THROW_ON_ERROR));
+
+            return new JsonResponse((object)['id' => $id, 'status' => 'OK']);
         }
-        if (Request::verifyGPCDataInt('branding') === 1) {
+        if ($this->request->requestInt('branding') === 1) {
             $step = 'branding_detail';
-            if (Request::postInt('speicher_einstellung') === 1 && Form::validateToken()) {
-                if ($this->saveConfig(Request::verifyGPCDataInt('kBranding'), $_POST, $_FILES)) {
+            if ($this->tokenIsValid && $this->request->postInt('speicher_einstellung') === 1) {
+                if ($this->saveConfig($this->request->requestInt('kBranding'), $request->getParsedBody(), $_FILES)) {
                     $this->alertService->addSuccess(\__('successConfigSave'), 'successConfigSave');
                 } else {
                     $this->alertService->addError(\__('errorFillRequired'), 'errorFillRequired');
                 }
             }
-            if (Request::verifyGPCDataInt('kBranding') > 0) {
-                $currentID = Request::verifyGPCDataInt('kBranding');
+            if (($tmp = $this->request->requestInt('kBranding')) > 0) {
+                $currentID = $tmp;
             }
         }
-
-        return $smarty->assign('cRnd', \time())
+        return $this->smarty->assign('cRnd', \time())
             ->assign('branding', $this->getBranding($currentID))
             ->assign('brandings', $this->getBrandings())
             ->assign('step', $step)
-            ->assign('route', $this->route)
             ->getResponse('branding.tpl');
     }
 

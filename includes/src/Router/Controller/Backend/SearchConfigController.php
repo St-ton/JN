@@ -7,12 +7,9 @@ use JTL\Backend\NotificationEntry;
 use JTL\Backend\Permissions;
 use JTL\Backend\Settings\Manager;
 use JTL\Backend\Settings\SectionFactory;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Router\Route;
 use JTL\Shop;
 use JTL\Shopsetting;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -25,9 +22,8 @@ class SearchConfigController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::SETTINGS_ARTICLEOVERVIEW_VIEW);
         $this->getText->loadAdminLocale('pages/sucheinstellungen');
         $this->getText->loadAdminLocale('pages/einstellungen');
@@ -41,10 +37,10 @@ class SearchConfigController extends AbstractBackendController
         $step             = 'einstellungen bearbeiten';
         $createIndex      = false;
         $sectionFactory   = new SectionFactory();
-        $settingManager   = new Manager($this->db, $smarty, $this->account, $this->getText, $this->alertService);
+        $settingManager   = new Manager($this->db, $this->smarty, $this->account, $this->getText, $this->alertService);
 
-        if (Request::postInt('einstellungen_bearbeiten') === 1 && Form::validateToken()) {
-            $sucheFulltext = \in_array(Request::postVar('suche_fulltext', []), ['Y', 'B'], true);
+        if ($this->tokenIsValid && $this->request->postInt('einstellungen_bearbeiten') === 1) {
+            $sucheFulltext = \in_array($this->request->post('suche_fulltext', []), ['Y', 'B'], true);
             if ($sucheFulltext) {
                 if (\version_compare($mysqlVersion, '5.6', '<')) {
                     /*
@@ -53,20 +49,22 @@ class SearchConfigController extends AbstractBackendController
                      * Since MariaDB 10.3.7 and later, the InnoDB implementation has diverged substantially from the
                      * InnoDB in MySQL and the InnoDB Version is no longer reported.
                      */
-                    $_POST['suche_fulltext'] = 'N';
+                    $this->request->updateBody('suche_fulltext', 'N');
                     $this->alertService->addError(\__('errorFulltextSearchMYSQL'), 'errorFulltextSearchMYSQL');
                 } else {
                     // Bei Volltextsuche die Mindeswortlänge an den DB-Parameter anpassen
                     $currentVal = $this->db->getSingleObject('SELECT @@ft_min_word_len AS ft_min_word_len');
-                    if (($currentVal->ft_min_word_len ?? $_POST['suche_min_zeichen']) !== $_POST['suche_min_zeichen']) {
-                        $_POST['suche_min_zeichen'] = $currentVal->ft_min_word_len;
+                    if (($currentVal->ft_min_word_len ?? $this->request->post('suche_min_zeichen'))
+                        !== $this->request->post('suche_min_zeichen')
+                    ) {
+                        $this->request->updateBody('suche_min_zeichen', $currentVal->ft_min_word_len);
                         $this->alertService->addWarning(\__('errorFulltextSearchMinLen'), 'errorFulltextSearchMinLen');
                     }
                 }
             }
 
             $shopSettings = Shopsetting::getInstance();
-            $this->saveAdminSectionSettings($sectionID, $_POST);
+            $this->saveAdminSectionSettings($sectionID, $this->request->getBody());
 
             $this->cache->flushTags(
                 [\CACHING_GROUP_OPTION, \CACHING_GROUP_CORE, \CACHING_GROUP_ARTICLE, \CACHING_GROUP_CATEGORY]
@@ -86,7 +84,9 @@ class SearchConfigController extends AbstractBackendController
                          'suche_prio_han',
                          'suche_prio_anmerkung'
                      ] as $sucheParam) {
-                if (isset($_POST[$sucheParam]) && ($_POST[$sucheParam] != $conf['artikeluebersicht'][$sucheParam])) {
+                if ($this->request->post($sucheParam) !== null
+                    && ($this->request->post($sucheParam) != $conf['artikeluebersicht'][$sucheParam])
+                ) {
                     $fulltextChanged = true;
                     break;
                 }
@@ -128,14 +128,13 @@ class SearchConfigController extends AbstractBackendController
 
         $this->assignScrollPosition();
 
-        return $smarty->assign('kEinstellungenSektion', $sectionID)
+        return $this->smarty->assign('kEinstellungenSektion', $sectionID)
             ->assign('sections', [$section])
-            ->assign('cPrefURL', $smarty->getConfigVars('prefURL' . $sectionID))
+            ->assign('cPrefURL', $this->smarty->getConfigVars('prefURL' . $sectionID))
             ->assign('step', $step)
             ->assign('supportFulltext', \version_compare($mysqlVersion, '5.6', '>='))
             ->assign('createIndex', $createIndex)
             ->assign('waehrung', $standardwaehrung->cName ?? '')
-            ->assign('route', $this->route)
             ->getResponse('sucheinstellungen.tpl');
     }
 }

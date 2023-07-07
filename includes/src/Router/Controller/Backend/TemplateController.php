@@ -4,12 +4,9 @@ namespace JTL\Router\Controller\Backend;
 
 use InvalidArgumentException;
 use JTL\Backend\Permissions;
-use JTL\Helpers\Form;
 use JTL\Helpers\Overlay;
-use JTL\Helpers\Request;
 use JTL\Plugin\Admin\Installation\InstallationResponse;
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
 use JTL\Template\Admin\Extractor;
 use JTL\Template\Admin\Listing;
 use JTL\Template\Admin\Validation\TemplateValidator;
@@ -42,12 +39,10 @@ class TemplateController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::DISPLAY_TEMPLATE_VIEW);
         $this->getText->loadAdminLocale('pages/shoptemplate');
-        $this->smarty->assign('route', $this->route);
 
         return $this->handleAction();
     }
@@ -57,9 +52,9 @@ class TemplateController extends AbstractBackendController
      */
     public function handleAction(): ResponseInterface
     {
-        $action                   = Request::verifyGPDataString('action');
-        $valid                    = Form::validateToken();
-        $this->currentTemplateDir = \basename(Request::verifyGPDataString('dir'));
+        $action                   = $this->request->request('action');
+        $valid                    = $this->tokenIsValid;
+        $this->currentTemplateDir = \basename($this->request->request('dir'));
         if (!\is_dir(\PFAD_ROOT . \PFAD_TEMPLATES . $this->currentTemplateDir)) {
             $this->currentTemplateDir = null;
             $valid                    = false;
@@ -75,7 +70,7 @@ class TemplateController extends AbstractBackendController
         if (!$valid) {
             return $this->displayOverview();
         }
-        if (Request::postVar('saveAndContinue')) {
+        if ($this->request->post('saveAndContinue')) {
             $this->saveConfig();
             return $this->displayTemplateSettings();
         }
@@ -84,7 +79,7 @@ class TemplateController extends AbstractBackendController
                 return $this->displayTemplateSettings();
             case 'switch':
                 $this->switch();
-                return Request::verifyGPCDataInt('config') === 1
+                return $this->request->requestInt('config') === 1
                     ? $this->displayTemplateSettings()
                     : $this->displayOverview();
             case 'save-config':
@@ -95,7 +90,7 @@ class TemplateController extends AbstractBackendController
                 return $this->displayOverview();
             case 'setPreview':
                 $this->switch('test');
-                return Request::verifyGPCDataInt('config') === 1
+                return $this->request->requestInt('config') === 1
                     ? $this->displayTemplateSettings()
                     : $this->displayOverview();
             case 'upload':
@@ -172,9 +167,9 @@ class TemplateController extends AbstractBackendController
         foreach ($tplConfXML as $config) {
             foreach ($config->settings as $setting) {
                 if ($setting->cType === 'checkbox') {
-                    $value = isset($_POST[$setting->elementID]) ? '1' : '0';
+                    $value = $this->request->post($setting->elementID) !== null ? '1' : '0';
                 } else {
-                    $value = $_POST[$setting->elementID] ?? null;
+                    $value = $this->request->post($setting->elementID);
                 }
                 if ($value === null) {
                     continue;
@@ -193,14 +188,14 @@ class TemplateController extends AbstractBackendController
                 $this->config->updateConfigInDB($setting->section, $setting->key, $value);
             }
         }
-        $check = $service->setActiveTemplate($this->currentTemplateDir, Request::postVar('eTyp', 'standard'));
+        $check = $service->setActiveTemplate($this->currentTemplateDir, $this->request->post('eTyp', 'standard'));
         $this->cache->flushTags([\CACHING_GROUP_OPTION, \CACHING_GROUP_TEMPLATE]);
         if ($check) {
             $this->alertService->addSuccess(\__('successTemplateSave'), 'successTemplateSave');
         } else {
             $this->alertService->addError(\__('errorTemplateSave'), 'errorTemplateSave');
         }
-        if (Request::verifyGPCDataInt('activate') === 1) {
+        if ($this->request->requestInt('activate') === 1) {
             $overlayHelper = new Overlay($this->db);
             $overlayHelper->loadOverlaysFromTemplateFolder($this->currentTemplateDir);
         }

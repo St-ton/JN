@@ -6,11 +6,8 @@ use JTL\Backend\Permissions;
 use JTL\Cart\PersistentCart;
 use JTL\Customer\Customer;
 use JTL\DB\SqlObject;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Pagination\Pagination;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -23,15 +20,14 @@ class PersistentCartController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::MODULE_SAVED_BASKETS_VIEW);
         $this->getText->loadAdminLocale('pages/warenkorbpers');
 
         $this->step = 'uebersicht';
-        if (Request::getInt('l') > 0 && Form::validateToken()) {
-            $customerID = Request::getInt('l');
+        if ($this->tokenIsValid && $this->request->getInt('l') > 0) {
+            $customerID = $this->request->getInt('l');
             $persCart   = new PersistentCart($customerID);
             if ($persCart->entferneSelf()) {
                 $this->alertService->addSuccess(\__('successCartPersPosDelete'), 'successCartPersPosDelete');
@@ -40,12 +36,11 @@ class PersistentCartController extends AbstractBackendController
             unset($persCart);
         }
         $this->getOverview();
-        if (Request::getInt('a') > 0) {
-            $this->actionShow(Request::getInt('a'));
+        if ($this->request->getInt('a') > 0) {
+            $this->actionShow($this->request->getInt('a'));
         }
 
-        return $smarty->assign('step', $this->step)
-            ->assign('route', $this->route)
+        return $this->smarty->assign('step', $this->step)
             ->getResponse('warenkorbpers.tpl');
     }
 
@@ -55,10 +50,10 @@ class PersistentCartController extends AbstractBackendController
     private function getSearchSQL(): SqlObject
     {
         $searchSQL = new SqlObject();
-        if (\mb_strlen(Request::verifyGPDataString('cSuche')) === 0) {
+        if (\mb_strlen($this->request->request('cSuche')) === 0) {
             return $searchSQL;
         }
-        $query = $this->db->escape(Text::filterXSS(Request::verifyGPDataString('cSuche')));
+        $query = $this->db->escape(Text::filterXSS($this->request->request('cSuche')));
         if (\mb_strlen($query) > 0) {
             $searchSQL->setWhere(' WHERE (tkunde.cKundenNr LIKE :qry
                 OR tkunde.cVorname LIKE :qry 

@@ -3,10 +3,7 @@
 namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\Permissions;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -26,14 +23,13 @@ class LogoController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::DISPLAY_OWN_LOGO_VIEW);
         $this->getText->loadAdminLocale('pages/shoplogouploader');
 
-        if (Form::validateToken()) {
-            if (isset($_POST['action'], $_POST['logo']) && $_POST['action'] === 'deleteLogo') {
+        if ($this->tokenIsValid) {
+            if ($this->request->post('logo') && $this->request->post('action') === 'deleteLogo') {
                 return $this->actionDelete();
             }
             if (!empty($_FILES)) {
@@ -41,15 +37,14 @@ class LogoController extends AbstractBackendController
 
                 return new JsonResponse($response);
             }
-            if (Request::verifyGPCDataInt('upload') === 1) {
+            if ($this->request->requestInt('upload') === 1) {
                 $this->actionUpload();
             }
         }
 
-        return $smarty->assign('ShopLogo', Shop::getLogo())
+        return $this->smarty->assign('ShopLogo', Shop::getLogo())
             ->assign('ShopLogoURL', Shop::getLogo(true))
             ->assign('step', 'shoplogouploader_uebersicht')
-            ->assign('route', $this->route)
             ->getResponse('shoplogouploader.tpl');
     }
 
@@ -117,7 +112,7 @@ class LogoController extends AbstractBackendController
     {
         $currentLogo = Shop::getLogo();
         $response    = (object)['status' => 'FAILED'];
-        if ($currentLogo === $_POST['logo'] && Form::validateToken()) {
+        if ($this->tokenIsValid && $currentLogo === $this->request->post('logo')) {
             $delete                        = $this->deleteShopLogo($currentLogo);
             $response->status              = $delete === true ? 'OK' : 'FAILED';
             $option                        = new stdClass();
@@ -136,7 +131,7 @@ class LogoController extends AbstractBackendController
      */
     private function actionUpload(): void
     {
-        if (isset($_POST['delete'])) {
+        if ($this->request->post('delete') !== null) {
             $delete = $this->deleteShopLogo(Shop::getLogo());
             if ($delete === true) {
                 $this->alertService->addSuccess(\__('successLogoDelete'), 'successLogoDelete');

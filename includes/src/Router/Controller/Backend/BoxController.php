@@ -5,13 +5,10 @@ namespace JTL\Router\Controller\Backend;
 use JTL\Backend\Permissions;
 use JTL\Backend\Revision;
 use JTL\Boxes\Type;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Link\LinkGroupInterface;
 use JTL\Mapper\PageTypeToPageNiceName;
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -76,33 +73,32 @@ class BoxController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::BOXES_VIEW);
         $this->getText->loadAdminLocale('pages/boxen');
 
-        $pageID = Request::verifyGPCDataInt('page');
-        $linkID = Request::verifyGPCDataInt('linkID');
-        $boxID  = Request::verifyGPCDataInt('item');
+        $pageID = $this->request->requestInt('page');
+        $linkID = $this->request->requestInt('linkID');
+        $boxID  = $this->request->requestInt('item');
 
-        if (Request::postInt('einstellungen') > 0) {
-            $this->saveAdminSectionSettings(\CONF_BOXEN, $_POST);
-        } elseif (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::validateToken()) {
-            switch ($_REQUEST['action']) {
+        if ($this->request->postInt('einstellungen') > 0) {
+            $this->saveAdminSectionSettings(\CONF_BOXEN, $request->getParsedBody());
+        } elseif ($this->tokenIsValid
+            && $this->request->request('action', null) !== null
+            && $this->request->request('revision-action', null) === null
+        ) {
+            switch ($this->request->request('action')) {
                 case 'delete-invisible':
-                    $items = !empty($_POST['kInvisibleBox']) && \count($_POST['kInvisibleBox']) > 0
-                        ? $_POST['kInvisibleBox']
-                        : [];
-                    $this->actionDeleteInvisible($items);
+                    $this->actionDeleteInvisible($this->request->post('kInvisibleBox', []));
                     break;
 
                 case 'new':
                     $this->actionNew(
                         $boxID,
                         $pageID,
-                        (int)($_REQUEST['container'] ?? 0),
-                        Text::filterXSS($_REQUEST['position'])
+                        (int)$this->request->request('container', 0),
+                        Text::filterXSS($this->request->request('position'))
                     );
                     break;
 
@@ -144,7 +140,7 @@ class BoxController extends AbstractBackendController
         $this->getAdminSectionSettings(\CONF_BOXEN);
         $this->assignScrollPosition();
 
-        return $smarty->assign('validPageTypes', self::getMappedValidPageTypes())
+        return $this->smarty->assign('validPageTypes', self::getMappedValidPageTypes())
             ->assign('bBoxenAnzeigen', $this->getVisibility($pageID))
             ->assign('oBoxenLeft_arr', $boxList['left'] ?? [])
             ->assign('oBoxenTop_arr', $boxList['top'] ?? [])
@@ -156,7 +152,6 @@ class BoxController extends AbstractBackendController
             ->assign('oBoxenContainer', $boxContainer)
             ->assign('nPage', $pageID)
             ->assign('invisibleBoxes', $this->getInvisibleBoxes())
-            ->assign('route', $this->route)
             ->getResponse('boxen.tpl');
     }
 
@@ -227,7 +222,7 @@ class BoxController extends AbstractBackendController
 
         if ($this->currentBoxID !== null
             && $this->currentBoxID > 0
-            && Request::postVar('saveAndContinue')
+            && $this->request->post('saveAndContinue')
         ) {
             $this->actionEditMode($this->currentBoxID);
         }
@@ -278,8 +273,8 @@ class BoxController extends AbstractBackendController
     private function actionEdit(int $boxID, int $linkID): void
     {
         $ok    = false;
-        $title = Text::xssClean($_REQUEST['boxtitle']);
-        $type  = $_REQUEST['typ'];
+        $title = Text::xssClean($this->request->request('boxtitle'));
+        $type  = $this->request->request('typ');
         if ($type === Type::TEXT) {
             $oldBox = $this->getByID($boxID);
             if ($oldBox->supportsRevisions === true) {
@@ -288,8 +283,8 @@ class BoxController extends AbstractBackendController
             }
             $ok = $this->update($boxID, $title);
             if ($ok) {
-                foreach ($_REQUEST['title'] as $iso => $title) {
-                    $content = $_REQUEST['text'][$iso];
+                foreach ($this->request->request('title') as $iso => $title) {
+                    $content = $this->request->request('text')[$iso];
                     $ok      = $this->updateLanguage($boxID, $iso, $title, $content);
                     if (!$ok) {
                         break;
@@ -299,7 +294,7 @@ class BoxController extends AbstractBackendController
         } elseif (($type === Type::LINK && $linkID > 0) || $type === Type::CATBOX) {
             $ok = $this->update($boxID, $title, $linkID);
             if ($ok) {
-                foreach ($_REQUEST['title'] as $iso => $title) {
+                foreach ($this->request->request('title') as $iso => $title) {
                     $ok = $this->updateLanguage($boxID, $iso, $title, '');
                     if (!$ok) {
                         break;
@@ -314,7 +309,7 @@ class BoxController extends AbstractBackendController
             $this->alertService->addError(\__('errorBoxEdit'), 'errorBoxEdit');
         }
 
-        if (Request::postVar('saveAndContinue')) {
+        if ($this->request->post('saveAndContinue')) {
             $this->actionEditMode($boxID);
         }
     }
@@ -325,12 +320,12 @@ class BoxController extends AbstractBackendController
      */
     private function actionResort(int $pageID): void
     {
-        $position = Text::filterXSS($_REQUEST['position']);
-        $boxes    = \array_map('\intval', $_REQUEST['box'] ?? []);
-        $sort     = \array_map('\intval', $_REQUEST['sort'] ?? []);
-        $active   = \array_map('\intval', $_REQUEST['aktiv'] ?? []);
-        $ignore   = \array_map('\intval', $_REQUEST['ignore'] ?? []);
-        $ok       = $this->setVisibility($pageID, $position, (bool)($_REQUEST['box_show'] ?? false));
+        $position = Text::filterXSS($this->request->request('position'));
+        $boxes    = \array_map('\intval', $this->request->request('box', []));
+        $sort     = \array_map('\intval', $this->request->request('sort', []));
+        $active   = \array_map('\intval', $this->request->request('aktiv', []));
+        $ignore   = \array_map('\intval', $this->request->request('ignore', []));
+        $ok       = $this->setVisibility($pageID, $position, (bool)($this->request->request('box_show', false)));
         foreach ($boxes as $i => $boxIDtoSort) {
             $idx = 'box-filter-' . $boxIDtoSort;
             $this->sort(
@@ -340,11 +335,11 @@ class BoxController extends AbstractBackendController
                 \in_array($boxIDtoSort, $active, true),
                 \in_array($boxIDtoSort, $ignore, true)
             );
-            $this->filterBoxVisibility($boxIDtoSort, $pageID, $_POST[$idx] ?? '');
+            $this->filterBoxVisibility($boxIDtoSort, $pageID, $this->request->post($idx, ''));
         }
         // see jtlshop/jtl-shop/issues#544 && jtlshop/shop4#41
         if ($position !== 'left' || $pageID > 0) {
-            $this->setVisibility($pageID, $position, isset($_REQUEST['box_show']));
+            $this->setVisibility($pageID, $position, $this->request->request('box_show') !== null);
         }
         if ($ok) {
             $this->alertService->addSuccess(\__('successBoxRefresh'), 'successBoxRefresh');
@@ -359,7 +354,7 @@ class BoxController extends AbstractBackendController
      */
     private function actionActivate(int $boxID): void
     {
-        if ($this->activate($boxID, 0, (bool)$_REQUEST['value'])) {
+        if ($this->activate($boxID, 0, (bool)$this->request->request('value'))) {
             $this->alertService->addSuccess(\__('successBoxEdit'), 'successBoxEdit');
         } else {
             $this->alertService->addError(\__('errorBoxEdit'), 'errorBoxEdit');
@@ -368,8 +363,8 @@ class BoxController extends AbstractBackendController
 
     private function actionContainer(): void
     {
-        $position = Text::filterXSS($_REQUEST['position']);
-        if ($this->setVisibility(0, $position, (bool)$_GET['value'])) {
+        $position = Text::filterXSS($this->request->request('position'));
+        if ($this->setVisibility(0, $position, (bool)$this->request->get('value'))) {
             $this->alertService->addSuccess(\__('successBoxEdit'), 'successBoxEdit');
         } else {
             $this->alertService->addError(\__('errorBoxEdit'), 'errorBoxEdit');

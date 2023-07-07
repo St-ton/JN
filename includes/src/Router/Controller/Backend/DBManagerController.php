@@ -5,10 +5,7 @@ namespace JTL\Router\Controller\Backend;
 use Exception;
 use JTL\Backend\Permissions;
 use JTL\DB\ReturnType;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Helpers\Text;
-use JTL\Smarty\JTLSmarty;
 use JTL\Update\DBManager;
 use JTLShop\SemVer\Parser as SemVerParser;
 use PDOException;
@@ -28,17 +25,15 @@ class DBManagerController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::DBCHECK_VIEW);
         $this->getText->loadAdminLocale('pages/dbmanager');
 
         $tables = DBManager::getStatus(DB_NAME);
-        $smarty->assign('tables', $tables)
-            ->assign('route', $this->route);
+        $this->smarty->assign('tables', $tables);
 
-        $valid  = Form::validateToken();
+        $valid  = $this->tokenIsValid;
         $jsTypo = (object)['tables' => []];
         foreach ($tables as $table => $info) {
             $columns                = DBManager::getColumns($table);
@@ -50,22 +45,22 @@ class DBManagerController extends AbstractBackendController
             );
             $jsTypo->tables[$table] = $columns;
         }
-        $smarty->assign('jsTypo', $jsTypo);
+        $this->smarty->assign('jsTypo', $jsTypo);
 
         switch (true) {
-            case isset($_GET['table']) && $valid:
-                return $this->actionGetTable($_GET['table']);
+            case $this->request->get('table') !== null && $valid:
+                return $this->actionGetTable($this->request->get('table'));
 
-            case isset($_GET['select']) && $valid:
-                return $this->actionSelect($_GET['select']);
+            case $this->request->get('select') !== null && $valid:
+                return $this->actionSelect($this->request->get('select'));
 
-            case isset($_GET['command']) && $valid:
+            case $this->request->get('command') !== null && $valid:
                 return $this->actionQuery();
 
             default:
                 $definedTables = \array_keys(self::getDBFileStruct() ?: []);
 
-                return $smarty->assign('definedTables', $definedTables)
+                return $this->smarty->assign('definedTables', $definedTables)
                     ->assign('sub', 'default')
                     ->assign('columns', [])
                     ->getResponse('dbmanager.tpl');
@@ -93,10 +88,10 @@ class DBManagerController extends AbstractBackendController
     {
         $restrictedTables = ['tadminlogin', 'tbrocken', 'tsession', 'tsynclogin'];
         $query            = null;
-        if (isset($_POST['query'])) {
-            $query = $_POST['query'];
-        } elseif (isset($_POST['sql_query_edit'])) {
-            $query = $_POST['sql_query_edit'];
+        if ($this->request->post('query') !== null) {
+            $query = $this->request->post('query');
+        } elseif ($this->request->post('sql_query_edit') !== null) {
+            $query = $this->request->post('sql_query_edit');
         }
         if ($query !== null) {
             try {
@@ -129,8 +124,8 @@ class DBManagerController extends AbstractBackendController
                 $this->smarty->assign('error', $e);
             }
             $this->smarty->assign('query', $query);
-        } elseif (isset($_GET['query'])) {
-            $this->smarty->assign('query', Text::filterXSS($_GET['query']));
+        } elseif ($this->request->get('query') !== null) {
+            $this->smarty->assign('query', Text::filterXSS($this->request->get('query')));
         }
 
         return $this->smarty->assign('sub', 'command')
@@ -153,11 +148,11 @@ class DBManagerController extends AbstractBackendController
             'offset' => 0,
             'where'  => []
         ];
-        $filter        = $_GET['filter'] ?? [];
+        $filter        = $this->request->get('filter', []);
         $filter        = \array_merge($defaultFilter, $filter);
         // validate filter
         $filter['limit'] = (int)$filter['limit'];
-        $page            = Request::getInt('page', 1);
+        $page            = $this->request->getInt('page', 1);
         if ($page < 1) {
             $page = 1;
         }

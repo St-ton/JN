@@ -6,8 +6,6 @@ use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use JTL\Backend\Permissions;
 use JTL\Filesystem\Filesystem;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\License\Manager;
 use JTL\License\Mapper;
@@ -30,7 +28,6 @@ use JTL\Plugin\LegacyPluginLoader;
 use JTL\Plugin\PluginLoader;
 use JTL\Plugin\State;
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
 use JTL\XMLParser;
 use JTLShop\SemVer\Version;
 use Laminas\Diactoros\Response;
@@ -129,14 +126,11 @@ class PluginManagerController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::PLUGIN_ADMIN_VIEW);
         $this->getText->loadAdminLocale('pages/pluginverwaltung');
         $this->getText->loadAdminLocale('pages/plugin');
-
-        $this->smarty->assign('route', $this->route);
         $pluginUploaded = false;
         $pluginNotFound = false;
         $response       = null;
@@ -160,10 +154,10 @@ class PluginManagerController extends AbstractBackendController
         if (isset($_SESSION['plugin_msg'])) {
             $this->notice = $_SESSION['plugin_msg'];
             unset($_SESSION['plugin_msg']);
-        } elseif (\mb_strlen(Request::verifyGPDataString('h')) > 0) {
-            $this->notice = Text::filterXSS(\base64_decode(Request::verifyGPDataString('h')));
+        } elseif (\mb_strlen($this->request->request('h')) > 0) {
+            $this->notice = Text::filterXSS(\base64_decode($this->request->request('h')));
         }
-        if (!empty($_FILES['plugin-install-upload']) && Form::validateToken()) {
+        if ($this->tokenIsValid && !empty($_FILES['plugin-install-upload'])) {
             $response       = $extractor->extractPlugin($_FILES['plugin-install-upload']['tmp_name']);
             $pluginUploaded = true;
         }
@@ -172,14 +166,14 @@ class PluginManagerController extends AbstractBackendController
             return $this->actionUpload($response);
         }
 
-        if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::validateToken()) {
+        if ($this->tokenIsValid && $this->request->requestInt('pluginverwaltung_uebersicht') === 1) {
             $this->actionOverview();
-        } elseif (Request::verifyGPCDataInt('pluginverwaltung_sprachvariable') === 1 && Form::validateToken()) {
+        } elseif ($this->tokenIsValid && $this->request->requestInt('pluginverwaltung_sprachvariable') === 1) {
             $this->actionLanguageVariables();
         }
 
         if ($this->step === 'pluginverwaltung_sprachvariablen') {
-            $pluginID = Request::verifyGPCDataInt('kPlugin');
+            $pluginID = $this->request->requestInt('kPlugin');
             $loader   = Helper::getLoaderByPluginID($pluginID, $this->db);
             try {
                 $this->smarty->assign('pluginLanguages', Shop::Lang()->gibInstallierteSprachen())
@@ -289,11 +283,11 @@ class PluginManagerController extends AbstractBackendController
     private function actionLanguageVariables(): void
     {
         $this->step = 'pluginverwaltung_sprachvariablen';
-        if (Request::verifyGPCDataInt('kPlugin') <= 0) {
+        if ($this->request->requestInt('kPlugin') <= 0) {
             return;
         }
-        $pluginID = Request::verifyGPCDataInt('kPlugin');
-        $varID    = Request::verifyGPCDataInt('kPluginSprachvariable');
+        $pluginID = $this->request->requestInt('kPlugin');
+        $varID    = $this->request->requestInt('kPluginSprachvariable');
         if ($varID > 0) {
             $this->resetLangVar($pluginID, $varID);
         } else {
@@ -304,19 +298,19 @@ class PluginManagerController extends AbstractBackendController
 
     private function actionOverview(): void
     {
-        if (Request::postInt('lizenzkey') > 0) {
-            $this->enterKeyStep(Request::postInt('lizenzkey'));
-        } elseif (Request::postInt('lizenzkeyadd') === 1 && Request::postInt('kPlugin') > 0) {
-            $this->enterKey(Request::postInt('kPlugin'));
-        } elseif (\is_array($_POST['kPlugin'] ?? null) && \count($_POST['kPlugin']) > 0) {
+        if ($this->request->postInt('lizenzkey') > 0) {
+            $this->enterKeyStep($this->request->postInt('lizenzkey'));
+        } elseif ($this->request->postInt('lizenzkeyadd') === 1 && $this->request->postInt('kPlugin') > 0) {
+            $this->enterKey($this->request->postInt('kPlugin'));
+        } elseif (\is_array($this->request->post('kPlugin')) && \count($this->request->post('kPlugin')) > 0) {
             $this->massAction();
-        } elseif (Request::verifyGPCDataInt('updaten') === 1) {
+        } elseif ($this->request->requestInt('updaten') === 1) {
             $this->update();
-        } elseif (Request::verifyGPCDataInt('sprachvariablen') === 1) {
+        } elseif ($this->request->requestInt('sprachvariablen') === 1) {
             $this->step = 'pluginverwaltung_sprachvariablen';
-        } elseif (isset($_POST['installieren'])) {
+        } elseif ($this->request->post('installieren') !== null) {
             $this->install();
-        } elseif (Request::postInt('delete') === 1) {
+        } elseif ($this->request->postInt('delete') === 1) {
             $this->delete();
         } else {
             $this->errorMessage = \__('errorAtLeastOnePlugin');
@@ -403,7 +397,7 @@ class PluginManagerController extends AbstractBackendController
                 $cSprachvariable       = $langVar->cName;
                 $iso                   = \mb_convert_case($lang->cISO, \MB_CASE_UPPER);
                 $idx                   = $kPluginSprachvariable . '_' . $iso;
-                if (!isset($_POST[$idx])) {
+                if ($this->request->post($idx) === null) {
                     continue;
                 }
                 $this->db->delete(
@@ -416,7 +410,7 @@ class PluginManagerController extends AbstractBackendController
                 $customLang->cSprachvariable       = $cSprachvariable;
                 $customLang->cISO                  = $iso;
                 $customLang->kPluginSprachvariable = $kPluginSprachvariable;
-                $customLang->cName                 = $_POST[$idx];
+                $customLang->cName                 = $this->request->post($idx);
                 $match                             = first(
                     select(
                         $original[$kPluginSprachvariable],
@@ -460,10 +454,15 @@ class PluginManagerController extends AbstractBackendController
             $class         = $plugin->getLicense()->getClass();
             $license       = new $class();
             $licenseMethod = \PLUGIN_LICENCE_METHODE;
-            if ($license->$licenseMethod(Text::filterXSS($_POST['cKey']))) {
+            if ($license->$licenseMethod(Text::filterXSS($this->request->post('cKey')))) {
                 Helper::updateStatusByID(State::ACTIVATED, $plugin->getID());
-                $plugin->getLicense()->setKey(Text::filterXSS($_POST['cKey']));
-                $this->db->update('tplugin', 'kPlugin', $plugin->getID(), (object)['cLizenz' => $_POST['cKey']]);
+                $plugin->getLicense()->setKey(Text::filterXSS($this->request->post('cKey')));
+                $this->db->update(
+                    'tplugin',
+                    'kPlugin',
+                    $plugin->getID(),
+                    (object)['cLizenz' => $this->request->post('cKey')]
+                );
                 $this->notice = \__('successPluginKeySave');
                 $this->step   = 'pluginverwaltung_uebersicht';
                 $this->reload = true;
@@ -502,7 +501,7 @@ class PluginManagerController extends AbstractBackendController
     private function update(): void
     {
         $res       = InstallCode::INVALID_PLUGIN_ID;
-        $pluginID  = Request::verifyGPCDataInt('kPlugin');
+        $pluginID  = $this->request->requestInt('kPlugin');
         $updatable = $this->pluginsInstalled->concat($this->pluginsDisabled)
             ->concat($this->pluginsErroneous)
             ->concat($this->pluginsProblematic);
@@ -531,12 +530,12 @@ class PluginManagerController extends AbstractBackendController
 
     private function delete(): void
     {
-        $dirs    = Request::postVar('cVerzeichnis', []);
+        $dirs    = $this->request->post('cVerzeichnis', []);
         $res     = \count($dirs) > 0;
         $manager = new MountManager(['plgn' => Shop::Container()->get(Filesystem::class)]);
         foreach ($dirs as $dir) {
             $dir  = \basename($dir);
-            $test = $_POST['ext'][$dir] ?? -1;
+            $test = $this->request->post('ext', [])[$dir] ?? -1;
             if ($test === -1) {
                 continue;
             }
@@ -556,7 +555,7 @@ class PluginManagerController extends AbstractBackendController
 
     private function install(): void
     {
-        $dirs = $_POST['cVerzeichnis'] ?? [];
+        $dirs = $this->request->post('cVerzeichnis', []);
         if (\SAFE_MODE) {
             $this->errorMessage = \__('Safe mode enabled.') . ' - ' . \__('pluginBtnInstall');
             return;
@@ -584,11 +583,11 @@ class PluginManagerController extends AbstractBackendController
 
     private function massAction(): void
     {
-        $uninstallErroneous = Request::postInt('uninstall') === 1;
-        $deleteData         = Request::postInt('delete-data', 1) === 1;
-        $deleteFiles        = Request::postInt('delete-files', 1) === 1;
-        foreach (\array_map('\intval', $_POST['kPlugin'] ?? []) as $pluginID) {
-            if (isset($_POST['aktivieren'])) {
+        $uninstallErroneous = $this->request->postInt('uninstall') === 1;
+        $deleteData         = $this->request->postInt('delete-data', 1) === 1;
+        $deleteFiles        = $this->request->postInt('delete-files', 1) === 1;
+        foreach (\array_map('\intval', $this->request->post('kPlugin', [])) as $pluginID) {
+            if ($this->request->post('aktivieren') !== null) {
                 if (\SAFE_MODE) {
                     $this->errorMessage = \__('Safe mode enabled.') . ' - ' . \__('activate');
                     break;
@@ -619,7 +618,7 @@ class PluginManagerController extends AbstractBackendController
                     $mapper             = new ValidationMapper();
                     $this->errorMessage = $mapper->map($res);
                 }
-            } elseif (isset($_POST['deaktivieren'])) {
+            } elseif ($this->request->post('deaktivieren') !== null) {
                 $res = $this->stateChanger->deactivate($pluginID);
 
                 switch ($res) {
@@ -637,7 +636,7 @@ class PluginManagerController extends AbstractBackendController
                         $this->errorMessage = \__('errorPluginNotFound');
                         break;
                 }
-            } elseif (isset($_POST['deinstallieren']) || $uninstallErroneous) {
+            } elseif ($this->request->post('deinstallieren') !== null || $uninstallErroneous) {
                 $plugin = $this->db->select('tplugin', 'kPlugin', $pluginID);
                 $ok     = false;
                 if ($plugin !== null && $plugin->kPlugin > 0) {
@@ -665,7 +664,7 @@ class PluginManagerController extends AbstractBackendController
                 if ($ok === false && $uninstallErroneous === true && $deleteFiles === true) {
                     $this->delete();
                 }
-            } elseif (isset($_POST['reload'])) { // Reload
+            } elseif ($this->request->post('reload') !== null) {
                 $plugin = $this->db->select('tplugin', 'kPlugin', $pluginID);
                 if ($plugin !== null && $plugin->kPlugin > 0) {
                     $loader = (int)$plugin->bExtension === 1

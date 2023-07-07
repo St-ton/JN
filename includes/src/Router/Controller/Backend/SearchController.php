@@ -13,7 +13,6 @@ use JTL\Plugin\Admin\Listing;
 use JTL\Plugin\Admin\ListingItem;
 use JTL\Plugin\Admin\Validation\LegacyPluginValidator;
 use JTL\Plugin\Admin\Validation\PluginValidator;
-use JTL\Smarty\JTLSmarty;
 use JTL\XMLParser;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -27,16 +26,14 @@ class SearchController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::SETTINGS_SEARCH_VIEW);
-        $query = $_GET['cSuche'] ?? '';
+        $query = $this->request->get('cSuche', '');
 
         $this->adminSearch(\trim($query), true);
 
-        return $this->smarty->assign('route', $this->route)
-            ->getResponse('suche.tpl');
+        return $this->smarty->getResponse('suche.tpl');
     }
 
     /**

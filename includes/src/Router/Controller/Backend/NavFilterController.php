@@ -3,9 +3,7 @@
 namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\Permissions;
-use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -18,20 +16,20 @@ class NavFilterController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::SETTINGS_NAVIGATION_FILTER_VIEW);
         $this->getText->loadAdminLocale('pages/navigationsfilter');
-
-        if (isset($_POST['speichern']) && Form::validateToken()) {
-            $this->saveAdminSectionSettings(\CONF_NAVIGATIONSFILTER, $_POST);
+        if ($this->tokenIsValid && $this->request->post('speichern') !== null) {
+            $this->saveAdminSectionSettings(\CONF_NAVIGATIONSFILTER, $this->request->getBody());
             $this->cache->flushTags([\CACHING_GROUP_CATEGORY]);
-            if (GeneralObject::hasCount('nVon', $_POST) && GeneralObject::hasCount('nBis', $_POST)) {
+            if (GeneralObject::hasCount('nVon', $this->request->getBody())
+                && GeneralObject::hasCount('nBis', $this->request->getBody())
+            ) {
                 $this->db->query('TRUNCATE TABLE tpreisspannenfilter');
-                foreach ($_POST['nVon'] as $i => $nVon) {
+                foreach ($this->request->post('nVon') as $i => $nVon) {
                     $nVon = (float)$nVon;
-                    $nBis = (float)$_POST['nBis'][$i];
+                    $nBis = (float)$this->request->post('nBis')[$i];
                     if ($nVon >= 0 && $nBis >= 0) {
                         $this->db->insert('tpreisspannenfilter', (object)['nVon' => $nVon, 'nBis' => $nBis]);
                     }
@@ -42,8 +40,7 @@ class NavFilterController extends AbstractBackendController
         $priceRangeFilters = $this->db->getObjects('SELECT * FROM tpreisspannenfilter');
         $this->getAdminSectionSettings(\CONF_NAVIGATIONSFILTER);
 
-        return $smarty->assign('oPreisspannenfilter_arr', $priceRangeFilters)
-            ->assign('route', $this->route)
+        return $this->smarty->assign('oPreisspannenfilter_arr', $priceRangeFilters)
             ->getResponse('navigationsfilter.tpl');
     }
 }

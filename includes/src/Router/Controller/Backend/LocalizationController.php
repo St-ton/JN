@@ -5,10 +5,7 @@ namespace JTL\Router\Controller\Backend;
 use JTL\Backend\LocalizationCheck\LocalizationCheckFactory;
 use JTL\Backend\Permissions;
 use JTL\Backend\Status;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Language\LanguageHelper;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -21,16 +18,15 @@ class LocalizationController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::DIAGNOSTIC_VIEW);
         $this->getText->loadAdminLocale('pages/localizationcheck');
         $this->getText->loadAdminLocale('pages/categorycheck');
 
-        $type      = Request::postVar('type');
+        $type      = $this->request->post('type');
         $languages = \collect(LanguageHelper::getAllLanguages(0, true, true));
-        if ($type !== null && Request::postVar('action') === 'deleteExcess' && Form::validateToken()) {
+        if ($this->tokenIsValid && $type !== null && $this->request->post('action') === 'deleteExcess') {
             $check = (new LocalizationCheckFactory($this->db, $languages))->getCheckByClassName($type);
             if ($check === null) {
                 $this->alertService->addWarning('No check found', 'clearerr');
@@ -39,7 +35,7 @@ class LocalizationController extends AbstractBackendController
             $this->alertService->addSuccess(\sprintf(\__('Deleted %d item(s).'), $deleted), 'clearsuccess');
         }
 
-        return $smarty->assign('passed', false)
+        return $this->smarty->assign('passed', false)
             ->assign('safe_mode', \SAFE_MODE === true)
             ->assign('checkResults', Status::getInstance($this->db, $this->cache)->getLocalizationProblems(false))
             ->assign('languagesById', $languages->keyBy('id')->toArray())

@@ -8,8 +8,6 @@ use GuzzleHttp\Exception\GuzzleException;
 use JsonException;
 use JTL\Backend\AuthToken;
 use JTL\Backend\Permissions;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\License\AjaxResponse;
 use JTL\License\Checker;
 use JTL\License\Exception\AuthException;
@@ -22,7 +20,6 @@ use JTL\Plugin\InstallCode;
 use JTL\Router\Route;
 use JTL\Session\Backend;
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\Response\JsonResponse;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
@@ -97,15 +94,14 @@ class LicenseController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty->assign('route', $this->route);
-        $this->auth   = AuthToken::getInstance($this->db);
+        $this->auth = AuthToken::getInstance($this->db);
         $this->getText->loadAdminLocale('pages/licenses');
         $this->getText->loadAdminLocale('pages/pluginverwaltung');
         $this->checker = new Checker(Shop::Container()->getLogService(), $this->db, $this->cache);
         $this->manager = new Manager($this->db, $this->cache);
-        if (Request::postVar('action') === 'code') {
+        if ($this->request->post('action') === 'code') {
             $this->handleAuth();
             exit();
         }
@@ -128,9 +124,8 @@ class LicenseController extends AbstractBackendController
     public function handle(): ?ResponseInterface
     {
         \ob_start();
-        $action = Request::postVar('action');
-        $valid  = Form::validateToken();
-        if ($valid) {
+        $action = $this->request->post('action');
+        if ($this->tokenIsValid) {
             if ($action === self::ACTION_SAVE_TOKEN) {
                 $this->saveToken();
                 $action = null;
@@ -160,7 +155,7 @@ class LicenseController extends AbstractBackendController
                 return $this->extendUpgrade($action);
             }
         }
-        if ($action === null || !$valid || !\in_array($action, $this->validActions, true)) {
+        if ($action === null || !$this->tokenIsValid || !\in_array($action, $this->validActions, true)) {
             $this->getLicenses();
             $this->getList();
 
@@ -185,9 +180,9 @@ class LicenseController extends AbstractBackendController
      */
     private function installUpdate(string $action): JsonResponse
     {
-        $itemID           = Request::postVar('item-id', '');
-        $exsID            = Request::postVar('exs-id', '');
-        $type             = Request::postVar('license-type', '');
+        $itemID           = $this->request->post('item-id', '');
+        $exsID            = $this->request->post('exs-id', '');
+        $type             = $this->request->post('license-type', '');
         $response         = new AjaxResponse();
         $response->action = $action;
         $response->id     = $itemID;
@@ -250,8 +245,8 @@ class LicenseController extends AbstractBackendController
         $response->action = $up === true ? 'setbinding' : 'clearbinding';
         try {
             $apiResponse = $up === true
-                ? $this->manager->setBinding(Request::postVar('url'))
-                : $this->manager->clearBinding(Request::postVar('url'));
+                ? $this->manager->setBinding($this->request->post('url'))
+                : $this->manager->clearBinding($this->request->post('url'));
         } catch (ClientException | GuzzleException $e) {
             $response->error = $e->getMessage();
             if ($e->getResponse()->getStatusCode() === 400) {
@@ -285,9 +280,9 @@ class LicenseController extends AbstractBackendController
         $response->action = $action;
         try {
             $apiResponse  = $this->manager->extendUpgrade(
-                Request::postVar('url'),
-                Request::postVar('exsid'),
-                Request::postVar('key')
+                $this->request->post('url'),
+                $this->request->post('exsid'),
+                $this->request->post('key')
             );
             $responseData = \json_decode($apiResponse, false, 512, \JSON_THROW_ON_ERROR);
         } catch (ClientException | GuzzleException | AuthException | JsonException $e) {
@@ -339,8 +334,8 @@ class LicenseController extends AbstractBackendController
      */
     private function saveToken(): void
     {
-        $code  = \trim(Request::postVar('code', ''));
-        $token = \trim(Request::postVar('token', ''));
+        $code  = \trim($this->request->post('code', ''));
+        $token = \trim($this->request->post('token', ''));
         $this->auth->reset($code);
         AuthToken::getInstance($this->db)->set($code, $token);
     }
@@ -422,7 +417,7 @@ class LicenseController extends AbstractBackendController
         $collection = (new Mapper($this->manager))->getCollection();
         $this->smarty->assign('licenses', $collection)
             ->assign('authToken', $this->auth->get())
-            ->assign('rawData', isset($_GET['debug']) ? $this->manager->getLicenseData() : null)
+            ->assign('rawData', $this->request->get('debug') !== null ? $this->manager->getLicenseData() : null)
             ->assign('licenseItemUpdates', $collection->getUpdateableItems());
     }
 

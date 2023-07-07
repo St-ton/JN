@@ -10,9 +10,7 @@ use JTL\Backend\Settings\Sections\PluginPaymentMethod;
 use JTL\Checkout\Zahlungsart;
 use JTL\Checkout\ZahlungsLog;
 use JTL\DB\SqlObject;
-use JTL\Helpers\Form;
 use JTL\Helpers\PaymentMethod;
-use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Pagination\Filter;
@@ -20,7 +18,6 @@ use JTL\Pagination\Pagination;
 use JTL\Plugin\Helper as PluginHelper;
 use JTL\Recommendation\Manager;
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -45,9 +42,8 @@ class PaymentMethodsController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->getText->loadAdminLocale('pages/zahlungsarten');
         $this->getText->loadConfigLocales(true, true);
         $this->checkPermissions(Permissions::ORDER_PAYMENT_VIEW);
@@ -56,24 +52,24 @@ class PaymentMethodsController extends AbstractBackendController
         $defaultCurrency      = $this->db->select('twaehrung', 'cStandard', 'Y');
         $this->step           = 'uebersicht';
         $recommendations      = new Manager($this->alertService, Manager::SCOPE_BACKEND_PAYMENT_PROVIDER);
-        $filteredPost         = Text::filterXSS($_POST);
+        $filteredPost         = Text::filterXSS($this->request->getBody());
         $this->sectionFactory = new SectionFactory();
         $this->settingManager = new SettingsManager(
             $this->db,
-            $smarty,
+            $this->smarty,
             $this->account,
             $this->getText,
             $this->alertService
         );
-        if (Request::verifyGPCDataInt('checkNutzbar') === 1) {
+        if ($this->request->requestInt('checkNutzbar') === 1) {
             PaymentMethod::checkPaymentMethodAvailability();
             $this->alertService->addSuccess(\__('successPaymentMethodCheck'), 'successPaymentMethodCheck');
         }
         // reset log
-        if (($action = Request::verifyGPDataString('a')) !== ''
+        if (($action = $this->request->request('a')) !== ''
             && $action === 'logreset'
-            && ($paymentMethodID = Request::verifyGPCDataInt('kZahlungsart')) > 0
-            && Form::validateToken()
+            && $this->tokenIsValid
+            && ($paymentMethodID = $this->request->requestInt('kZahlungsart')) > 0
         ) {
             $method = $this->db->select('tzahlungsart', 'kZahlungsart', $paymentMethodID);
             if ($method !== null && \mb_strlen($method->cModulId) > 0) {
@@ -81,7 +77,7 @@ class PaymentMethodsController extends AbstractBackendController
                 $this->alertService->addSuccess(\sprintf(\__('successLogReset'), $method->cName), 'successLogReset');
             }
         }
-        if ($action !== 'logreset' && Request::verifyGPCDataInt('kZahlungsart') > 0 && Form::validateToken()) {
+        if ($this->tokenIsValid && $action !== 'logreset' && $this->request->requestInt('kZahlungsart') > 0) {
             $this->step = 'einstellen';
             if ($action === 'payments') {
                 $this->step = 'payments';
@@ -91,13 +87,13 @@ class PaymentMethodsController extends AbstractBackendController
                 $this->step = 'delete';
             }
         }
-        if (Request::postInt('einstellungen_bearbeiten') === 1
-            && Request::postInt('kZahlungsart') > 0
-            && Form::validateToken()
+        if ($this->tokenIsValid
+            && $this->request->postInt('einstellungen_bearbeiten') === 1
+            && $this->request->postInt('kZahlungsart') > 0
         ) {
             $this->actionSaveConfig($filteredPost);
 
-            if (Request::postVar('saveAndContinue')) {
+            if ($this->request->post('saveAndContinue')) {
                 $this->setStep('einstellen');
             }
         }
@@ -120,7 +116,6 @@ class PaymentMethodsController extends AbstractBackendController
         return $this->smarty->assign('step', $this->step)
             ->assign('waehrung', $defaultCurrency->cName ?? '')
             ->assign('recommendations', $recommendations)
-            ->assign('route', $this->route)
             ->getResponse('zahlungsarten.tpl');
     }
 
@@ -168,7 +163,7 @@ class PaymentMethodsController extends AbstractBackendController
 
     private function stepDelete(): void
     {
-        $paymentMethodID = Request::verifyGPCDataInt('kZahlungsart');
+        $paymentMethodID = $this->request->requestInt('kZahlungsart');
         $method          = $this->db->select('tzahlungsart', 'kZahlungsart', $paymentMethodID);
         if ($method === null) {
             return;
@@ -203,7 +198,7 @@ class PaymentMethodsController extends AbstractBackendController
     {
         if (isset($filteredPost['action'], $filteredPost['kEingang_arr'])
             && $filteredPost['action'] === 'paymentwawireset'
-            && Form::validateToken()
+            && $this->tokenIsValid
         ) {
             $this->db->query(
                 "UPDATE tzahlungseingang
@@ -214,7 +209,7 @@ class PaymentMethodsController extends AbstractBackendController
             );
         }
 
-        $paymentMethodID = Request::verifyGPCDataInt('kZahlungsart');
+        $paymentMethodID = $this->request->requestInt('kZahlungsart');
 
         $filter = new Filter('payments-' . $paymentMethodID);
         $filter->addTextfield(
@@ -253,7 +248,7 @@ class PaymentMethodsController extends AbstractBackendController
 
     private function stepLog(): void
     {
-        $paymentMethodID = Request::verifyGPCDataInt('kZahlungsart');
+        $paymentMethodID = $this->request->requestInt('kZahlungsart');
         $method          = $this->db->select('tzahlungsart', 'kZahlungsart', $paymentMethodID);
 
         $filterStandard = new Filter('standard');
@@ -279,7 +274,7 @@ class PaymentMethodsController extends AbstractBackendController
 
     private function stepConfig(): void
     {
-        $paymentMethod = new Zahlungsart(Request::verifyGPCDataInt('kZahlungsart'));
+        $paymentMethod = new Zahlungsart($this->request->requestInt('kZahlungsart'));
         if ($paymentMethod->getZahlungsart() === null) {
             $this->step = 'uebersicht';
             $this->alertService->addError(\__('errorPaymentMethodNotFound'), 'errorNotFound');
@@ -325,14 +320,14 @@ class PaymentMethodsController extends AbstractBackendController
     private function actionSaveConfig(array $filteredPost): void
     {
         $this->step    = 'uebersicht';
-        $paymentMethod = $this->db->select('tzahlungsart', 'kZahlungsart', Request::postInt('kZahlungsart'));
+        $paymentMethod = $this->db->select('tzahlungsart', 'kZahlungsart', $this->request->postInt('kZahlungsart'));
         if ($paymentMethod !== null) {
             $paymentMethod->kZahlungsart        = (int)$paymentMethod->kZahlungsart;
             $paymentMethod->nSort               = (int)$paymentMethod->nSort;
             $paymentMethod->nWaehrendBestellung = (int)$paymentMethod->nWaehrendBestellung;
         }
-        $nMailSenden       = Request::postInt('nMailSenden');
-        $nMailSendenStorno = Request::postInt('nMailSendenStorno');
+        $nMailSenden       = $this->request->postInt('nMailSenden');
+        $nMailSendenStorno = $this->request->postInt('nMailSendenStorno');
         $nMailBits         = 0;
         if (\is_array($filteredPost['kKundengruppe'])) {
             $filteredPost['kKundengruppe'] = \array_map('\intval', $filteredPost['kKundengruppe']);
@@ -351,11 +346,11 @@ class PaymentMethodsController extends AbstractBackendController
             $cKundengruppen = '';
         }
 
-        $duringCheckout = Request::postInt('nWaehrendBestellung', $paymentMethod->nWaehrendBestellung);
+        $duringCheckout = $this->request->postInt('nWaehrendBestellung', $paymentMethod->nWaehrendBestellung);
 
         $upd                      = new stdClass();
         $upd->cKundengruppen      = $cKundengruppen;
-        $upd->nSort               = Request::postInt('nSort');
+        $upd->nSort               = $this->request->postInt('nSort');
         $upd->nMailSenden         = $nMailBits;
         $upd->cBild               = $filteredPost['cBild'];
         $upd->nWaehrendBestellung = $duringCheckout;
@@ -367,20 +362,18 @@ class PaymentMethodsController extends AbstractBackendController
             $sql->setWhere(" cWertName LIKE :mid 
                 AND cConf = 'Y'");
             $sql->addParam('mid', $paymentMethod->cModulId . '\_%');
-            $section         = new PluginPaymentMethod($this->settingManager, \CONF_ZAHLUNGSARTEN);
-            $post            = $_POST;
-            $post['kPlugin'] = $kPlugin;
+            $section = new PluginPaymentMethod($this->settingManager, \CONF_ZAHLUNGSARTEN);
+            $this->request->updateBody('kPlugin', $kPlugin);
         } else {
             $section = $this->sectionFactory->getSection(\CONF_ZAHLUNGSARTEN, $this->settingManager);
             $sql->setWhere(' ec.cModulId = :mid');
             $sql->addParam('mid', $paymentMethod->cModulId);
             $section->load($sql);
-            $post             = $_POST;
-            $post['cModulId'] = $paymentMethod->cModulId;
+            $this->request->updateBody('cModulId', $paymentMethod->cModulId);
         }
-        $section->update($post);
+        $section->update($this->request->getBody());
         $localized               = new stdClass();
-        $localized->kZahlungsart = Request::postInt('kZahlungsart');
+        $localized->kZahlungsart = $this->request->postInt('kZahlungsart');
         foreach (LanguageHelper::getAllLanguages(0, true, true) as $lang) {
             $langCode               = $lang->getCode();
             $localized->cISOSprache = $langCode;
@@ -395,7 +388,7 @@ class PaymentMethodsController extends AbstractBackendController
             $this->db->delete(
                 'tzahlungsartsprache',
                 ['kZahlungsart', 'cISOSprache'],
-                [Request::postInt('kZahlungsart'), $langCode]
+                [$this->request->postInt('kZahlungsart'), $langCode]
             );
             $this->db->insert('tzahlungsartsprache', $localized);
         }

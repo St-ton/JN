@@ -4,12 +4,9 @@ namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\Permissions;
 use JTL\DB\SqlObject;
-use JTL\Helpers\GeneralObject;
-use JTL\Helpers\Request;
 use JTL\Helpers\Seo;
 use JTL\Helpers\Text;
 use JTL\Pagination\Pagination;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -23,9 +20,8 @@ class LivesearchController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::MODULE_LIVESEARCH_VIEW);
         $this->getText->loadAdminLocale('pages/livesuche');
         $this->setLanguage();
@@ -37,39 +33,38 @@ class LivesearchController extends AbstractBackendController
             'boxen_livesuche_count',
             'boxen_livesuche_anzeigen'
         ];
-        if (Request::verifyGPCDataInt('einstellungen') === 1) {
+        if ($this->request->requestInt('einstellungen') === 1) {
             $this->alertService->addSuccess(
-                $this->saveAdminSettings($settingsIDs, $_POST, [\CACHING_GROUP_OPTION], true),
+                $this->saveAdminSettings($settingsIDs, $this->request->getBody(), [\CACHING_GROUP_OPTION], true),
                 'saveSettings'
             );
             $this->smarty->assign('tab', 'einstellungen');
         }
-        if (Request::postInt('livesuche') === 1) { //Formular wurde abgeschickt
+        if ($this->request->postInt('livesuche') === 1) { //Formular wurde abgeschickt
             // Suchanfragen aktualisieren
-            if (isset($_POST['suchanfragenUpdate'])) {
+            if ($this->request->post('suchanfragenUpdate') !== null) {
                 $this->actionUpdate($this->currentLanguageID);
-            } elseif (isset($_POST['submitMapping'])) { // Auswahl mappen
+            } elseif ($this->request->post('submitMapping') !== null) { // Auswahl mappen
                 $this->actionMap($this->currentLanguageID);
-            } elseif (isset($_POST['delete'])) { // Auswahl loeschen
-                $deleteQueryIDs = Request::verifyGPDataIntegerArray('kSuchanfrage');
+            } elseif ($this->request->post('delete') !== null) { // Auswahl loeschen
+                $deleteQueryIDs = $this->request->requestIntArray('kSuchanfrage');
                 $this->actionDelete($deleteQueryIDs);
             }
-        } elseif (Request::postInt('livesuche') === 2) { // Erfolglos mapping
+        } elseif ($this->request->postInt('livesuche') === 2) { // Erfolglos mapping
             $this->actionMapWithoutSuccess($this->currentLanguageID);
             $this->smarty->assign('tab', 'erfolglos');
-        } elseif (Request::postInt('livesuche') === 3) { // Blacklist
+        } elseif ($this->request->postInt('livesuche') === 3) { // Blacklist
             $this->actionBlacklist($this->currentLanguageID);
-        } elseif (Request::postInt('livesuche') === 4) { // Mappinglist
-            if (isset($_POST['delete'])) {
-                $this->actionDeleteMapping($_POST['kSuchanfrageMapping'] ?? null);
+        } elseif ($this->request->postInt('livesuche') === 4) { // Mappinglist
+            if ($this->request->post('delete') !== null) {
+                $this->actionDeleteMapping($this->request->post('kSuchanfrageMapping'));
             }
             $this->smarty->assign('tab', 'mapping');
         }
         $this->assignData($this->currentLanguageID);
         $this->getAdminSectionSettings($settingsIDs, true);
 
-        return $this->smarty->assign('route', $this->route)
-            ->getResponse('livesuche.tpl');
+        return $this->smarty->getResponse('livesuche.tpl');
     }
 
     /**
@@ -116,12 +111,12 @@ class LivesearchController extends AbstractBackendController
      */
     private function actionMap(int $languageID): void
     {
-        $mapping = Request::verifyGPDataString('cMapping');
+        $mapping = $this->request->request('cMapping');
         if (\mb_strlen($mapping) === 0) {
             $this->alertService->addError(\__('errorMapNameMissing'), 'errorMapNameMissing');
             return;
         }
-        $mappingQueryIDs = Request::verifyGPDataIntegerArray('kSuchanfrage');
+        $mappingQueryIDs = $this->request->requestIntArray('kSuchanfrage');
         if (\count($mappingQueryIDs) === 0) {
             $this->alertService->addError(\__('errorAtLeastOneSearch'), 'errorAtLeastOneSearch');
             return;
@@ -204,16 +199,16 @@ class LivesearchController extends AbstractBackendController
      */
     private function actionMapWithoutSuccess(int $languageID): void
     {
-        if (isset($_POST['erfolglosEdit'])) { // Editieren
+        if ($this->request->post('erfolglosEdit') !== null) { // Editieren
             $this->smarty->assign('nErfolglosEditieren', 1);
             return;
         }
-        if (isset($_POST['erfolglosUpdate'])) { // Update
+        if ($this->request->post('erfolglosUpdate') !== null) { // Update
             $this->actionUpdateWithoutSuccess($languageID);
             return;
         }
-        if (isset($_POST['erfolglosDelete'])) { // Loeschen
-            $queryIDs = $_POST['kSuchanfrageErfolglos'] ?? [];
+        if ($this->request->post('erfolglosDelete') !== null) { // Loeschen
+            $queryIDs = $this->request->post('kSuchanfrageErfolglos', []);
             if (!\is_array($queryIDs) || \count($queryIDs) === 0) {
                 $this->alertService->addError(\__('errorAtLeastOneSearch'), 'errorAtLeastOneSearch');
                 return;
@@ -240,14 +235,14 @@ class LivesearchController extends AbstractBackendController
         );
         foreach ($failedQueries as $failedQuery) {
             $idx = 'mapping_' . $failedQuery->kSuchanfrageErfolglos;
-            if (\mb_strlen(Request::postVar($idx, '')) > 0) {
+            if (\mb_strlen($this->request->post($idx, '')) > 0) {
                 if (\mb_convert_case($failedQuery->cSuche, \MB_CASE_LOWER) !==
-                    \mb_convert_case($_POST[$idx], \MB_CASE_LOWER)
+                    \mb_convert_case($this->request->post($idx), \MB_CASE_LOWER)
                 ) {
                     $mapping                 = new stdClass();
                     $mapping->kSprache       = $languageID;
                     $mapping->cSuche         = $failedQuery->cSuche;
-                    $mapping->cSucheNeu      = $_POST[$idx];
+                    $mapping->cSucheNeu      = $this->request->post($idx);
                     $mapping->nAnzahlGesuche = $failedQuery->nAnzahlGesuche;
 
                     $oldQuery = $this->db->getSingleObject(
@@ -320,9 +315,9 @@ class LivesearchController extends AbstractBackendController
                         'errSearchMapSelf'
                     );
                 }
-            } elseif (Request::postInt('nErfolglosEditieren') === 1) {
+            } elseif ($this->request->postInt('nErfolglosEditieren') === 1) {
                 $idx                 = 'cSuche_' . $failedQuery->kSuchanfrageErfolglos;
-                $failedQuery->cSuche = Text::filterXSS($_POST[$idx]);
+                $failedQuery->cSuche = Text::filterXSS($this->request->post($idx));
                 $upd                 = (object)['cSuche' => $failedQuery->cSuche];
                 $this->db->update(
                     'tsuchanfrageerfolglos',
@@ -341,7 +336,7 @@ class LivesearchController extends AbstractBackendController
     private function actionBlacklist(int $languageID): void
     {
         $this->db->delete('tsuchanfrageblacklist', 'kSprache', $languageID);
-        foreach (\explode(';', $_POST['suchanfrageblacklist']) as $item) {
+        foreach (\explode(';', $this->request->post('suchanfrageblacklist', [])) as $item) {
             if (!empty($item)) {
                 $ins           = new stdClass();
                 $ins->cSuche   = $item;
@@ -390,13 +385,11 @@ class LivesearchController extends AbstractBackendController
      */
     private function actionUpdate(int $languageID): void
     {
-        if (GeneralObject::hasCount('kSuchanfrageAll', $_POST)) {
-            foreach ($_POST['kSuchanfrageAll'] as $searchQueryID) {
-                $value = $_POST['nAnzahlGesuche_' . $searchQueryID] ?? '';
-                if ((int)$value > 0) {
-                    $upd = (object)['nAnzahlGesuche' => (int)$value];
-                    $this->db->update('tsuchanfrage', 'kSuchanfrage', (int)$searchQueryID, $upd);
-                }
+        foreach ($this->request->post('kSuchanfrageAll', []) as $searchQueryID) {
+            $value = $this->request->post('nAnzahlGesuche_' . $searchQueryID, '');
+            if ((int)$value > 0) {
+                $upd = (object)['nAnzahlGesuche' => (int)$value];
+                $this->db->update('tsuchanfrage', 'kSuchanfrage', (int)$searchQueryID, $upd);
             }
         }
         $searchQueries = $this->db->selectAll(
@@ -407,11 +400,11 @@ class LivesearchController extends AbstractBackendController
             'nAnzahlGesuche DESC'
         );
         // Wurde ein Mapping durchgefuehrt
-        if (\is_array($_POST['kSuchanfrageAll']) && \count($_POST['kSuchanfrageAll']) > 0) {
+        if (\is_array($this->request->post('kSuchanfrageAll')) && \count($this->request->post('kSuchanfrageAll')) > 0) {
             $whereIn   = ' IN (';
             $deleteIDs = [];
             // nAktiv Reihe updaten
-            foreach ($_POST['kSuchanfrageAll'] as $searchQueryID) {
+            foreach ($this->request->post('kSuchanfrageAll') as $searchQueryID) {
                 $searchQueryID = (int)$searchQueryID;
                 $this->db->update('tsuchanfrage', 'kSuchanfrage', $searchQueryID, (object)['nAktiv' => 0]);
                 $deleteIDs[] = $searchQueryID;
@@ -430,7 +423,7 @@ class LivesearchController extends AbstractBackendController
                     SET cSeo = ''
                     WHERE kSuchanfrage" . $whereIn
             );
-            foreach (Request::verifyGPDataIntegerArray('nAktiv') as $active) {
+            foreach ($this->request->requestIntArray('nAktiv') as $active) {
                 $query = $this->db->select('tsuchanfrage', 'kSuchanfrage', $active);
                 $this->db->delete(
                     'tseo',
@@ -458,15 +451,15 @@ class LivesearchController extends AbstractBackendController
         $errorMapMessage  = '';
         foreach ($searchQueries as $searchQuery) {
             $index = 'mapping_' . $searchQuery->kSuchanfrage;
-            if (!isset($_POST[$index])
+            if ($this->request->post($index) === null
                 || \mb_convert_case($searchQuery->cSuche, \MB_CASE_LOWER) !==
-                \mb_convert_case($_POST[$index], \MB_CASE_LOWER)
+                \mb_convert_case($this->request->post($index), \MB_CASE_LOWER)
             ) {
-                if (!empty($_POST[$index])) {
+                if (!empty($this->request->post($index))) {
                     $mapping                 = new stdClass();
                     $mapping->kSprache       = $languageID;
                     $mapping->cSuche         = $searchQuery->cSuche;
-                    $mapping->cSucheNeu      = $_POST[$index];
+                    $mapping->cSucheNeu      = $this->request->post($index);
                     $mapping->nAnzahlGesuche = $searchQuery->nAnzahlGesuche;
                     $mappedSearch            = $this->db->getSingleObject(
                         'SELECT tsuchanfrage.kSuchanfrage, IF(:mapped = :cSuche, 1, 0) isEqual
@@ -487,7 +480,7 @@ class LivesearchController extends AbstractBackendController
                             [
                                 'cnt' => $searchQuery->nAnzahlGesuche,
                                 'lid' => $languageID,
-                                'src' => $_POST[$index]
+                                'src' => $this->request->post($index)
                             ]
                         );
                         $this->db->delete('tsuchanfrage', 'kSuchanfrage', (int)$searchQuery->kSuchanfrage);
@@ -511,7 +504,7 @@ class LivesearchController extends AbstractBackendController
                     }
                 }
             } else {
-                $errorMapMessage .= \sprintf(\__('errorSearchMapSelf'), Text::filterXSS($_POST[$index]));
+                $errorMapMessage .= \sprintf(\__('errorSearchMapSelf'), Text::filterXSS($this->request->post($index)));
             }
         }
         $this->alertService->addSuccess($succesMapMessage ?? '', 'successSearchMap');
@@ -527,8 +520,8 @@ class LivesearchController extends AbstractBackendController
     {
         $liveSearchSQL = new SqlObject();
         $liveSearchSQL->setOrder(' tsuchanfrage.nAnzahlGesuche DESC ');
-        if (\mb_strlen(Request::verifyGPDataString('cSuche')) > 0) {
-            $query = $this->db->escape(Text::filterXSS(Request::verifyGPDataString('cSuche')));
+        if (\mb_strlen($this->request->request('cSuche')) > 0) {
+            $query = $this->db->escape(Text::filterXSS($this->request->request('cSuche')));
             if (\mb_strlen($query) > 0) {
                 $liveSearchSQL->setWhere(' AND tsuchanfrage.cSuche LIKE :srch');
                 $liveSearchSQL->addParam('srch', '%' . $query . '%');
@@ -537,10 +530,10 @@ class LivesearchController extends AbstractBackendController
                 $this->alertService->addError(\__('errorSearchTermMissing'), 'errorSearchTermMissing');
             }
         }
-        if (Request::verifyGPCDataInt('nSort') > 0) {
-            $this->smarty->assign('nSort', Request::verifyGPCDataInt('nSort'));
+        if ($this->request->requestInt('nSort') > 0) {
+            $this->smarty->assign('nSort', $this->request->requestInt('nSort'));
 
-            switch (Request::verifyGPCDataInt('nSort')) {
+            switch ($this->request->requestInt('nSort')) {
                 case 1:
                     $liveSearchSQL->setOrder(' tsuchanfrage.cSuche ASC ');
                     break;

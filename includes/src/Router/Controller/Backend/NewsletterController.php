@@ -6,8 +6,6 @@ use JTL\Backend\Permissions;
 use JTL\Customer\Customer;
 use JTL\Customer\CustomerGroup;
 use JTL\DB\SqlObject;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Newsletter\Admin;
 use JTL\Newsletter\Newsletter;
@@ -15,7 +13,6 @@ use JTL\Pagination\Pagination;
 use JTL\Router\Route;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -28,9 +25,8 @@ class NewsletterController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::MODULE_NEWSLETTER_VIEW);
         $this->getText->loadAdminLocale('pages/newsletter');
         $this->setLanguage();
@@ -52,16 +48,17 @@ class NewsletterController extends AbstractBackendController
         );
         $_SESSION['Kundengruppe'] = new CustomerGroup($cgID);
         $instance                 = new Newsletter($this->db, $conf);
-        $postData                 = Text::filterXSS($_POST);
-        if (Form::validateToken()) {
-            if (Request::postInt('einstellungen') === 1) {
-                if (isset($postData['speichern']) || Request::postVar('resetSetting') !== null) {
+        $postData                 = Text::filterXSS($this->request->getBody());
+        if ($this->tokenIsValid) {
+            if ($this->request->postInt('einstellungen') === 1) {
+                if (isset($postData['speichern']) || $this->request->post('resetSetting') !== null) {
                     $step = 'uebersicht';
-                    $this->saveAdminSectionSettings(\CONF_NEWSLETTER, $_POST);
+                    $this->saveAdminSectionSettings(\CONF_NEWSLETTER, $this->request->getBody());
                     $admin->setNewsletterCheckboxStatus();
                 }
-            } elseif (Request::postInt('newsletterabonnent_loeschen') === 1
-                || (Request::verifyGPCDataInt('inaktiveabonnenten') === 1 && isset($postData['abonnentloeschenSubmit']))
+            } elseif ($this->request->postInt('newsletterabonnent_loeschen') === 1
+                || ($this->request->requestInt('inaktiveabonnenten') === 1
+                    && isset($postData['abonnentloeschenSubmit']))
             ) {
                 if ($admin->deleteSubscribers($postData['kNewsletterEmpfaenger'] ?? [])) {
                     $this->alertService->addSuccess(\__('successNewsletterAboDelete'), 'successNewsletterAboDelete');
@@ -69,17 +66,17 @@ class NewsletterController extends AbstractBackendController
                     $this->alertService->addError(\__('errorAtLeastOneNewsletterAbo'), 'errorAtLeastOneNewsletterAbo');
                 }
             } elseif (isset($postData['abonnentfreischaltenSubmit'])
-                && Request::verifyGPCDataInt('inaktiveabonnenten') === 1
+                && $this->request->requestInt('inaktiveabonnenten') === 1
             ) {
                 if ($admin->activateSubscribers($postData['kNewsletterEmpfaenger'])) {
                     $this->alertService->addSuccess(\__('successNewsletterAbounlock'), 'successNewsletterAbounlock');
                 } else {
                     $this->alertService->addError(\__('errorAtLeastOneNewsletterAbo'), 'errorAtLeastOneNewsletterAbo');
                 }
-            } elseif (Request::postInt('newsletterabonnent_neu') === 1) {
+            } elseif ($this->request->postInt('newsletterabonnent_neu') === 1) {
                 $newsletter = $admin->addRecipient($instance, $postData);
-                $smarty->assign('oNewsletter', $newsletter);
-            } elseif (Request::postInt('newsletterqueue') === 1) { // Queue
+                $this->smarty->assign('oNewsletter', $newsletter);
+            } elseif ($this->request->postInt('newsletterqueue') === 1) { // Queue
                 if (isset($postData['loeschen'])) {
                     if (!empty($postData['kNewsletterQueue']) && \is_array($postData['kNewsletterQueue'])) {
                         $admin->deleteQueue($postData['kNewsletterQueue']);
@@ -87,16 +84,16 @@ class NewsletterController extends AbstractBackendController
                         $this->alertService->addError(\__('errorAtLeastOneNewsletter'), 'errorAtLeastOneNewsletter');
                     }
                 }
-            } elseif (Request::postInt('newsletterhistory') === 1 || Request::getInt('newsletterhistory') === 1) {
+            } elseif ($this->request->requestInt('newsletterhistory') === 1) {
                 if (isset($postData['loeschen'])) {
                     if (\is_array($postData['kNewsletterHistory'])) {
                         $admin->deleteHistory($postData['kNewsletterHistory']);
                     } else {
                         $this->alertService->addError(\__('errorAtLeastOneHistory'), 'errorAtLeastOneHistory');
                     }
-                } elseif (isset($_GET['anzeigen'])) {
+                } elseif ($this->request->get('anzeigen') !== null) {
                     $step      = 'history_anzeigen';
-                    $historyID = (int)$_GET['anzeigen'];
+                    $historyID = $this->request->getInt('anzeigen');
                     $hist      = $this->db->getSingleObject(
                         "SELECT kNewsletterHistory, cBetreff, cHTMLStatic, cKundengruppe,
                             DATE_FORMAT(dStart, '%d.%m.%Y %H:%i') AS Datum
@@ -106,11 +103,11 @@ class NewsletterController extends AbstractBackendController
                         ['hid' => $historyID, 'lid' => $this->currentLanguageID]
                     );
                     if ($hist !== null && $hist->kNewsletterHistory > 0) {
-                        $smarty->assign('oNewsletterHistory', $hist);
+                        $this->smarty->assign('oNewsletterHistory', $hist);
                     }
                 }
-            } elseif (\mb_strlen(Request::verifyGPDataString('cSucheInaktiv')) > 0) { // Inaktive Abonnentensuche
-                $query = Request::verifyGPDataString('cSucheInaktiv');
+            } elseif (\mb_strlen($this->request->request('cSucheInaktiv')) > 0) { // Inaktive Abonnentensuche
+                $query = $this->request->request('cSucheInaktiv');
                 if (\mb_strlen($query) > 0) {
                     $inactiveSearchSQL->setWhere(' AND (tnewsletterempfaenger.cVorname LIKE :qry
                         OR tnewsletterempfaenger.cNachname LIKE :qry
@@ -118,9 +115,9 @@ class NewsletterController extends AbstractBackendController
                     $inactiveSearchSQL->addParam('qry', '%' . $query . '%');
                 }
 
-                $smarty->assign('cSucheInaktiv', Text::filterXSS($query));
-            } elseif (\mb_strlen(Request::verifyGPDataString('cSucheAktiv')) > 0) { // Aktive Abonnentensuche
-                $query = Request::verifyGPDataString('cSucheAktiv');
+                $this->smarty->assign('cSucheInaktiv', Text::filterXSS($query));
+            } elseif (\mb_strlen($this->request->request('cSucheAktiv')) > 0) { // Aktive Abonnentensuche
+                $query = $this->request->request('cSucheAktiv');
                 if (\mb_strlen($query) > 0) {
                     $activeSearchSQL->setWhere(' AND (tnewsletterempfaenger.cVorname LIKE :qry
                         OR tnewsletterempfaenger.cNachname LIKE :qry
@@ -128,9 +125,9 @@ class NewsletterController extends AbstractBackendController
                     $activeSearchSQL->addParam('qry', '%' . $query . '%');
                 }
 
-                $smarty->assign('cSucheAktiv', Text::filterXSS($query));
-            } elseif (Request::verifyGPCDataInt('vorschau') > 0) { // Vorschau
-                $nlTemplateID = Request::verifyGPCDataInt('vorschau');
+                $this->smarty->assign('cSucheAktiv', Text::filterXSS($query));
+            } elseif ($this->request->requestInt('vorschau') > 0) { // Vorschau
+                $nlTemplateID = $this->request->requestInt('vorschau');
                 // Infos der Vorlage aus DB holen
                 $newsletterTPL = $this->db->getSingleObject(
                     "SELECT *, DATE_FORMAT(dStartZeit, '%d.%m.%Y %H:%i') AS Datum
@@ -139,9 +136,9 @@ class NewsletterController extends AbstractBackendController
                     ['tid' => $nlTemplateID]
                 );
                 $preview       = null;
-                if (Request::verifyGPCDataInt('iframe') === 1) {
+                if ($this->request->requestInt('iframe') === 1) {
                     $step = 'vorlage_vorschau_iframe';
-                    $smarty->assign(
+                    $this->smarty->assign(
                         'cURL',
                         $this->baseURL . '/' . Route::NEWSLETTER
                             . '?vorschau=' . $nlTemplateID . '&token=' . $_SESSION['jtl_token']
@@ -155,9 +152,9 @@ class NewsletterController extends AbstractBackendController
                 if (\is_string($preview)) {
                     $this->alertService->addError($preview, 'errorNewsletterPreview');
                 }
-                $smarty->assign('oNewsletterVorlage', $newsletterTPL)
+                $this->smarty->assign('oNewsletterVorlage', $newsletterTPL)
                     ->assign('NettoPreise', Frontend::getCustomerGroup()->getIsMerchant());
-            } elseif (Request::verifyGPCDataInt('newslettervorlagenstd') === 1) { // Vorlagen Std
+            } elseif ($this->request->requestInt('newslettervorlagenstd') === 1) { // Vorlagen Std
                 $customerGroupIDs = $postData['kKundengruppe'] ?? null;
                 $groupString      = '';
                 // Kundengruppen in einen String bauen
@@ -166,30 +163,30 @@ class NewsletterController extends AbstractBackendController
                         $groupString .= ';' . $customerGroupID . ';';
                     }
                 }
-                $smarty->assign('oKampagne_arr', self::getCampaigns(false, true, $this->db))
+                $this->smarty->assign('oKampagne_arr', self::getCampaigns(false, true, $this->db))
                     ->assign('cTime', \time());
                 // Vorlage speichern
-                if (Request::verifyGPCDataInt('vorlage_std_speichern') === 1) {
-                    $step = $admin->save(Request::verifyGPCDataInt('kNewslettervorlageStd'), $smarty);
-                } elseif (Request::verifyGPCDataInt('editieren') > 0) { // Editieren
-                    $step = $admin->edit(Request::verifyGPCDataInt('editieren'), $smarty);
+                if ($this->request->requestInt('vorlage_std_speichern') === 1) {
+                    $step = $admin->save($this->request->requestInt('kNewslettervorlageStd'), $this->smarty);
+                } elseif ($this->request->requestInt('editieren') > 0) { // Editieren
+                    $step = $admin->edit($this->request->requestInt('editieren'), $this->smarty);
                 }
                 // Vorlage Std erstellen
-                if (Request::verifyGPCDataInt('vorlage_std_erstellen') === 1
-                    && Request::verifyGPCDataInt('kNewsletterVorlageStd') > 0
+                if ($this->request->requestInt('vorlage_std_erstellen') === 1
+                    && $this->request->requestInt('kNewsletterVorlageStd') > 0
                 ) {
                     $step                  = 'vorlage_std_erstellen';
-                    $kNewsletterVorlageStd = Request::verifyGPCDataInt('kNewsletterVorlageStd');
+                    $kNewsletterVorlageStd = $this->request->requestInt('kNewsletterVorlageStd');
                     // Hole Std Vorlage
-                    $smarty->assign('oNewslettervorlageStd', $admin->getDefaultTemplate($kNewsletterVorlageStd));
+                    $this->smarty->assign('oNewslettervorlageStd', $admin->getDefaultTemplate($kNewsletterVorlageStd));
                 }
-                if (Request::postVar('saveAndContinue', '') === 'std') {
-                    $admin->save(Request::verifyGPCDataInt('kNewslettervorlageStd'), $smarty);
-                    $step = $admin->edit($admin->getCurrentId(), $smarty);
+                if ($this->request->post('saveAndContinue', '') === 'std') {
+                    $admin->save($this->request->requestInt('kNewslettervorlageStd'), $this->smarty);
+                    $step = $admin->edit($admin->getCurrentId(), $this->smarty);
                 }
-            } elseif (Request::verifyGPCDataInt('newslettervorlagen') === 1) {
+            } elseif ($this->request->requestInt('newslettervorlagen') === 1) {
                 // Vorlagen
-                $smarty->assign('oKampagne_arr', self::getCampaigns(false, true, $this->db));
+                $this->smarty->assign('oKampagne_arr', self::getCampaigns(false, true, $this->db));
                 $customerGroupIDs = $postData['kKundengruppe'] ?? [];
                 $groupString      = '';
                 // Kundengruppen in einen String bauen
@@ -198,11 +195,11 @@ class NewsletterController extends AbstractBackendController
                         $groupString .= ';' . (int)$customerGroupID . ';';
                     }
                 }
-                if (Request::postVar('saveAndContinue', '') === '1') {
-                    $checks = $admin->saveTemplate($_POST);
+                if ($this->request->post('saveAndContinue', '') === '1') {
+                    $checks = $admin->saveTemplate($this->request->getBody());
                     if (\is_array($checks) && \count($checks) > 0) {
-                        $smarty->assign('cPlausiValue_arr', $checks)
-                            ->assign('cPostVar_arr', $_POST)
+                        $this->smarty->assign('cPlausiValue_arr', $checks)
+                            ->assign('cPostVar_arr', $this->request->getBody())
                             ->assign('oNewsletterVorlage', $newsletterTPL);
                     }
                     $step   = 'vorlage_erstellen';
@@ -214,13 +211,13 @@ class NewsletterController extends AbstractBackendController
                     $step   = 'vorlage_erstellen';
                     $option = 'erstellen';
                 } elseif ((isset($id) && $id > 0)
-                    || Request::getInt('editieren') > 0
-                    || Request::getInt('vorbereiten') > 0) {
+                    || $this->request->getInt('editieren') > 0
+                    || $this->request->getInt('vorbereiten') > 0) {
                     // Vorlage editieren/vorbereiten
                     $step         = 'vorlage_erstellen';
-                    $nlTemplateID = $id ?? Request::verifyGPCDataInt('vorbereiten');
+                    $nlTemplateID = $id ?? $this->request->requestInt('vorbereiten');
                     if ($nlTemplateID === 0) {
-                        $nlTemplateID = Request::verifyGPCDataInt('editieren');
+                        $nlTemplateID = $this->request->requestInt('editieren');
                     }
                     // Infos der Vorlage aus DB holen
                     $newsletterTPL = $this->db->getSingleObject(
@@ -235,31 +232,31 @@ class NewsletterController extends AbstractBackendController
                         $newsletterTPL->cArtikel    = \mb_substr(\mb_substr($newsletterTPL->cArtikel, 1), 0, -1);
                         $newsletterTPL->cHersteller = \mb_substr(\mb_substr($newsletterTPL->cHersteller, 1), 0, -1);
                         $newsletterTPL->cKategorie  = \mb_substr(\mb_substr($newsletterTPL->cKategorie, 1), 0, -1);
-                        $smarty->assign('kArtikel_arr', $productData->kArtikel_arr)
+                        $this->smarty->assign('kArtikel_arr', $productData->kArtikel_arr)
                             ->assign('cArtNr_arr', $productData->cArtNr_arr)
                             ->assign('kKundengruppe_arr', $admin->getCustomerGroupData($newsletterTPL->cKundengruppe));
                     }
 
-                    $smarty->assign('oNewsletterVorlage', $newsletterTPL);
-                    if (isset($_GET['editieren'])) {
+                    $this->smarty->assign('oNewsletterVorlage', $newsletterTPL);
+                    if ($this->request->get('editieren') !== null) {
                         $option = 'editieren';
                     }
                 } elseif (isset($postData['speichern'])) { // Vorlage speichern
-                    $checks = $admin->saveTemplate($_POST);
+                    $checks = $admin->saveTemplate($this->request->getBody());
                     if (\is_array($checks) && \count($checks) > 0) {
                         $step = 'vorlage_erstellen';
-                        $smarty->assign('cPlausiValue_arr', $checks)
-                            ->assign('cPostVar_arr', $_POST)
+                        $this->smarty->assign('cPlausiValue_arr', $checks)
+                            ->assign('cPostVar_arr', $this->request->getBody())
                             ->assign('oNewsletterVorlage', $newsletterTPL);
                     }
                 } elseif (isset($postData['speichern_und_senden'])) { // Vorlage speichern und senden
                     unset($newsletter, $oKunde, $mailRecipient);
-                    $res = $admin->saveAndContinue($newsletterTPL, $smarty);
+                    $res = $admin->saveAndContinue($newsletterTPL, $this->smarty);
                     if ($res === false) {
                         $step = 'vorlage_erstellen';
                     }
                 } elseif (isset($postData['speichern_und_testen'])) { // Vorlage speichern und testen
-                    $res = $admin->saveAndTest($newsletterTPL, $smarty);
+                    $res = $admin->saveAndTest($newsletterTPL, $this->smarty);
                     if ($res === false) {
                         $step = 'vorlage_erstellen';
                     }
@@ -267,7 +264,7 @@ class NewsletterController extends AbstractBackendController
                     $step = 'uebersicht';
                     $admin->deleteTemplates($postData['kNewsletterVorlage'] ?? []);
                 }
-                $smarty->assign('cOption', $option);
+                $this->smarty->assign('cOption', $option);
             }
         }
         if ($step === 'uebersicht') {
@@ -425,7 +422,6 @@ class NewsletterController extends AbstractBackendController
         return $this->smarty->assign('step', $step)
             ->assign('customerGroups', CustomerGroup::getGroups())
             ->assign('nRand', \time())
-            ->assign('route', $this->route)
             ->getResponse('newsletter.tpl');
     }
 }

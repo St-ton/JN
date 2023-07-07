@@ -9,9 +9,7 @@ use Illuminate\Support\Collection;
 use JTL\Backend\Permissions;
 use JTL\Backend\Revision;
 use JTL\Customer\CustomerGroup;
-use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
-use JTL\Helpers\Request;
 use JTL\Helpers\Seo;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
@@ -28,7 +26,6 @@ use JTL\News\Item;
 use JTL\News\ItemList;
 use JTL\Pagination\Pagination;
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -74,85 +71,84 @@ class NewsController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::CONTENT_NEWS_SYSTEM_VIEW);
         $this->getText->loadAdminLocale('pages/news');
         $author    = Author::getInstance($this->db);
         $category  = new Category($this->db);
         $languages = LanguageHelper::getAllLanguages(0, true, true);
-        $valid     = Form::validateToken();
-        $tab       = Request::verifyGPDataString('tab');
+        $valid     = $this->tokenIsValid;
+        $tab       = $this->request->request('tab');
         $this->handleTab($tab);
-        if ($valid && Request::postInt('einstellungen') === 1) {
+        if ($valid && $this->request->postInt('einstellungen') === 1) {
             $this->actionConfig($languages);
-        } elseif ($valid && Request::verifyGPCDataInt('news') === 1) {
-            if (Request::postInt('news_erstellen') === 1) {
+        } elseif ($valid && $this->request->requestInt('news') === 1) {
+            if ($this->request->postInt('news_erstellen') === 1) {
                 $this->actionCreateNews($author);
-            } elseif (Request::postInt('news_kategorie_erstellen') === 1) {
+            } elseif ($this->request->postInt('news_kategorie_erstellen') === 1) {
                 $this->setStep('news_kategorie_erstellen');
-            } elseif (Request::verifyGPCDataInt('nkedit') === 1 && Request::verifyGPCDataInt('kNews') > 0) {
+            } elseif ($this->request->requestInt('nkedit') === 1 && $this->request->requestInt('kNews') > 0) {
                 $response = $this->actionEditComment();
                 if ($response !== null) {
                     return $response;
                 }
-            } elseif (Request::verifyGPCDataInt('nkanswer') === 1 && Request::verifyGPCDataInt('kNews') > 0) {
+            } elseif ($this->request->requestInt('nkanswer') === 1 && $this->request->requestInt('kNews') > 0) {
                 $this->actionCommentAnswer();
-            } elseif (Request::postInt('news_speichern') === 1) {
-                if (($response = $this->createOrUpdateNewsItem($_POST, $languages, $author)) !== null) {
+            } elseif ($this->request->postInt('news_speichern') === 1) {
+                $response = $this->createOrUpdateNewsItem($this->request->getBody(), $languages, $author);
+                if ($response !== null) {
                     return $response;
                 }
-            } elseif (Request::postInt('news_loeschen') === 1) {
-                if (GeneralObject::hasCount('kNews', $_POST)) {
-                    $this->deleteNewsItems($_POST['kNews'], $author);
+            } elseif ($this->request->postInt('news_loeschen') === 1) {
+                if (GeneralObject::hasCount('kNews', $this->request->getBody())) {
+                    $this->deleteNewsItems($this->request->post('kNews'), $author);
                     $this->setMsg(\__('successNewsDelete'));
 
                     return $this->newsRedirect('aktiv', $this->getMsg());
                 }
                 $this->setErrorMsg(\__('errorAtLeastOneNews'));
-            } elseif (Request::postInt('news_kategorie_speichern') === 1
-                      && Request::postVar('saveAndContinue', '') !== 'kategorie') {
-                $category = $this->createOrUpdateCategory($_POST, $languages);
-            } elseif (Request::postVar('saveAndContinue', '') === 'kategorie') {
-                $category = $this->createOrUpdateCategory($_POST, $languages);
+            } elseif ($this->request->postInt('news_kategorie_speichern') === 1
+                      && $this->request->post('saveAndContinue', '') !== 'kategorie') {
+                $category = $this->createOrUpdateCategory($this->request->getBody(), $languages);
+            } elseif ($this->request->post('saveAndContinue', '') === 'kategorie') {
+                $category = $this->createOrUpdateCategory($this->request->getBody(), $languages);
                 $category = $this->actionEditCategory($category);
-            } elseif (Request::postInt('news_kategorie_loeschen') === 1) {
+            } elseif ($this->request->postInt('news_kategorie_loeschen') === 1) {
                 $this->setStep('news_uebersicht');
-                if (isset($_POST['kNewsKategorie'])) {
-                    $this->deleteCategories($_POST['kNewsKategorie']);
+                if ($this->request->post('kNewsKategorie') !== null) {
+                    $this->deleteCategories($this->request->post('kNewsKategorie'));
                     $this->setMsg(\__('successNewsCatDelete'));
 
                     return $this->newsRedirect('kategorien', $this->getMsg());
                 }
                 $this->setErrorMsg(\__('errorAtLeastOneNewsCat'));
-            } elseif (Request::getInt('newskategorie_editieren') === 1) {
+            } elseif ($this->request->getInt('newskategorie_editieren') === 1) {
                 $category = $this->actionEditCategory();
-            } elseif (!isset($_POST['kommentareloeschenSubmit'])
-                && Request::postInt('newskommentar_freischalten') > 0
+            } elseif ($this->request->post('kommentareloeschenSubmit') === null
+                && $this->request->postInt('newskommentar_freischalten') > 0
             ) {
-                $commentIDs = Request::verifyGPDataIntegerArray('kNewsKommentar');
+                $commentIDs = $this->request->requestIntArray('kNewsKommentar');
                 if (\count($commentIDs) > 0) {
                     $this->activateComments($commentIDs);
-                    $tab = Request::verifyGPDataString('tab');
+                    $tab = $this->request->request('tab');
 
                     return $this->newsRedirect(empty($tab) ? 'inaktiv' : $tab, $this->getMsg());
                 }
                 $this->setErrorMsg(\__('errorAtLeastOneNewsComment'));
 
                 return $this->newsRedirect('', $this->getErrorMsg());
-            } elseif (isset(
-                $_POST['newskommentar_freischalten'],
-                $_POST['kNewsKommentar'],
-                $_POST['kommentareloeschenSubmit']
-            )) {
-                if (($response = $this->deleteComments($_POST['kNewsKommentar'])) !== null) {
+            } elseif ($this->request->post('newskommentar_freischalten') !== null
+                && $this->request->post('kNewsKommentar') !== null
+                && $this->request->post('kommentareloeschenSubmit') !== null
+            ) {
+                if (($response = $this->deleteComments($this->request->post('kNewsKommentar'))) !== null) {
                     return $response;
                 }
             }
-            if (Request::getInt('news_editieren') === 1 || $this->getContinueWith() > 0) {
+            if ($this->request->getInt('news_editieren') === 1 || $this->getContinueWith() > 0) {
                 $this->actionEditNews($languages, $author);
-            } elseif ($this->getStep() === 'news_vorschau' || Request::verifyGPCDataInt('nd') === 1) {
+            } elseif ($this->getStep() === 'news_vorschau' || $this->request->requestInt('nd') === 1) {
                 $response = $this->actionPreview();
                 if ($response !== null) {
                     return $response;
@@ -172,7 +168,6 @@ class NewsController extends AbstractBackendController
         $this->assignScrollPosition();
 
         return $this->smarty->assign('customerGroups', CustomerGroup::getGroups())
-            ->assign('route', $this->route)
             ->assign('step', $this->getStep())
             ->assign('nMaxFileSize', self::getMaxFileSize(\ini_get('upload_max_filesize')))
             ->getResponse('news.tpl');
@@ -184,7 +179,11 @@ class NewsController extends AbstractBackendController
      */
     private function actionConfig(array $languages): void
     {
-        $this->saveAdminSectionSettings(\CONF_NEWS, $_POST, [\CACHING_GROUP_OPTION, \CACHING_GROUP_NEWS]);
+        $this->saveAdminSectionSettings(
+            \CONF_NEWS,
+            $this->request->getBody(),
+            [\CACHING_GROUP_OPTION, \CACHING_GROUP_NEWS]
+        );
         if (\count($languages) === 0) {
             return;
         }
@@ -192,9 +191,9 @@ class NewsController extends AbstractBackendController
         foreach ($languages as $lang) {
             $monthPrefix           = new stdClass();
             $monthPrefix->kSprache = $lang->getId();
-            if (!empty($_POST['praefix_' . $lang->getIso()])) {
+            if (!empty($this->request->post('praefix_' . $lang->getIso()))) {
                 $monthPrefix->cPraefix = \htmlspecialchars(
-                    $_POST['praefix_' . $lang->getIso()],
+                    $this->request->post('praefix_' . $lang->getIso()),
                     \ENT_COMPAT | \ENT_HTML401,
                     \JTL_CHARSET
                 );
@@ -363,11 +362,11 @@ class NewsController extends AbstractBackendController
             }
             $this->flushCache();
             $this->msg .= \__('successNewsSave');
-            if (Request::postVar('saveAndContinue', '') === 'news') {
+            if ($this->request->post('saveAndContinue', '') === 'news') {
                 $this->step         = 'news_editieren';
                 $this->continueWith = $newsItemID;
             } else {
-                $tab = Request::verifyGPDataString('tab');
+                $tab = $this->request->request('tab');
 
                 return $this->newsRedirect(empty($tab) ? 'aktiv' : $tab, $this->getMsg());
             }
@@ -1000,7 +999,7 @@ class NewsController extends AbstractBackendController
         }
         $this->flushCache();
         $this->setMsg(\__('successNewsCommentDelete'));
-        $tab    = Request::verifyGPDataString('tab');
+        $tab    = $this->request->request('tab');
         $params = [
             'news'  => '1',
             'token' => $_SESSION['jtl_token'],
@@ -1094,9 +1093,9 @@ class NewsController extends AbstractBackendController
             $urlParams['tab'] = $tab;
             if (isset($tabPageMapping[$tab])
                 && !\array_key_exists($tabPageMapping[$tab], $urlParams)
-                && Request::verifyGPCDataInt($tabPageMapping[$tab]) > 1
+                && $this->request->requestInt($tabPageMapping[$tab]) > 1
             ) {
-                $urlParams[$tabPageMapping[$tab]] = Request::verifyGPCDataInt($tabPageMapping[$tab]);
+                $urlParams[$tabPageMapping[$tab]] = $this->request->requestInt($tabPageMapping[$tab]);
             }
         }
 
@@ -1316,21 +1315,21 @@ class NewsController extends AbstractBackendController
         $this->smarty->assign('files', []);
         switch ($tab) {
             case 'inaktiv':
-                if (Request::verifyGPCDataInt('s1') > 1) {
-                    $this->smarty->assign('cBackPage', 'tab=inaktiv&s1=' . Request::verifyGPCDataInt('s1'))
-                        ->assign('cSeite', Request::verifyGPCDataInt('s1'));
+                if ($this->request->requestInt('s1') > 1) {
+                    $this->smarty->assign('cBackPage', 'tab=inaktiv&s1=' . $this->request->requestInt('s1'))
+                        ->assign('cSeite', $this->request->requestInt('s1'));
                 }
                 break;
             case 'aktiv':
-                if (Request::verifyGPCDataInt('s2') > 1) {
-                    $this->smarty->assign('cBackPage', 'tab=aktiv&s2=' . Request::verifyGPCDataInt('s2'))
-                        ->assign('cSeite', Request::verifyGPCDataInt('s2'));
+                if ($this->request->requestInt('s2') > 1) {
+                    $this->smarty->assign('cBackPage', 'tab=aktiv&s2=' . $this->request->requestInt('s2'))
+                        ->assign('cSeite', $this->request->requestInt('s2'));
                 }
                 break;
             case 'kategorien':
-                if (Request::verifyGPCDataInt('s3') > 1) {
-                    $this->smarty->assign('cBackPage', 'tab=kategorien&s3=' . Request::verifyGPCDataInt('s3'))
-                        ->assign('cSeite', Request::verifyGPCDataInt('s3'));
+                if ($this->request->requestInt('s3') > 1) {
+                    $this->smarty->assign('cBackPage', 'tab=kategorien&s3=' . $this->request->requestInt('s3'))
+                        ->assign('cSeite', $this->request->requestInt('s3'));
                 }
                 break;
         }
@@ -1403,29 +1402,29 @@ class NewsController extends AbstractBackendController
      */
     private function actionEditComment(): ?ResponseInterface
     {
-        if (!isset($_POST['newskommentarsavesubmit'])) {
+        if ($this->request->post('newskommentarsavesubmit') === null) {
             $this->setStep('news_kommentar_editieren');
             $comment = new Comment($this->db);
-            $comment->load(Request::verifyGPCDataInt('kNewsKommentar'));
+            $comment->load($this->request->requestInt('kNewsKommentar'));
             $this->smarty->assign('oNewsKommentar', $comment);
-            if (Request::verifyGPCDataInt('nFZ') === 1) {
+            if ($this->request->requestInt('nFZ') === 1) {
                 $this->smarty->assign('nFZ', 1);
             }
 
             return null;
         }
-        if ($this->saveComment(Request::verifyGPCDataInt('kNewsKommentar'), $_POST)) {
+        if ($this->saveComment($this->request->requestInt('kNewsKommentar'), $this->request->getBody())) {
             $this->setStep('news_vorschau');
             $this->setMsg(\__('successNewsCommmentEdit'));
-            if (Request::verifyGPCDataInt('nFZ') === 1) {
+            if ($this->request->requestInt('nFZ') === 1) {
                 return new RedirectResponse(Shop::getURL() . $this->route);
             }
-            $tab = Request::verifyGPDataString('tab');
+            $tab = $this->request->request('tab');
             if ($tab === 'aktiv') {
                 return $this->newsRedirect(empty($tab) ? 'inaktiv' : $tab, $this->getMsg(), [
                     'news'  => '1',
                     'nd'    => '1',
-                    'kNews' => Request::verifyGPCDataInt('kNews'),
+                    'kNews' => $this->request->requestInt('kNews'),
                     'token' => $_SESSION['jtl_token'],
                 ]);
             }
@@ -1436,9 +1435,9 @@ class NewsController extends AbstractBackendController
         $this->setStep('news_kommentar_editieren');
         $this->setErrorMsg(\__('errorCheckInput'));
         $comment = new Comment($this->db);
-        $comment->load((int)$_POST['kNewsKommentar']);
-        $comment->setName(Text::filterXSS($_POST['cName']));
-        $comment->setText(Text::filterXSS($_POST['cKommentar']));
+        $comment->load($this->request->postInt('kNewsKommentar'));
+        $comment->setName(Text::filterXSS($this->request->post('cName')));
+        $comment->setText(Text::filterXSS($this->request->post('cKommentar')));
         $this->smarty->assign('oNewsKommentar', $comment);
 
         return null;
@@ -1451,12 +1450,12 @@ class NewsController extends AbstractBackendController
     {
         $this->setStep('news_kommentar_antwort_editieren');
         $comment         = new Comment($this->db);
-        $parentCommentID = Request::verifyGPCDataInt('parentCommentID');
+        $parentCommentID = $this->request->requestInt('parentCommentID');
         if ($comment->loadByParentCommentID($parentCommentID) === null) {
             $adminID   = $this->account->getID();
             $adminName = $this->db->select('tadminlogin', 'kAdminlogin', $adminID)->cName;
             $comment->setID(0);
-            $comment->setNewsID(Request::verifyGPCDataInt('kNews'));
+            $comment->setNewsID($this->request->requestInt('kNews'));
             $comment->setCustomerID(0);
             $comment->setIsActive(true);
             $comment->setName($adminName);
@@ -1478,9 +1477,9 @@ class NewsController extends AbstractBackendController
         $newsCategories = $this->getAllNewsCategories();
         $newsItemID     = $this->getContinueWith() > 0
             ? $this->getContinueWith()
-            : Request::getInt('kNews');
-        if (\mb_strlen(Request::verifyGPDataString('delpic')) > 0) {
-            if ($this->deleteNewsImage(Request::verifyGPDataString('delpic'), $newsItemID, self::UPLOAD_DIR)) {
+            : $this->request->getInt('kNews');
+        if (\mb_strlen($this->request->request('delpic')) > 0) {
+            if ($this->deleteNewsImage($this->request->request('delpic'), $newsItemID, self::UPLOAD_DIR)) {
                 $this->setMsg(\__('successNewsImageDelete'));
             } else {
                 $this->setErrorMsg(\__('errorNewsImageDelete'));
@@ -1514,15 +1513,17 @@ class NewsController extends AbstractBackendController
     private function actionPreview(): ?ResponseInterface
     {
         $this->setStep('news_vorschau');
-        $newsItemID = Request::verifyGPCDataInt('kNews');
+        $newsItemID = $this->request->requestInt('kNews');
         $newsItem   = new Item($this->db, $this->cache);
         $newsItem->load($newsItemID);
 
         if ($newsItem->getID() <= 0) {
             return null;
         }
-        if (isset($_POST['kommentareloeschenSubmit']) || Request::postInt('kommentare_loeschen') === 1) {
-            $response = $this->deleteComments($_POST['kNewsKommentar'] ?? [], $newsItem);
+        if ($this->request->post('kommentareloeschenSubmit') !== null
+            || $this->request->postInt('kommentare_loeschen') === 1
+        ) {
+            $response = $this->deleteComments($this->request->post('kNewsKommentar', []), $newsItem);
             if ($response !== null) {
                 return $response;
             }
@@ -1540,10 +1541,10 @@ class NewsController extends AbstractBackendController
      */
     private function actionEditCategory(?Category $category = null): Category
     {
-        if (\mb_strlen(Request::verifyGPDataString('delpic')) > 0) {
+        if (\mb_strlen($this->request->request('delpic')) > 0) {
             if ($this->deleteNewsImage(
-                Request::verifyGPDataString('delpic'),
-                Request::getInt('kNewsKategorie'),
+                $this->request->request('delpic'),
+                $this->request->getInt('kNewsKategorie'),
                 self::UPLOAD_DIR_CATEGORY
             )) {
                 $this->setMsg(\__('successNewsImageDelete'));
@@ -1554,11 +1555,11 @@ class NewsController extends AbstractBackendController
 
         if ($category === null) {
             $category = new Category($this->db);
-            if (Request::getInt('kNewsKategorie') <= 0) {
+            if ($this->request->getInt('kNewsKategorie') <= 0) {
                 return $category;
             }
         }
-        $categoryId = $category->getID() > 0 ? $category->getID() : Request::getInt('kNewsKategorie');
+        $categoryId = $category->getID() > 0 ? $category->getID() : $this->request->getInt('kNewsKategorie');
         $this->setStep('news_kategorie_erstellen');
         $category->load($categoryId, false);
 
@@ -1568,7 +1569,7 @@ class NewsController extends AbstractBackendController
         } elseif (!$this->errorMsg) {
             $this->setStep('news_uebersicht');
             $this->setErrorMsg(
-                \sprintf(\__('errorNewsCatNotFound'), Request::getInt('kNewsKategorie'))
+                \sprintf(\__('errorNewsCatNotFound'), $this->request->getInt('kNewsKategorie'))
             );
         }
 

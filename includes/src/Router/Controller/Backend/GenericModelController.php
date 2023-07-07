@@ -3,9 +3,8 @@
 namespace JTL\Router\Controller\Backend;
 
 use Exception;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Helpers\Text;
+use JTL\Model\DataModel;
 use JTL\Model\DataModelInterface;
 use JTL\Pagination\Pagination;
 use Laminas\Diactoros\Response\RedirectResponse;
@@ -57,21 +56,21 @@ abstract class GenericModelController extends AbstractBackendController
     {
         $this->item = new $this->modelClass($this->db);
         $this->step = $_SESSION['step'] ?? 'overview';
-        $valid      = Form::validateToken();
-        $action     = Request::postVar('action') ?? Request::getVar('action');
-        $itemID     = $_SESSION['modelid'] ?? Request::postInt('id', null) ?? Request::getInt('id', null);
-        $continue   = (bool)($_SESSION['continue'] ?? Request::postInt('save-model-continue') === 1);
-        $save       = $valid && ($continue || Request::postInt('save-model') === 1);
-        $modelIDs   = Request::postVar('mid', []);
-        $cancel     = Request::postInt('go-back') === 1;
-        if (\count($modelIDs) === 0 && Request::postInt('id', null) > 0) {
-            $modelIDs = [Request::postInt('id')];
+        $valid      = $this->tokenIsValid;
+        $action     = $this->request->post('action') ?? $this->request->get('action');
+        $itemID     = (int)($_SESSION['modelid'] ?? 0) ?: $this->request->postInt('id') ?: $this->request->getInt('id');
+        $continue   = (bool)($_SESSION['continue'] ?? $this->request->postInt('save-model-continue') === 1);
+        $save       = $valid && ($continue || $this->request->postInt('save-model') === 1);
+        $modelIDs   = $this->request->post('mid', []);
+        $cancel     = $this->request->postInt('go-back') === 1;
+        if (\count($modelIDs) === 0 && $this->request->postInt('id') > 0) {
+            $modelIDs = [$this->request->postInt('id')];
         }
-        $delete       = $valid && Request::postInt('model-delete') === 1 && \count($modelIDs) > 0;
-        $disable      = $valid && Request::postInt('model-disable') === 1 && \count($modelIDs) > 0;
-        $enable       = $valid && Request::postInt('model-enable') === 1 && \count($modelIDs) > 0;
-        $create       = Request::postInt('model-create') === 1;
-        $saveSettings = Request::postVar('a') === 'saveSettings';
+        $delete       = $valid && $this->request->postInt('model-delete') === 1 && \count($modelIDs) > 0;
+        $disable      = $valid && $this->request->postInt('model-disable') === 1 && \count($modelIDs) > 0;
+        $enable       = $valid && $this->request->postInt('model-enable') === 1 && \count($modelIDs) > 0;
+        $create       = $this->request->postInt('model-create') === 1;
+        $saveSettings = $this->request->post('a') === 'saveSettings';
         if ($cancel) {
             return $this->modelPRG();
         }
@@ -82,7 +81,12 @@ abstract class GenericModelController extends AbstractBackendController
             $this->step = 'detail';
         }
         if ($itemID > 0) {
-            $this->item = $this->modelClass::load(['id' => $itemID], $this->db);
+            try {
+                /** @var DataModelInterface $class */
+                $class      = $this->modelClass;
+                $this->item = $class::load(['id' => $itemID], $this->db, DataModel::ON_NOTEXISTS_FAIL);
+            } catch (Exception) {
+            }
         }
         unset($_SESSION['step'], $_SESSION['continue']);
 
@@ -111,8 +115,9 @@ abstract class GenericModelController extends AbstractBackendController
             }
         }
         $this->setMessages();
-
-        $models     = $this->modelClass::loadAll($this->db, [], []);
+        /** @var DataModelInterface $class */
+        $class      = $this->modelClass;
+        $models     = $class::loadAll($this->db, [], []);
         $pagination = (new Pagination($template))
             ->setItemCount($models->count())
             ->assemble();
@@ -142,7 +147,7 @@ abstract class GenericModelController extends AbstractBackendController
      */
     protected function save(int $itemID, bool $continue): ResponseInterface
     {
-        if ($this->updateFromPost($this->item, Text::filterXSS($_POST)) === true) {
+        if ($this->updateFromPost($this->item, Text::filterXSS($this->request->getBody())) === true) {
             $_SESSION['modelid']         = $itemID;
             $_SESSION['modelSuccessMsg'] = \__('successSave');
             $_SESSION['step']            = $continue ? 'detail' : 'overview';
@@ -212,8 +217,9 @@ abstract class GenericModelController extends AbstractBackendController
     {
         return every(map($ids, function ($id) use ($state) {
             try {
-                /** @var DataModelInterface $model */
-                $model = $this->modelClass::load(['id' => (int)$id], $this->db, DataModelInterface::ON_NOTEXISTS_FAIL);
+                /** @var DataModelInterface $class */
+                $class = $this->modelClass;
+                $model = $class::load(['id' => (int)$id], $this->db, DataModelInterface::ON_NOTEXISTS_FAIL);
                 $model->setAttribValue('active', $state);
 
                 return $model->save(['active']);
@@ -274,8 +280,9 @@ abstract class GenericModelController extends AbstractBackendController
     {
         return every(map($ids, function ($id) {
             try {
-                /** @var DataModelInterface $model */
-                $model = $this->modelClass::load(['id' => (int)$id], $this->db, DataModelInterface::ON_NOTEXISTS_FAIL);
+                /** @var DataModelInterface $class */
+                $class = $this->modelClass;
+                $model = $class::load(['id' => (int)$id], $this->db, DataModelInterface::ON_NOTEXISTS_FAIL);
             } catch (Exception) {
                 return false;
             }
@@ -292,6 +299,6 @@ abstract class GenericModelController extends AbstractBackendController
     public function saveSettings(): void
     {
         $this->tab = 'settings';
-        $this->saveAdminSectionSettings(\CONF_CONSENTMANAGER, $_POST);
+        $this->saveAdminSectionSettings(\CONF_CONSENTMANAGER, $this->request->getBody());
     }
 }

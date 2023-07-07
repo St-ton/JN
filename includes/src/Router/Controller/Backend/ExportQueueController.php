@@ -12,12 +12,9 @@ use JTL\Cron\Queue;
 use JTL\Cron\Type;
 use JTL\Export\ExporterFactory;
 use JTL\Export\Model;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -32,26 +29,25 @@ class ExportQueueController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::EXPORT_SCHEDULE_VIEW);
         $this->getText->loadAdminLocale('pages/exportformat_queue');
 
-        $action   = isset($_GET['action'])
-            ? [$_GET['action'] => 1]
-            : ($_POST['action'] ?? ['uebersicht' => 1]);
+        $action   = $this->request->get('action') !== null
+            ? [$this->request->get('action') => 1]
+            : ($this->request->post('action') ?? ['uebersicht' => 1]);
         $step     = 'uebersicht';
         $messages = [
             'notice' => '',
             'error'  => ''
         ];
-        if (Form::validateToken()) {
+        if ($this->tokenIsValid) {
             if (isset($action['erstellen']) && (int)$action['erstellen'] === 1) {
-                $step = $this->stepCreate($smarty);
+                $step = $this->stepCreate();
             }
             if (isset($action['editieren']) && (int)$action['editieren'] === 1) {
-                $step = $this->stepEdit($smarty, $messages);
+                $step = $this->stepEdit($messages);
             }
             if (isset($action['loeschen']) && (int)$action['loeschen'] === 1) {
                 $step = $this->stepDelete($messages);
@@ -60,17 +56,16 @@ class ExportQueueController extends AbstractBackendController
                 $step = $this->stepTrigger($messages);
             }
             if (isset($action['fertiggestellt']) && (int)$action['fertiggestellt'] === 1) {
-                $step = $this->stepDone($smarty);
+                $step = $this->stepDone();
             }
             if (isset($action['erstellen_eintragen']) && (int)$action['erstellen_eintragen'] === 1) {
-                $step = $this->stepCreateInsert($smarty, $messages);
+                $step = $this->stepCreateInsert($messages);
             }
         }
 
-        $result = $this->exportformatQueueFinalize($step, $smarty, $messages);
+        $result = $this->exportformatQueueFinalize($step, $messages);
 
-        return $result ?? $smarty->assign('step', $step)
-            ->assign('route', $this->route)
+        return $result ?? $this->smarty->assign('step', $step)
             ->getResponse('exportformat_queue.tpl');
     }
 
@@ -366,29 +361,27 @@ class ExportQueueController extends AbstractBackendController
     }
 
     /**
-     * @param JTLSmarty $smarty
      * @return string
      */
-    private function stepCreate(JTLSmarty $smarty): string
+    private function stepCreate(): string
     {
-        $smarty->assign('exportFormats', $this->getExports());
+        $this->smarty->assign('exportFormats', $this->getExports());
 
         return 'erstellen';
     }
 
     /**
-     * @param JTLSmarty $smarty
-     * @param array     $messages
+     * @param array $messages
      * @return string
      * @former exportformatQueueActionEditieren()
      */
-    private function stepEdit(JTLSmarty $smarty, array &$messages): string
+    private function stepEdit(array &$messages): string
     {
-        $id   = Request::verifyGPCDataInt('kCron');
+        $id   = $this->request->requestInt('kCron');
         $cron = $id > 0 ? $this->getCron($id) : 0;
         if (\is_object($cron) && $cron->cronID > 0) {
             $step = 'erstellen';
-            $smarty->assign('cron', $cron)
+            $this->smarty->assign('cron', $cron)
                 ->assign('exportFormats', $this->getExports());
         } else {
             $messages['error'] .= \__('errorWrongQueue');
@@ -405,7 +398,7 @@ class ExportQueueController extends AbstractBackendController
      */
     private function stepDelete(array &$messages): string
     {
-        $cronIDs = $_POST['kCron'] ?? [];
+        $cronIDs = $this->request->post('kCron', []);
         if (\is_array($cronIDs) && \count($cronIDs) > 0) {
             if ($this->deleteCron($cronIDs)) {
                 $messages['notice'] .= \__('successQueueDelete');
@@ -446,44 +439,42 @@ class ExportQueueController extends AbstractBackendController
     }
 
     /**
-     * @param JTLSmarty $smarty
      * @return string
      * @former exportformatQueueActionFertiggestellt()
      */
-    private function stepDone(JTLSmarty $smarty): string
+    private function stepDone(): string
     {
-        $hours = Request::verifyGPCDataInt('nStunden');
+        $hours = $this->request->requestInt('nStunden');
         if ($hours <= 0) {
             $hours = 24;
         }
 
         $_SESSION['exportformatQueue.nStunden'] = $hours;
-        $smarty->assign('cTab', 'fertig');
+        $this->smarty->assign('cTab', 'fertig');
 
         return 'fertiggestellt';
     }
 
     /**
-     * @param JTLSmarty $smarty
-     * @param array     $messages
+     * @param array $messages
      * @return string
      * @former exportformatQueueActionErstellenEintragen()
      */
-    private function stepCreateInsert(JTLSmarty $smarty, array &$messages): string
+    private function stepCreateInsert(array &$messages): string
     {
-        $id                   = Request::postInt('kExportformat');
-        $start                = $_POST['dStart'] ?? '';
-        $freq                 = !empty($_POST['nAlleXStundenCustom'])
-            ? (int)$_POST['nAlleXStundenCustom']
-            : (int)$_POST['nAlleXStunden'];
+        $id                   = $this->request->postInt('kExportformat');
+        $start                = $this->request->post('dStart', '');
+        $freq                 = !empty($this->request->post('nAlleXStundenCustom'))
+            ? $this->request->postInt('nAlleXStundenCustom')
+            : $this->request->postInt('nAlleXStunden');
         $error                = new stdClass();
         $error->kExportformat = $id;
-        $error->dStart        = Text::filterXSS($_POST['dStart']);
+        $error->dStart        = Text::filterXSS($this->request->post('dStart'));
         $error->nAlleXStunden = $freq;
         if ($id > 0) {
             if ($this->checkStartTime($start)) {
                 if ($freq >= 1) {
-                    $state = $this->createCron($id, $start, $freq, Request::postInt('kCron'));
+                    $state = $this->createCron($id, $start, $freq, $this->request->postInt('kCron'));
                     if ($state === 1) {
                         $messages['notice'] .= \__('successQueueCreate');
                         $step                = 'erstellen_success';
@@ -497,17 +488,17 @@ class ExportQueueController extends AbstractBackendController
                 } else { // Alle X Stunden ist entweder leer oder kleiner als 6
                     $messages['error'] .= \__('errorGreaterEqualOne') . '<br />';
                     $step               = 'erstellen';
-                    $smarty->assign('error', $error);
+                    $this->smarty->assign('error', $error);
                 }
             } else { // Kein gueltiges Datum + Uhrzeit
                 $messages['error'] .= \__('errorEnterValidDate') . '<br />';
                 $step               = 'erstellen';
-                $smarty->assign('error', $error);
+                $this->smarty->assign('error', $error);
             }
         } else { // Kein gueltiges Exportformat
             $messages['error'] .= \__('errorFormatSelect') . '<br />';
             $step               = 'erstellen';
-            $smarty->assign('error', $error);
+            $this->smarty->assign('error', $error);
         }
 
         return $step;
@@ -544,11 +535,10 @@ class ExportQueueController extends AbstractBackendController
 
     /**
      * @param string    $step
-     * @param JTLSmarty $smarty
      * @param array     $messages
      * @return ResponseInterface|null
      */
-    private function exportformatQueueFinalize(string $step, JTLSmarty $smarty, array &$messages): ?ResponseInterface
+    private function exportformatQueueFinalize(string $step, array &$messages): ?ResponseInterface
     {
         if (isset($_SESSION['exportformatQueue.notice'])) {
             $messages['notice'] = $_SESSION['exportformatQueue.notice'];
@@ -562,7 +552,7 @@ class ExportQueueController extends AbstractBackendController
         switch ($step) {
             case 'uebersicht':
                 $freq = (int)($_SESSION['exportformatQueue.nStunden'] ?? 24);
-                $smarty->assign('oExportformatCron_arr', $this->holeExportformatCron())
+                $this->smarty->assign('oExportformatCron_arr', $this->holeExportformatCron())
                     ->assign('oExportformatQueueBearbeitet_arr', $this->getQueues($freq))
                     ->assign('nStunden', $freq);
                 break;
@@ -575,7 +565,7 @@ class ExportQueueController extends AbstractBackendController
             case 'erstellen':
                 if (!empty($messages['error'])) {
                     $freq = (int)($_SESSION['exportformatQueue.nStunden'] ?? 24);
-                    $smarty->assign('oExportformatCron_arr', $this->holeExportformatCron())
+                    $this->smarty->assign('oExportformatCron_arr', $this->holeExportformatCron())
                         ->assign('oExportformatQueueBearbeitet_arr', $this->getQueues($freq))
                         ->assign('exportFormats', $this->getExports())
                         ->assign('nStunden', $freq);

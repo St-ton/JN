@@ -6,15 +6,12 @@ use DateTime;
 use Exception;
 use JTL\Backend\Permissions;
 use JTL\Customer\CustomerGroup;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\ImageMap;
 use JTL\IO\IOResponse;
 use JTL\Media\Image;
 use JTL\Pagination\Pagination;
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -33,20 +30,21 @@ class BannerController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
         $this->getText->loadAdminLocale('pages/banner');
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::DISPLAY_BANNER_VIEW);
-        $this->action = (isset($_REQUEST['action']) && Form::validateToken()) ? $_REQUEST['action'] : 'view';
-        $postData     = Text::filterXSS($_POST);
+        $this->action = ($this->tokenIsValid && $this->request->request('action', null) !== null)
+            ? $this->request->request('action')
+            : 'view';
+        $postData     = Text::filterXSS($request->getParsedBody());
         $imageMap     = null;
-        if ((isset($postData['cName']) || isset($postData['kImageMap'])) && Form::validateToken()) {
+        if ($this->tokenIsValid && (isset($postData['cName']) || isset($postData['kImageMap']))) {
             $this->create($postData);
         }
         switch ($this->action) {
             case 'area':
-                $this->actionArea(Request::postInt('id'));
+                $this->actionArea($this->request->postInt('id'));
                 break;
             case 'edit':
                 $this->actionEdit((int)($postData['id'] ?? $postData['kImageMap']));
@@ -55,7 +53,7 @@ class BannerController extends AbstractBackendController
                 $this->actionNew($imageMap ?? null);
                 break;
             case 'delete':
-                $this->actionDelete(Request::postInt('id'));
+                $this->actionDelete($this->request->postInt('id'));
                 break;
             default:
                 break;
@@ -65,10 +63,9 @@ class BannerController extends AbstractBackendController
             ->setItemArray($this->getBanners())
             ->assemble();
 
-        return $smarty->assign('action', $this->action)
+        return $this->smarty->assign('action', $this->action)
             ->assign('validPageTypes', BoxController::getMappedValidPageTypes())
             ->assign('pagination', $pagination)
-            ->assign('route', $this->route)
             ->assign('banners', $pagination->getPageItems())
             ->getResponse('banner.tpl');
     }
@@ -81,12 +78,12 @@ class BannerController extends AbstractBackendController
     {
         $checks     = [];
         $imageMap   = new ImageMap($this->db);
-        $imageMapID = Request::postInt('kImageMap', null);
+        $imageMapID = $this->request->postInt('kImageMap');
         $name       = \htmlspecialchars($postData['cName'], \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET);
         if (\mb_strlen($name) === 0) {
             $checks['cName'] = 1;
         }
-        $bannerPath = Request::postVar('cPath', '') !== '' ? $postData['cPath'] : null;
+        $bannerPath = $this->request->post('cPath', '') !== '' ? $postData['cPath'] : null;
         if (isset($_FILES['oFile'])
             && Image::isImageUpload($_FILES['oFile'])
             && \move_uploaded_file(
@@ -102,7 +99,7 @@ class BannerController extends AbstractBackendController
         }
         $dateFrom  = null;
         $dateUntil = null;
-        if (Request::postVar('vDatum') !== '') {
+        if ($this->request->post('vDatum', '') !== '') {
             try {
                 $dateFrom = new DateTime($postData['vDatum']);
                 $dateFrom = $dateFrom->format('Y-m-d H:i:s');
@@ -110,7 +107,7 @@ class BannerController extends AbstractBackendController
                 $checks['vDatum'] = 1;
             }
         }
-        if (Request::postVar('bDatum') !== '') {
+        if ($this->request->post('bDatum', '') !== '') {
             try {
                 $dateUntil = new DateTime($postData['bDatum']);
                 $dateUntil = $dateUntil->format('Y-m-d H:i:s');
@@ -125,15 +122,15 @@ class BannerController extends AbstractBackendController
             $checks['cBannerPath'] = 1;
         }
         if (\count($checks) === 0) {
-            if ($imageMapID === null || $imageMapID === 0) {
+            if ($imageMapID === 0) {
                 $imageMapID = $imageMap->save($name, $bannerPath, $dateFrom, $dateUntil);
             } else {
                 $imageMap->update($imageMapID, $name, $bannerPath, $dateFrom, $dateUntil);
             }
             // extensionpoint
-            $languageID      = Request::postInt('kSprache');
-            $customerGroupID = Request::postInt('kKundengruppe');
-            $pageType        = Request::postInt('nSeitenTyp');
+            $languageID      = $this->request->postInt('kSprache');
+            $customerGroupID = $this->request->postInt('kKundengruppe');
+            $pageType        = $this->request->postInt('nSeitenTyp');
             $key             = $postData['cKey'];
             $keyValue        = '';
             $value           = '';

@@ -5,10 +5,7 @@ namespace JTL\Router\Controller\Backend;
 use JTL\Alert\Alert;
 use JTL\Backend\Permissions;
 use JTL\Export\RSS;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -21,12 +18,11 @@ class RSSController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::EXPORT_RSSFEED_VIEW);
         $this->getText->loadAdminLocale('pages/rss');
-        if (Request::getInt('f') === 1 && Form::validateToken()) {
+        if ($this->tokenIsValid && $this->request->getInt('f') === 1) {
             $rss = new RSS($this->db, Shop::Container()->getLogService());
             if ($rss->generateXML()) {
                 $this->alertService->addSuccess(\__('successRSSCreate'), 'successRSSCreate');
@@ -34,8 +30,8 @@ class RSSController extends AbstractBackendController
                 $this->alertService->addError(\__('errorRSSCreate'), 'errorRSSCreate');
             }
         }
-        if (Request::postInt('einstellungen') > 0) {
-            $this->saveAdminSectionSettings(\CONF_RSS, $_POST);
+        if ($this->request->postInt('einstellungen') > 0) {
+            $this->saveAdminSectionSettings(\CONF_RSS, $this->request->getBody());
         }
         $rssDir = \PFAD_ROOT . \FILE_RSS_FEED;
         if (!\file_exists($rssDir)) {
@@ -49,8 +45,7 @@ class RSSController extends AbstractBackendController
         }
         $this->getAdminSectionSettings(\CONF_RSS);
 
-        return $smarty->assign('alertError', $this->alertService->alertTypeExists(Alert::TYPE_ERROR))
-            ->assign('route', $this->route)
+        return $this->smarty->assign('alertError', $this->alertService->alertTypeExists(Alert::TYPE_ERROR))
             ->getResponse('rss.tpl');
     }
 }

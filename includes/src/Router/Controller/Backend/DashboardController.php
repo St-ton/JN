@@ -7,13 +7,10 @@ use JTL\Alert\Alert;
 use JTL\Backend\AdminLoginStatus;
 use JTL\Backend\Status;
 use JTL\Exceptions\LoginException;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Plugin\Helper;
 use JTL\Plugin\State;
 use JTL\Session\Backend;
-use JTL\Smarty\JTLSmarty;
 use JTL\Widgets\AbstractWidget;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
@@ -28,29 +25,28 @@ class DashboardController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
-        if (Request::postInt('adminlogin') === 1) {
+        if ($this->request->postInt('adminlogin') === 1) {
             try {
                 return $this->actionLogin();
             } catch (LoginException $e) {
                 $this->alertService->addError($e->getMessage(), 'errLogin', ['dismissable' => false]);
             }
         }
-        $uri = Text::filterXSS(Request::verifyGPDataString('uri'));
-        $this->smarty->assign('pw_updated', Request::getVar('pw_updated') === 'true')
+        $uri = Text::filterXSS($this->request->request('uri'));
+        $this->smarty->assign('pw_updated', $this->request->get('pw_updated') === 'true')
             ->assign('alertError', $this->alertService->alertTypeExists(Alert::TYPE_ERROR))
             ->assign('alertList', $this->alertService)
             ->assign('plgSafeMode', (bool)($GLOBALS['plgSafeMode'] ?? false));
         if (!$this->account->getIsAuthenticated()) {
             $this->account->redirectOnUrl();
-            if (Request::getInt('errCode', null) === AdminLoginStatus::ERROR_SESSION_INVALID) {
+            if ($this->request->getInt('errCode', 999) === AdminLoginStatus::ERROR_SESSION_INVALID) {
                 $this->alertService->addError(\__('errorSessionExpired'), 'errorSessionExpired');
             }
             $this->getText->loadAdminLocale('pages/login');
 
-            return $smarty->assign('uri', $uri)
+            return $this->smarty->assign('uri', $uri)
                 ->assign('alertError', $this->alertService->alertTypeExists(Alert::TYPE_ERROR))
                 ->assign('alertList', $this->alertService)
                 ->getResponse('login.tpl');
@@ -59,8 +55,8 @@ class DashboardController extends AbstractBackendController
         if (!$this->account->getIsTwoFaAuthenticated()) {
             $_SESSION['AdminAccount']->TwoFA_active = true;
             // restore first generated token from POST
-            $_SESSION['jtl_token'] = $_POST['jtl_token'] ?? '';
-            if (Request::postVar('TwoFA_code', '') !== '') {
+            $_SESSION['jtl_token'] = $this->request->post('jtl_token', '');
+            if ($this->request->post('TwoFA_code', '') !== '') {
                 if ($this->account->doTwoFA()) {
                     Backend::getInstance()->reHash();
                     $_SESSION['AdminAccount']->TwoFA_expired = false;
@@ -70,14 +66,14 @@ class DashboardController extends AbstractBackendController
                     return $this->redirectLogin();
                 }
                 $this->alertService->addError(\__('errorTwoFactorFaultyExpired'), 'errorTwoFactorFaultyExpired');
-                $smarty->assign('alertError', true);
+                $this->smarty->assign('alertError', true);
             } else {
                 $_SESSION['AdminAccount']->TwoFA_expired = true;
             }
             $this->getText->loadAdminLocale('pages/login');
             $this->account->redirectOnUrl();
 
-            return $smarty->assign('uri', $uri)
+            return $this->smarty->assign('uri', $uri)
                 ->getResponse('login.tpl');
         }
         if ($uri !== '') {
@@ -93,14 +89,14 @@ class DashboardController extends AbstractBackendController
         }
 
         if ($this->hasPermissions('DASHBOARD_VIEW')) {
-            $smarty->assign('bDashboard', true)
-                ->assign('bUpdateError', (Request::postInt('shopupdate') === 1 ? '1' : false))
+            $this->smarty->assign('bDashboard', true)
+                ->assign('bUpdateError', ($this->request->postInt('shopupdate') === 1 ? '1' : false))
                 ->assign('oActiveWidget_arr', $this->getWidgets())
                 ->assign('oAvailableWidget_arr', $this->getWidgets(false))
                 ->assign('bInstallExists', \is_dir(\PFAD_ROOT . 'install'));
         }
 
-        return $smarty->getResponse('dashboard.tpl');
+        return $this->smarty->getResponse('dashboard.tpl');
     }
 
     /**
@@ -230,7 +226,7 @@ class DashboardController extends AbstractBackendController
     public function redirectLogin(): ResponseInterface
     {
         unset($_SESSION['frontendUpToDate']);
-        $uri      = Text::filterXSS(Request::verifyGPDataString('uri'));
+        $uri      = Text::filterXSS($this->request->request('uri'));
         $safeMode = isset($GLOBALS['plgSafeMode'])
             ? '?safemode=' . ($GLOBALS['plgSafeMode'] ? 'on' : 'off')
             : '';
@@ -247,11 +243,11 @@ class DashboardController extends AbstractBackendController
      */
     private function actionLogin(): ResponseInterface
     {
-        $csrfOK = Form::validateToken();
+        $csrfOK = $this->tokenIsValid;
         if ($csrfOK !== true) {
             throw new LoginException(isset($_COOKIE['eSIdAdm']) ? \__('errorCSRF') : \__('errorCookieSettings'));
         }
-        $res = $this->account->login($_POST['benutzer'], $_POST['passwort']);
+        $res = $this->account->login($this->request->post('benutzer'), $this->request->post('passwort'));
         switch ($res) {
             case AdminLoginStatus::ERROR_LOCKED:
             case AdminLoginStatus::ERROR_INVALID_PASSWORD_LOCKED:
@@ -260,7 +256,7 @@ class DashboardController extends AbstractBackendController
 
             case AdminLoginStatus::ERROR_USER_NOT_FOUND:
             case AdminLoginStatus::ERROR_INVALID_PASSWORD:
-                if (empty(Request::verifyGPDataString('TwoFA_code'))) {
+                if (empty($this->request->request('TwoFA_code'))) {
                     throw new LoginException(\__('errorWrongPasswordUser'));
                 }
                 throw new LoginException('');

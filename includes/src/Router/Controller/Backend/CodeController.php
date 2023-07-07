@@ -3,9 +3,7 @@
 namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\AuthToken;
-use JTL\Helpers\Request;
 use JTL\Router\Route;
-use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -19,13 +17,12 @@ class CodeController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         if (empty($args['redir'])) {
-            return $smarty->getResponse('string:');
+            return $this->smarty->getResponse('string:');
         }
-        if (Request::postVar('code') !== null || Request::postVar('token') !== null) {
+        if ($this->request->post('code') !== null || $this->request->post('token') !== null) {
             $auth = AuthToken::getInstance($this->db);
             $auth->responseToken();
         }

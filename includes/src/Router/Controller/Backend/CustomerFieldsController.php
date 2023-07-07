@@ -4,11 +4,8 @@ namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\CustomerFields;
 use JTL\Backend\Permissions;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\PlausiKundenfeld;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -21,23 +18,21 @@ class CustomerFieldsController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::ORDER_CUSTOMERFIELDS_VIEW);
         $this->getText->loadAdminLocale('pages/kundenfeld');
         $this->setLanguage();
         $cf         = CustomerFields::getInstance($this->currentLanguageID, $this->db);
         $step       = 'uebersicht';
         $invalidate = false;
-        $smarty->assign('cTab', $step)
-            ->assign('route', $this->route);
-        if (Request::postInt('einstellungen') > 0) {
-            $this->saveAdminSectionSettings(\CONF_KUNDENFELD, $_POST);
-        } elseif (Request::postInt('kundenfelder') === 1 && Form::validateToken()) {
+        $this->smarty->assign('cTab', $step);
+        if ($this->request->postInt('einstellungen') > 0) {
+            $this->saveAdminSectionSettings(\CONF_KUNDENFELD, $request->getParsedBody());
+        } elseif ($this->tokenIsValid && $this->request->postInt('kundenfelder') === 1) {
             $success = true;
-            if (isset($_POST['loeschen'])) {
-                $fieldIDs = $_POST['kKundenfeld'];
+            if ($this->request->post('loeschen') !== null) {
+                $fieldIDs = $this->request->post('kKundenfeld');
                 if (\is_array($fieldIDs) && \count($fieldIDs) > 0) {
                     foreach ($fieldIDs as $fieldID) {
                         $success = $success && $cf->delete((int)$fieldID);
@@ -54,9 +49,9 @@ class CustomerFieldsController extends AbstractBackendController
                 } else {
                     $this->alertService->addError(\__('errorAtLeastOneCustomerField'), 'errorAtLeastOneCustomerField');
                 }
-            } elseif (isset($_POST['aktualisieren'])) {
+            } elseif ($this->request->post('aktualisieren') !== null) {
                 foreach ($cf->getCustomerFields() as $customerField) {
-                    $customerField->nSort = (int)$_POST['nSort_' . $customerField->kKundenfeld];
+                    $customerField->nSort = $this->request->postInt('nSort_' . $customerField->kKundenfeld);
                     $success              = $success && $cf->save($customerField);
                 }
                 if ($success) {
@@ -67,22 +62,22 @@ class CustomerFieldsController extends AbstractBackendController
                 $invalidate = true;
             } else { // Speichern
                 $customerField = (object)[
-                    'kKundenfeld' => (int)($_POST['kKundenfeld'] ?? 0),
+                    'kKundenfeld' => $this->request->postInt('kKundenfeld'),
                     'kSprache'    => $this->currentLanguageID,
                     'cName'       => Text::htmlspecialchars(
-                        Text::filterXSS($_POST['cName']),
+                        Text::filterXSS($this->request->post('cName')),
                         \ENT_COMPAT | \ENT_HTML401
                     ),
-                    'cWawi'       => Text::filterXSS(\str_replace(['"', "'"], '', $_POST['cWawi'])),
-                    'cTyp'        => Text::filterXSS($_POST['cTyp']),
-                    'nSort'       => Request::postInt('nSort'),
-                    'nPflicht'    => Request::postInt('nPflicht'),
-                    'nEditierbar' => Request::postInt('nEdit'),
+                    'cWawi'       => Text::filterXSS(\str_replace(['"', "'"], '', $this->request->post('cWawi'))),
+                    'cTyp'        => Text::filterXSS($this->request->post('cTyp')),
+                    'nSort'       => $this->request->postInt('nSort'),
+                    'nPflicht'    => $this->request->postInt('nPflicht'),
+                    'nEditierbar' => $this->request->postInt('nEdit'),
                 ];
                 $invalidate    = true;
-                $cfValues      = $_POST['cfValues'] ?? null;
+                $cfValues      = $this->request->post('cfValues');
                 $check         = new PlausiKundenfeld();
-                $check->setPostVar($_POST);
+                $check->setPostVar($this->request->getBody());
                 $check->doPlausi($customerField->cTyp, $customerField->kKundenfeld > 0);
 
                 if (\count($check->getPlausiVar()) === 0) {
@@ -101,18 +96,18 @@ class CustomerFieldsController extends AbstractBackendController
                     } else {
                         $this->alertService->addError(\__('errorFillRequired'), 'errorFillRequired');
                     }
-                    $smarty->assign('xPlausiVar_arr', $check->getPlausiVar())
+                    $this->smarty->assign('xPlausiVar_arr', $check->getPlausiVar())
                         ->assign('xPostVar_arr', $check->getPostVar())
                         ->assign('kKundenfeld', $customerField->kKundenfeld);
                 }
             }
-        } elseif (Request::verifyGPDataString('a') === 'edit') {
-            $fieldID = Request::verifyGPCDataInt('kKundenfeld');
+        } elseif ($this->request->request('a') === 'edit') {
+            $fieldID = $this->request->requestInt('kKundenfeld');
             if ($fieldID > 0) {
                 $customerField = $cf->getCustomerField($fieldID);
                 if ($customerField !== null) {
                     $customerField->oKundenfeldWert_arr = $cf->getCustomerFieldValues($customerField);
-                    $smarty->assign('oKundenfeld', $customerField);
+                    $this->smarty->assign('oKundenfeld', $customerField);
                 }
             }
         }
@@ -138,7 +133,7 @@ class CustomerFieldsController extends AbstractBackendController
         \reset($fields); // we leave the array in a safe state
         $this->getAdminSectionSettings(\CONF_KUNDENFELD);
 
-        return $smarty->assign('oKundenfeld_arr', $fields)
+        return $this->smarty->assign('oKundenfeld_arr', $fields)
             ->assign('nHighestSortValue', $highestSortValue)
             ->assign('nHighestSortDiff', $highestSortDiff)
             ->assign('step', $step)

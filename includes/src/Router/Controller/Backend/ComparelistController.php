@@ -3,10 +3,7 @@
 namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\Permissions;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Pagination\Pagination;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -20,9 +17,8 @@ class ComparelistController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::MODULE_COMPARELIST_VIEW);
         $this->getText->loadAdminLocale('pages/vergleichsliste');
         $this->getText->loadConfigLocales(true, true);
@@ -32,15 +28,15 @@ class ComparelistController extends AbstractBackendController
         }
         $_SESSION['Vergleichsliste']->nZeitFilter = 1;
         $_SESSION['Vergleichsliste']->nAnzahl     = 10;
-        if (Request::postInt('zeitfilter') === 1) {
-            $_SESSION['Vergleichsliste']->nZeitFilter = Request::postInt('nZeitFilter');
-            $_SESSION['Vergleichsliste']->nAnzahl     = Request::postInt('nAnzahl');
+        if ($this->request->postInt('zeitfilter') === 1) {
+            $_SESSION['Vergleichsliste']->nZeitFilter = $this->request->postInt('nZeitFilter');
+            $_SESSION['Vergleichsliste']->nAnzahl     = $this->request->postInt('nAnzahl');
         }
 
-        if ((Request::postInt('einstellungen') === 1 || Request::postVar('resetSetting') !== null)
-            && Form::validateToken()
+        if ($this->tokenIsValid
+            && ($this->request->postInt('einstellungen') === 1 || $this->request->post('resetSetting') !== null)
         ) {
-            $this->saveAdminSectionSettings(\CONF_VERGLEICHSLISTE, $_POST);
+            $this->saveAdminSectionSettings(\CONF_VERGLEICHSLISTE, $request->getParsedBody());
         }
 
         $listCount  = (int)$this->db->getSingleObject(
@@ -87,10 +83,9 @@ class ComparelistController extends AbstractBackendController
         }
         $this->getAdminSectionSettings(\CONF_VERGLEICHSLISTE);
 
-        return $smarty->assign('Letzten20Vergleiche', $last20)
+        return $this->smarty->assign('Letzten20Vergleiche', $last20)
             ->assign('TopVergleiche', $topComparisons)
             ->assign('pagination', $pagination)
-            ->assign('route', $this->route)
             ->getResponse('vergleichsliste.tpl');
     }
 

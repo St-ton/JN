@@ -5,13 +5,10 @@ namespace JTL\Router\Controller\Backend;
 use JTL\Alert\Alert;
 use JTL\Backend\Permissions;
 use JTL\Customer\CustomerGroup;
-use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
-use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Pagination\Pagination;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -27,25 +24,23 @@ class PackagingsController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
         $this->getText->loadAdminLocale('pages/zusatzverpackung');
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::ORDER_PACKAGE_VIEW);
-
-        if (Form::validateToken()) {
-            if (isset($_POST['action'])) {
-                $this->action = $_POST['action'];
-            } elseif (Request::getInt('kVerpackung', -1) >= 0) {
+        if ($this->tokenIsValid) {
+            if ($this->request->post('action') !== null) {
+                $this->action = $this->request->post('action');
+            } elseif ($this->request->getInt('kVerpackung', -1) >= 0) {
                 $this->action = 'edit';
             }
         }
 
         if ($this->action === 'save') {
-            $this->actionSave(Text::filterXSS($_POST));
+            $this->actionSave(Text::filterXSS($this->request->getBody()));
         }
-        if ($this->action === 'edit' && Request::verifyGPCDataInt('kVerpackung') > 0) { // Editieren
-            $this->actionEdit(Request::verifyGPCDataInt('kVerpackung'));
+        if ($this->action === 'edit' && $this->request->requestInt('kVerpackung') > 0) { // Editieren
+            $this->actionEdit($this->request->requestInt('kVerpackung'));
         } elseif ($this->action === 'delete') {
             $this->actionDelete();
         } elseif ($this->action === 'refresh') {
@@ -72,12 +67,11 @@ class PackagingsController extends AbstractBackendController
             $packaging->cKundengruppe_arr = $customerGroup->cKundengruppe_arr;
         }
 
-        return $smarty->assign('customerGroups', CustomerGroup::getGroups())
+        return $this->smarty->assign('customerGroups', CustomerGroup::getGroups())
             ->assign('taxClasses', $this->db->getObjects('SELECT * FROM tsteuerklasse'))
             ->assign('packagings', $packagings)
             ->assign('step', 'zusatzverpackung')
             ->assign('pagination', $pagination)
-            ->assign('route', $this->route)
             ->assign('action', $this->action)
             ->getResponse('zusatzverpackung.tpl');
     }
@@ -90,14 +84,14 @@ class PackagingsController extends AbstractBackendController
     {
         $languages                      = LanguageHelper::getAllLanguages(0, true);
         $nameIDX                        = 'cName_' . $languages[0]->getCode();
-        $packagingID                    = Request::postInt('kVerpackung');
+        $packagingID                    = $this->request->postInt('kVerpackung');
         $customerGroupIDs               = $postData['kKundengruppe'] ?? null;
         $packaging                      = new stdClass();
         $packaging->fBrutto             = (float)\str_replace(',', '.', $postData['fBrutto'] ?? 0);
         $packaging->fMindestbestellwert = (float)\str_replace(',', '.', $postData['fMindestbestellwert'] ?? 0);
         $packaging->fKostenfrei         = (float)\str_replace(',', '.', $postData['fKostenfrei'] ?? 0);
-        $packaging->kSteuerklasse       = Request::postInt('kSteuerklasse');
-        $packaging->nAktiv              = Request::postInt('nAktiv');
+        $packaging->kSteuerklasse       = $this->request->postInt('kSteuerklasse');
+        $packaging->nAktiv              = $this->request->postInt('nAktiv');
         $packaging->cName               = \htmlspecialchars(
             \strip_tags(\trim($postData[$nameIDX])),
             \ENT_COMPAT | \ENT_HTML401,
@@ -189,10 +183,11 @@ class PackagingsController extends AbstractBackendController
 
     private function actionRefresh(): void
     {
-        if (GeneralObject::hasCount('nAktivTMP', $_POST)) {
-            foreach ($_POST['nAktivTMP'] as $packagingID) {
+        if (GeneralObject::hasCount('nAktivTMP', $this->request->getBody())) {
+            foreach ($this->request->post('nAktivTMP') as $packagingID) {
                 $upd         = new stdClass();
-                $upd->nAktiv = isset($_POST['nAktiv']) && \in_array($packagingID, $_POST['nAktiv'], true) ? 1 : 0;
+                $upd->nAktiv = $this->request->post('nAktiv') !== null
+                               && \in_array($packagingID, $this->request->post('nAktiv'), true) ? 1 : 0;
                 $this->db->update('tverpackung', 'kVerpackung', (int)$packagingID, $upd);
             }
             $this->alertService->addSuccess(\__('successPackagingSaveMultiple'), 'successPackagingSaveMultiple');
@@ -201,8 +196,8 @@ class PackagingsController extends AbstractBackendController
 
     private function actionDelete(): void
     {
-        if (GeneralObject::hasCount('kVerpackung', $_POST)) {
-            foreach ($_POST['kVerpackung'] as $packagingID) {
+        if (GeneralObject::hasCount('kVerpackung', $this->request->getBody())) {
+            foreach ($this->request->post('kVerpackung') as $packagingID) {
                 $packagingID = (int)$packagingID;
                 // tverpackung loeschen
                 $this->db->delete('tverpackung', 'kVerpackung', $packagingID);
@@ -262,7 +257,7 @@ class PackagingsController extends AbstractBackendController
     private function holdInputOnError(stdClass $packaging, ?array $customerGroupIDs, int $packagingID): void
     {
         $packaging->oSprach_arr = [];
-        $postData               = Text::filterXSS($_POST);
+        $postData               = Text::filterXSS($this->request->getBody());
         foreach ($postData as $key => $value) {
             if (!\str_contains($key, 'cName')) {
                 continue;

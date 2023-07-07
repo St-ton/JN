@@ -15,6 +15,7 @@ use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\L10n\GetText;
+use JTL\Router\RequestParser;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
@@ -41,9 +42,14 @@ abstract class AbstractBackendController implements ControllerInterface
     protected string $step = '';
 
     /**
-     * @var string
+     * @var string - route registered for router - i.e. /example[/{id}]
      */
     protected string $route = '';
+
+    /**
+     * @var string - route without the router params - i.e. /example
+     */
+    protected string $handledRoute = '';
 
     /**
      * @var string
@@ -59,6 +65,16 @@ abstract class AbstractBackendController implements ControllerInterface
      * @var string
      */
     protected string $currentLanguageCode;
+
+    /**
+     * @var RequestParser|null
+     */
+    protected ?RequestParser $request = null;
+
+    /**
+     * @var bool
+     */
+    protected bool $tokenIsValid = false;
 
     /**
      * @param DbInterface           $db
@@ -132,11 +148,8 @@ abstract class AbstractBackendController implements ControllerInterface
      * @inheritdoc
      * @todo!!!!
      */
-    public function notFoundResponse(
-        ServerRequestInterface $request,
-        array                  $args,
-        JTLSmarty              $smarty
-    ): ResponseInterface {
+    public function notFoundResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    {
         return (new Response())->withStatus(404);
     }
 
@@ -179,14 +192,14 @@ abstract class AbstractBackendController implements ControllerInterface
      * @param array $settingsIDs
      * @param array $post
      * @param array $tags
-     * @param bool $byName
+     * @param bool  $byName
      * @return string
      */
     public function saveAdminSettings(
         array $settingsIDs,
         array $post,
         array $tags = [\CACHING_GROUP_OPTION],
-        bool $byName = false
+        bool  $byName = false
     ): string {
         $manager = new Manager($this->db, $this->smarty, $this->account, $this->getText, $this->alertService);
         if (Request::postVar('resetSetting') !== null) {
@@ -300,7 +313,7 @@ abstract class AbstractBackendController implements ControllerInterface
      */
     public function saveAdminSectionSettings(int $sectionID, array $post, array $tags = [\CACHING_GROUP_OPTION]): string
     {
-        if (!Form::validateToken()) {
+        if (!$this->tokenIsValid) {
             $msg = \__('errorCSRF');
             $this->alertService->addError($msg, 'saveSettingsErrCsrf');
 
@@ -568,5 +581,33 @@ abstract class AbstractBackendController implements ControllerInterface
     public function setStep(string $step): void
     {
         $this->step = $step;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function initController(ServerRequestInterface $request, JTLSmarty $smarty): RequestParser
+    {
+        $this->handledRoute = \str_replace('[/{id}]', '', $this->route);
+        $this->smarty       = $smarty->assign('route', $this->handledRoute);
+        $this->request      = new RequestParser($request);
+        $this->validateToken();
+
+        return $this->request;
+    }
+
+    protected function validateToken(): void
+    {
+        $sess = $_SESSION['jtl_token'] ?? null;
+        if ($sess === null) {
+            $this->tokenIsValid = false;
+            return;
+        }
+        $token = $this->request->post('jtl_token') ?? $this->request->get('token') ?? null;
+        if ($token === null) {
+            $this->tokenIsValid = false;
+            return;
+        }
+        $this->tokenIsValid = Shop::Container()->getCryptoService()->stableStringEquals($sess, $token);
     }
 }

@@ -3,10 +3,7 @@
 namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\Permissions;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Profiler;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -20,20 +17,19 @@ class ProfilerController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::PROFILER_VIEW);
         $this->getText->loadAdminLocale('pages/profiler');
 
-        if (isset($_POST['delete-run-submit']) && Form::validateToken()) {
-            if (\is_numeric(Request::postVar('run-id'))) {
-                if ($this->deleteProfileRun(false, (int)$_POST['run-id']) > 0) {
+        if ($this->tokenIsValid && $this->request->post('delete-run-submit') !== null) {
+            if (\is_numeric($this->request->post('run-id'))) {
+                if ($this->deleteProfileRun(false, $this->request->postInt('run-id')) > 0) {
                     $this->alertService->addSuccess(\__('successEntryDelete'), 'successEntryDelete');
                 } else {
                     $this->alertService->addError(\__('errorEntryDelete'), 'errorEntryDelete');
                 }
-            } elseif (Request::postVar('delete-all') === 'y') {
+            } elseif ($this->request->post('delete-all') === 'y') {
                 if ($this->deleteProfileRun(true) > 0) {
                     $this->alertService->addSuccess(\__('successEntriesDelete'), 'successEntriesDelete');
                 } else {
@@ -43,8 +39,7 @@ class ProfilerController extends AbstractBackendController
         }
         $this->getOverview();
 
-        return $smarty->assign('tab', Request::postVar('tab', 'uebersicht'))
-            ->assign('route', $this->route)
+        return $this->smarty->assign('tab', $this->request->post('tab', 'uebersicht'))
             ->getResponse('profiler.tpl');
     }
 

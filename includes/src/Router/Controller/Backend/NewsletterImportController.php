@@ -4,7 +4,6 @@ namespace JTL\Router\Controller\Backend;
 
 use Exception;
 use JTL\Backend\Permissions;
-use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Newsletter\Newsletter;
@@ -12,7 +11,6 @@ use JTL\Optin\Optin;
 use JTL\Optin\OptinNewsletter;
 use JTL\Optin\OptinRefData;
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -26,15 +24,14 @@ class NewsletterImportController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::IMPORT_NEWSLETTER_RECEIVER_VIEW);
         $this->getText->loadAdminLocale('pages/newsletterimport');
 
         if (isset($_FILES['csv']['tmp_name'])
-            && Request::postInt('newsletterimport') === 1
-            && Form::validateToken()
+            && $this->tokenIsValid
+            && $this->request->postInt('newsletterimport') === 1
             && \mb_strlen($_FILES['csv']['tmp_name']) > 0
         ) {
             $file = \fopen($_FILES['csv']['tmp_name'], 'rb');
@@ -62,10 +59,9 @@ class NewsletterImportController extends AbstractBackendController
             }
         }
 
-        return $smarty->assign('kundengruppen', $this->db->getObjects(
+        return $this->smarty->assign('kundengruppen', $this->db->getObjects(
             'SELECT * FROM tkundengruppe ORDER BY cName'
         ))
-            ->assign('route', $this->route)
             ->getResponse('newsletterimport.tpl');
     }
 
@@ -197,7 +193,7 @@ class NewsletterImportController extends AbstractBackendController
         $recipient->cOptCode     = $instance->createCode('cOptCode', $recipient->cEmail);
         $recipient->cLoeschCode  = $instance->createCode('cLoeschCode', $recipient->cEmail);
         $recipient->dEingetragen = 'NOW()';
-        $recipient->kSprache     = (int)$_POST['kSprache'];
+        $recipient->kSprache     = $this->request->postInt('kSprache');
         $recipient->kKunde       = 0;
 
         $customerData = $this->db->select('tkunde', 'cMail', $recipient->cEmail);

@@ -8,15 +8,12 @@ use JTL\Campaign;
 use JTL\Catalog\Product\Preise;
 use JTL\Customer\CustomerGroup;
 use JTL\Helpers\Date;
-use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
-use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Linechart;
 use JTL\Pagination\Pagination;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -39,9 +36,8 @@ class CampaignController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::STATS_CAMPAIGN_VIEW);
         $this->getText->loadAdminLocale('pages/kampagne');
 
@@ -51,35 +47,35 @@ class CampaignController extends AbstractBackendController
         $step         = 'kampagne_uebersicht';
 
         $this->sanitizeSessionData();
-        if (Request::verifyGPCDataInt('neu') === 1 && Form::validateToken()) {
+        if ($this->tokenIsValid && $this->request->requestInt('neu') === 1) {
             $step = 'kampagne_erstellen';
-        } elseif (Request::verifyGPCDataInt('editieren') === 1
-            && Request::verifyGPCDataInt('kKampagne') > 0
-            && Form::validateToken()
+        } elseif ($this->tokenIsValid
+            && $this->request->requestInt('editieren') === 1
+            && $this->request->requestInt('kKampagne') > 0
         ) {
             // Editieren
             $step       = 'kampagne_erstellen';
-            $campaignID = Request::verifyGPCDataInt('kKampagne');
-        } elseif (Request::verifyGPCDataInt('detail') === 1
-            && Request::verifyGPCDataInt('kKampagne') > 0
-            && Form::validateToken()
+            $campaignID = $this->request->requestInt('kKampagne');
+        } elseif ($this->tokenIsValid
+            && $this->request->requestInt('detail') === 1
+            && $this->request->requestInt('kKampagne') > 0
         ) {
             // Detail
             $step       = 'kampagne_detail';
-            $campaignID = Request::verifyGPCDataInt('kKampagne');
+            $campaignID = $this->request->requestInt('kKampagne');
             // Zeitraum / Ansicht
             $this->setTimespan($now);
-        } elseif (Request::verifyGPCDataInt('defdetail') === 1
-            && Request::verifyGPCDataInt('kKampagne') > 0
-            && Request::verifyGPCDataInt('kKampagneDef') > 0
-            && Form::validateToken()
+        } elseif ($this->tokenIsValid
+            && $this->request->requestInt('defdetail') === 1
+            && $this->request->requestInt('kKampagne') > 0
+            && $this->request->requestInt('kKampagneDef') > 0
         ) { // Def Detail
             $step         = 'kampagne_defdetail';
-            $campaignID   = Request::verifyGPCDataInt('kKampagne');
-            $definitionID = Request::verifyGPCDataInt('kKampagneDef');
-        } elseif (Request::verifyGPCDataInt('erstellen_speichern') === 1 && Form::validateToken()) {
+            $campaignID   = $this->request->requestInt('kKampagne');
+            $definitionID = $this->request->requestInt('kKampagneDef');
+        } elseif ($this->tokenIsValid && $this->request->requestInt('erstellen_speichern') === 1) {
             // Speichern / Editieren
-            $postData             = Text::filterXSS($_POST);
+            $postData             = Text::filterXSS($request->getParsedBody());
             $campaign             = new Campaign();
             $campaign->cName      = $postData['cName'] ?? '';
             $campaign->cParameter = $postData['cParameter'];
@@ -88,8 +84,8 @@ class CampaignController extends AbstractBackendController
             $campaign->nAktiv     = (int)($postData['nAktiv'] ?? 0);
             $campaign->dErstellt  = 'NOW()';
             // Editieren
-            if (Request::verifyGPCDataInt('kKampagne') > 0) {
-                $campaign->kKampagne = Request::verifyGPCDataInt('kKampagne');
+            if ($this->request->requestInt('kKampagne') > 0) {
+                $campaign->kKampagne = $this->request->requestInt('kKampagne');
             }
             $res = $this->save($campaign);
             if ($res === 1) {
@@ -99,26 +95,28 @@ class CampaignController extends AbstractBackendController
                 $this->smarty->assign('oKampagne', $campaign);
                 $step = 'kampagne_erstellen';
             }
-        } elseif (Request::verifyGPCDataInt('delete') === 1 && Form::validateToken()) {
+        } elseif ($this->tokenIsValid && $this->request->requestInt('delete') === 1) {
             // Loeschen
-            if (GeneralObject::hasCount('kKampagne', $_POST)) {
-                if ($this->deleteCampaigns($_POST['kKampagne']) === true) {
+            if (GeneralObject::hasCount('kKampagne', $request->getParsedBody())) {
+                if ($this->deleteCampaigns($this->request->post('kKampagne')) === true) {
                     $this->alertService->addSuccess(\__('successCampaignDelete'), 'successCampaignDelete');
                 }
             } else {
                 $this->alertService->addError(\__('errorAtLeastOneCampaign'), 'errorAtLeastOneCampaign');
             }
-        } elseif (Request::verifyGPCDataInt('nAnsicht') > 0) { // Ansicht
-            $_SESSION['Kampagne']->nAnsicht = Request::verifyGPCDataInt('nAnsicht');
-        } elseif (Request::verifyGPCDataInt('nStamp') === -1 || Request::verifyGPCDataInt('nStamp') === 1) {
+        } elseif ($this->request->requestInt('nAnsicht') > 0) { // Ansicht
+            $_SESSION['Kampagne']->nAnsicht = $this->request->requestInt('nAnsicht');
+        } elseif ($this->request->requestInt('nStamp') === -1
+              || $this->request->requestInt('nStamp') === 1
+        ) {
             // Vergangenheit
-            if (Request::verifyGPCDataInt('nStamp') === -1) {
+            if ($this->request->requestInt('nStamp') === -1) {
                 $_SESSION['Kampagne']->cStamp = $this->getStamp(
                     $_SESSION['Kampagne']->cStamp,
                     -1,
                     $_SESSION['Kampagne']->nAnsicht
                 );
-            } elseif (Request::verifyGPCDataInt('nStamp') === 1) {
+            } elseif ($this->request->requestInt('nStamp') === 1) {
                 // Zukunft
                 $_SESSION['Kampagne']->cStamp = $this->getStamp(
                     $_SESSION['Kampagne']->cStamp,
@@ -126,9 +124,9 @@ class CampaignController extends AbstractBackendController
                     $_SESSION['Kampagne']->nAnsicht
                 );
             }
-        } elseif (Request::verifyGPCDataInt('nSort') > 0) { // Sortierung
+        } elseif ($this->request->requestInt('nSort') > 0) { // Sortierung
             // ASC / DESC
-            if ((int)$_SESSION['Kampagne']->nSort === Request::verifyGPCDataInt('nSort')) {
+            if ((int)$_SESSION['Kampagne']->nSort === $this->request->requestInt('nSort')) {
                 if ($_SESSION['Kampagne']->cSort === 'ASC') {
                     $_SESSION['Kampagne']->cSort = 'DESC';
                 } else {
@@ -136,13 +134,12 @@ class CampaignController extends AbstractBackendController
                 }
             }
 
-            $_SESSION['Kampagne']->nSort = Request::verifyGPCDataInt('nSort');
+            $_SESSION['Kampagne']->nSort = $this->request->requestInt('nSort');
         }
         $this->handleStep($step, $campaignID, $definitionID);
         $this->assignViewData();
 
         return $this->smarty->assign('step', $step)
-            ->assign('route', $this->route)
             ->getResponse('kampagne.tpl');
     }
 
@@ -206,7 +203,7 @@ class CampaignController extends AbstractBackendController
             return;
         }
         if ($step === 'kampagne_defdetail') { // DefDetailseite
-            $stamp = Request::verifyGPDataString('cStamp');
+            $stamp = $this->request->request('cStamp');
             if (\mb_strlen($stamp) === 0) {
                 $stamp = $this->checkGesamtStatZeitParam();
             }
@@ -1526,30 +1523,33 @@ class CampaignController extends AbstractBackendController
             $_SESSION['Kampagne']->cToDate = $date->format('Y-m-d');
         }
         // Ansicht und Zeitraum
-        if (Request::verifyGPCDataInt('zeitraum') === 1) {
+        if ($this->request->requestInt('zeitraum') === 1) {
             // Ansicht
-            if (Request::postInt('nAnsicht') > 0) {
-                $_SESSION['Kampagne']->nDetailAnsicht = Request::postInt('nAnsicht');
+            if ($this->request->postInt('nAnsicht') > 0) {
+                $_SESSION['Kampagne']->nDetailAnsicht = $this->request->postInt('nAnsicht');
             }
             // Zeitraum
-            if (Request::postInt('cFromDay') > 0
-                && Request::postInt('cFromMonth') > 0
-                && Request::postInt('cFromYear') > 0
+            if ($this->request->postInt('cFromDay') > 0
+                && $this->request->postInt('cFromMonth') > 0
+                && $this->request->postInt('cFromYear') > 0
             ) {
-                $_SESSION['Kampagne']->cFromDate_arr['nJahr']  = Request::postInt('cFromYear');
-                $_SESSION['Kampagne']->cFromDate_arr['nMonat'] = Request::postInt('cFromMonth');
-                $_SESSION['Kampagne']->cFromDate_arr['nTag']   = Request::postInt('cFromDay');
-                $_SESSION['Kampagne']->cFromDate               = Request::postInt('cFromYear')
-                    . '-' . Request::postInt('cFromMonth')
-                    . '-' . Request::postInt('cFromDay');
+                $_SESSION['Kampagne']->cFromDate_arr['nJahr']  = $this->request->postInt('cFromYear');
+                $_SESSION['Kampagne']->cFromDate_arr['nMonat'] = $this->request->postInt('cFromMonth');
+                $_SESSION['Kampagne']->cFromDate_arr['nTag']   = $this->request->postInt('cFromDay');
+                $_SESSION['Kampagne']->cFromDate               = $this->request->postInt('cFromYear')
+                    . '-' . $this->request->postInt('cFromMonth')
+                    . '-' . $this->request->postInt('cFromDay');
             }
-            if (Request::postInt('cToDay') > 0 && Request::postInt('cToMonth') > 0 && Request::postInt('cToYear') > 0) {
-                $_SESSION['Kampagne']->cToDate_arr['nJahr']  = Request::postInt('cToYear');
-                $_SESSION['Kampagne']->cToDate_arr['nMonat'] = Request::postInt('cToMonth');
-                $_SESSION['Kampagne']->cToDate_arr['nTag']   = Request::postInt('cToDay');
-                $_SESSION['Kampagne']->cToDate               = Request::postInt('cToYear')
-                    . '-' . Request::postInt('cToMonth')
-                    . '-' . Request::postInt('cToDay');
+            if ($this->request->postInt('cToDay') > 0
+                && $this->request->postInt('cToMonth') > 0
+                && $this->request->postInt('cToYear') > 0
+            ) {
+                $_SESSION['Kampagne']->cToDate_arr['nJahr']  = $this->request->postInt('cToYear');
+                $_SESSION['Kampagne']->cToDate_arr['nMonat'] = $this->request->postInt('cToMonth');
+                $_SESSION['Kampagne']->cToDate_arr['nTag']   = $this->request->postInt('cToDay');
+                $_SESSION['Kampagne']->cToDate               = $this->request->postInt('cToYear')
+                    . '-' . $this->request->postInt('cToMonth')
+                    . '-' . $this->request->postInt('cToDay');
             }
         }
         $this->checkGesamtStatZeitParam();
@@ -1562,10 +1562,10 @@ class CampaignController extends AbstractBackendController
     private function checkGesamtStatZeitParam(): string
     {
         $stamp = '';
-        if (\mb_strlen(Request::verifyGPDataString('cZeitParam')) === 0) {
+        if (\mb_strlen($this->request->request('cZeitParam')) === 0) {
             return $stamp;
         }
-        $span      = \base64_decode(Request::verifyGPDataString('cZeitParam'));
+        $span      = \base64_decode($this->request->request('cZeitParam'));
         $spanParts = \explode(' - ', $span ?: '');
         $dateStart = $spanParts[0] ?? '';
         $dateEnd   = $spanParts[1] ?? '';

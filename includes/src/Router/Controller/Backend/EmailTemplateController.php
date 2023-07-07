@@ -8,8 +8,6 @@ use JTL\Backend\Revision;
 use JTL\Backend\Status;
 use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Language\LanguageModel;
@@ -21,7 +19,6 @@ use JTL\Mail\Template\Model;
 use JTL\Mail\Template\TemplateFactory;
 use JTL\Mail\Validator\NullValidator;
 use JTL\Shopsetting;
-use JTL\Smarty\JTLSmarty;
 use JTL\Smarty\MailSmarty;
 use PHPMailer\PHPMailer\Exception;
 use Psr\Http\Message\ResponseInterface;
@@ -76,9 +73,8 @@ class EmailTemplateController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::CONTENT_EMAIL_TEMPLATE_VIEW);
         $this->getText->loadAdminLocale('pages/emailvorlagen');
         $this->cache->flushTags([Status::CACHE_ID_EMAIL_SYNTAX_CHECK]);
@@ -89,8 +85,8 @@ class EmailTemplateController extends AbstractBackendController
         $step                = 'uebersicht';
         $settingsTableName   = 'temailvorlageeinstellungen';
         $pluginSettingsTable = 'tpluginemailvorlageeinstellungen';
-        $emailTemplateID     = Request::verifyGPCDataInt('kEmailvorlage');
-        $pluginID            = Request::verifyGPCDataInt('kPlugin');
+        $emailTemplateID     = $this->request->requestInt('kEmailvorlage');
+        $pluginID            = $this->request->requestInt('kPlugin');
         $settings            = Shopsetting::getInstance();
         $renderer            = new SmartyRenderer(new MailSmarty($this->db));
         $hydrator            = new TestHydrator($renderer->getSmarty(), $this->db, $settings);
@@ -99,30 +95,30 @@ class EmailTemplateController extends AbstractBackendController
         if ($pluginID > 0) {
             $settingsTableName = $pluginSettingsTable;
         }
-        if (isset($_GET['err'])) {
+        if ($this->request->get('err') !== null) {
             $this->alertService->addError(\__('errorTemplate'), 'errorTemplate');
             if (\is_array($_SESSION['last_error'])) {
                 $this->alertService->addError($_SESSION['last_error']['message'], 'last_error');
                 unset($_SESSION['last_error']);
             }
         }
-        if (Request::postInt('resetConfirm') > 0) {
-            $mailTemplate = $this->getTemplateByID(Request::postInt('resetConfirm'));
+        if ($this->request->postInt('resetConfirm') > 0) {
+            $mailTemplate = $this->getTemplateByID($this->request->postInt('resetConfirm'));
             if ($mailTemplate !== null) {
                 $step = 'zuruecksetzen';
             }
         }
-        if (isset($_POST['resetConfirmJaSubmit'])
+        if ($this->tokenIsValid
             && $emailTemplateID > 0
-            && Request::postInt('resetEmailvorlage') === 1
-            && Form::validateToken()
+            && $this->request->post('resetConfirmJaSubmit') !== null
+            && $this->request->postInt('resetEmailvorlage') === 1
             && $this->getTemplateByID($emailTemplateID) !== null
         ) {
             self::resetTemplate($emailTemplateID, $this->db);
             $this->alertService->addSuccess(\__('successTemplateReset'), 'successTemplateReset');
         }
-        if (Request::postInt('preview') > 0) {
-            $state = $this->sendPreviewMails(Request::postInt('preview'));
+        if ($this->request->postInt('preview') > 0) {
+            $state = $this->sendPreviewMails($this->request->postInt('preview'));
             if ($state === self::OK) {
                 $this->alertService->addSuccess(\__('successEmailSend'), 'successEmailSend');
             } elseif ($state === self::ERROR_CANNOT_SEND) {
@@ -132,41 +128,41 @@ class EmailTemplateController extends AbstractBackendController
                 $this->alertService->addError($msg, 'sentError' . $i);
             }
         }
-        if ($emailTemplateID > 0 && Request::verifyGPCDataInt('Aendern') === 1 && Form::validateToken()) {
+        if ($this->tokenIsValid && $emailTemplateID > 0 && $this->request->requestInt('Aendern') === 1) {
             $step     = 'uebersicht';
             $revision = new Revision($this->db);
             $revision->addRevision('mail', $emailTemplateID, true);
 
             $this->db->delete($settingsTableName, 'kEmailvorlage', $emailTemplateID);
-            if (\mb_strlen(Request::verifyGPDataString('cEmailOut')) > 0) {
+            if (\mb_strlen($this->request->request('cEmailOut')) > 0) {
                 $this->saveEmailSetting(
                     $settingsTableName,
                     $emailTemplateID,
                     'cEmailOut',
-                    Request::verifyGPDataString('cEmailOut')
+                    $this->request->request('cEmailOut')
                 );
             }
-            if (\mb_strlen(Request::verifyGPDataString('cEmailSenderName')) > 0) {
+            if (\mb_strlen($this->request->request('cEmailSenderName')) > 0) {
                 $this->saveEmailSetting(
                     $settingsTableName,
                     $emailTemplateID,
                     'cEmailSenderName',
-                    Request::verifyGPDataString('cEmailSenderName')
+                    $this->request->request('cEmailSenderName')
                 );
             }
-            if (\mb_strlen(Request::verifyGPDataString('cEmailCopyTo')) > 0) {
+            if (\mb_strlen($this->request->request('cEmailCopyTo')) > 0) {
                 $this->saveEmailSetting(
                     $settingsTableName,
                     $emailTemplateID,
                     'cEmailCopyTo',
-                    Request::verifyGPDataString('cEmailCopyTo')
+                    $this->request->request('cEmailCopyTo')
                 );
             }
 
-            $res = $this->updateTemplate($emailTemplateID, $_POST, $_FILES);
+            $res = $this->updateTemplate($emailTemplateID, $this->request->getBody(), $_FILES);
             if ($res === self::OK) {
                 $this->alertService->addSuccess(\__('successTemplateEdit'), 'successTemplateEdit');
-                $continue = Request::postVar('saveAndContinue', false) !== false;
+                $continue = $this->request->post('saveAndContinue', false) !== false;
                 $doCheck  = $emailTemplateID;
             } else {
                 $mailTemplate = $this->getModel();
@@ -175,15 +171,16 @@ class EmailTemplateController extends AbstractBackendController
                 }
             }
         }
-        if ((($emailTemplateID > 0 && $continue === true) || Request::getVar('a') === 'pdfloeschen')
-            && Form::validateToken()
+        if ($this->tokenIsValid
+            && (($emailTemplateID > 0 && $continue === true) || $this->request->get('a') === 'pdfloeschen')
         ) {
             $uploadDir = \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . \PFAD_EMAILPDFS;
-            if (isset($_GET['kS'], $_GET['token'])
-                && $_GET['token'] === $_SESSION['jtl_token']
-                && Request::getVar('a') === 'pdfloeschen'
+            if ($this->request->get('kS') !== null
+                && $this->request->get('token') !== null
+                && $this->request->get('token') === $_SESSION['jtl_token']
+                && $this->request->get('a') === 'pdfloeschen'
             ) {
-                $languageID = Request::verifyGPCDataInt('kS');
+                $languageID = $this->request->requestInt('kS');
                 $this->deleteAttachments($emailTemplateID, $languageID);
                 $this->alertService->addSuccess(\__('successFileAppendixDelete'), 'successFileAppendixDelete');
             }
@@ -195,14 +192,14 @@ class EmailTemplateController extends AbstractBackendController
                 $configAssoc[$item->cKey] = $item->cValue;
             }
             $mailTemplate = $mailTemplate ?? $this->getTemplateByID($emailTemplateID);
-            $smarty->assign('availableLanguages', LanguageHelper::getAllLanguages(0, true, true))
+            $this->smarty->assign('availableLanguages', LanguageHelper::getAllLanguages(0, true, true))
                 ->assign('mailConfig', $configAssoc)
                 ->assign('cUploadVerzeichnis', $uploadDir);
         }
 
         if ($step === 'uebersicht') {
             $templates = $this->getAllTemplates();
-            $smarty->assign('mailTemplates', filter($templates, static function (Model $e): bool {
+            $this->smarty->assign('mailTemplates', filter($templates, static function (Model $e): bool {
                 return $e->getPluginID() === 0;
             }))
                 ->assign('pluginMailTemplates', filter($templates, static function (Model $e) {
@@ -212,12 +209,11 @@ class EmailTemplateController extends AbstractBackendController
 
         $this->assignScrollPosition();
 
-        return $smarty->assign('kPlugin', $pluginID)
+        return $this->smarty->assign('kPlugin', $pluginID)
             ->assign('mailTemplate', $mailTemplate)
             ->assign('checkTemplate', $doCheck ?? 0)
             ->assign('cFehlerAnhang_arr', $attachmentErrors)
             ->assign('step', $step)
-            ->assign('route', $this->route)
             ->getResponse('emailvorlagen.tpl');
     }
 

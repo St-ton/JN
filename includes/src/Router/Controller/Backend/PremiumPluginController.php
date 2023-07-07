@@ -6,12 +6,10 @@ use JTL\Alert\Alert;
 use JTL\Backend\AuthToken;
 use JTL\Backend\Permissions;
 use JTL\Backend\Wizard\ExtensionInstaller;
-use JTL\Helpers\Request;
 use JTL\License\Manager as LicenseManager;
 use JTL\Recommendation\Manager;
 use JTL\Router\Route;
 use JTL\Session\Backend;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -24,18 +22,17 @@ class PremiumPluginController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::PLUGIN_ADMIN_VIEW);
         $this->getText->loadAdminLocale('pages/premiumplugin');
-        $recommendationID = Request::verifyGPDataString('id');
+        $recommendationID = $this->request->request('id');
         $manager          = new LicenseManager($this->db, $this->cache);
-        $scope            = Request::verifyGPDataString('scope');
+        $scope            = $this->request->request('scope');
         $recommendations  = new Manager($this->alertService, $scope);
         $hasLicense       = $manager->getLicenseByExsID($recommendationID) !== null;
         $token            = AuthToken::getInstance($this->db);
-        $action           = Request::verifyGPDataString('action');
+        $action           = $this->request->request('action');
         if ($action === 'install') {
             $this->getText->loadAdminLocale('pages/pluginverwaltung');
             $this->getText->loadAdminLocale('pages/licenses');
@@ -63,7 +60,7 @@ class PremiumPluginController extends AbstractBackendController
             );
         }
 
-        return $smarty->assign('recommendation', $recommendations->getRecommendationById($recommendationID))
+        return $this->smarty->assign('recommendation', $recommendations->getRecommendationById($recommendationID))
             ->assign('hasAuth', $token->isValid())
             ->assign('hasLicense', $hasLicense)
             ->getResponse('premiumplugin.tpl');

@@ -4,10 +4,8 @@ namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\Permissions;
 use JTL\Catalog\Warehouse;
-use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Text;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -20,15 +18,14 @@ class WarehousesController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::WAREHOUSE_VIEW);
         $this->getText->loadAdminLocale('pages/warenlager');
 
         $step     = 'uebersicht';
-        $postData = Text::filterXSS($_POST);
-        $action   = (isset($postData['a']) && Form::validateToken()) ? $postData['a'] : null;
+        $postData = Text::filterXSS($this->request->getBody());
+        $action   = (isset($postData['a']) && $this->tokenIsValid) ? $postData['a'] : null;
         if ($action === 'update') {
             $this->db->query('UPDATE twarenlager SET nAktiv = 0');
             if (GeneralObject::hasCount('kWarenlager', $postData)) {
@@ -62,9 +59,8 @@ class WarehousesController extends AbstractBackendController
             $this->alertService->addSuccess(\__('successStoreRefresh'), 'successStoreRefresh');
         }
 
-        return $smarty->assign('step', $step)
+        return $this->smarty->assign('step', $step)
             ->assign('warehouses', Warehouse::getAll(false, true))
-            ->assign('route', $this->route)
             ->getResponse('warenlager.tpl');
     }
 }

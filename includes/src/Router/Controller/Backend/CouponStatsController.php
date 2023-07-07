@@ -7,9 +7,6 @@ use JTL\Backend\Permissions;
 use JTL\Catalog\Product\Preise;
 use JTL\Checkout\KuponBestellung;
 use JTL\Customer\Customer;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -23,9 +20,8 @@ class CouponStatsController extends AbstractBackendController
      * @inheritdoc
      * @todo!
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::STATS_COUPON_VIEW);
         $this->getText->loadAdminLocale('pages/kuponstatistik');
 
@@ -33,9 +29,12 @@ class CouponStatsController extends AbstractBackendController
         $cWhere  = '';
         $coupons = $this->db->getArrays('SELECT kKupon, cName FROM tkupon ORDER BY cName DESC');
         $endDate = DateTime::createFromFormat('Y-m-j', \date('Y-m-j'));
-        if (isset($_POST['formFilter']) && $_POST['formFilter'] > 0 && Form::validateToken()) {
-            if (Request::postInt('kKupon') > -1) {
-                $couponID = Request::postInt('kKupon');
+        if ($this->tokenIsValid
+            && $this->request->post('formFilter') !== null
+            && $this->request->postInt('formFilter') > 0
+        ) {
+            if ($this->request->postInt('kKupon') > -1) {
+                $couponID = $this->request->postInt('kKupon');
                 $cWhere   = '(SELECT kKupon 
                         FROM tkuponbestellung 
                         WHERE tkuponbestellung.kBestellung = tbestellung.kBestellung 
@@ -49,7 +48,7 @@ class CouponStatsController extends AbstractBackendController
                 }
             }
 
-            $dateRanges = \explode(' - ', $_POST['daterange']);
+            $dateRanges = \explode(' - ', $this->request->post('daterange'));
             $endDate    = (DateTime::createFromFormat('Y-m-j', $dateRanges[1])
                 && (DateTime::createFromFormat('Y-m-j', $dateRanges[1])
                     >= DateTime::createFromFormat('Y-m-j', $dateRanges[0]))
@@ -80,7 +79,7 @@ class CouponStatsController extends AbstractBackendController
         $usedCouponsOrder = KuponBestellung::getOrdersWithUsedCoupons(
             $dStart,
             $dEnd,
-            (int)Request::verifyGPDataString('kKupon')
+            (int)$this->request->request('kKupon')
         );
 
         $orderCount            = (int)$this->db->getSingleObject(
@@ -146,13 +145,12 @@ class CouponStatsController extends AbstractBackendController
             'nCouponAmountAll'         => Preise::getLocalizedPriceWithoutFactor($couponAmountAll)
         ];
 
-        return $smarty->assign('overview_arr', $overview)
+        return $this->smarty->assign('overview_arr', $overview)
             ->assign('usedCouponsOrder', $usedCouponsOrder)
             ->assign('startDate', $startDate->format('Y-m-d'))
             ->assign('endDate', $endDate->format('Y-m-d'))
             ->assign('coupons_arr', $coupons)
             ->assign('step', $step)
-            ->assign('route', $this->route)
             ->getResponse('kuponstatistik.tpl');
     }
 }

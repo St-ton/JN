@@ -4,9 +4,7 @@ namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\Permissions;
 use JTL\Catalog\Product\Artikel;
-use JTL\Helpers\Request;
 use JTL\Pagination\Pagination;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -19,9 +17,8 @@ class GiftsController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::MODULE_GIFT_VIEW);
         $this->getText->loadAdminLocale('pages/gratisgeschenk');
 
@@ -32,9 +29,9 @@ class GiftsController extends AbstractBackendController
             'sonstiges_gratisgeschenk_sortierung'
         ];
 
-        if (Request::verifyGPCDataInt('einstellungen') === 1) {
+        if ($this->request->requestInt('einstellungen') === 1) {
             $this->alertService->addSuccess(
-                $this->saveAdminSettings($settingsIDs, $_POST, [\CACHING_GROUP_OPTION], true),
+                $this->saveAdminSettings($settingsIDs, $this->request->getBody(), [\CACHING_GROUP_OPTION], true),
                 'saveSettings'
             );
         }
@@ -49,10 +46,9 @@ class GiftsController extends AbstractBackendController
             ->assemble();
         $this->getAdminSectionSettings($settingsIDs, true);
 
-        return $smarty->assign('oPagiAktiv', $paginationActive)
+        return $this->smarty->assign('oPagiAktiv', $paginationActive)
             ->assign('oPagiHaeufig', $paginationCommon)
             ->assign('oPagiLetzte100', $paginationLast100)
-            ->assign('route', $this->route)
             ->assign(
                 'oAktiveGeschenk_arr',
                 $this->getActive(' LIMIT ' . $paginationActive->getLimitSQL())

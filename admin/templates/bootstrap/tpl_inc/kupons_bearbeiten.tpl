@@ -5,11 +5,11 @@
 {/if}
 
 {if $oKupon->cKuponTyp === $couponTypes.standard}
-    {assign var=cTitel value="$cTitel : {__('standardCoupon')}"}
+    {assign var=cTitel value="$cTitel: {__('standardCoupon')}"}
 {elseif $oKupon->cKuponTyp === $couponTypes.shipping}
-    {assign var=cTitel value="$cTitel : {__('shippingCoupon')}"}
+    {assign var=cTitel value="$cTitel: {__('shippingCoupon')}"}
 {elseif $oKupon->cKuponTyp === $couponTypes.newCustomer}
-    {assign var=cTitel value="$cTitel : {__('newCustomerCoupon')}"}
+    {assign var=cTitel value="$cTitel: {__('newCustomerCoupon')}"}
 {/if}
 {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=__('couponsDesc') cDokuURL=__('couponsURL')}
 <script>

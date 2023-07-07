@@ -4,8 +4,6 @@ namespace JTL\Router\Controller\Backend;
 
 use InvalidArgumentException;
 use JTL\Backend\Permissions;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Plugin\Admin\InputType;
 use JTL\Plugin\Admin\Installation\MigrationManager;
@@ -16,7 +14,6 @@ use JTL\Plugin\LoaderInterface;
 use JTL\Plugin\Plugin;
 use JTL\Plugin\PluginInterface;
 use JTL\Plugin\State;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -59,23 +56,22 @@ class PluginController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::PLUGIN_ADMIN_VIEW);
         $this->getText->loadAdminLocale('pages/plugin');
 
-        $pluginID    = (int)$args['id'];
-        $plugin      = null;
-        $loader      = null;
-        $activeTab   = -1;
-        $this->step  = 'plugin_uebersicht';
-        $this->route = \str_replace('{id}', (string)$pluginID, $this->route);
+        $pluginID           = (int)$args['id'];
+        $plugin             = null;
+        $loader             = null;
+        $activeTab          = -1;
+        $this->step         = 'plugin_uebersicht';
+        $this->handledRoute = \str_replace('{id}', (string)$pluginID, $this->route);
         $this->smarty->assign('hasDifferentVersions', false)
             ->assign('currentDatabaseVersion', 0)
             ->assign('currentFileVersion', 0)
-            ->assign('pluginBackendURL', $this->baseURL . $this->route)
-            ->assign('route', $this->route);
+            ->assign('pluginBackendURL', $this->baseURL . $this->handledRoute)
+            ->assign('route', $this->handledRoute);
 
         if (\SAFE_MODE) {
             $this->alertService->addWarning(\__('Safe mode enabled.'), 'warnSafeMode');
@@ -87,14 +83,14 @@ class PluginController extends AbstractBackendController
                 ->getResponse('plugin.tpl');
         }
 
-        if (Request::verifyGPCDataInt('Setting') === 1) {
+        if ($this->request->requestInt('Setting') === 1) {
             $this->actionConfig($pluginID);
         }
-        if (Request::verifyGPCDataInt('kPluginAdminMenu') > 0) {
-            $activeTab = Request::verifyGPCDataInt('kPluginAdminMenu');
+        if ($this->request->requestInt('kPluginAdminMenu') > 0) {
+            $activeTab = $this->request->requestInt('kPluginAdminMenu');
         }
-        if (\mb_strlen(Request::verifyGPDataString('cPluginTab')) > 0) {
-            $activeTab = Request::verifyGPDataString('cPluginTab');
+        if (\mb_strlen($this->request->request('cPluginTab')) > 0) {
+            $activeTab = $this->request->request('cPluginTab');
         }
         $this->smarty->assign('defaultTabbertab', $activeTab);
         $loader = $loader ?? Helper::getLoaderByPluginID($pluginID, $this->db, $this->cache);
@@ -151,10 +147,10 @@ class PluginController extends AbstractBackendController
     private function actionConfig(int $pluginID): void
     {
         $this->updated = true;
-        if (!Form::validateToken()) {
+        if (!$this->tokenIsValid) {
             $this->hasError = true;
         } else {
-            $plgnConf = isset($_POST['kPluginAdminMenu'])
+            $plgnConf = $this->request->post('kPluginAdminMenu') !== null
                 ? $this->db->getObjects(
                     "SELECT *
                     FROM tplugineinstellungenconf
@@ -162,7 +158,7 @@ class PluginController extends AbstractBackendController
                         AND kPlugin = :plgn
                         AND cConf != 'N'
                         AND kPluginAdminMenu = :kpm",
-                    ['plgn' => $pluginID, 'kpm' => Request::postInt('kPluginAdminMenu')]
+                    ['plgn' => $pluginID, 'kpm' => $this->request->postInt('kPluginAdminMenu')]
                 )
                 : [];
             foreach ($plgnConf as $current) {
@@ -179,18 +175,18 @@ class PluginController extends AbstractBackendController
                     'cName'   => $current->cWertName,
                     'cWert'   => null
                 ];
-                if (isset($_POST[$current->cWertName])) {
-                    if (\is_array($_POST[$current->cWertName])) {
+                if ($this->request->post($current->cWertName) !== null) {
+                    if (\is_array($this->request->post($current->cWertName))) {
                         if ($current->cConf === Config::TYPE_DYNAMIC) {
                             // selectbox with "multiple" attribute
-                            $upd->cWert = \serialize($_POST[$current->cWertName]);
+                            $upd->cWert = \serialize($this->request->post($current->cWertName));
                         } else {
                             // radio buttons
-                            $upd->cWert = $_POST[$current->cWertName][0];
+                            $upd->cWert = $this->request->post($current->cWertName)[0];
                         }
                     } else {
                         // textarea/text
-                        $upd->cWert = $_POST[$current->cWertName];
+                        $upd->cWert = $this->request->post($current->cWertName);
                     }
                 }
                 if (!$this->db->insert('tplugineinstellungen', $upd)) {

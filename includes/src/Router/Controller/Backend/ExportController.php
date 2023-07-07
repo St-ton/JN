@@ -13,11 +13,8 @@ use JTL\Backend\Status;
 use JTL\DB\SqlObject;
 use JTL\Export\Model;
 use JTL\Export\SyntaxChecker;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Router\Route;
-use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -37,17 +34,16 @@ class ExportController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
-        $this->step   = 'overview';
+        $this->step = 'overview';
         $this->checkPermissions(Permissions::EXPORT_FORMATS_VIEW);
         $this->getText->loadAdminLocale('pages/exportformate');
         $this->getText->loadConfigLocales(true, true);
         $this->cache->flushTags([Status::CACHE_ID_EXPORT_SYNTAX_CHECK]);
         $manager      = new Manager(
             $this->db,
-            $smarty,
+            $this->smarty,
             $this->account,
             $this->getText,
             $this->alertService
@@ -58,7 +54,6 @@ class ExportController extends AbstractBackendController
         }
 
         return $this->smarty->assign('step', $this->step)
-            ->assign('route', $this->route)
             ->assign('exportformate', Model::loadAll(
                 $this->db,
                 [],
@@ -72,17 +67,17 @@ class ExportController extends AbstractBackendController
      */
     public function getAction(): ?ResponseInterface
     {
-        if (!Form::validateToken()) {
+        if (!$this->tokenIsValid) {
             return null;
         }
         $action   = null;
         $exportID = null;
-        if (\mb_strlen(Request::postVar('action', '')) > 0) {
-            $action   = $_POST['action'];
-            $exportID = Request::postInt('kExportformat');
-        } elseif (\mb_strlen(Request::getVar('action', '')) > 0) {
-            $action   = $_GET['action'];
-            $exportID = Request::getInt('kExportformat');
+        if (\mb_strlen($this->request->post('action', '')) > 0) {
+            $action   = $this->request->post('action');
+            $exportID = $this->request->postInt('kExportformat');
+        } elseif (\mb_strlen($this->request->get('action', '')) > 0) {
+            $action   = $this->request->get('action');
+            $exportID = $this->request->getInt('kExportformat');
         }
         if ($exportID === null) {
             return null;
@@ -102,8 +97,8 @@ class ExportController extends AbstractBackendController
                 $this->view();
                 break;
             case 'edit':
-                $this->step             = 'edit';
-                $_POST['kExportformat'] = $exportID;
+                $this->step = 'edit';
+                $this->request->updateBody('kExportformat', $exportID);
                 $this->createOrUpdate();
                 break;
             case 'delete':
@@ -123,7 +118,7 @@ class ExportController extends AbstractBackendController
     {
         $model       = Model::newInstance($this->db);
         $checker     = new SyntaxChecker(0, $this->db);
-        $checkResult = $checker->check($_POST, $model);
+        $checkResult = $checker->check($this->request->getBody(), $model);
         $doCheck     = 0;
         if (\is_a($checkResult, Model::class)) {
             $checkResult->setFooter($checkResult->getFooter() ?? '');
@@ -132,7 +127,7 @@ class ExportController extends AbstractBackendController
             if ($exportID > 0) {
                 $oldModel = Model::load(['id' => $exportID], $this->db);
                 /** @var Model $oldModel */
-                $exportID = Request::postInt('kExportformat');
+                $exportID = $this->request->postInt('kExportformat');
                 $revision = new Revision($this->db);
                 $revision->addRevision('export', $exportID);
                 $checkResult->setWasLoaded(true);
@@ -152,22 +147,28 @@ class ExportController extends AbstractBackendController
                     'successFormatCreate'
                 );
             }
-            $doCheck           = $exportID;
-            $_POST['exportID'] = $exportID;
-            $this->config->update($_POST, true, []);
+            $doCheck = $exportID;
+            $this->request->updateBody('exportID', $exportID);
+            $this->config->update($this->request->getBody(), true, []);
             $this->step = 'overview';
-            if (Request::postInt('saveAndContinue') === 1) {
+            if ($this->request->postInt('saveAndContinue') === 1) {
                 $this->step = 'edit';
                 $this->view();
             }
         } else {
-            $_POST['cContent']   = \str_replace('<tab>', "\t", $_POST['cContent']);
-            $_POST['cKopfzeile'] = \str_replace('<tab>', "\t", Request::postVar('cKopfzeile', ''));
-            $_POST['cFusszeile'] = \str_replace('<tab>', "\t", Request::postVar('cFusszeile', ''));
+            $content = \str_replace('<tab>', "\t", $this->request->post('cContent'));
+            $header  = \str_replace('<tab>', "\t", $this->request->post('cKopfzeile', ''));
+            $footer  = \str_replace('<tab>', "\t", $this->request->post('cFusszeile', ''));
+            $this->request->updateBody('cContent', $content);
+            $this->request->updateBody('cKopfzeile', $header);
+            $this->request->updateBody('cFusszeile', $footer);
             $this->smarty->assign('cPlausiValue_arr', $checkResult)
-                ->assign('cPostVar_arr', Collection::make(Text::filterXSS($_POST))->map(static function ($e) {
-                    return \is_string($e) ? Text::htmlentities($e) : $e;
-                })->all());
+                ->assign(
+                    'cPostVar_arr',
+                    Collection::make(Text::filterXSS($this->request->getBody()))->map(static function ($e) {
+                        return \is_string($e) ? Text::htmlentities($e) : $e;
+                    })->all()
+                );
             $this->view();
             $this->step = 'edit';
             $this->alertService->addError(\__('errorCheckInput'), 'errorCheckInput');
@@ -190,10 +191,10 @@ class ExportController extends AbstractBackendController
             ))
             ->assign('oKampagne_arr', AbstractBackendController::getCampaigns(true, true, $this->db));
 
-        if (Request::postInt('kExportformat') > 0) {
+        if ($this->request->postInt('kExportformat') > 0) {
             try {
                 $model = Model::load(
-                    ['id' => Request::postInt('kExportformat')],
+                    ['id' => $this->request->postInt('kExportformat')],
                     $this->db,
                     Model::ON_NOTEXISTS_FAIL
                 );
@@ -231,7 +232,7 @@ class ExportController extends AbstractBackendController
         $realZipped = \realpath(\PFAD_ROOT . \PFAD_EXPORT . $exportformat->cDateiname . '.zip');
         $ok2        = \is_string($realZipped) && \str_starts_with($realZipped, $realBase);
         if ($ok1 === true || $ok2 === true || (int)($exportformat->nSplitgroesse ?? 0) > 0) {
-            if (empty($_GET['hasError'])) {
+            if (empty($this->request->get('hasError'))) {
                 $this->alertService->addSuccess(
                     \sprintf(\__('successFormatCreate'), $exportformat->cName),
                     'successFormatCreate'
@@ -315,7 +316,7 @@ class ExportController extends AbstractBackendController
      */
     private function startExport(int $exportID): ResponseInterface
     {
-        $async                 = isset($_GET['ajax']);
+        $async                 = $this->request->get('ajax') !== null;
         $queue                 = new stdClass();
         $queue->kExportformat  = $exportID;
         $queue->nLimit_n       = 0;

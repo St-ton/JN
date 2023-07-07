@@ -7,12 +7,9 @@ use JTL\CheckBox;
 use JTL\Checkbox\CheckboxDataTableObject;
 use JTL\Customer\CustomerGroup;
 use JTL\Exceptions\PermissionException;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Pagination\Pagination;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -41,41 +38,39 @@ class CheckboxController extends AbstractBackendController
      * @inheritdoc
      * @throws PermissionException
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::CHECKBOXES_VIEW);
         $this->getText->loadAdminLocale('pages/checkbox');
-
         $step     = 'uebersicht';
         $checkbox = new CheckBox(0, $this->db);
         $tab      = $step;
-        if (\mb_strlen(Request::verifyGPDataString('tab')) > 0) {
-            $tab = Request::verifyGPDataString('tab');
+        if (\mb_strlen($this->request->request('tab')) > 0) {
+            $tab = $this->request->request('tab');
         }
-        if (isset($_POST['erstellenShowButton'])) {
+        if ($this->request->post('erstellenShowButton') !== null) {
             $tab = 'erstellen';
-        } elseif (Request::verifyGPCDataInt('uebersicht') === 1 && Form::validateToken()) {
-            $checkboxIDs = Request::verifyGPDataIntegerArray('kCheckBox');
-            if (isset($_POST['checkboxAktivierenSubmit'])) {
+        } elseif ($this->tokenIsValid && $this->request->requestInt('uebersicht') === 1) {
+            $checkboxIDs = $this->request->requestIntArray('kCheckBox');
+            if ($this->request->post('checkboxAktivierenSubmit') !== null) {
                 $checkbox->activate($checkboxIDs);
                 $this->alertService->addSuccess(\__('successCheckboxActivate'), 'successCheckboxActivate');
-            } elseif (isset($_POST['checkboxDeaktivierenSubmit'])) {
+            } elseif ($this->request->post('checkboxDeaktivierenSubmit') !== null) {
                 $checkbox->deactivate($checkboxIDs);
                 $this->alertService->addSuccess(\__('successCheckboxDeactivate'), 'successCheckboxDeactivate');
-            } elseif (isset($_POST['checkboxLoeschenSubmit'])) {
+            } elseif ($this->request->post('checkboxLoeschenSubmit') !== null) {
                 $checkbox->delete($checkboxIDs);
                 $this->alertService->addSuccess(\__('successCheckboxDelete'), 'successCheckboxDelete');
             }
-        } elseif (Request::verifyGPCDataInt('edit') > 0) {
-            $checkboxID = Request::verifyGPCDataInt('edit');
+        } elseif ($this->request->requestInt('edit') > 0) {
+            $checkboxID = $this->request->requestInt('edit');
             $step       = 'erstellen';
             $tab        = $step;
-            $smarty->assign('oCheckBox', new CheckBox($checkboxID, $this->db));
-        } elseif (Request::verifyGPCDataInt('erstellen') === 1 && Form::validateToken()) {
-            $post        = Text::filterXSS($_POST);
+            $this->smarty->assign('oCheckBox', new CheckBox($checkboxID, $this->db));
+        } elseif ($this->tokenIsValid && $this->request->requestInt('erstellen') === 1) {
+            $post        = Text::filterXSS($request->getParsedBody());
             $step        = 'erstellen';
-            $checkboxID  = Request::verifyGPCDataInt('kCheckBox');
+            $checkboxID  = $this->request->requestInt('kCheckBox');
             $languages   = LanguageHelper::getAllLanguages(0, true, true);
             $checkboxDTO = $this->getCheckboxDTO($post, $languages);
             $checks      = $this->validate($checkboxDTO, $languages);
@@ -86,10 +81,10 @@ class CheckboxController extends AbstractBackendController
             } else {
                 $this->alertService->addError(\__('errorFillRequired'), 'errorFillRequired');
 
-                $smarty->assign('cPost_arr', $post)
+                $this->smarty->assign('cPost_arr', $post)
                     ->assign('cPlausi_arr', $checks);
                 if ($checkboxID > 0) {
-                    $smarty->assign('kCheckBox', $checkboxID);
+                    $this->smarty->assign('kCheckBox', $checkboxID);
 
                     $customerGroupID = $post['kKundengruppe'] ?? ';;';
                     if ((int)$post['nInternal'] === 1) {
@@ -120,7 +115,7 @@ class CheckboxController extends AbstractBackendController
                             'kKundengruppe'     => $customerGroupID,
                         ];
                     }
-                    $smarty->assign('oCheckBox', (object)$postBox);
+                    $this->smarty->assign('oCheckBox', (object)$postBox);
                 }
             }
             $tab = $step;
@@ -130,7 +125,7 @@ class CheckboxController extends AbstractBackendController
             ->setItemCount($checkbox->getTotalCount())
             ->assemble();
 
-        return $smarty->assign('oCheckBox_arr', $checkbox->getAll('LIMIT ' . $pagination->getLimitSQL()))
+        return $this->smarty->assign('oCheckBox_arr', $checkbox->getAll('LIMIT ' . $pagination->getLimitSQL()))
             ->assign('pagination', $pagination)
             ->assign('cAnzeigeOrt_arr', CheckBox::gibCheckBoxAnzeigeOrte())
             ->assign('customerGroups', CustomerGroup::getGroups())
@@ -142,7 +137,6 @@ class CheckboxController extends AbstractBackendController
             ->assign('oCheckBoxFunktion_arr', $checkbox->getCheckBoxFunctions())
             ->assign('step', $step)
             ->assign('cTab', $tab)
-            ->assign('route', $this->route)
             ->getResponse('checkbox.tpl');
     }
 

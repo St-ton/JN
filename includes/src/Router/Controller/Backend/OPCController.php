@@ -4,10 +4,7 @@ namespace JTL\Router\Controller\Backend;
 
 use Exception;
 use JTL\Backend\Permissions;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
 use JTL\Update\Updater;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
@@ -22,31 +19,29 @@ class OPCController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::OPC_VIEW);
         $this->getText->loadAdminLocale('pages/opc');
 
-        $pageKey   = Request::verifyGPCDataInt('pageKey');
-        $pageId    = Request::verifyGPDataString('pageId');
-        $pageUrl   = Request::verifyGPDataString('pageUrl');
-        $pageName  = Request::verifyGPDataString('pageName');
-        $action    = Request::verifyGPDataString('action');
-        $draftKeys = \array_map('\intval', $_POST['draftKeys'] ?? []);
+        $pageKey   = $this->request->requestInt('pageKey');
+        $pageId    = $this->request->request('pageId');
+        $pageUrl   = $this->request->request('pageUrl');
+        $pageName  = $this->request->request('pageName');
+        $action    = $this->request->request('action');
+        $draftKeys = \array_map('\intval', $this->request->post('draftKeys', []));
         $shopURL   = Shop::getURL();
         $error     = null;
         $opc       = Shop::Container()->getOPC();
         $opcPage   = Shop::Container()->getOPCPageService();
         $opcPageDB = Shop::Container()->getOPCPageDB();
 
-        $templateUrl = $this->baseURL . '/' . $smarty->getTemplateUrlPath();
+        $templateUrl = $this->baseURL . '/' . $this->smarty->getTemplateUrlPath();
 
-        $smarty->assign('shopUrl', $shopURL)
+        $this->smarty->assign('shopUrl', $shopURL)
             ->assign('adminUrl', $this->baseURL)
             ->assign('templateUrl', $templateUrl)
             ->assign('pageKey', $pageKey)
-            ->assign('route', $this->route)
             ->assign('opc', $opc);
 
         $updater    = new Updater($this->db);
@@ -56,7 +51,7 @@ class OPCController extends AbstractBackendController
             // Database update needed
             $this->getText->loadAdminLocale('pages/dbupdater');
 
-            return $smarty->assign('error', [
+            return $this->smarty->assign('error', [
                 'heading' => \__('dbUpdate') . ' ' . \__('required'),
                 'desc'    => \sprintf(\__('dbUpdateNeeded'), $this->baseURL),
             ])
@@ -73,11 +68,11 @@ class OPCController extends AbstractBackendController
 
             $this->getText->loadAdminLocale('pages/opc/tutorials');
 
-            return $smarty->assign('error', $error)
+            return $this->smarty->assign('error', $error)
                 ->assign('page', $page)
                 ->getResponse(\PFAD_ROOT . \PFAD_ADMIN . '/opc/tpl/editor.tpl');
         }
-        if ($action !== '' && Form::validateToken() === false) {
+        if ($action !== '' && $this->tokenIsValid === false) {
             // OPC action while XSRF validation failed
             $error = \__('Wrong XSRF token.');
         } elseif ($action === 'extend') {

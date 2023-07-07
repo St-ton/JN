@@ -5,15 +5,12 @@ namespace JTL\Router\Controller\Backend;
 use JTL\Backend\Permissions;
 use JTL\CSV\Export;
 use JTL\CSV\Import;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Pagination\DataType;
 use JTL\Pagination\Filter;
 use JTL\Pagination\Operation;
 use JTL\Pagination\Pagination;
 use JTL\Redirect;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -26,17 +23,16 @@ class RedirectController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::REDIRECT_VIEW);
         $this->getText->loadAdminLocale('pages/redirect');
 
-        $action = Request::verifyGPDataString('action');
-        if (Request::verifyGPDataString('importcsv') === 'redirects') {
+        $action = $this->request->request('action');
+        if ($this->request->request('importcsv') === 'redirects') {
             $action = 'csvImport';
         }
-        $redirects = $_POST['redirects'] ?? [];
+        $redirects = $this->request->post('redirects', []);
         $filter    = new Filter();
         $filter->addTextfield(\__('url'), 'cFromUrl', Operation::CONTAINS);
         $filter->addTextfield(\__('redirectTo'), 'cToUrl', Operation::CONTAINS);
@@ -52,7 +48,7 @@ class RedirectController extends AbstractBackendController
             ['cToUrl', \__('redirectTo')],
             ['nCount', \__('calls')]
         ]);
-        if (Form::validateToken()) {
+        if ($this->tokenIsValid) {
             switch ($action) {
                 case 'csvImport':
                     $this->actionImport();
@@ -74,13 +70,13 @@ class RedirectController extends AbstractBackendController
                     Redirect::deleteUnassigned();
                     break;
                 case 'new':
-                    if (Request::postInt('redirect-id') > 0) {
-                        $redirect = new Redirect(Request::postInt('redirect-id'));
+                    if ($this->request->postInt('redirect-id') > 0) {
+                        $redirect = new Redirect($this->request->postInt('redirect-id'));
                         $data     = [
-                            'kRedirect'     => Request::postInt('redirect-id'),
-                            'cToUrl'        => Request::postVar('cToUrl'),
-                            'cFromUrl'      => Request::postVar('cFromUrl'),
-                            'paramHandling' => Request::postInt('paramHandling')
+                            'kRedirect'     => $this->request->postInt('redirect-id'),
+                            'cToUrl'        => $this->request->post('cToUrl'),
+                            'cFromUrl'      => $this->request->post('cFromUrl'),
+                            'paramHandling' => $this->request->postInt('paramHandling')
                         ];
                         $ok       = $this->updateItem($redirect, $data);
                         if ($ok === true) {
@@ -96,7 +92,7 @@ class RedirectController extends AbstractBackendController
                     }
                     break;
                 case 'edit':
-                    $this->actionEdit(Request::getInt('id'));
+                    $this->actionEdit($this->request->getInt('id'));
                     break;
                 default:
                     break;
@@ -111,9 +107,8 @@ class RedirectController extends AbstractBackendController
             $pagination->getLimitSQL()
         );
 
-        return $smarty->assign('oFilter', $filter)
+        return $this->smarty->assign('oFilter', $filter)
             ->assign('pagination', $pagination)
-            ->assign('route', $this->route)
             ->assign('oRedirect_arr', $list)
             ->assign('nTotalRedirectCount', Redirect::getRedirectCount())
             ->getResponse('redirect.tpl');
@@ -155,7 +150,7 @@ class RedirectController extends AbstractBackendController
     private function actionImport(): void
     {
         $importer = new Import($this->db);
-        $importer->import('redirects', 'tredirect', [], null, Request::verifyGPCDataInt('importType'));
+        $importer->import('redirects', 'tredirect', [], null, $this->request->requestInt('importType'));
         $errorCount = $importer->getErrorCount();
         if ($errorCount > 0) {
             $this->alertService->addError(
@@ -231,17 +226,17 @@ class RedirectController extends AbstractBackendController
     {
         $redirect = new Redirect();
         if ($redirect->saveExt(
-            Request::verifyGPDataString('cFromUrl'),
-            Request::verifyGPDataString('cToUrl'),
+            $this->request->request('cFromUrl'),
+            $this->request->request('cToUrl'),
             false,
-            Request::verifyGPCDataInt('paramHandling')
+            $this->request->requestInt('paramHandling')
         )) {
             $this->alertService->addSuccess(\__('successRedirectSave'), 'successRedirectSave');
         } else {
             $this->alertService->addError(\__('errorCheckInput'), 'errorCheckInput');
             $this->smarty->assign('cTab', 'new_redirect')
-                ->assign('cFromUrl', Text::filterXSS(Request::verifyGPDataString('cFromUrl')))
-                ->assign('cToUrl', Text::filterXSS(Request::verifyGPDataString('cToUrl')));
+                ->assign('cFromUrl', Text::filterXSS($this->request->request('cFromUrl')))
+                ->assign('cToUrl', Text::filterXSS($this->request->request('cToUrl')));
         }
     }
 }

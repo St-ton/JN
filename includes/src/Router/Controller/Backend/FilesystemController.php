@@ -6,11 +6,9 @@ use Exception;
 use JTL\Backend\Permissions;
 use JTL\Filesystem\AdapterFactory;
 use JTL\Filesystem\Filesystem;
-use JTL\Helpers\Form;
 use JTL\Helpers\Text;
 use JTL\Shop;
 use JTL\Shopsetting;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -23,24 +21,22 @@ class FilesystemController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::FILESYSTEM_VIEW);
         $this->getText->loadAdminLocale('pages/filesystem');
         $this->getText->loadConfigLocales(true, true);
-        if (!empty($_POST) && Form::validateToken()) {
-            $postData = Text::filterXSS($_POST);
-            $this->saveAdminSectionSettings(\CONF_FS, $_POST);
+        if ($this->tokenIsValid && !empty($this->request->getBody())) {
+            $postData = Text::filterXSS($this->request->getBody());
+            $this->saveAdminSectionSettings(\CONF_FS, $this->request->getBody());
             Shopsetting::getInstance()->reset();
-            if (isset($postData['test'])) {
+            if ($this->request->post('test') !== null) {
                 $this->test($postData);
             }
         }
         $this->getAdminSectionSettings(\CONF_FS);
 
-        return $smarty->assign('route', $this->route)
-            ->getResponse('filesystem.tpl');
+        return $this->smarty->getResponse('filesystem.tpl');
     }
 
     /**

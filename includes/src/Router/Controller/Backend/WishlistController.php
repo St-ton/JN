@@ -5,10 +5,7 @@ namespace JTL\Router\Controller\Backend;
 use JTL\Backend\Permissions;
 use JTL\Catalog\Wishlist\Wishlist;
 use JTL\Customer\Customer;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Pagination\Pagination;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -21,9 +18,8 @@ class WishlistController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::MODULE_WISHLIST_VIEW);
         $this->getText->loadAdminLocale('pages/wunschliste');
 
@@ -36,14 +32,14 @@ class WishlistController extends AbstractBackendController
             'global_wunschliste_max_email',
             'global_wunschliste_artikel_loeschen_nach_kauf'
         ];
-        if (Request::verifyGPCDataInt('einstellungen') === 1) {
+        if ($this->request->requestInt('einstellungen') === 1) {
             $this->alertService->addSuccess(
-                $this->saveAdminSettings($settingsIDs, $_POST, [\CACHING_GROUP_OPTION], true),
+                $this->saveAdminSettings($settingsIDs, $this->request->getBody(), [\CACHING_GROUP_OPTION], true),
                 'saveSettings'
             );
         }
-        if (Request::getInt('delete') > 0 && Form::validateToken()) {
-            Wishlist::delete(Request::getInt('delete'), true);
+        if ($this->tokenIsValid && $this->request->getInt('delete') > 0) {
+            Wishlist::delete($this->request->getInt('delete'), true);
         }
         $itemCount         = (int)$this->db->getSingleObject(
             'SELECT COUNT(DISTINCT twunschliste.kWunschliste) AS cnt
@@ -121,13 +117,12 @@ class WishlistController extends AbstractBackendController
         );
         $this->getAdminSectionSettings($settingsIDs, true);
 
-        return $smarty->assign('oPagiPos', $posPagination)
+        return $this->smarty->assign('oPagiPos', $posPagination)
             ->assign('oPagiArtikel', $productPagination)
             ->assign('oPagiFreunde', $friendsPagination)
             ->assign('CWunschlisteVersand_arr', $sentWishLists)
             ->assign('CWunschliste_arr', $wishLists)
             ->assign('CWunschlistePos_arr', $wishListPositions)
-            ->assign('route', $this->route)
             ->getResponse('wunschliste.tpl');
     }
 }

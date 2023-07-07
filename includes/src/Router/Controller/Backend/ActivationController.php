@@ -5,13 +5,10 @@ namespace JTL\Router\Controller\Backend;
 use JTL\Backend\Permissions;
 use JTL\Customer\Customer;
 use JTL\DB\SqlObject;
-use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
-use JTL\Helpers\Request;
 use JTL\Helpers\Seo;
 use JTL\Helpers\Text;
 use JTL\Pagination\Pagination;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -25,9 +22,8 @@ class ActivationController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::UNLOCK_CENTRAL_VIEW);
         $this->setLanguage();
         $this->getText->loadAdminLocale('pages/freischalten');
@@ -38,13 +34,13 @@ class ActivationController extends AbstractBackendController
         $recipientsSQL = new SqlObject();
         $liveSearchSQL->setOrder(' dZuletztGesucht DESC ');
         $recipientsSQL->setOrder(' tnewsletterempfaenger.dEingetragen DESC');
-        $tab = Request::verifyGPDataString('tab');
+        $tab = $this->request->request('tab');
 
-        if (Request::verifyGPCDataInt('Suche') === 1) {
-            $search = Text::filterXSS(Request::verifyGPDataString('cSuche'));
+        if ($this->request->requestInt('Suche') === 1) {
+            $search = Text::filterXSS($this->request->request('cSuche'));
 
             if (\mb_strlen($search) > 0) {
-                switch (Request::verifyGPDataString('cSuchTyp')) {
+                switch ($this->request->request('cSuchTyp')) {
                     case 'Bewertung':
                         $tab = 'bewertungen';
                         $ratingsSQL->setWhere(' AND (tbewertung.cName LIKE :srch
@@ -75,18 +71,17 @@ class ActivationController extends AbstractBackendController
                     default:
                         break;
                 }
-
-                $smarty->assign('cSuche', $search)
-                    ->assign('cSuchTyp', Request::verifyGPDataString('cSuchTyp'));
+                $this->smarty->assign('cSuche', $search)
+                    ->assign('cSuchTyp', $this->request->request('cSuchTyp'));
             } else {
                 $this->alertService->addError(\__('errorSearchTermMissing'), 'errorSearchTermMissing');
             }
         }
 
-        if (Request::verifyGPCDataInt('nSort') > 0) {
-            $smarty->assign('nSort', Request::verifyGPCDataInt('nSort'));
+        if ($this->request->requestInt('nSort') > 0) {
+            $this->smarty->assign('nSort', $this->request->requestInt('nSort'));
 
-            switch (Request::verifyGPCDataInt('nSort')) {
+            switch ($this->request->requestInt('nSort')) {
                 case 1:
                     $liveSearchSQL->setOrder(' tsuchanfrage.cSuche ASC ');
                     break;
@@ -115,7 +110,7 @@ class ActivationController extends AbstractBackendController
                     break;
             }
         } else {
-            $smarty->assign('nLivesucheSort', -1);
+            $this->smarty->assign('nLivesucheSort', -1);
         }
 
         $this->getAction();
@@ -138,7 +133,7 @@ class ActivationController extends AbstractBackendController
         $newsComments = $this->getNewsComments(' LIMIT ' . $pagiComments->getLimitSQL(), $commentsSQL);
         $recipients   = $this->getNewsletterRecipients(' LIMIT ' . $pagiRecipients->getLimitSQL(), $recipientsSQL);
 
-        return $smarty->assign('ratings', $reviews)
+        return $this->smarty->assign('ratings', $reviews)
             ->assign('searchQueries', $queries)
             ->assign('comments', $newsComments)
             ->assign('recipients', $recipients)
@@ -148,24 +143,23 @@ class ActivationController extends AbstractBackendController
             ->assign('oPagiNewsletterEmpfaenger', $pagiRecipients)
             ->assign('step', 'freischalten_uebersicht')
             ->assign('cTab', $tab)
-            ->assign('route', $this->route)
             ->getResponse('freischalten.tpl');
     }
 
     private function getAction(): void
     {
-        if (Request::verifyGPCDataInt('freischalten') !== 1 || !Form::validateToken()) {
+        if (!$this->tokenIsValid || $this->request->requestInt('freischalten') !== 1) {
             return;
         }
-        if (Request::verifyGPCDataInt('bewertungen') === 1) {
-            if (isset($_POST['freischaltensubmit'])) {
-                if ($this->activateReviews(Request::postVar('kBewertung', []))) {
+        if ($this->request->requestInt('bewertungen') === 1) {
+            if ($this->request->post('freischaltensubmit') !== null) {
+                if ($this->activateReviews($this->request->post('kBewertung', []))) {
                     $this->alertService->addSuccess(\__('successRatingUnlock'), 'successRatingUnlock');
                     return;
                 }
                 $this->alertService->addError(\__('errorAtLeastOneRating'), 'errorAtLeastOneRating');
-            } elseif (isset($_POST['freischaltenleoschen'])) {
-                if ($this->deleteReviews(Request::postVar('kBewertung', []))) {
+            } elseif ($this->request->post('freischaltenleoschen') !== null) {
+                if ($this->deleteReviews($this->request->post('kBewertung', []))) {
                     $this->alertService->addSuccess(\__('successRatingDelete'), 'successRatingDelete');
                     return;
                 }
@@ -173,22 +167,22 @@ class ActivationController extends AbstractBackendController
             }
             return;
         }
-        if (Request::verifyGPCDataInt('suchanfragen') === 1) { // Suchanfragen
+        if ($this->request->requestInt('suchanfragen') === 1) { // Suchanfragen
             // Mappen
-            if (isset($_POST['submitMapping'])) {
-                $mapping = Request::verifyGPDataString('cMapping');
+            if ($this->request->post('submitMapping') !== null) {
+                $mapping = $this->request->request('cMapping');
                 if (\mb_strlen($mapping) === 0) {
                     $this->alertService->addError(\__('errorMapNameMissing'), 'errorMapNameMissing');
                     return;
                 }
-                if (!GeneralObject::hasCount('kSuchanfrage', $_POST)) {
+                if (!GeneralObject::hasCount('kSuchanfrage', $this->request->getBody())) {
                     $this->alertService->addError(
                         \__('errorAtLeastOneLiveSearch'),
                         'errorAtLeastOneLiveSearch'
                     );
                     return;
                 }
-                $res = $this->mapLiveSearch($_POST['kSuchanfrage'], $mapping);
+                $res = $this->mapLiveSearch($this->request->post('kSuchanfrage'), $mapping);
                 if ($res !== 1) {
                     $searchError = match ($res) {
                         2       => \__('errorMapUnknown'),
@@ -201,7 +195,7 @@ class ActivationController extends AbstractBackendController
                     $this->alertService->addError($searchError, 'searchError');
                     return;
                 }
-                if (!$this->activateSearchQueries(Request::postVar('kSuchanfrage', []))) {
+                if (!$this->activateSearchQueries($this->request->post('kSuchanfrage', []))) {
                     $this->alertService->addError(
                         \__('errorLiveSearchMapNotUnlock'),
                         'errorLiveSearchMapNotUnlock'
@@ -215,16 +209,16 @@ class ActivationController extends AbstractBackendController
                 return;
             }
 
-            if (isset($_POST['freischaltensubmit'])) {
-                if ($this->activateSearchQueries(Request::postVar('kSuchanfrage', []))) {
+            if ($this->request->post('freischaltensubmit') !== null) {
+                if ($this->activateSearchQueries($this->request->post('kSuchanfrage', []))) {
                     $this->alertService->addSuccess(\__('successSearchUnlock'), 'successSearchUnlock');
                     return;
                 }
                 $this->alertService->addError(\__('errorAtLeastOneSearch'), 'errorAtLeastOneSearch');
                 return;
             }
-            if (isset($_POST['freischaltenleoschen'])) {
-                if ($this->deleteSearchQueries(Request::postVar('kSuchanfrage', []))) {
+            if ($this->request->post('freischaltenleoschen') !== null) {
+                if ($this->deleteSearchQueries($this->request->post('kSuchanfrage', []))) {
                     $this->alertService->addSuccess(\__('successSearchDelete'), 'successSearchDelete');
                     return;
                 }
@@ -232,17 +226,17 @@ class ActivationController extends AbstractBackendController
             }
             return;
         }
-        if (Request::verifyGPCDataInt('newskommentare') === 1 && Form::validateToken()) {
-            if (isset($_POST['freischaltensubmit'])) {
-                if ($this->activateNewsComments(Request::postVar('kNewsKommentar', []))) {
+        if ($this->request->requestInt('newskommentare') === 1) {
+            if ($this->request->post('freischaltensubmit') !== null) {
+                if ($this->activateNewsComments($this->request->post('kNewsKommentar', []))) {
                     $this->alertService->addSuccess(\__('successNewsCommentUnlock'), 'successNewsCommentUnlock');
                     return;
                 }
                 $this->alertService->addError(\__('errorAtLeastOneNewsComment'), 'errorAtLeastOneNewsComment');
                 return;
             }
-            if (isset($_POST['freischaltenleoschen'])) {
-                if ($this->deleteNewsComments(Request::postVar('kNewsKommentar', []))) {
+            if ($this->request->post('freischaltenleoschen') !== null) {
+                if ($this->deleteNewsComments($this->request->post('kNewsKommentar', []))) {
                     $this->alertService->addSuccess(\__('successNewsCommentDelete'), 'successNewsCommentDelete');
                     return;
                 }
@@ -250,17 +244,17 @@ class ActivationController extends AbstractBackendController
             }
             return;
         }
-        if (Request::verifyGPCDataInt('newsletterempfaenger') === 1 && Form::validateToken()) {
-            if (isset($_POST['freischaltensubmit'])) {
-                if ($this->activateNewsletterRecipients(Request::postVar('kNewsletterEmpfaenger', []))) {
+        if ($this->request->requestInt('newsletterempfaenger') === 1) {
+            if ($this->request->post('freischaltensubmit') !== null) {
+                if ($this->activateNewsletterRecipients($this->request->post('kNewsletterEmpfaenger', []))) {
                     $this->alertService->addSuccess(\__('successNewsletterUnlock'), 'successNewsletterUnlock');
                     return;
                 }
                 $this->alertService->addError(\__('errorAtLeastOneNewsletter'), 'errorAtLeastOneNewsletter');
                 return;
             }
-            if (isset($_POST['freischaltenleoschen'])) {
-                if ($this->deleteNewsletterRecipients(Request::postVar('kNewsletterEmpfaenger', []))) {
+            if ($this->request->post('freischaltenleoschen') !== null) {
+                if ($this->deleteNewsletterRecipients($this->request->post('kNewsletterEmpfaenger', []))) {
                     $this->alertService->addSuccess(\__('successNewsletterDelete'), 'successNewsletterDelete');
                     return;
                 }
@@ -464,7 +458,7 @@ class ActivationController extends AbstractBackendController
         $this->db->query(
             'UPDATE tnewsletterempfaenger
                 SET nAktiv = 1
-                WHERE kNewsletterEmpfaenger IN (' . \implode(',', \array_map('\intval', $recipients)) .')'
+                WHERE kNewsletterEmpfaenger IN (' . \implode(',', \array_map('\intval', $recipients)) . ')'
         );
 
         return true;

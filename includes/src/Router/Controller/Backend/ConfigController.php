@@ -7,15 +7,12 @@ use JTL\Backend\Settings\Manager;
 use JTL\Backend\Settings\Search;
 use JTL\Backend\Settings\SectionFactory;
 use JTL\Backend\Settings\Sections\Subsection;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Text;
 use JTL\Mail\SmtpTest;
 use JTL\Router\Route;
 use JTL\Shop;
 use JTL\Shopsetting;
-use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -29,17 +26,15 @@ class ConfigController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
     {
-        $this->smarty = $smarty;
         $this->getText->loadAdminLocale('pages/einstellungen');
-        $sectionID      = (int)($args['id'] ?? $_REQUEST['kSektion'] ?? 0);
-        $isSearch       = (int)($_REQUEST['einstellungen_suchen'] ?? 0) === 1;
+        $sectionID      = (int)($args['id'] ?? $this->request->request('kSektion', 0));
+        $isSearch       = (int)($this->request->request('einstellungen_suchen', 0)) === 1;
         $sectionFactory = new SectionFactory();
-        $search         = Request::verifyGPDataString('cSuche');
-        $settingManager = new Manager($this->db, $smarty, $this->account, $this->getText, $this->alertService);
+        $search         = $this->request->request('cSuche');
+        $settingManager = new Manager($this->db, $this->smarty, $this->account, $this->getText, $this->alertService);
         $this->getText->loadConfigLocales(true, true);
-        $this->route = \str_replace('[/{id}]', '', $this->route);
         if ($isSearch) {
             $this->checkPermissions(Permissions::SETTINGS_SEARCH_VIEW);
         }
@@ -72,39 +67,39 @@ class ConfigController extends AbstractBackendController
             case 0:
                 break;
             default:
-                return $this->notFoundResponse($request, $args, $smarty);
+                return $this->notFoundResponse($request, $args);
         }
-        $postData        = Text::filterXSS($_POST);
+        $postData        = Text::filterXSS($request->getParsedBody());
         $defaultCurrency = $this->db->select('twaehrung', 'cStandard', 'Y');
         $step            = 'uebersicht';
         if ($sectionID > 0) {
             $step    = 'einstellungen bearbeiten';
             $section = $sectionFactory->getSection($sectionID, $settingManager);
-            $smarty->assign('kEinstellungenSektion', $section->getID());
+            $this->smarty->assign('kEinstellungenSektion', $section->getID());
         } else {
             $section = $sectionFactory->getSection(\CONF_GLOBAL, $settingManager);
-            $smarty->assign('kEinstellungenSektion', \CONF_GLOBAL);
+            $this->smarty->assign('kEinstellungenSektion', \CONF_GLOBAL);
         }
-        $smarty->assign('testResult', null);
+        $this->smarty->assign('testResult', null);
 
         if ($isSearch) {
             $step = 'einstellungen bearbeiten';
         }
-        if (Request::postVar('resetSetting') !== null) {
-            $settingManager->resetSetting(Request::postVar('resetSetting'));
-        } elseif ($sectionID > 0 && Request::postInt('einstellungen_bearbeiten') === 1 && Form::validateToken()) {
+        if ($this->request->post('resetSetting') !== null) {
+            $settingManager->resetSetting($this->request->post('resetSetting'));
+        } elseif ($this->tokenIsValid && $sectionID > 0 && $this->request->postInt('einstellungen_bearbeiten') === 1) {
             // Einstellungssuche
             $step = 'einstellungen bearbeiten';
             if ($isSearch) {
                 $searchInstance = new Search($this->db, $this->getText, $settingManager);
                 $sections       = $searchInstance->getResultSections($search);
-                $smarty->assign('cSearch', $searchInstance->getTitle());
+                $this->smarty->assign('cSearch', $searchInstance->getTitle());
                 foreach ($sections as $section) {
-                    $section->update($_POST);
+                    $section->update($request->getParsedBody());
                 }
             } else {
                 $sectionInstance = $sectionFactory->getSection($sectionID, $settingManager);
-                $sectionInstance->update($_POST);
+                $sectionInstance->update($request->getParsedBody());
             }
             $this->db->query('UPDATE tglobals SET dLetzteAenderung = NOW()');
             $this->alertService->addSuccess(\__('successConfigSave'), 'successConfigSave');
@@ -123,21 +118,21 @@ class ConfigController extends AbstractBackendController
                 $test = new SmtpTest();
                 $test->run(Shop::getSettingSection(\CONF_EMAILS));
                 $result = \ob_get_clean();
-                $smarty->assign('testResult', $result);
+                $this->smarty->assign('testResult', $result);
             }
         }
         if ($step === 'uebersicht') {
             $overview = $settingManager->getAllSections();
-            $smarty->assign('sectionOverview', $overview);
+            $this->smarty->assign('sectionOverview', $overview);
         }
         if ($step === 'einstellungen bearbeiten') {
             if ($isSearch) {
                 $searchInstance = new Search($this->db, $this->getText, $settingManager);
                 $sections       = $searchInstance->getResultSections($search);
-                $smarty->assign('cSearch', $searchInstance->getTitle())
+                $this->smarty->assign('cSearch', $searchInstance->getTitle())
                     ->assign('cSuche', $search);
             } else {
-                $group           = Request::verifyGPDataString('group');
+                $group           = $this->request->request('group');
                 $sectionInstance = $sectionFactory->getSection($sectionID, $settingManager);
                 $sectionInstance->load();
                 $filtered = $sectionInstance->filter($group);
@@ -150,16 +145,15 @@ class ConfigController extends AbstractBackendController
                 }
                 $sections = [$sectionInstance];
             }
-            $group = Text::filterXSS(Request::verifyGPDataString('group'));
-            $smarty->assign('section', $section)
+            $group = Text::filterXSS($this->request->request('group'));
+            $this->smarty->assign('section', $section)
                 ->assign('title', \__('settings') . ': ' . ($group !== '' ? \__($group) : \__($section->getName())))
                 ->assign('sections', $sections);
         }
         $this->assignScrollPosition();
 
-        return $smarty->assign('cPrefURL', \__('prefURL' . $sectionID))
+        return $this->smarty->assign('cPrefURL', \__('prefURL' . $sectionID))
             ->assign('step', $step)
-            ->assign('route', $this->route)
             ->assign('countries', ShippingMethod::getPossibleShippingCountries())
             ->assign('waehrung', $defaultCurrency->cName ?? '')
             ->getResponse('einstellungen.tpl');

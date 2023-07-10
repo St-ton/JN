@@ -297,7 +297,7 @@ final class Customer extends AbstractSync
         $cstmr[0]['cFirma']    = \trim($crypto->decryptXTEA($cstmr[0]['cFirma']));
         $cstmr[0]['cZusatz']   = \trim($crypto->decryptXTEA($cstmr[0]['cZusatz']));
         $cstmr[0]['cStrasse']  = \trim($crypto->decryptXTEA($cstmr[0]['cStrasse']));
-        $cstmr[0]['cAnrede']   = CustomerClass::mapSalutation($cstmr[0]['cAnrede'], $cstmr[0]['kSprache']);
+        $cstmr[0]['cAnrede']   = CustomerClass::mapSalutation($cstmr[0]['cAnrede'], (int)$cstmr[0]['kSprache']);
         // Strasse und Hausnummer zusammenführen
         $cstmr[0]['cStrasse'] .= ' ' . $cstmr[0]['cHausnummer'];
         unset($cstmr[0]['cHausnummer']);

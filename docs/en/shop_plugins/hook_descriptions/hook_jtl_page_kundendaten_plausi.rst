@@ -4,9 +4,10 @@ HOOK_JTL_PAGE_KUNDENDATEN_PLAUSI (25)
 Triggerpunkt
 """"""""""""
 
-Plausibilitätsprüfung nach dem Ändern von Kundendaten
+Plausibility check after changing customer data
 
 Parameter
 """""""""
 
-``--``
+``int`` **nReturnValue** (since 5.3.0)
+    **nReturnValue** Return value of form validation

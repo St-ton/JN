@@ -26,6 +26,7 @@ use JTL\News\Item;
 use JTL\News\ItemList;
 use JTL\Pagination\Pagination;
 use JTL\Shop;
+use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -71,7 +72,7 @@ class NewsController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->checkPermissions(Permissions::CONTENT_NEWS_SYSTEM_VIEW);
         $this->getText->loadAdminLocale('pages/news');

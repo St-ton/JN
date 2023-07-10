@@ -9,6 +9,7 @@ use JTL\Filesystem\Filesystem;
 use JTL\Helpers\Text;
 use JTL\Shop;
 use JTL\Shopsetting;
+use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -21,7 +22,7 @@ class FilesystemController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->checkPermissions(Permissions::FILESYSTEM_VIEW);
         $this->getText->loadAdminLocale('pages/filesystem');

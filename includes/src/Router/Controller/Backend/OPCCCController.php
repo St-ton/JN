@@ -5,6 +5,7 @@ namespace JTL\Router\Controller\Backend;
 use JTL\Backend\Permissions;
 use JTL\Pagination\Pagination;
 use JTL\Shop;
+use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -17,7 +18,7 @@ class OPCCCController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->checkPermissions(Permissions::OPC_VIEW);
         $this->getText->loadAdminLocale('pages/opc-controlcenter');

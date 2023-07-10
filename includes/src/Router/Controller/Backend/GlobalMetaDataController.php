@@ -4,6 +4,7 @@ namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\Permissions;
 use JTL\Helpers\Text;
+use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -17,7 +18,7 @@ class GlobalMetaDataController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->checkPermissions(Permissions::SETTINGS_GLOBAL_META_VIEW);
         $this->getText->loadAdminLocale('pages/globalemetaangaben');

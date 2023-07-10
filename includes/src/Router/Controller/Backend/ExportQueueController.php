@@ -15,6 +15,7 @@ use JTL\Export\Model;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Shop;
+use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -29,7 +30,7 @@ class ExportQueueController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->checkPermissions(Permissions::EXPORT_SCHEDULE_VIEW);
         $this->getText->loadAdminLocale('pages/exportformat_queue');

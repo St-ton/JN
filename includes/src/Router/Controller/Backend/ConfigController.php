@@ -13,6 +13,7 @@ use JTL\Mail\SmtpTest;
 use JTL\Router\Route;
 use JTL\Shop;
 use JTL\Shopsetting;
+use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -26,7 +27,7 @@ class ConfigController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->getText->loadAdminLocale('pages/einstellungen');
         $sectionID      = (int)($args['id'] ?? $this->request->request('kSektion', 0));

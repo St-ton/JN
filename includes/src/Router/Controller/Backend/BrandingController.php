@@ -6,6 +6,7 @@ use JTL\Backend\Permissions;
 use JTL\Media\Image;
 use JTL\Media\IMedia;
 use JTL\Media\Media;
+use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -20,7 +21,7 @@ class BrandingController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->checkPermissions(Permissions::DISPLAY_BRANDING_VIEW);
         $this->getText->loadAdminLocale('pages/branding');

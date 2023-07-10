@@ -12,6 +12,7 @@ use JTL\IO\IOResponse;
 use JTL\Media\Image;
 use JTL\Pagination\Pagination;
 use JTL\Shop;
+use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -30,7 +31,7 @@ class BannerController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->getText->loadAdminLocale('pages/banner');
         $this->checkPermissions(Permissions::DISPLAY_BANNER_VIEW);

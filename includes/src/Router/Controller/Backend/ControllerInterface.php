@@ -21,9 +21,10 @@ interface ControllerInterface
     /**
      * @param ServerRequestInterface $request
      * @param array                  $args
+     * @param JTLSmarty              $smarty
      * @return ResponseInterface
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface;
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface;
 
     /**
      * @param ServerRequestInterface $request
@@ -35,7 +36,6 @@ interface ControllerInterface
     /**
      * @param ServerRequestInterface $request
      * @param JTLSmarty              $smarty
-     * @return RequestParser
      */
-    public function initController(ServerRequestInterface $request, JTLSmarty $smarty): RequestParser;
+    public function initController(ServerRequestInterface $request, JTLSmarty $smarty): void;
 }

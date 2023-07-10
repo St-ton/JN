@@ -6,6 +6,7 @@ use JTL\Backend\Permissions;
 use JTL\Backend\Status;
 use JTL\Helpers\Text;
 use JTL\Session\Backend;
+use JTL\Smarty\JTLSmarty;
 use JTL\Update\DBMigrationHelper;
 use JTLShop\SemVer\Parser;
 use Laminas\Diactoros\Response\TextResponse;
@@ -23,7 +24,7 @@ class DBCheckController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->checkPermissions(Permissions::DBCHECK_VIEW);
         $this->getText->loadAdminLocale('pages/dbcheck');

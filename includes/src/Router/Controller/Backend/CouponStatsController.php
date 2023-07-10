@@ -7,6 +7,7 @@ use JTL\Backend\Permissions;
 use JTL\Catalog\Product\Preise;
 use JTL\Checkout\KuponBestellung;
 use JTL\Customer\Customer;
+use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -20,7 +21,7 @@ class CouponStatsController extends AbstractBackendController
      * @inheritdoc
      * @todo!
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->checkPermissions(Permissions::STATS_COUPON_VIEW);
         $this->getText->loadAdminLocale('pages/kuponstatistik');

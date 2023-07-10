@@ -20,6 +20,7 @@ use JTL\Plugin\InstallCode;
 use JTL\Router\Route;
 use JTL\Session\Backend;
 use JTL\Shop;
+use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\Response\JsonResponse;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
@@ -94,7 +95,7 @@ class LicenseController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->auth = AuthToken::getInstance($this->db);
         $this->getText->loadAdminLocale('pages/licenses');

@@ -9,6 +9,7 @@ use JTL\Media\IMedia;
 use JTL\Media\Media;
 use JTL\Shop;
 use JTL\Shopsetting;
+use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -21,7 +22,7 @@ class ImagesController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->getText->loadAdminLocale('pages/bilder');
         $this->checkPermissions(Permissions::SETTINGS_SITEMAP_VIEW);

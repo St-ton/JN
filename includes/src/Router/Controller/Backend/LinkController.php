@@ -17,6 +17,7 @@ use JTL\PlausiCMS;
 use JTL\Services\JTL\LinkService;
 use JTL\Services\JTL\LinkServiceInterface;
 use JTL\Shop;
+use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -52,7 +53,7 @@ class LinkController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->checkPermissions(Permissions::CONTENT_PAGE_VIEW);
         $this->getText->loadAdminLocale('pages/links');

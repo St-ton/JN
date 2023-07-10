@@ -6,6 +6,7 @@ use JTL\Backend\LocalizationCheck\LocalizationCheckFactory;
 use JTL\Backend\Permissions;
 use JTL\Backend\Status;
 use JTL\Language\LanguageHelper;
+use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -18,7 +19,7 @@ class LocalizationController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->checkPermissions(Permissions::DIAGNOSTIC_VIEW);
         $this->getText->loadAdminLocale('pages/localizationcheck');

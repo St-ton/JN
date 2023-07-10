@@ -14,6 +14,7 @@ use JTL\Plugin\LoaderInterface;
 use JTL\Plugin\Plugin;
 use JTL\Plugin\PluginInterface;
 use JTL\Plugin\State;
+use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -56,7 +57,7 @@ class PluginController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->checkPermissions(Permissions::PLUGIN_ADMIN_VIEW);
         $this->getText->loadAdminLocale('pages/plugin');

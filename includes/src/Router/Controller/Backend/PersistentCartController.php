@@ -8,6 +8,7 @@ use JTL\Customer\Customer;
 use JTL\DB\SqlObject;
 use JTL\Helpers\Text;
 use JTL\Pagination\Pagination;
+use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -20,7 +21,7 @@ class PersistentCartController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->checkPermissions(Permissions::MODULE_SAVED_BASKETS_VIEW);
         $this->getText->loadAdminLocale('pages/warenkorbpers');

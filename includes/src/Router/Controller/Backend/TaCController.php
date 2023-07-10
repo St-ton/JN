@@ -5,6 +5,7 @@ namespace JTL\Router\Controller\Backend;
 use JTL\Backend\Permissions;
 use JTL\Customer\CustomerGroup;
 use JTL\Recommendation\Manager;
+use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -18,7 +19,7 @@ class TaCController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->checkPermissions(Permissions::ORDER_AGB_WRB_VIEW);
         $this->getText->loadAdminLocale('pages/agbwrb');

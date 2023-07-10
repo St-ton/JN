@@ -12,6 +12,7 @@ use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Text;
 use JTL\Minify\MinifyService;
 use JTL\Shop;
+use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -30,7 +31,7 @@ class CacheController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->checkPermissions(Permissions::OBJECTCACHE_VIEW);
         $this->getText->loadAdminLocale('pages/cache');

@@ -6,6 +6,7 @@ use Exception;
 use JTL\Backend\Permissions;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
+use JTL\Smarty\JTLSmarty;
 use JTL\Update\DBManager;
 use JTLShop\SemVer\Parser as SemVerParser;
 use PDOException;
@@ -25,7 +26,7 @@ class DBManagerController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->checkPermissions(Permissions::DBCHECK_VIEW);
         $this->getText->loadAdminLocale('pages/dbmanager');

@@ -15,6 +15,7 @@ use JTL\Review\ReviewBonusModel;
 use JTL\Review\ReviewModel;
 use JTL\Router\Route;
 use JTL\Shop;
+use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -59,7 +60,7 @@ class ReviewController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->checkPermissions(Permissions::MODULE_VOTESYSTEM_VIEW);
         $this->getText->loadAdminLocale('pages/bewertung');

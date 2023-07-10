@@ -9,6 +9,7 @@ use JTL\Helpers\Text;
 use JTL\Link\LinkGroupInterface;
 use JTL\Mapper\PageTypeToPageNiceName;
 use JTL\Shop;
+use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -73,7 +74,7 @@ class BoxController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->checkPermissions(Permissions::BOXES_VIEW);
         $this->getText->loadAdminLocale('pages/boxen');

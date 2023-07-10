@@ -19,6 +19,7 @@ use JTL\Mail\Template\Model;
 use JTL\Mail\Template\TemplateFactory;
 use JTL\Mail\Validator\NullValidator;
 use JTL\Shopsetting;
+use JTL\Smarty\JTLSmarty;
 use JTL\Smarty\MailSmarty;
 use PHPMailer\PHPMailer\Exception;
 use Psr\Http\Message\ResponseInterface;
@@ -73,7 +74,7 @@ class EmailTemplateController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->checkPermissions(Permissions::CONTENT_EMAIL_TEMPLATE_VIEW);
         $this->getText->loadAdminLocale('pages/emailvorlagen');

@@ -15,6 +15,7 @@ use JTL\Export\Model;
 use JTL\Export\SyntaxChecker;
 use JTL\Helpers\Text;
 use JTL\Router\Route;
+use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -34,7 +35,7 @@ class ExportController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->step = 'overview';
         $this->checkPermissions(Permissions::EXPORT_FORMATS_VIEW);

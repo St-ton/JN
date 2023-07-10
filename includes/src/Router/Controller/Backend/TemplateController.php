@@ -7,6 +7,7 @@ use JTL\Backend\Permissions;
 use JTL\Helpers\Overlay;
 use JTL\Plugin\Admin\Installation\InstallationResponse;
 use JTL\Shop;
+use JTL\Smarty\JTLSmarty;
 use JTL\Template\Admin\Extractor;
 use JTL\Template\Admin\Listing;
 use JTL\Template\Admin\Validation\TemplateValidator;
@@ -39,7 +40,7 @@ class TemplateController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->checkPermissions(Permissions::DISPLAY_TEMPLATE_VIEW);
         $this->getText->loadAdminLocale('pages/shoptemplate');

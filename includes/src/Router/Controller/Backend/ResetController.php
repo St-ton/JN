@@ -5,6 +5,7 @@ namespace JTL\Router\Controller\Backend;
 use JTL\Backend\Permissions;
 use JTL\Reset\Reset;
 use JTL\Reset\ResetContentType;
+use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -17,7 +18,7 @@ class ResetController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->checkPermissions(Permissions::RESET_SHOP_VIEW);
         $this->getText->loadAdminLocale('pages/shopzuruecksetzen');

@@ -8,6 +8,7 @@ use JTL\Extensions\SelectionWizard\Question;
 use JTL\Extensions\SelectionWizard\Wizard;
 use JTL\Helpers\Text;
 use JTL\Nice;
+use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -20,7 +21,7 @@ class SelectionWizardController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->checkPermissions(Permissions::EXTENSION_SELECTIONWIZARD_VIEW);
         $step     = '';

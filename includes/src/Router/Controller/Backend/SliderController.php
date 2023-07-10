@@ -8,6 +8,7 @@ use JTL\Helpers\Text;
 use JTL\Pagination\Pagination;
 use JTL\Slide;
 use JTL\Slider;
+use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -22,7 +23,7 @@ class SliderController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->checkPermissions(Permissions::SLIDER_VIEW);
         $this->getText->loadAdminLocale('pages/slider');

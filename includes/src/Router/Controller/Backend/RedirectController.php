@@ -11,6 +11,7 @@ use JTL\Pagination\Filter;
 use JTL\Pagination\Operation;
 use JTL\Pagination\Pagination;
 use JTL\Redirect;
+use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -23,7 +24,7 @@ class RedirectController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->checkPermissions(Permissions::REDIRECT_VIEW);
         $this->getText->loadAdminLocale('pages/redirect');

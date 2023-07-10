@@ -6,6 +6,7 @@ use InvalidArgumentException;
 use JTL\Cron\QueueEntry;
 use JTL\Export\ExporterFactory;
 use JTL\Shop;
+use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -19,7 +20,7 @@ class ExportStarterController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         @\ini_set('max_execution_time', '0');
         if (!$this->tokenIsValid || $this->request->getInt('e') < 1) {

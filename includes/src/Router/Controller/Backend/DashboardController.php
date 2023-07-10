@@ -11,6 +11,7 @@ use JTL\Helpers\Text;
 use JTL\Plugin\Helper;
 use JTL\Plugin\State;
 use JTL\Session\Backend;
+use JTL\Smarty\JTLSmarty;
 use JTL\Widgets\AbstractWidget;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
@@ -25,7 +26,7 @@ class DashboardController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         if ($this->request->postInt('adminlogin') === 1) {
             try {

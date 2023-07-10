@@ -8,6 +8,7 @@ use JTL\Language\LanguageHelper;
 use JTL\Pagination\Filter;
 use JTL\Pagination\Operation;
 use JTL\Pagination\Pagination;
+use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -26,7 +27,7 @@ class LanguageController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->checkPermissions(Permissions::LANGUAGE_VIEW);
         $this->getText->loadAdminLocale('pages/sprache');

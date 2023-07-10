@@ -6,6 +6,7 @@ use JTL\Backend\Permissions;
 use JTL\Checkout\Bestellung;
 use JTL\Helpers\Text;
 use JTL\Pagination\Pagination;
+use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -18,7 +19,7 @@ class OrderController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->getText->loadAdminLocale('pages/bestellungen');
         $this->checkPermissions(Permissions::ORDER_VIEW);

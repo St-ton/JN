@@ -31,6 +31,7 @@ use JTL\Plugin\Helper;
 use JTL\Redirect;
 use JTL\Shop;
 use JTL\Shopsetting;
+use JTL\Smarty\JTLSmarty;
 use JTL\Update\DBMigrationHelper;
 use JTL\Update\UpdateIO;
 use JTL\Widgets\Controller;
@@ -48,7 +49,7 @@ class IOController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         \ob_start();
         $io = AdminIO::getInstance();

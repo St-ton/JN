@@ -586,14 +586,12 @@ abstract class AbstractBackendController implements ControllerInterface
     /**
      * @inheritdoc
      */
-    public function initController(ServerRequestInterface $request, JTLSmarty $smarty): RequestParser
+    public function initController(ServerRequestInterface $request, JTLSmarty $smarty): void
     {
         $this->handledRoute = \str_replace('[/{id}]', '', $this->route);
         $this->smarty       = $smarty->assign('route', $this->handledRoute);
         $this->request      = new RequestParser($request);
         $this->validateToken();
-
-        return $this->request;
     }
 
     protected function validateToken(): void

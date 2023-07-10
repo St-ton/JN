@@ -6,6 +6,7 @@ use JTL\Backend\Permissions;
 use JTL\Catalog\Wishlist\Wishlist;
 use JTL\Customer\Customer;
 use JTL\Pagination\Pagination;
+use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -18,7 +19,7 @@ class WishlistController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->checkPermissions(Permissions::MODULE_WISHLIST_VIEW);
         $this->getText->loadAdminLocale('pages/wunschliste');

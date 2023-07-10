@@ -3,6 +3,7 @@
 namespace JTL\Router\Controller\Backend;
 
 use JTL\Helpers\Text;
+use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\Response;
 use Parsedown;
 use Psr\Http\Message\ResponseInterface;
@@ -17,7 +18,7 @@ class MarkdownController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $path = $request->getParsedBody()['path'] ?? null;
         if ($path === null || $this->tokenIsValid === false) {

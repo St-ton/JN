@@ -8,6 +8,7 @@ use JTL\Backend\Wizard\Controller;
 use JTL\Backend\Wizard\DefaultFactory;
 use JTL\Router\Route;
 use JTL\Session\Backend;
+use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -20,7 +21,7 @@ class WizardController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->getText->loadAdminLocale('pages/wizard');
         $factory      = new DefaultFactory(

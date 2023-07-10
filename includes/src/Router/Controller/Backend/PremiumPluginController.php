@@ -10,6 +10,7 @@ use JTL\License\Manager as LicenseManager;
 use JTL\Recommendation\Manager;
 use JTL\Router\Route;
 use JTL\Session\Backend;
+use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -22,7 +23,7 @@ class PremiumPluginController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->checkPermissions(Permissions::PLUGIN_ADMIN_VIEW);
         $this->getText->loadAdminLocale('pages/premiumplugin');

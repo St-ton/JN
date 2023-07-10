@@ -12,6 +12,7 @@ use JTL\Events\Dispatcher;
 use JTL\Events\Event;
 use JTL\Mapper\JobTypeToJob;
 use JTL\Shop;
+use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
@@ -46,7 +47,7 @@ class CronController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->checkPermissions(Permissions::CRON_VIEW);
         $deleted  = 0;

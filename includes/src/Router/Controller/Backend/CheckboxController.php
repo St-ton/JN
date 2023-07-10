@@ -10,6 +10,7 @@ use JTL\Exceptions\PermissionException;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Pagination\Pagination;
+use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -38,7 +39,7 @@ class CheckboxController extends AbstractBackendController
      * @inheritdoc
      * @throws PermissionException
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->checkPermissions(Permissions::CHECKBOXES_VIEW);
         $this->getText->loadAdminLocale('pages/checkbox');

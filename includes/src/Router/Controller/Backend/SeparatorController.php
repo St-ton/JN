@@ -6,6 +6,7 @@ use JTL\Backend\Permissions;
 use JTL\Catalog\Separator;
 use JTL\Helpers\Text;
 use JTL\PlausiTrennzeichen;
+use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -18,7 +19,7 @@ class SeparatorController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->checkPermissions(Permissions::SETTINGS_SEPARATOR_VIEW);
         $this->getText->loadAdminLocale('pages/trennzeichen');

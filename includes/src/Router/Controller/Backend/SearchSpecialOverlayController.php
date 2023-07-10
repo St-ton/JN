@@ -6,6 +6,7 @@ use JTL\Backend\Permissions;
 use JTL\Helpers\Overlay as Helper;
 use JTL\Media\Image\Overlay;
 use JTL\Shop;
+use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -18,7 +19,7 @@ class SearchSpecialOverlayController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->checkPermissions(Permissions::DISPLAY_ARTICLEOVERLAYS_VIEW);
         $this->getText->loadAdminLocale('pages/suchspecialoverlay');

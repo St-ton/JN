@@ -28,6 +28,7 @@ use JTL\Plugin\LegacyPluginLoader;
 use JTL\Plugin\PluginLoader;
 use JTL\Plugin\State;
 use JTL\Shop;
+use JTL\Smarty\JTLSmarty;
 use JTL\XMLParser;
 use JTLShop\SemVer\Version;
 use Laminas\Diactoros\Response;
@@ -126,7 +127,7 @@ class PluginManagerController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->checkPermissions(Permissions::PLUGIN_ADMIN_VIEW);
         $this->getText->loadAdminLocale('pages/pluginverwaltung');

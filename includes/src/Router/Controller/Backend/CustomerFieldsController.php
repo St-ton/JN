@@ -6,6 +6,7 @@ use JTL\Backend\CustomerFields;
 use JTL\Backend\Permissions;
 use JTL\Helpers\Text;
 use JTL\PlausiKundenfeld;
+use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -18,7 +19,7 @@ class CustomerFieldsController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->checkPermissions(Permissions::ORDER_CUSTOMERFIELDS_VIEW);
         $this->getText->loadAdminLocale('pages/kundenfeld');

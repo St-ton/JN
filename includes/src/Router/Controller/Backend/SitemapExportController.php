@@ -11,6 +11,7 @@ use JTL\Sitemap\Config\DefaultConfig;
 use JTL\Sitemap\Export;
 use JTL\Sitemap\ItemRenderers\DefaultRenderer;
 use JTL\Sitemap\SchemaRenderers\DefaultSchemaRenderer;
+use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\Response;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
@@ -25,7 +26,7 @@ class SitemapExportController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->checkPermissions(Permissions::EXPORT_SITEMAP_VIEW);
         $this->getText->loadAdminLocale('pages/sitemapexport');

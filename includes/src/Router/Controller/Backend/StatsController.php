@@ -8,6 +8,7 @@ use JTL\Linechart;
 use JTL\Pagination\Filter;
 use JTL\Pagination\Pagination;
 use JTL\Piechart;
+use JTL\Smarty\JTLSmarty;
 use JTL\Statistik;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -22,7 +23,7 @@ class StatsController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function getResponse(ServerRequestInterface $request, array $args): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->getText->loadAdminLocale('pages/statistik');
         $statsType = (int)($args['id'] ?? $this->request->requestInt('s'));

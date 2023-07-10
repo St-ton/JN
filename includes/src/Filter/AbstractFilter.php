@@ -897,14 +897,6 @@ abstract class AbstractFilter implements FilterInterface
         return $this->notFound;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function setNotFound(bool $notFound): void
-    {
-        $this->notFound = $notFound;
-    }
-
     protected function fail(): void
     {
         Shop::$is404             = true;

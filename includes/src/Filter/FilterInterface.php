@@ -445,9 +445,4 @@ interface FilterInterface
      * @return bool
      */
     public function isNotFound(): bool;
-
-    /**
-     * @param bool $notFound
-     */
-    public function setNotFound(bool $notFound): void;
 }

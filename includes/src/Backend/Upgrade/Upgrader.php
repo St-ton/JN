@@ -167,7 +167,7 @@ class Upgrader
         $this->disableMaintenanceMode();
         $end          = \microtime(true);
         $time         = \number_format($end - $start, 2);
-        $this->logs[] = \sprintf('Successfully pgraded to target version %s - took %ss.', $this->targetVersion, $time);
+        $this->logs[] = \sprintf('Successfully upgraded to target version %s - took %ss.', $this->targetVersion, $time);
 
         return true;
     }

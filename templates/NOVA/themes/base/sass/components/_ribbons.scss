@@ -59,3 +59,13 @@
     }
   }
 }
+
+@each $color, $value in $ribbon-custom-bg-colors {
+  .ribbon-custom.bg-#{$color} {
+    border-right-color: darken($value, 6%);
+  }
+}
+
+.ribbon-custom:before {
+  border-right-color: inherit;
+}

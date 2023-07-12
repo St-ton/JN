@@ -1343,7 +1343,9 @@ class AccountController
         $customerAttributes = $form->getCustomerAttributes($postData);
         $returnCode         = Form::hasNoMissingData($missingData);
 
-        \executeHook(\HOOK_JTL_PAGE_KUNDENDATEN_PLAUSI);
+        \executeHook(\HOOK_JTL_PAGE_KUNDENDATEN_PLAUSI, [
+            'returnCode' => &$returnCode
+        ]);
 
         if ($returnCode) {
             $customerData->cAbgeholt = 'N';

@@ -616,7 +616,7 @@ class CheckoutController extends RegistrationController
                         $info->cBankName = Text::htmlentities(\stripslashes($_POST['bankname'] ?? ''), \ENT_QUOTES);
                         $info->cKontoNr  = Text::htmlentities(\stripslashes($_POST['kontonr'] ?? ''), \ENT_QUOTES);
                         $info->cBLZ      = Text::htmlentities(\stripslashes($_POST['blz'] ?? ''), \ENT_QUOTES);
-                        $info->cIBAN     = Text::htmlentities(\stripslashes($_POST['iban']), \ENT_QUOTES);
+                        $info->cIBAN     = Text::htmlentities(\stripslashes($_POST['iban'] ?? ''), \ENT_QUOTES);
                         $info->cBIC      = Text::htmlentities(\stripslashes($_POST['bic'] ?? ''), \ENT_QUOTES);
                         $info->cInhaber  = Text::htmlentities(\stripslashes($_POST['inhaber'] ?? ''), \ENT_QUOTES);
 

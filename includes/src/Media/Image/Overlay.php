@@ -115,6 +115,12 @@ class Overlay
      */
     private $urlSizes;
 
+    /**
+     * @var stdClass
+     * @since 5.3.0
+     */
+    private $noImageOverlay;
+
     public const IMAGENAME_TEMPLATE = 'overlay';
 
     public const IMAGE_DEFAULT = [
@@ -137,8 +143,7 @@ class Overlay
         $this->setType($type)
             ->setLanguage($language)
             ->setTemplateName($template)
-            ->setPath(\PFAD_TEMPLATES . $this->getTemplateName() . \PFAD_OVERLAY_TEMPLATE)
-            ->setPathSizes();
+            ->setPath(\PFAD_TEMPLATES . $this->getTemplateName() . \PFAD_OVERLAY_TEMPLATE);
     }
 
     /**
@@ -399,6 +404,26 @@ class Overlay
             \IMAGE_SIZE_LG => $default ? \PFAD_SUCHSPECIALOVERLAY_RETINA : $this->getPath() . \IMAGE_SIZE_LG . '/'
         ];
 
+        return $this;
+    }
+
+    /**
+     * @return stdClass|null
+     * @since 5.3.0
+     */
+    public function getCssAndText(): ?stdClass
+    {
+        return $this->noImageOverlay ?? null;
+    }
+
+    /**
+     * @param stdClass|null $data
+     * @return $this
+     * @since 5.3.0
+     */
+    public function setCssAndText(stdClass $data = null): self
+    {
+        $this->noImageOverlay = $data;
         return $this;
     }
 

@@ -29,6 +29,7 @@ use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Media\Image;
+use JTL\Media\Image\Overlay;
 use JTL\Media\Image\Variation as VariationImage;
 use JTL\Media\Image\Product;
 use JTL\Media\MediaImageRequest;
@@ -4095,6 +4096,36 @@ class Artikel implements RoutableInterface
      */
     private function getSearchSpecialOverlay(): self
     {
+        $customBadge       = new \stdClass();
+        $tmp               = \explode(
+            ';',
+            $this->getFunctionalAttributevalue(\FKT_ATTRIBUT_CUSTOM_ITEM_BADGE) ?? ''
+        );
+        $customBadge->text = $tmp[0] ?? '';
+        if ($customBadge->text !== '') {
+            $customBadge->text  = Shop::Lang()->get($customBadge->text, 'custom');
+            $customBadge->class = '';
+            $customBadge->style = '';
+            $textColor          = $tmp[1] ?? '';
+            $bgColor            = $tmp[2] ?? '';
+
+            if (\str_starts_with($textColor, '#')) {
+                $customBadge->style .= 'color:' . $textColor . ';';
+            } else {
+                $customBadge->class .= ' text-' . $textColor;
+            }
+            if (\str_starts_with($bgColor, '#')) {
+                $customBadge->style .= 'border-right-color: ' . $bgColor . ';background-color:' . $bgColor . ';';
+            } else {
+                $customBadge->class .= ' bg-' . $bgColor;
+            }
+            $overlay = new Overlay(\SEARCHSPECIALS_CUSTOMBADGE, Shop::getLanguageID());
+            $overlay->setPriority(0);
+            $overlay->setCssAndText($customBadge);
+            $this->oSuchspecialBild = $overlay;
+            return $this;
+        }
+
         $searchSpecials = SearchSpecial::getAll($this->kSprache);
         // Suchspecialbildoverlay
         // Kleinste Prio und somit die Wichtigste, steht immer im Element 0 vom Array (nPrio ASC)
@@ -6112,6 +6143,7 @@ class Artikel implements RoutableInterface
 
     /**
      * @return int|null
+     * @noinspection PhpHierarchyChecksInspection
      */
     public function getID()
     {

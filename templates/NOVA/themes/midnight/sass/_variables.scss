@@ -46,6 +46,20 @@ $theme-colors: map-merge((
         'gray-darker'	: $gray-darker
 ), $theme-colors);
 
+$ribbon-custom-bg-colors				: () !default;
+$ribbon-custom-bg-colors: map-merge($theme-colors, (
+        'primary'    : $primary,
+        'secondary'  : $secondary,
+        'success'    : $bg-success,
+        'danger'     : $bg-danger,
+        'warning'    : $bg-warning,
+        'info'       : $white,
+        'light'      : $gray-lighter,
+        'dark'       : $gray-darker,
+        'white'      : $gray-darker,
+        'transparent': transparent
+));
+
 // spacer
 
 $spacer: 1rem !default;

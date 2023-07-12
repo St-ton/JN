@@ -12,7 +12,6 @@ use JTL\Filter\Pagination\ItemFactory;
 use JTL\Filter\Pagination\Pagination;
 use JTL\Helpers\Category;
 use JTL\Helpers\Product;
-use JTL\Helpers\Request;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
@@ -68,7 +67,6 @@ class ProductListController extends AbstractController
      */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
-        $this->smarty = $smarty;
         if (!$this->productFilter->getBaseState()->isInitialized()) {
             $this->updateProductFilter();
         }
@@ -169,7 +167,7 @@ class ProductListController extends AbstractController
         );
         \executeHook(\HOOK_FILTER_ENDE);
 
-        if (Request::verifyGPCDataInt('useMobileFilters')) {
+        if ($this->request->requestInt('useMobileFilters')) {
             return $this->smarty->assign('NaviFilter', $this->productFilter)
                 ->assign('show_filters', true)
                 ->assign('itemCount', $this->searchResults->getProductCount())
@@ -184,9 +182,9 @@ class ProductListController extends AbstractController
      */
     protected function checkProductRedirect(): ?ResponseInterface
     {
-        if ($this->config['navigationsfilter']['allgemein_weiterleitung'] !== 'Y'
+        if ($this->request->isAjax
+            || $this->config['navigationsfilter']['allgemein_weiterleitung'] !== 'Y'
             || $this->searchResults->getVisibleProductCount() !== 1
-            || Request::isAjaxRequest()
         ) {
             return null;
         }
@@ -233,9 +231,9 @@ class ProductListController extends AbstractController
     protected function assignPagination(): void
     {
         $pages = $this->searchResults->getPages();
-        if ($pages->getCurrentPage() > 0
+        if (!$this->request->isAjax
+            && $pages->getCurrentPage() > 0
             && $pages->getTotalPages() > 0
-            && !Request::isAjaxRequest()
             && ($this->searchResults->getVisibleProductCount() === 0
                 || ($pages->getCurrentPage() > $pages->getTotalPages()))
         ) {

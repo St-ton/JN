@@ -5,9 +5,7 @@ namespace JTL\Router\Controller;
 use JTL\Campaign;
 use JTL\Cart\CartHelper;
 use JTL\Catalog\Wishlist\Wishlist;
-use JTL\Helpers\Form;
 use JTL\Helpers\Product;
-use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Pagination\Pagination;
 use JTL\Session\Frontend;
@@ -39,15 +37,14 @@ class WishlistController extends AbstractController
      */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
-        $this->smarty = $smarty;
         Shop::setPageType(\PAGE_WUNSCHLISTE);
-        $urlID            = Text::filterXSS(Request::verifyGPDataString('wlid'));
-        $wishlistID       = (Request::verifyGPCDataInt('wl') > 0 && Request::verifyGPCDataInt('wlvm') === 0)
-            ? Request::verifyGPCDataInt('wl') // one of multiple customer wishlists
+        $urlID            = Text::filterXSS($this->request->request('wlid'));
+        $wishlistID       = ($this->request->requestInt('wl') > 0 && $this->request->requestInt('wlvm') === 0)
+            ? $this->request->requestInt('wl') // one of multiple customer wishlists
             : ($this->state->wishlistID // default wishlist from Shop class
                 ?? $urlID); // public link
-        $wishlistTargetID = Request::verifyGPCDataInt('kWunschlisteTarget');
-        $searchQuery      = Text::filterXSS(Request::verifyGPDataString('cSuche'));
+        $wishlistTargetID = $this->request->requestInt('kWunschlisteTarget');
+        $searchQuery      = Text::filterXSS($this->request->request('cSuche'));
         $step             = null;
         $wishlist         = null;
         $action           = null;
@@ -60,18 +57,18 @@ class WishlistController extends AbstractController
             $_SESSION['Wunschliste']->schreibeDB();
             $wishlistID = $_SESSION['Wunschliste']->getID();
         }
-        if (!empty($_POST['addToCart'])) {
+        if (!empty($this->request->post('addToCart'))) {
             $action         = 'addToCart';
-            $wishlistItemID = (int)$_POST['addToCart'];
-        } elseif (!empty($_POST['remove'])) {
+            $wishlistItemID = $this->request->postInt('addToCart');
+        } elseif (!empty($this->request->post('remove'))) {
             $action         = 'remove';
-            $wishlistItemID = (int)$_POST['remove'];
-        } elseif (isset($_POST['action'])) {
-            $action = $_POST['action'];
+            $wishlistItemID = $this->request->postInt('remove');
+        } elseif ($this->request->post('action') !== null) {
+            $action = $this->request->post('action');
         }
-        if ($action !== null && Form::validateToken()) {
-            if (isset($_POST['kWunschliste'])) {
-                $wishlistID = (int)$_POST['kWunschliste'];
+        if ($action !== null && $this->tokenIsValid) {
+            if ($this->request->post('kWunschliste') !== null) {
+                $wishlistID = $this->request->postInt('kWunschliste');
                 $wl         = Wishlist::instanceByID($wishlistID)->filterPositions($searchQuery);
                 switch ($action) {
                     case 'addToCart':
@@ -96,9 +93,9 @@ class WishlistController extends AbstractController
                     case 'sendViaMail':
                         if ($wl->getURL() !== '' && $wl->isPublic() && $wl->isSelfControlled()) {
                             $step = 'wunschliste anzeigen';
-                            if (Request::postInt('send') === 1) {
+                            if ($this->request->postInt('send') === 1) {
                                 if ($this->config['global']['global_wunschliste_anzeigen'] === 'Y') {
-                                    $mails = \explode(' ', Text::filterXSS($_POST['email']));
+                                    $mails = \explode(' ', Text::filterXSS($this->request->post('email')));
                                     $this->alertService->addNotice(Wishlist::send($mails, $wishlistID), 'sendWL');
                                     $wishlist = Wishlist::buildPrice(Wishlist::instanceByID($wishlistID));
                                 }
@@ -189,7 +186,9 @@ class WishlistController extends AbstractController
 
                     case 'createNew':
                         $this->alertService->addNotice(
-                            Wishlist::save(Text::htmlentities(Text::filterXSS($_POST['cWunschlisteName']))),
+                            Wishlist::save(
+                                Text::htmlentities(Text::filterXSS($this->request->post('cWunschlisteName')))
+                            ),
                             'saveWL'
                         );
                         break;
@@ -233,10 +232,10 @@ class WishlistController extends AbstractController
             }
         }
 
-        if (Request::verifyGPCDataInt('wlidmsg') > 0) {
-            $this->alertService->addNotice(Wishlist::mapMessage(Request::verifyGPCDataInt('wlidmsg')), 'wlidmsg');
+        if ($this->request->requestInt('wlidmsg') > 0) {
+            $this->alertService->addNotice(Wishlist::mapMessage($this->request->requestInt('wlidmsg')), 'wlidmsg');
         }
-        if (Request::verifyGPCDataInt('error') === 1) {
+        if ($this->request->requestInt('error') === 1) {
             if (\mb_strlen($urlID) > 0) {
                 $wl = Wishlist::instanceByURLID($urlID);
                 if ($wl->isPublic()) {
@@ -296,7 +295,7 @@ class WishlistController extends AbstractController
             ->assign('pagination', $pagination)
             ->assign('wishlistItems', $pagination->getPageItems())
             ->assign('oWunschliste_arr', $wishlists)
-            ->assign('newWL', Request::verifyGPCDataInt('newWL'))
+            ->assign('newWL', $this->request->requestInt('newWL'))
             ->assign('wlsearch', $searchQuery)
             ->assign('Link', $link)
             ->assign('hasItems', \count($wishListItems) > 0)
@@ -310,7 +309,7 @@ class WishlistController extends AbstractController
             $campaign = new Campaign(\KAMPAGNE_INTERN_OEFFENTL_WUNSCHZETTEL);
             if (isset($campaign->kKampagne, $campaign->cWert)
                 && \mb_convert_case($campaign->cWert, \MB_CASE_LOWER) ===
-                \strtolower(Request::verifyGPDataString($campaign->cParameter))
+                \strtolower($this->request->request($campaign->cParameter))
             ) {
                 $event               = new stdClass();
                 $event->kKampagne    = $campaign->kKampagne;

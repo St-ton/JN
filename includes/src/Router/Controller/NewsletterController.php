@@ -3,7 +3,6 @@
 namespace JTL\Router\Controller;
 
 use Exception;
-use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Newsletter\Controller;
@@ -39,15 +38,13 @@ class NewsletterController extends PageController
      */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
-        $this->smarty = $smarty;
         Shop::setPageType($this->state->pageType);
-        $valid              = Form::validateToken();
         $controller         = new Controller($this->db, $this->config);
         $option             = 'eintragen';
         $customer           = Frontend::getCustomer();
         $this->canonicalURL = $this->currentLink?->getURL() ?? '';
-        if ($valid && Request::verifyGPCDataInt('abonnieren') > 0) {
-            $post = Text::filterXSS($_POST);
+        if ($this->tokenIsValid && $this->request->requestInt('abonnieren') > 0) {
+            $post = Text::filterXSS($this->request->getBody());
             if ($customer->getID() > 0) {
                 $post['cAnrede']   = $post['cAnrede'] ?? $customer->cAnrede;
                 $post['cVorname']  = $post['cVorname'] ?? $customer->cVorname;
@@ -79,11 +76,11 @@ class NewsletterController extends PageController
                 );
             }
             $this->smarty->assign('cPost_arr', $post);
-        } elseif ($valid && Request::verifyGPCDataInt('abmelden') === 1) {
-            if (Text::filterEmailAddress($_POST['cEmail']) !== false) {
+        } elseif ($this->tokenIsValid && $this->request->requestInt('abmelden') === 1) {
+            if (Text::filterEmailAddress($this->request->post('cEmail')) !== false) {
                 try {
                     (new Optin(OptinNewsletter::class))
-                        ->setEmail(Text::htmlentities($_POST['cEmail']))
+                        ->setEmail(Text::htmlentities($this->request->post('cEmail')))
                         ->setAction(OptinBase::DELETE_CODE)
                         ->handleOptin();
                 } catch (Exception) {
@@ -99,9 +96,9 @@ class NewsletterController extends PageController
                 );
                 $this->smarty->assign('oFehlendeAngaben', (object)['cUnsubscribeEmail' => 1]);
             }
-        } elseif (Request::getInt('show') > 0) {
+        } elseif ($this->request->getInt('show') > 0) {
             $option = 'anzeigen';
-            if ($history = $controller->getHistory($this->customerGroupID, Request::getInt('show'))) {
+            if ($history = $controller->getHistory($this->customerGroupID, $this->request->getInt('show'))) {
                 $this->smarty->assign('oNewsletterHistory', $history);
             }
         }

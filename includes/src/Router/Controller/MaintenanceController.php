@@ -28,7 +28,6 @@ class MaintenanceController extends AbstractController
      */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
-        $this->smarty = $smarty;
         Shop::setPageType(\PAGE_WARTUNG);
         $this->preRender();
 

@@ -2,7 +2,6 @@
 
 namespace JTL\Router\Controller\Backend;
 
-use JTL\Router\RequestParser;
 use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

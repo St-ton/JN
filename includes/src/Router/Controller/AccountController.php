@@ -29,7 +29,6 @@ class AccountController extends AbstractController
      */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
-        $this->smarty = $smarty;
         Shop::setPageType($this->state->pageType);
         require_once \PFAD_ROOT . \PFAD_INCLUDES . 'bestellvorgang_inc.php';
 

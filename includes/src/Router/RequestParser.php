@@ -7,18 +7,23 @@ use Psr\Http\Message\ServerRequestInterface;
 /**
  * Class RequestParser
  * @package JTL\Router
- * @since 5.3.0
+ * @since   5.3.0
  */
 class RequestParser
 {
-    private array|null|object $body;
+    private array | null | object $body;
 
     private array $queryParams;
+
+    public bool $isAjax;
 
     public function __construct(private readonly ServerRequestInterface $request)
     {
         $this->body        = $this->request->getParsedBody() ?? [];
         $this->queryParams = $this->request->getQueryParams();
+        $header            = $this->request->getHeader('x-requested-with');
+        $this->isAjax      = isset($this->request->getQueryParams()['isAjax'])
+                             || \in_array('xmlhttprequest', \array_map('\mb_strtolower', $header), true);
     }
 
     public function post(string $var, mixed $default = null): mixed
@@ -78,6 +83,11 @@ class RequestParser
 
     public function updateBody(string $var, mixed $value): void
     {
-        $this->body[$var] = $var;
+        $this->body[$var] = $value;
+    }
+
+    public function updateParam(string $var, mixed $value): void
+    {
+        $this->queryParams[$var] = $value;
     }
 }

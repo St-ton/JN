@@ -10,7 +10,6 @@ use JTL\Checkout\Kupon;
 use JTL\Extensions\Upload\Upload;
 use JTL\Helpers\Form;
 use JTL\Helpers\Order;
-use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -39,7 +38,6 @@ class CartController extends PageController
      */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
-        $this->smarty = $smarty;
         require_once \PFAD_ROOT . \PFAD_INCLUDES . 'bestellvorgang_inc.php';
 
         Shop::setPageType(\PAGE_WARENKORB);
@@ -48,19 +46,18 @@ class CartController extends PageController
         $couponCodeValid = true;
         $cart            = Frontend::getCart();
         $link            = $linkHelper->getSpecialPage(\LINKTYP_WARENKORB);
-        $valid           = Form::validateToken();
         // Warenkorbaktualisierung?
-        if ($valid) {
+        if ($this->tokenIsValid) {
             CartHelper::applyCartChanges();
         }
         CartHelper::validateCartConfig();
         Order::setUsedBalance();
-        if ($valid && isset($_POST['land'], $_POST['plz'])
-            && !ShippingMethod::getShippingCosts($_POST['land'], $_POST['plz'], $warning)
+        if ($this->tokenIsValid && $this->request->post('land') !== null && $this->request->post('plz') !== null
+            && !ShippingMethod::getShippingCosts($this->request->post('land'), $this->request->post('plz'), $warning)
         ) {
             $warning = Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages');
         }
-        if ($valid) {
+        if ($this->tokenIsValid) {
             $this->checkCoupons($cart);
             $warning = $this->checkGifts($cart);
         }
@@ -129,7 +126,7 @@ class CartController extends PageController
      */
     protected function checkErrors(Cart $cart): ?string
     {
-        if (($res = Request::getInt('fillOut', -1)) < 0) {
+        if (($res = $this->request->getInt('fillOut', -1)) < 0) {
             return null;
         }
         $warning = null;
@@ -156,11 +153,13 @@ class CartController extends PageController
      */
     protected function checkGifts(Cart $cart): string
     {
-        if (!isset($_POST['gratis_geschenk'], $_POST['gratisgeschenk']) || (int)$_POST['gratis_geschenk'] !== 1) {
+        if (($this->request->post('gratis_geschenk') === null && $this->request->post('gratisgeschenk') === null)
+            || $this->request->postInt('gratis_geschenk') !== 1
+        ) {
             return '';
         }
         $warning = '';
-        $giftID  = (int)$_POST['gratisgeschenk'];
+        $giftID  = $this->request->postInt('gratisgeschenk');
         $gift    = $this->db->getSingleObject(
             'SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand, 
                 tartikel.cLagerKleinerNull, tartikel.cLagerBeachten
@@ -198,12 +197,14 @@ class CartController extends PageController
      */
     protected function checkCoupons(Cart $cart): void
     {
-        if (Request::postVar('Kuponcode', '') === '' || $cart->gibAnzahlArtikelExt([\C_WARENKORBPOS_TYP_ARTIKEL]) < 1) {
+        if ($this->request->post('Kuponcode', '') === ''
+            || $cart->gibAnzahlArtikelExt([\C_WARENKORBPOS_TYP_ARTIKEL]) < 1
+        ) {
             // Kupon darf nicht im leeren Warenkorb eingelöst werden
             return;
         }
         $coupon            = new Kupon();
-        $coupon            = $coupon->getByCode($_POST['Kuponcode']);
+        $coupon            = $coupon->getByCode($this->request->post('Kuponcode'));
         $invalidCouponCode = 11;
         if ($coupon !== false && $coupon->kKupon > 0) {
             $couponError       = $coupon->check();

@@ -4,8 +4,6 @@ namespace JTL\Router\Controller;
 
 use JTL\Checkout\Bestellung;
 use JTL\Customer\Customer;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -35,10 +33,9 @@ class OrderStatusController extends PageController
      */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
-        $this->smarty = $smarty;
         Shop::setPageType(\PAGE_BESTELLSTATUS);
         $linkHelper = Shop::Container()->getLinkService();
-        $uid        = Request::verifyGPDataString('uid');
+        $uid        = $this->request->request('uid');
         if (!empty($uid)) {
             $status = $this->db->getSingleObject(
                 'SELECT kBestellung, failedAttempts
@@ -64,10 +61,12 @@ class OrderStatusController extends PageController
             $order    = new Bestellung((int)$status->kBestellung, true);
             $plzValid = false;
 
-            if (Form::validateToken()) {
-                if (isset($_POST['plz']) && $order->oRechnungsadresse->cPLZ === Text::filterXSS($_POST['plz'])) {
+            if ($this->tokenIsValid) {
+                if ($this->request->post('plz') !== null
+                    && $order->oRechnungsadresse->cPLZ === Text::filterXSS($this->request->post('plz'))
+                ) {
                     $plzValid = true;
-                } elseif (!empty($_POST['plz'])) {
+                } elseif (!empty($this->request->post('plz'))) {
                     $this->db->update(
                         'tbestellstatus',
                         'cUID',

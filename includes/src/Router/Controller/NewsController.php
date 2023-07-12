@@ -8,8 +8,6 @@ use JTL\Catalog\Navigation;
 use JTL\Catalog\NavigationEntry;
 use JTL\Filter\Metadata;
 use JTL\Helpers\CMS;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Helpers\URL;
 use JTL\News\Category;
@@ -118,13 +116,13 @@ class NewsController extends AbstractController
     public function register(RouteGroup $route, string $dynName): void
     {
         $name = \SLUG_ALLOW_SLASHES ? 'name:.+' : 'name';
-        $route->get('/' . \ROUTE_PREFIX_NEWS . '/id/{id:\d+}', $this->getResponse(...))
+        $route->get('/' . \ROUTE_PREFIX_NEWS . '/id/{id:\d+}', [$this, 'getResponse'])
             ->setName('ROUTE_NEWS_BY_ID' . $dynName);
-        $route->get('/' . \ROUTE_PREFIX_NEWS . '[/{' . $name . '}]', $this->getResponse(...))
+        $route->get('/' . \ROUTE_PREFIX_NEWS . '[/{' . $name . '}]', [$this, 'getResponse'])
             ->setName('ROUTE_NEWS_BY_NAME' . $dynName);
-        $route->post('/' . \ROUTE_PREFIX_NEWS . '/id/{id:\d+}', $this->getResponse(...))
+        $route->post('/' . \ROUTE_PREFIX_NEWS . '/id/{id:\d+}', [$this, 'getResponse'])
             ->setName('ROUTE_NEWS_BY_ID' . $dynName . 'POST');
-        $route->post('/' . \ROUTE_PREFIX_NEWS . '/{' . $name . '}', $this->getResponse(...))
+        $route->post('/' . \ROUTE_PREFIX_NEWS . '/{' . $name . '}', [$this, 'getResponse'])
             ->setName('ROUTE_NEWS_BY_NAME' . $dynName . 'POST');
     }
 
@@ -167,8 +165,8 @@ class NewsController extends AbstractController
                 $this->metaTitle       = $newsItem->getMetaTitle();
                 $this->metaDescription = $newsItem->getMetaDescription();
                 $this->metaKeywords    = $newsItem->getMetaKeyword();
-                if ((int)($_POST['kommentar_einfuegen'] ?? 0) > 0 && Form::validateToken()) {
-                    $this->addComment($newsItemID, $_POST);
+                if ($this->tokenIsValid && $this->request->postInt('kommentar_einfuegen') > 0) {
+                    $this->addComment($newsItemID, $this->request->getBody());
                 }
                 $this->displayItem($newsItem, $pagination);
 
@@ -273,9 +271,9 @@ class NewsController extends AbstractController
         if (!isset($_SESSION['NewsNaviFilter'])) {
             $_SESSION['NewsNaviFilter'] = new stdClass();
         }
-        if (Request::verifyGPCDataInt('nSort') > 0) {
-            $_SESSION['NewsNaviFilter']->nSort = Request::verifyGPCDataInt('nSort');
-        } elseif (Request::verifyGPCDataInt('nSort') === -1) {
+        if ($this->request->requestInt('nSort') > 0) {
+            $_SESSION['NewsNaviFilter']->nSort = $this->request->requestInt('nSort');
+        } elseif ($this->request->requestInt('nSort') === -1) {
             $_SESSION['NewsNaviFilter']->nSort = -1;
         } elseif (!isset($_SESSION['NewsNaviFilter']->nSort)) {
             $_SESSION['NewsNaviFilter']->nSort = 1;

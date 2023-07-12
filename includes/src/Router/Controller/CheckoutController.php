@@ -25,7 +25,6 @@ use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Order;
 use JTL\Helpers\PaymentMethod as Helper;
-use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
@@ -85,7 +84,6 @@ class CheckoutController extends RegistrationController
      */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
-        $this->smarty = $smarty;
         Shop::setPageType(\PAGE_BESTELLVORGANG);
         require_once \PFAD_ROOT . \PFAD_INCLUDES . 'bestellvorgang_inc.php';
         require_once \PFAD_ROOT . \PFAD_INCLUDES . 'registrieren_inc.php';
@@ -99,18 +97,17 @@ class CheckoutController extends RegistrationController
         $this->updateStep('accountwahl');
         $linkService = Shop::Container()->getLinkService();
         $controller  = new AccountController($this->db, $this->alertService, $linkService, $this->smarty);
-        $valid       = Form::validateToken();
 
         unset($_SESSION['ajaxcheckout']);
-        if (Request::postInt('login') === 1) {
-            $controller->login($_POST['email'], $_POST['passwort']);
+        if ($this->request->postInt('login') === 1) {
+            $controller->login($this->request->post('email'), $this->request->post('passwort'));
         }
-        if (Request::verifyGPCDataInt('basket2Pers') === 1) {
+        if ($this->request->requestInt('basket2Pers') === 1) {
             $controller->setzeWarenkorbPersInWarenkorb($this->customer->getID());
 
             return new RedirectResponse($linkService->getStaticRoute('bestellvorgang.php') . '?wk=1');
         }
-        if (Request::verifyGPCDataInt('updatePersCart') === 1) {
+        if ($this->request->requestInt('updatePersCart') === 1) {
             $pers = PersistentCart::getInstance($this->customer->getID(), false, $this->db);
             $pers->entferneAlles();
             $pers->bauePersVonSession();
@@ -136,10 +133,10 @@ class CheckoutController extends RegistrationController
         // oneClick? Darf nur einmal ausgeführt werden und nur dann, wenn man vom Warenkorb kommt.
         if (!isset($_SESSION['Lieferadresse'])
             && $this->config['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] === 'NO'
-            && Request::verifyGPCDataInt('wk') === 1
+            && $this->request->requestInt('wk') === 1
         ) {
             $persCart = new PersistentCart($this->customer->getID());
-            if (!(Request::postInt('login') === 1
+            if (!($this->request->postInt('login') === 1
                 && $this->config['kaufabwicklung']['warenkorbpers_nutzen'] === 'Y'
                 && $this->config['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'P'
                 && \count($persCart->getItems()) > 0)
@@ -147,39 +144,43 @@ class CheckoutController extends RegistrationController
                 $this->pruefeAjaxEinKlick();
             }
         }
-        if (Request::verifyGPCDataInt('wk') === 1) {
+        if ($this->request->requestInt('wk') === 1) {
             Kupon::resetNewCustomerCoupon();
         }
         $form = new RegistrationForm();
-        if ($valid && Request::postInt('unreg_form') === 1) {
+        if ($this->tokenIsValid && $this->request->postInt('unreg_form') === 1) {
             if ($this->config['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y') {
-                $this->checkGuestOrderProcess($_POST);
-            } elseif (isset($_POST['shipping_address'], $_POST['register']['shipping_address'])) {
-                $this->checkNewShippingAddress($_POST);
-            } elseif (Request::postInt('kLieferadresse') > 0) {
-                $form->pruefeLieferdaten($_POST);
-            } elseif (Request::postInt('shipping_address') === 0) {
-                $missingInput = $form->getMissingInput($_POST);
-                $form->pruefeLieferdaten($_POST, $missingInput);
+                $this->checkGuestOrderProcess($this->request->getBody());
+            } elseif ($this->request->post('shipping_address') !== null
+                  && ($this->request->post('register')['shipping_address'] ?? null) !== null
+            ) {
+                $this->checkNewShippingAddress($this->request->getBody());
+            } elseif ($this->request->postInt('kLieferadresse') > 0) {
+                $form->pruefeLieferdaten($this->request->getBody());
+            } elseif ($this->request->postInt('shipping_address') === 0) {
+                $missingInput = $form->getMissingInput($this->request->getBody());
+                $form->pruefeLieferdaten($this->request->getBody(), $missingInput);
             }
         }
-        if (isset($_GET['editLieferadresse'])) {
+        if ($this->request->get('editLieferadresse') !== null) {
             // Shipping address and customer address are now on same site
-            $_GET['editRechnungsadresse'] = Request::getInt($_GET['editLieferadresse']);
+            $this->request->updateParam('editRechnungsadresse', $this->request->getInt('editLieferadresse'));
         }
-        if (Request::postInt('unreg_form', -1) === 0) {
-            $_POST['checkout'] = 1;
-            $_POST['form']     = 1;
-            $this->saveCustomer($_POST);
+        if ($this->request->postInt('unreg_form', -1) === 0) {
+            $this->request->updateBody('checkout', 1);
+            $this->request->updateBody('form', 1);
+            $this->saveCustomer($this->request->getBody());
         }
-        if (($paymentMethodID = Request::getInt('kZahlungsart')) > 0) {
+        if (($paymentMethodID = $this->request->getInt('kZahlungsart')) > 0) {
             $this->checkPaymentMethod($paymentMethodID);
         }
-        if (Request::postInt('versandartwahl') === 1 || isset($_GET['kVersandart'])) {
+        if ($this->request->postInt('versandartwahl') === 1 || $this->request->get('kVersandart') !== null) {
             unset($_SESSION['Zahlungsart']);
-            $this->checkShippingSelection(Request::verifyGPCDataInt('kVersandart'));
+            $this->checkShippingSelection($this->request->requestInt('kVersandart'));
         }
-        if (Request::getInt('unreg') === 1 && $this->config['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y') {
+        if ($this->request->getInt('unreg') === 1
+            && $this->config['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y'
+        ) {
             $this->updateStep('edit_customer_address');
         }
 
@@ -199,10 +200,10 @@ class CheckoutController extends RegistrationController
                     $shippingID = Order::getLastOrderRefIDs($this->customer->getID())->kLieferadresse;
                 }
                 $form->pruefeLieferdaten([
-                    'kLieferadresse' => max($shippingID, 0)
+                    'kLieferadresse' => \max($shippingID, 0)
                 ]);
                 if (isset($_SESSION['Lieferadresse']) && $_SESSION['Lieferadresse']->kLieferadresse > 0) {
-                    $_GET['editLieferadresse'] = 1;
+                    $this->request->updateParam('editLieferadresse', 1);
                 }
             }
 
@@ -245,8 +246,8 @@ class CheckoutController extends RegistrationController
             unset($_SESSION['Kunde']);
             // unset not needed values to ensure the correct step
             $_POST = [];
-            if (isset($_GET['editRechnungsadresse'])) {
-                unset($_GET['editRechnungsadresse']);
+            if ($this->request->get('editRechnungsadresse') === null) {
+                $this->request->updateParam('editRechnungsadresse', null);
             }
         }
         $this->checkStepShippingCosts();
@@ -260,7 +261,7 @@ class CheckoutController extends RegistrationController
         $this->checkStepShippingMethod(Text::filterXSS($_GET));
         // sondersteps Zahlungsart aendern
         $this->checkStepPaymentMethod(Text::filterXSS($_GET));
-        $this->checkStepPaymentMethodSelection(Text::filterXSS($_POST));
+        $this->checkStepPaymentMethodSelection(Text::filterXSS($this->request->getBody()));
         if ($this->step === 'accountwahl') {
             $this->checkStepAccountSelection();
             $this->getStepGuestCheckout();
@@ -282,15 +283,15 @@ class CheckoutController extends RegistrationController
             Cart::refreshChecksum($this->cart);
         }
         if ($this->step === 'ZahlungZusatzschritt') {
-            $this->getStepPaymentAdditionalStep($_POST);
+            $this->getStepPaymentAdditionalStep($this->request->getBody());
             Cart::refreshChecksum($this->cart);
         }
         if ($this->step === 'Bestaetigung') {
             if (($response = $this->validateCouponInCheckout()) !== null) {
                 return $response;
             }
-            Order::checkBalance($_POST);
-            CouponValidator::validateCoupon($_POST, $this->customer);
+            Order::checkBalance($this->request->getBody());
+            CouponValidator::validateCoupon($this->request->getBody(), $this->customer);
             //evtl genutztes guthaben anpassen
             $this->pruefeGuthabenNutzen();
             // Eventuellen Zahlungsarten Aufpreis/Rabatt neusetzen
@@ -305,7 +306,7 @@ class CheckoutController extends RegistrationController
             $this->checkPaymentMethod($paymentMethod->kZahlungsart ?? 0);
 
             if ((isset($_SESSION['Bestellung']->GuthabenNutzen) && (int)$_SESSION['Bestellung']->GuthabenNutzen === 1)
-                || Request::postInt('guthabenVerrechnen') === 1
+                || $this->request->postInt('guthabenVerrechnen') === 1
             ) {
                 $_SESSION['Bestellung']->GuthabenNutzen   = 1;
                 $_SESSION['Bestellung']->fGuthabenGenutzt = Order::getOrderCredit($_SESSION['Bestellung']);
@@ -325,13 +326,13 @@ class CheckoutController extends RegistrationController
             ->assign('step', $this->step)
             ->assign(
                 'editRechnungsadresse',
-                $this->customer->nRegistriert === 1 ? 1 : Request::verifyGPCDataInt('editRechnungsadresse')
+                $this->customer->nRegistriert === 1 ? 1 : $this->request->requestInt('editRechnungsadresse')
             )
             ->assign('WarensummeLocalized', $this->cart->gibGesamtsummeWarenLocalized())
             ->assign('Warensumme', $this->cart->gibGesamtsummeWaren())
             ->assign('Steuerpositionen', $this->cart->gibSteuerpositionen())
             ->assign('bestellschritt', $this->getNextOrderStep($this->step))
-            ->assign('unregForm', Request::verifyGPCDataInt('unreg_form'))
+            ->assign('unregForm', $this->request->requestInt('unreg_form'))
             ->assign('hasDownloads', $hasDownloads)
             ->assignDeprecated('C_WARENKORBPOS_TYP_ARTIKEL', \C_WARENKORBPOS_TYP_ARTIKEL, '5.0.0')
             ->assignDeprecated('C_WARENKORBPOS_TYP_GRATISGESCHENK', \C_WARENKORBPOS_TYP_GRATISGESCHENK, '5.0.0');
@@ -602,44 +603,63 @@ class CheckoutController extends RegistrationController
         $paymentMethod->angezeigterName = $specialItem->cName;
         $_SESSION['Zahlungsart']        = $paymentMethod;
         $_SESSION['AktiveZahlungsart']  = $paymentMethod->kZahlungsart;
-        if ($paymentMethod->cZusatzschrittTemplate) {
-            $info                 = new stdClass();
-            $additionalInfoExists = false;
-            switch ($paymentMethod->cModulId) {
-                case 'za_null_jtl':
-                    // the null-paymentMethod did not has any additional-steps
-                    break;
-                case 'za_lastschrift_jtl':
-                    $fehlendeAngaben = $this->checkAdditionalPayment($paymentMethod);
-
-                    if (\count($fehlendeAngaben) === 0) {
-                        $info->cBankName = Text::htmlentities(\stripslashes($_POST['bankname'] ?? ''), \ENT_QUOTES);
-                        $info->cKontoNr  = Text::htmlentities(\stripslashes($_POST['kontonr'] ?? ''), \ENT_QUOTES);
-                        $info->cBLZ      = Text::htmlentities(\stripslashes($_POST['blz'] ?? ''), \ENT_QUOTES);
-                        $info->cIBAN     = Text::htmlentities(\stripslashes($_POST['iban']), \ENT_QUOTES);
-                        $info->cBIC      = Text::htmlentities(\stripslashes($_POST['bic'] ?? ''), \ENT_QUOTES);
-                        $info->cInhaber  = Text::htmlentities(\stripslashes($_POST['inhaber'] ?? ''), \ENT_QUOTES);
-
-                        $additionalInfoExists = true;
-                    } elseif ($zaInfo !== null && (isset($zaInfo->cKontoNr) || isset($zaInfo->cIBAN))) {
-                        $info                 = $zaInfo;
-                        $additionalInfoExists = true;
-                    }
-                    break;
-                default:
-                    // Plugin-Zusatzschritt
-                    $additionalInfoExists = true;
-                    $paymentMethod        = LegacyMethod::create($paymentMethod->cModulId);
-                    if ($paymentMethod && !$paymentMethod->handleAdditional($_POST)) {
-                        $additionalInfoExists = false;
-                    }
-                    break;
-            }
-            if (!$additionalInfoExists) {
-                return 1;
-            }
-            $paymentMethod->ZahlungsInfo = $info;
+        if (!$paymentMethod->cZusatzschrittTemplate) {
+            return 2;
         }
+        $info                 = new stdClass();
+        $additionalInfoExists = false;
+        switch ($paymentMethod->cModulId) {
+            case 'za_null_jtl':
+                // the null-paymentMethod did not has any additional-steps
+                break;
+            case 'za_lastschrift_jtl':
+                $fehlendeAngaben = $this->checkAdditionalPayment($paymentMethod);
+
+                if (\count($fehlendeAngaben) === 0) {
+                    $info->cBankName = Text::htmlentities(
+                        \stripslashes($this->request->post('bankname', '')),
+                        \ENT_QUOTES
+                    );
+                    $info->cKontoNr  = Text::htmlentities(
+                        \stripslashes($this->request->post('kontonr', '')),
+                        \ENT_QUOTES
+                    );
+                    $info->cBLZ      = Text::htmlentities(
+                        \stripslashes($this->request->post('blz', '')),
+                        \ENT_QUOTES
+                    );
+                    $info->cIBAN     = Text::htmlentities(
+                        \stripslashes($this->request->post('iban', '')),
+                        \ENT_QUOTES
+                    );
+                    $info->cBIC      = Text::htmlentities(
+                        \stripslashes($this->request->post('bic', '')),
+                        \ENT_QUOTES
+                    );
+                    $info->cInhaber  = Text::htmlentities(
+                        \stripslashes($this->request->post('inhaber', '')),
+                        \ENT_QUOTES
+                    );
+
+                    $additionalInfoExists = true;
+                } elseif ($zaInfo !== null && (isset($zaInfo->cKontoNr) || isset($zaInfo->cIBAN))) {
+                    $info                 = $zaInfo;
+                    $additionalInfoExists = true;
+                }
+                break;
+            default:
+                // Plugin-Zusatzschritt
+                $additionalInfoExists = true;
+                $paymentMethod        = LegacyMethod::create($paymentMethod->cModulId);
+                if ($paymentMethod && !$paymentMethod->handleAdditional($this->request->getBody())) {
+                    $additionalInfoExists = false;
+                }
+                break;
+        }
+        if (!$additionalInfoExists) {
+            return 1;
+        }
+        $paymentMethod->ZahlungsInfo = $info;
 
         return 2;
     }
@@ -946,12 +966,12 @@ class CheckoutController extends RegistrationController
     public function checkAdditionalPayment($paymentMethod): array
     {
         foreach (['iban', 'bic'] as $dataKey) {
-            if (!empty($_POST[$dataKey])) {
-                $_POST[$dataKey] = \mb_convert_case($_POST[$dataKey], \MB_CASE_UPPER);
+            if (!empty($this->request->post($dataKey))) {
+                $this->request->updateBody($dataKey, \mb_convert_case($this->request->post($dataKey), \MB_CASE_UPPER));
             }
         }
 
-        $post   = Text::filterXSS($_POST);
+        $post   = Text::filterXSS($this->request->getBody());
         $errors = [];
         if ($paymentMethod->cModulId === 'za_lastschrift_jtl') {
             $conf = $this->config['zahlungsarten'];
@@ -991,23 +1011,23 @@ class CheckoutController extends RegistrationController
         $info->cGueltigkeit = null;
         $info->cCVV         = null;
         $info->cKartenTyp   = null;
-        $info->cBankName    = isset($_POST['bankname'])
-            ? Text::htmlentities(\stripslashes(\trim($_POST['bankname'])), \ENT_QUOTES)
+        $info->cBankName    = $this->request->post('bankname') !== null
+            ? Text::htmlentities(\stripslashes(\trim($this->request->post('bankname'))), \ENT_QUOTES)
             : null;
-        $info->cKontoNr     = isset($_POST['kontonr'])
-            ? Text::htmlentities(\stripslashes(\trim($_POST['kontonr'])), \ENT_QUOTES)
+        $info->cKontoNr     = $this->request->post('kontonr') !== null
+            ? Text::htmlentities(\stripslashes(\trim($this->request->post('kontonr'))), \ENT_QUOTES)
             : null;
-        $info->cBLZ         = isset($_POST['blz'])
-            ? Text::htmlentities(\stripslashes(\trim($_POST['blz'])), \ENT_QUOTES)
+        $info->cBLZ         = $this->request->post('blz') !== null
+            ? Text::htmlentities(\stripslashes(\trim($this->request->post('blz'))), \ENT_QUOTES)
             : null;
-        $info->cIBAN        = isset($_POST['iban'])
-            ? Text::htmlentities(\stripslashes(\trim($_POST['iban'])), \ENT_QUOTES)
+        $info->cIBAN        = $this->request->post('iban') !== null
+            ? Text::htmlentities(\stripslashes(\trim($this->request->post('iban'))), \ENT_QUOTES)
             : null;
-        $info->cBIC         = isset($_POST['bic'])
-            ? Text::htmlentities(\stripslashes(\trim($_POST['bic'])), \ENT_QUOTES)
+        $info->cBIC         = $this->request->post('bic') !== null
+            ? Text::htmlentities(\stripslashes(\trim($this->request->post('bic'))), \ENT_QUOTES)
             : null;
-        $info->cInhaber     = isset($_POST['inhaber'])
-            ? Text::htmlentities(\stripslashes(\trim($_POST['inhaber'])), \ENT_QUOTES)
+        $info->cInhaber     = $this->request->post('inhaber') !== null
+            ? Text::htmlentities(\stripslashes(\trim($this->request->post('inhaber'))), \ENT_QUOTES)
             : null;
 
         return $info;
@@ -1099,7 +1119,8 @@ class CheckoutController extends RegistrationController
     {
         // sondersteps Rechnungsadresse ändern
         if (!empty($this->customer->cOrt)
-            && (Request::getInt('editRechnungsadresse') === 1 || Request::getInt('editLieferadresse') === 1)
+            && ($this->request->getInt('editRechnungsadresse') === 1
+                || $this->request->getInt('editLieferadresse') === 1)
         ) {
             Kupon::resetNewCustomerCoupon();
             $this->updateStep('edit_customer_address');
@@ -1253,8 +1274,8 @@ class CheckoutController extends RegistrationController
         global $zahlungsangaben;
         if (!isset($post['zahlungsartwahl']) || (int)$post['zahlungsartwahl'] !== 1) {
             if (isset($_SESSION['Zahlungsart'])
-                && Request::getInt('editRechnungsadresse') !== 1
-                && Request::getInt('editLieferadresse') !== 1
+                && $this->request->getInt('editRechnungsadresse') !== 1
+                && $this->request->getInt('editLieferadresse') !== 1
             ) {
                 $zahlungsangaben = $this->checkPaymentMethod((int)$_SESSION['Zahlungsart']->kZahlungsart);
             } else {
@@ -1292,8 +1313,7 @@ class CheckoutController extends RegistrationController
     {
         // Einstellung global_kundenkonto_aktiv ist auf 'A'
         // und Kunde wurde nach der Registrierung zurück zur Accountwahl geleitet
-        if (isset($_REQUEST['reg'])
-            && (int)$_REQUEST['reg'] === 1
+        if ($this->request->requestInt('reg') === 1
             && $this->config['global']['global_kundenkonto_aktiv'] === 'A'
             && empty($this->smarty->getTemplateVars('fehlendeAngaben'))
         ) {
@@ -1307,7 +1327,7 @@ class CheckoutController extends RegistrationController
             );
         }
         $this->smarty->assign('untertitel', \lang_warenkorb_bestellungEnthaeltXArtikel($this->cart))
-            ->assign('one_step_wk', Request::verifyGPCDataInt('wk'));
+            ->assign('one_step_wk', $this->request->requestInt('wk'));
 
         \executeHook(\HOOK_BESTELLVORGANG_PAGE_STEPACCOUNTWAHL);
     }
@@ -1326,7 +1346,7 @@ class CheckoutController extends RegistrationController
             }
         } else {
             $form               = new RegistrationForm();
-            $customerAttributes = $form->getCustomerAttributes($_POST);
+            $customerAttributes = $form->getCustomerAttributes($this->request->getBody());
         }
         $this->smarty->assign('untertitel', Shop::Lang()->get('fillUnregForm', 'checkout'))
             ->assign('herkunfte', [])
@@ -1799,8 +1819,8 @@ class CheckoutController extends RegistrationController
      */
     public function shippingMethodIsValid(int $shippingMethodID, ?array $formValues = null): bool
     {
-        $packagingIDs           = GeneralObject::hasCount('kVerpackung', $_POST)
-            ? $_POST['kVerpackung']
+        $packagingIDs           = GeneralObject::hasCount('kVerpackung', $this->request->getBody())
+            ? $this->request->post('kVerpackung')
             : ($formValues['kVerpackung'] ?? []);
         $cartTotal              = $this->cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true);
         $_SESSION['Verpackung'] = [];
@@ -1861,7 +1881,7 @@ class CheckoutController extends RegistrationController
                 );
                 unset($packagings);
             }
-        } elseif (Request::postInt('zahlungsartwahl') > 0) {
+        } elseif ($this->request->postInt('zahlungsartwahl') > 0) {
             $_SESSION['AktiveVerpackung'] = [];
         }
         unset($_SESSION['Versandart']);

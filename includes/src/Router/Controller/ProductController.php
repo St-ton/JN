@@ -9,9 +9,7 @@ use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\Catalog\Product\Preisverlauf;
 use JTL\Extensions\Upload\Upload;
-use JTL\Helpers\Form;
 use JTL\Helpers\Product as ProductHelper;
-use JTL\Helpers\Request;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Pagination\Pagination;
@@ -124,16 +122,16 @@ class ProductController extends AbstractController
     {
         $name                 = \SLUG_ALLOW_SLASHES ? 'name:.+' : 'name';
         $visibilityMiddleware = new VisibilityMiddleware();
-        $route->get('/' . \ROUTE_PREFIX_PRODUCTS . '/id/{id:\d+}', $this->getResponse(...))
+        $route->get('/' . \ROUTE_PREFIX_PRODUCTS . '/id/{id:\d+}', [$this, 'getResponse'])
             ->setName('ROUTE_PRODUCT_BY_ID' . $dynName)
             ->middleware($visibilityMiddleware);
-        $route->get('/' . \ROUTE_PREFIX_PRODUCTS . '/{' . $name . '}', $this->getResponse(...))
+        $route->get('/' . \ROUTE_PREFIX_PRODUCTS . '/{' . $name . '}', [$this, 'getResponse'])
             ->setName('ROUTE_PRODUCT_BY_NAME' . $dynName)
             ->middleware($visibilityMiddleware);
-        $route->post('/' . \ROUTE_PREFIX_PRODUCTS . '/id/{id:\d+}', $this->getResponse(...))
+        $route->post('/' . \ROUTE_PREFIX_PRODUCTS . '/id/{id:\d+}', [$this, 'getResponse'])
             ->setName('ROUTE_PRODUCT_BY_ID' . $dynName . 'POST')
             ->middleware($visibilityMiddleware);
-        $route->post('/' . \ROUTE_PREFIX_PRODUCTS . '/{' . $name . '}', $this->getResponse(...))
+        $route->post('/' . \ROUTE_PREFIX_PRODUCTS . '/{' . $name . '}', [$this, 'getResponse'])
             ->setName('ROUTE_PRODUCT_BY_NAME' . $dynName . 'POST')
             ->middleware($visibilityMiddleware);
     }
@@ -149,29 +147,28 @@ class ProductController extends AbstractController
                 return $this->notFoundResponse($request, $args, $smarty);
             }
         }
-        $this->smarty = $smarty;
         Shop::setPageType(\PAGE_ARTIKEL);
         global $AktuellerArtikel;
         $priceHistory = null;
         $rated        = false;
         $nonAllowed   = [];
         $shopURL      = Shop::getURL() . '/';
-        $valid        = Form::validateToken();
         if ($productNote = ProductHelper::mapErrorCode(
-            Request::verifyGPDataString('cHinweis'),
-            ((float)Request::getVar('fB', 0) > 0) ? (float)$_GET['fB'] : 0.0
+            $this->request->request('cHinweis'),
+            ((float)$this->request->get('fB', 0) > 0) ? (float)$this->request->get('fB') : 0.0
         )) {
             $this->alertService->addNotice($productNote, 'productNote', ['showInAlertListTemplate' => false]);
         }
-        if ($productError = ProductHelper::mapErrorCode(Request::verifyGPDataString('cFehler'))) {
+        if ($productError = ProductHelper::mapErrorCode($this->request->request('cFehler'))) {
             $this->alertService->addError($productError, 'productError');
         }
-        if ($valid && isset($_POST['a'])
-            && Request::verifyGPCDataInt('addproductbundle') === 1
-            && ProductHelper::addProductBundleToCart(Request::verifyGPCDataInt('a'))
+        if ($this->tokenIsValid
+            && $this->request->post('a') !== null
+            && $this->request->requestInt('addproductbundle') === 1
+            && ProductHelper::addProductBundleToCart($this->request->requestInt('a'))
         ) {
             $this->alertService->addNotice(Shop::Lang()->get('basketAllAdded', 'messages'), 'allAdded');
-            $this->state->productID = Request::postInt('aBundle');
+            $this->state->productID = $this->request->postInt('aBundle');
         }
         // Warenkorbmatrix Anzeigen auf Artikel Attribut pruefen und falls vorhanden setzen
         if (isset($this->currentProduct->FunktionsAttribute['warenkorbmatrixanzeigen'])
@@ -235,13 +232,13 @@ class ProductController extends AbstractController
         if ($this->config['artikeldetails']['benachrichtigung_nutzen'] !== 'N') {
             $this->smarty->assign('Benachrichtigung', ProductHelper::getAvailabilityFormDefaults());
         }
-        if ($valid && Request::postInt('fragezumprodukt') === 1) {
+        if ($this->tokenIsValid && $this->request->postInt('fragezumprodukt') === 1) {
             $messages = ProductHelper::checkProductQuestion(
                 $messages,
                 $this->config['artikeldetails'],
                 $this->currentProduct
             );
-        } elseif ($valid && Request::postInt('benachrichtigung_verfuegbarkeit') === 1) {
+        } elseif ($this->tokenIsValid && $this->request->postInt('benachrichtigung_verfuegbarkeit') === 1) {
             $messages = $this->checkAndSendAvailabilityMessage($messages);
         }
         foreach ($messages as $productNoticeKey => $productNotice) {
@@ -256,11 +253,11 @@ class ProductController extends AbstractController
         );
         $this->expandedCategories = new KategorieListe();
         $this->expandedCategories->getOpenCategories($this->currentCategory);
-        $ratingPage   = Request::verifyGPCDataInt('btgseite');
-        $ratingStars  = Request::verifyGPCDataInt('btgsterne');
-        $sorting      = Request::verifyGPCDataInt('sortierreihenfolge');
-        $showRatings  = Request::verifyGPCDataInt('bewertung_anzeigen');
-        $allLanguages = Request::verifyGPCDataInt('moreRating');
+        $ratingPage   = $this->request->requestInt('btgseite');
+        $ratingStars  = $this->request->requestInt('btgsterne');
+        $sorting      = $this->request->requestInt('sortierreihenfolge');
+        $showRatings  = $this->request->requestInt('bewertung_anzeigen');
+        $allLanguages = $this->request->requestInt('moreRating');
         if ($ratingPage === 0) {
             $ratingPage = 1;
         }
@@ -294,12 +291,12 @@ class ProductController extends AbstractController
             $ratingsCount,
             $this->config['bewertung']['bewertung_anzahlseite']
         );
-        if (Request::hasGPCData('ek')) {
-            ProductHelper::getEditConfigMode(Request::verifyGPCDataInt('ek'), $this->smarty);
+        if ($this->request->request('ek', null) !== null) {
+            ProductHelper::getEditConfigMode($this->request->requestInt('ek'), $this->smarty);
             $this->smarty->assign(
                 'voucherPrice',
                 Tax::getGross(
-                    Frontend::getCart()->PositionenArr[Request::verifyGPCDataInt('ek')]->fPreis,
+                    Frontend::getCart()->PositionenArr[$this->request->requestInt('ek')]->fPreis,
                     Tax::getSalesTax($this->currentProduct->kSteuerklasse)
                 )
             );
@@ -372,8 +369,8 @@ class ProductController extends AbstractController
 
         \executeHook(\HOOK_ARTIKEL_PAGE, ['oArtikel' => $this->currentProduct]);
 
-        if (Request::isAjaxRequest()) {
-            $this->smarty->assign('listStyle', Text::filterXSS($_GET['isListStyle'] ?? ''));
+        if ($this->request->isAjax) {
+            $this->smarty->assign('listStyle', Text::filterXSS($this->request->get('isListStyle', '')));
         }
 
         return $this->smarty->getResponse('productdetails/index.tpl');

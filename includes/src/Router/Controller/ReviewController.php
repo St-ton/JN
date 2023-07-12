@@ -5,8 +5,6 @@ namespace JTL\Router\Controller;
 use Exception;
 use JTL\Catalog\Product\Artikel;
 use JTL\Customer\Customer;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Review\Manager;
 use JTL\Review\ReviewHelpfulModel;
@@ -39,9 +37,11 @@ class ReviewController extends PageController
      */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
-        $this->smarty = $smarty;
         Shop::setPageType(\PAGE_BEWERTUNG);
-        if (!isset($_POST['bfh']) && !isset($_POST['bhjn']) && Request::verifyGPCDataInt('bfa') !== 1) {
+        if ($this->request->post('bfh') === null
+            && $this->request->post('bhjn') === null
+            && $this->request->requestInt('bfa') !== 1
+        ) {
             return new RedirectResponse(Shop::getURL() . '/', 303);
         }
         if ($this->handleRequest() === true) {
@@ -63,7 +63,7 @@ class ReviewController extends PageController
      */
     public function handleRequest()
     {
-        if (!Form::validateToken()) {
+        if (!$this->tokenIsValid) {
             $this->alertService->addWarning(
                 Shop::Lang()->get('invalidToken'),
                 'invalidToken',
@@ -74,27 +74,27 @@ class ReviewController extends PageController
         }
         $params   = Shop::getParameters();
         $customer = Frontend::getCustomer();
-        if (Request::postInt('bfh') === 1) {
+        if ($this->request->postInt('bfh') === 1) {
             $message = $this->save(
                 $params['kArtikel'],
                 $customer->getID(),
                 Shop::getLanguageID(),
-                Request::verifyGPDataString('cTitel'),
-                Request::verifyGPDataString('cText'),
+                $this->request->request('cTitel'),
+                $this->request->request('cText'),
                 $params['nSterne']
             );
             \header('Location: ' . $message . '#alert-list', true, 303);
             exit;
         }
-        if (Request::postInt('bhjn') === 1) {
+        if ($this->request->postInt('bhjn') === 1) {
             $this->updateWasHelpful(
                 $params['kArtikel'],
                 $customer->getID(),
-                Request::verifyGPCDataInt('btgseite'),
-                Request::verifyGPCDataInt('btgsterne')
+                $this->request->requestInt('btgseite'),
+                $this->request->requestInt('btgsterne')
             );
         }
-        if (Request::verifyGPCDataInt('bfa') === 1) {
+        if ($this->request->requestInt('bfa') === 1) {
             return $this->reviewPreCheck($customer, $params);
         }
     }
@@ -192,7 +192,7 @@ class ReviewController extends PageController
             $helper = Shop::Container()->getLinkService();
             \header(
                 'Location: ' . $helper->getStaticRoute('jtl.php')
-                . '?a=' . Request::verifyGPCDataInt('a')
+                . '?a=' . $this->request->requestInt('a')
                 . '&bfa=1&r=' . \R_LOGIN_BEWERTUNG,
                 true,
                 303
@@ -278,7 +278,7 @@ class ReviewController extends PageController
     {
         $helpful  = 0;
         $reviewID = 0;
-        foreach (\array_keys($_POST) as $key) {
+        foreach (\array_keys($this->request->getBody()) as $key) {
             \preg_match('/^(nichthilfreich_)(\d*)/', $key, $hits);
             if (\count($hits) === 3) {
                 $reviewID = (int)$hits[2];
@@ -333,7 +333,7 @@ class ReviewController extends PageController
 
             $helpfulReview->save();
             $this->cache->flushTags([\CACHING_GROUP_ARTICLE . '_' . $review->getProductID()]);
-            if (!Request::isAjaxRequest()) {
+            if (!$this->request->isAjax) {
                 \header('Location: ' . $baseURL . '&cHinweis=h02', true, 303);
                 exit;
             }
@@ -354,7 +354,7 @@ class ReviewController extends PageController
         $helpfulReview->customerID = $customerID;
         $helpfulReview->save();
         $this->cache->flushTags([\CACHING_GROUP_ARTICLE . '_' . $review->getProductID()]);
-        if (!Request::isAjaxRequest()) {
+        if (!$this->request->isAjax) {
             \header('Location: ' . $baseURL . '&cHinweis=h03', true, 303);
             exit;
         }

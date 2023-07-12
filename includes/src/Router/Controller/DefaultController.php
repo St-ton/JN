@@ -69,10 +69,10 @@ class DefaultController extends AbstractController
     public function register(RouteGroup $route, string $dynName): void
     {
         $phpFileCheckMiddleware = new PhpFileCheckMiddleware();
-        $route->get('/{slug:.+}', $this->getResponse(...))
+        $route->get('/{slug:.+}', [$this, 'getResponse'])
             ->setName('catchall' . $dynName)
             ->middleware($phpFileCheckMiddleware);
-        $route->post('/{slug:.+}', $this->getResponse(...))
+        $route->post('/{slug:.+}', [$this, 'getResponse'])
             ->setName('catchallPOST' . $dynName)
             ->middleware($phpFileCheckMiddleware);
     }
@@ -86,15 +86,16 @@ class DefaultController extends AbstractController
             $args['slug'] = \ltrim($request->getUri()->getPath(), '/');
         }
         $this->getStateFromSlug($args);
-        $cf         = new ControllerFactory($this->state, $this->db, $this->cache, $smarty);
+        $cf         = new ControllerFactory($this->state, $this->db, $this->cache, $this->smarty);
         $controller = $cf->getEntryPoint($request);
-        $check      = $controller->init();
+        $controller->initController($request, $this->smarty);
+        $check = $controller->init();
         if ($check === false) {
-            return $controller->notFoundResponse($request, $args, $smarty);
+            return $controller->notFoundResponse($request, $args, $this->smarty);
         }
         if (\REDIR_OLD_ROUTES === true
             && $controller::class !== SearchController::class
-            && !isset($_GET['opcEditMode'])
+            && $this->request->get('opcEditMode') === null
         ) {
             $langID    = $this->state->languageID ?: Shop::getLanguageID();
             $locale    = null;
@@ -110,14 +111,14 @@ class DefaultController extends AbstractController
                 $scheme = 'F';
             }
             if ($isDefault && ($scheme === 'F' || ($scheme === 'L' && !empty($args['lang'])))) {
-                return $controller->getResponse($request, $args, $smarty);
+                return $controller->getResponse($request, $args, $this->smarty);
             }
             $scheme = $this->config['global']['routing_scheme'] ?? 'F';
             if (ENABLE_EXPERIMENTAL_ROUTING_SCHEMES === false) {
                 $scheme = 'F';
             }
             if (!$isDefault && ($scheme === 'F' || ($scheme === 'L' && !empty($args['lang'])))) {
-                return $controller->getResponse($request, $args, $smarty);
+                return $controller->getResponse($request, $args, $this->smarty);
             }
             $className = $controller instanceof PageController
                 ? PageController::class
@@ -135,6 +136,6 @@ class DefaultController extends AbstractController
             return new RedirectResponse($test, 301);
         }
 
-        return $controller->getResponse($request, $args, $smarty);
+        return $controller->getResponse($request, $args, $this->smarty);
     }
 }

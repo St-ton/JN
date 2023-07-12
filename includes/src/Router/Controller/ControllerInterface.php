@@ -44,4 +44,10 @@ interface ControllerInterface
         array                  $args,
         JTLSmarty              $smarty
     ): ResponseInterface;
+
+    /**
+     * @param ServerRequestInterface $request
+     * @param JTLSmarty              $smarty
+     */
+    public function initController(ServerRequestInterface $request, JTLSmarty $smarty): void;
 }

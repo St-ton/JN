@@ -5,12 +5,10 @@ namespace JTL\Router\Controller;
 use InvalidArgumentException;
 use JTL\Cart\Cart;
 use JTL\Cart\CartHelper;
-use JTL\CheckBox;
 use JTL\Checkbox\CheckboxService;
 use JTL\Checkbox\CheckboxValidationDataObject;
 use JTL\Checkout\Bestellung;
 use JTL\Checkout\OrderHandler;
-use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Plugin\Helper;
 use JTL\Plugin\Payment\LegacyMethod;
@@ -51,19 +49,18 @@ class OrderCompleteController extends CheckoutController
      */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
-        $this->smarty = $smarty;
         Shop::setPageType(\PAGE_BESTELLABSCHLUSS);
         require_once \PFAD_ROOT . \PFAD_INCLUDES . 'bestellabschluss_inc.php';
         require_once \PFAD_ROOT . \PFAD_INCLUDES . 'bestellvorgang_inc.php';
-        if (Request::getInt('payAgain') === 1 && Request::getInt('kBestellung') > 0) {
-            return $this->handlePayAgain(Request::getInt('kBestellung'));
+        if ($this->request->getInt('payAgain') === 1 && $this->request->getInt('kBestellung') > 0) {
+            return $this->handlePayAgain($this->request->getInt('kBestellung'));
         }
         $cart       = Frontend::getCart();
         $handler    = new OrderHandler($this->db, Frontend::getCustomer(), $cart);
         $linkHelper = Shop::Container()->getLinkService();
         $order      = null;
-        if (isset($_GET['i'])) {
-            $bestellid = $this->db->select('tbestellid', 'cId', $_GET['i']);
+        if ($this->request->get('i') !== null) {
+            $bestellid = $this->db->select('tbestellid', 'cId', $this->request->get('i'));
             if ($bestellid !== null && $bestellid->kBestellung > 0) {
                 $bestellid->kBestellung = (int)$bestellid->kBestellung;
                 $order                  = new Bestellung($bestellid->kBestellung);
@@ -74,8 +71,12 @@ class OrderCompleteController extends CheckoutController
             $this->db->query('DELETE FROM tbestellid WHERE dDatum < DATE_SUB(NOW(), INTERVAL 30 DAY)');
             $this->smarty->assign('abschlussseite', 1);
         } else {
-            if (isset($_POST['kommentar'])) {
-                $_SESSION['kommentar'] = \mb_substr(\strip_tags($this->db->escape($_POST['kommentar'])), 0, 1000);
+            if ($this->request->post('kommentar') !== null) {
+                $_SESSION['kommentar'] = \mb_substr(
+                    \strip_tags($this->db->escape($this->request->post('kommentar'))),
+                    0,
+                    1000
+                );
             } elseif (!isset($_SESSION['kommentar'])) {
                 $_SESSION['kommentar'] = '';
             }
@@ -154,7 +155,7 @@ class OrderCompleteController extends CheckoutController
                 );
             }
         }
-        if (empty($_SESSION['Zahlungsart']->nWaehrendBestellung) || isset($_GET['i'])) {
+        if (empty($_SESSION['Zahlungsart']->nWaehrendBestellung) || $this->request->get('i') !== null) {
             Frontend::getInstance()->cleanUp();
             $this->preRender();
             \executeHook(\HOOK_BESTELLABSCHLUSS_PAGE, ['oBestellung' => $order]);
@@ -190,30 +191,30 @@ class OrderCompleteController extends CheckoutController
         $this->smarty->assign('Bestellung', $order)
             ->assign('oPlugin', null)
             ->assign('plugin', null);
-        if (Request::verifyGPCDataInt('zusatzschritt') === 1) {
+        if ($this->request->requestInt('zusatzschritt') === 1) {
             $hasAdditionalInformation = false;
             if ($moduleID === 'za_lastschrift_jtl') {
-                if (($_POST['bankname']
-                        && $_POST['blz']
-                        && $_POST['kontonr']
-                        && $_POST['inhaber'])
-                    || ($_POST['bankname']
-                        && $_POST['iban']
-                        && $_POST['bic']
-                        && $_POST['inhaber'])
+                $blz      = $this->request->post('blz', '');
+                $bankName = $this->request->post('bankname', '');
+                $no       = $this->request->post('kontonr', '');
+                $name     = $this->request->post('inhaber', '');
+                $iban     = $this->request->post('iban', '');
+                $bic      = $this->request->post('bic', '');
+                if (($bankName && $blz && $no && $name)
+                    || ($bankName && $iban && $bic && $name)
                 ) {
                     $_SESSION['Zahlungsart']->ZahlungsInfo->cBankName =
-                        Text::htmlentities(\stripslashes($_POST['bankname']), \ENT_QUOTES);
+                        Text::htmlentities(\stripslashes($bankName), \ENT_QUOTES);
                     $_SESSION['Zahlungsart']->ZahlungsInfo->cKontoNr  =
-                        Text::htmlentities(\stripslashes($_POST['kontonr']), \ENT_QUOTES);
+                        Text::htmlentities(\stripslashes($no), \ENT_QUOTES);
                     $_SESSION['Zahlungsart']->ZahlungsInfo->cBLZ      =
-                        Text::htmlentities(\stripslashes($_POST['blz']), \ENT_QUOTES);
+                        Text::htmlentities(\stripslashes($blz), \ENT_QUOTES);
                     $_SESSION['Zahlungsart']->ZahlungsInfo->cIBAN     =
-                        Text::htmlentities(\stripslashes($_POST['iban']), \ENT_QUOTES);
+                        Text::htmlentities(\stripslashes($iban), \ENT_QUOTES);
                     $_SESSION['Zahlungsart']->ZahlungsInfo->cBIC      =
-                        Text::htmlentities(\stripslashes($_POST['bic']), \ENT_QUOTES);
+                        Text::htmlentities(\stripslashes($bic), \ENT_QUOTES);
                     $_SESSION['Zahlungsart']->ZahlungsInfo->cInhaber  =
-                        Text::htmlentities(\stripslashes($_POST['inhaber']), \ENT_QUOTES);
+                        Text::htmlentities(\stripslashes($name), \ENT_QUOTES);
                     $hasAdditionalInformation                         = true;
                 }
             }
@@ -250,7 +251,7 @@ class OrderCompleteController extends CheckoutController
                 if ($paymentMethod !== null) {
                     if ($paymentMethod->validateAdditional()) {
                         $paymentMethod->preparePaymentProcess($order);
-                    } elseif (!$paymentMethod->handleAdditional($_POST)) {
+                    } elseif (!$paymentMethod->handleAdditional($this->request->getBody())) {
                         $order->Zahlungsart = $this->getPaymentMethod($order->kZahlungsart);
                     }
                 }
@@ -298,16 +299,16 @@ class OrderCompleteController extends CheckoutController
                 'active'          => true,
             ]
         );
-        $_SESSION['cPlausi_arr'] = $this->checkboxService->validateCheckBox($validationData, $_POST);
+        $_SESSION['cPlausi_arr'] = $this->checkboxService->validateCheckBox($validationData, $this->request->getBody());
 
-        $_SESSION['cPost_arr'] = $_POST;
+        $_SESSION['cPost_arr'] = $this->request->getBody();
 
         return (isset($_SESSION['Kunde'], $_SESSION['Lieferadresse'], $_SESSION['Versandart'], $_SESSION['Zahlungsart'])
             && $_SESSION['Kunde']
             && $_SESSION['Lieferadresse']
             && (int)$_SESSION['Versandart']->kVersandart > 0
             && (int)$_SESSION['Zahlungsart']->kZahlungsart > 0
-            && Request::verifyGPCDataInt('abschluss') === 1
+            && $this->request->requestInt('abschluss') === 1
             && \count($_SESSION['cPlausi_arr']) === 0
         );
     }

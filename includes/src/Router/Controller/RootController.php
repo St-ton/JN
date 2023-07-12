@@ -19,8 +19,8 @@ class RootController extends AbstractController
      */
     public function register(RouteGroup $route, string $dynName): void
     {
-        $route->get('/', $this->getResponse(...))->setName('ROUTE_ROOT' . $dynName);
-        $route->post('/', $this->getResponse(...))->setName('ROUTE_ROOTPOST' . $dynName);
+        $route->get('/', [$this, 'getResponse'])->setName('ROUTE_ROOT' . $dynName);
+        $route->post('/', [$this, 'getResponse'])->setName('ROUTE_ROOTPOST' . $dynName);
     }
 
     /**
@@ -33,6 +33,7 @@ class RootController extends AbstractController
 
         $factory    = new ControllerFactory($this->state, $this->db, $this->cache, $smarty);
         $controller = $factory->getEntryPoint($request);
+        $controller->initController($request, $smarty);
         if (!$controller->init()) {
             return $controller->notFoundResponse($request, $args, $smarty);
         }

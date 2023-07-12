@@ -42,24 +42,27 @@ class ForgotPasswordController extends AbstractController
      */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
-        $this->smarty = $smarty;
         Shop::setPageType(\PAGE_PASSWORTVERGESSEN);
         $linkService = Shop::Container()->getLinkService();
         $this->step  = 'formular';
-        $valid       = Form::validateToken();
+        $valid       = $this->tokenIsValid;
         $missing     = ['captcha' => false];
-        if ($valid && isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwort_vergessen'] === 1) {
+        if ($valid && $this->request->post('email') !== null && $this->request->post('passwort_vergessen') === 1) {
             $missing = $this->initPasswordReset($missing);
-        } elseif ($valid && isset($_POST['pw_new'], $_POST['pw_new_confirm'], $_POST['fpwh'])) {
+        } elseif ($valid
+            && $this->request->post('pw_new') !== null
+            && $this->request->post('pw_new_confirm') !== null
+            && $this->request->post('fpwh') !== null
+        ) {
             if (($response = $this->reset($linkService)) !== null) {
                 return $response;
             }
-        } elseif (isset($_GET['fpwh'])) {
-            $resetItem = $this->db->select('tpasswordreset', 'cKey', $_GET['fpwh']);
+        } elseif ($this->request->get('fpwh') !== null) {
+            $resetItem = $this->db->select('tpasswordreset', 'cKey', $this->request->get('fpwh'));
             if ($resetItem) {
                 $dateExpires = new DateTime($resetItem->dExpires);
                 if ($dateExpires >= new DateTime()) {
-                    $this->smarty->assign('fpwh', Text::filterXSS($_GET['fpwh']));
+                    $this->smarty->assign('fpwh', Text::filterXSS($this->request->get('fpwh')));
                 } else {
                     $this->alertService->addError(Shop::Lang()->get('invalidHash', 'account data'), 'invalidHash');
                 }
@@ -80,7 +83,7 @@ class ForgotPasswordController extends AbstractController
 
         $this->smarty->assign('step', $this->step)
             ->assign('fehlendeAngaben', $missing)
-            ->assign('presetEmail', Text::filterXSS(Request::verifyGPDataString('email')))
+            ->assign('presetEmail', Text::filterXSS($this->request->request('email')))
             ->assign('Link', $link);
 
         $this->preRender();
@@ -95,12 +98,12 @@ class ForgotPasswordController extends AbstractController
      */
     protected function reset(LinkService $linkService): ?ResponseInterface
     {
-        if ($_POST['pw_new'] === $_POST['pw_new_confirm']) {
-            $resetItem = $this->db->select('tpasswordreset', 'cKey', $_POST['fpwh']);
+        if ($this->request->post('pw_new') === $this->request->post('pw_new_confirm')) {
+            $resetItem = $this->db->select('tpasswordreset', 'cKey', $this->request->post('fpwh'));
             if ($resetItem !== null && new DateTime($resetItem->dExpires) >= new DateTime()) {
                 $customer = new Customer((int)$resetItem->kKunde);
                 if ($customer->kKunde > 0 && $customer->cSperre !== 'Y') {
-                    $customer->updatePassword($_POST['pw_new']);
+                    $customer->updatePassword($this->request->post('pw_new'));
                     $this->db->delete('tpasswordreset', 'kKunde', $customer->kKunde);
 
                     return new RedirectResponse($linkService->getStaticRoute('jtl.php') . '?updated_pw=true');
@@ -116,7 +119,7 @@ class ForgotPasswordController extends AbstractController
             );
         }
         $this->step = 'confirm';
-        $this->smarty->assign('fpwh', Text::filterXSS($_POST['fpwh']));
+        $this->smarty->assign('fpwh', Text::filterXSS($this->request->post('fpwh')));
 
         return null;
     }
@@ -129,7 +132,7 @@ class ForgotPasswordController extends AbstractController
     protected function initPasswordReset(array $missing): array
     {
         $hasError     = false;
-        $email        = Request::postVar('email', '');
+        $email        = $this->request->post('email', '');
         $customerData = $this->db->getSingleObject(
             'SELECT kKunde, cSperre
                 FROM tkunde
@@ -144,7 +147,9 @@ class ForgotPasswordController extends AbstractController
             $limiter->persist();
             $limiter->cleanup();
             $validRecaptcha = true;
-            if ($this->config['kunden']['forgot_password_captcha'] === 'Y' && !Form::validateCaptcha($_POST)) {
+            if ($this->config['kunden']['forgot_password_captcha'] === 'Y'
+                && !Form::validateCaptcha($this->request->getBody())
+            ) {
                 $validRecaptcha     = false;
                 $missing['captcha'] = true;
             }

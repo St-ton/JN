@@ -22,6 +22,7 @@ use JTL\Router\Controller\Backend\ComparelistController;
 use JTL\Router\Controller\Backend\ConfigController;
 use JTL\Router\Controller\Backend\ConsentController;
 use JTL\Router\Controller\Backend\ContactFormsController;
+use JTL\Router\Controller\Backend\ControllerInterface;
 use JTL\Router\Controller\Backend\CountryController;
 use JTL\Router\Controller\Backend\CouponsController;
 use JTL\Router\Controller\Backend\CouponStatsController;
@@ -247,6 +248,7 @@ class BackendRouter
                 $getText,
                 $route
             ) {
+                /** @var ControllerInterface $controller */
                 $controller = new $controller($db, $cache, $alertService, $account, $getText);
                 $controller->setRoute('/' . $route);
 
@@ -264,35 +266,35 @@ class BackendRouter
                 if ($slug === Route::PASS || $slug === Route::DASHBOARD || $slug === Route::CODE) {
                     continue;
                 }
-                $route->get('/' . $slug, $controller . '::getResponse')->setName($slug);
-                $route->post('/' . $slug, $controller . '::getResponse')
+                $route->get('/' . $slug, [$controller, 'getResponse'])->setName($slug);
+                $route->post('/' . $slug, [$controller, 'getResponse'])
                     ->middleware($revisionMiddleware)
                     ->setName($slug . 'POST');
             }
         })->middleware(new AuthMiddleware($account))
             ->middleware($updateCheckMiddleWare)
             ->middleware(new WizardCheckMiddleware($this->db));
-        $this->router->get($basePath . Route::PASS, PasswordController::class . '::getResponse')
+        $this->router->get($basePath . Route::PASS, [PasswordController::class, 'getResponse'])
             ->setName(Route::PASS);
-        $this->router->post($basePath . Route::PASS, PasswordController::class . '::getResponse')
+        $this->router->post($basePath . Route::PASS, [PasswordController::class, 'getResponse'])
             ->setName(Route::PASS . 'POST');
 
-        $this->router->get($basePath . Route::CODE . '/{redir}', CodeController::class . '::getResponse')
+        $this->router->get($basePath . Route::CODE . '/{redir}', [CodeController::class, 'getResponse'])
             ->setName(Route::CODE);
-        $this->router->post($basePath . Route::CODE . '/{redir}', CodeController::class . '::getResponse')
+        $this->router->post($basePath . Route::CODE . '/{redir}', [CodeController::class, 'getResponse'])
             ->setName(Route::CODE . 'POST');
 
-        $this->router->get($basePath . 'index.php', DashboardController::class . '::getResponse')
+        $this->router->get($basePath . 'index.php', [DashboardController::class, 'getResponse'])
             ->setName(Route::DASHBOARD . 'php')
             ->middleware($updateCheckMiddleWare);
-        $this->router->get($basePath, DashboardController::class . '::getResponse')
+        $this->router->get($basePath, [DashboardController::class, 'getResponse'])
             ->setName(Route::DASHBOARD)
             ->middleware($updateCheckMiddleWare)
             ->middleware(new WizardCheckMiddleware($this->db));
-        $this->router->post($basePath, DashboardController::class . '::getResponse')
+        $this->router->post($basePath, [DashboardController::class, 'getResponse'])
             ->setName(Route::DASHBOARD . 'POST')
             ->middleware($updateCheckMiddleWare);
-        $this->router->post($basePath . 'index.php', DashboardController::class . '::getResponse')
+        $this->router->post($basePath . 'index.php', [DashboardController::class, 'getResponse'])
             ->setName(Route::DASHBOARD . 'POSTphp')
             ->middleware($updateCheckMiddleWare);
     }

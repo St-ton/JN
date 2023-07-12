@@ -11,7 +11,6 @@ use JTL\Customer\CustomerFields;
 use JTL\Customer\DataHistory;
 use JTL\Customer\Registration\Form as CustomerForm;
 use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
@@ -52,10 +51,9 @@ class RegistrationController extends PageController
      */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
-        $this->smarty = $smarty;
         Shop::setPageType(\PAGE_REGISTRIERUNG);
         $linkHelper = Shop::Container()->getLinkService();
-        if (Request::verifyGPCDataInt('editRechnungsadresse') === 0 && Frontend::getCustomer()->getID() > 0) {
+        if ($this->request->requestInt('editRechnungsadresse') === 0 && Frontend::getCustomer()->getID() > 0) {
             return new RedirectResponse($linkHelper->getStaticRoute('jtl.php'), 301);
         }
 
@@ -63,18 +61,18 @@ class RegistrationController extends PageController
         require_once \PFAD_ROOT . \PFAD_INCLUDES . 'registrieren_inc.php';
 
         $this->step = 'formular';
-        $edit       = Request::getInt('editRechnungsadresse');
-        if (isset($_POST['editRechnungsadresse'])) {
-            $edit = (int)$_POST['editRechnungsadresse'];
+        $edit       = $this->request->getInt('editRechnungsadresse');
+        if ($this->request->postInt('editRechnungsadresse') > 0) {
+            $edit = $this->request->postInt('editRechnungsadresse');
         }
-        if (Form::validateToken() && Request::postInt('form') === 1) {
-            $this->saveCustomer($_POST);
+        if ($this->tokenIsValid && $this->request->postInt('form') === 1) {
+            $this->saveCustomer($this->request->getBody());
         }
-        $title = Request::getInt('editRechnungsadresse') === 1
+        $title = $this->request->getInt('editRechnungsadresse') === 1
             ? Shop::Lang()->get('editData', 'login')
             : Shop::Lang()->get('newAccount', 'login');
         if ($this->step === 'formular') {
-            $this->getFormData(Request::verifyGPCDataInt('checkout'));
+            $this->getFormData($this->request->requestInt('checkout'));
         }
         $this->smarty->assign('editRechnungsadresse', $edit)
             ->assign('Ueberschrift', $title)
@@ -91,7 +89,7 @@ class RegistrationController extends PageController
             $_SESSION['dRegZeit'] = \time();
         }
 
-        if (Request::verifyGPCDataInt('accountDeleted') === 1) {
+        if ($this->request->requestInt('accountDeleted') === 1) {
             $this->alertService->addSuccess(
                 Shop::Lang()->get('accountDeleted', 'messages'),
                 'accountDeleted'

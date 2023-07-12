@@ -32,6 +32,7 @@ use JTL\Link\LinkInterface;
 use JTL\Link\SpecialPageNotFoundException;
 use JTL\Minify\MinifyService;
 use JTL\Router\DefaultParser;
+use JTL\Router\RequestParser;
 use JTL\Router\Router;
 use JTL\Router\State;
 use JTL\Services\JTL\AlertServiceInterface;
@@ -120,6 +121,16 @@ abstract class AbstractController implements ControllerInterface
      * @var string
      */
     protected string $tseoSelector = '';
+
+    /**
+     * @var RequestParser|null
+     */
+    protected ?RequestParser $request = null;
+
+    /**
+     * @var bool
+     */
+    protected bool $tokenIsValid = false;
 
     /**
      * @param DbInterface           $db
@@ -335,7 +346,7 @@ abstract class AbstractController implements ControllerInterface
         $debugbarRenderer         = $debugbar->getJavascriptRenderer();
         $pageType                 = Shop::getPageType();
         $link                     = $this->currentLink ?? new Link($this->db);
-        $categoryID               = Request::verifyGPCDataInt('kategorie');
+        $categoryID               = $this->request->requestInt('kategorie');
         $this->currentCategory    = $this->currentCategory
             ?? new Kategorie($categoryID, $this->languageID, $this->customerGroupID, false, $this->db);
         $this->expandedCategories->getOpenCategories($this->currentCategory, $this->customerGroupID, $this->languageID);
@@ -386,10 +397,10 @@ abstract class AbstractController implements ControllerInterface
                 ShippingMethod::getShippingFreeString($shippingFreeMin, $cartValueGros, $cartValueNet)
             )
             ->assign('oSpezialseiten_arr', $linkHelper->getSpecialPages())
-            ->assign('bAjaxRequest', Request::isAjaxRequest())
+            ->assign('bAjaxRequest', $this->request->isAjax)
             ->assign('jtl_token', Form::getTokenInput())
             ->assign('nSeitenTyp', $pageType)
-            ->assign('bExclusive', isset($_GET['exclusive_content']))
+            ->assign('bExclusive', $this->request->get('exclusive_content') !== null)
             ->assign('bAdminWartungsmodus', $this->config['global']['wartungsmodus_aktiviert'] === 'Y')
             ->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
             ->assign('Steuerpositionen', $cart->gibSteuerpositionen())
@@ -497,7 +508,7 @@ abstract class AbstractController implements ControllerInterface
             ->assign('ShopHomeURL', $this->getHomeURL($shopURL))
             ->assign('ShopURLSSL', Shop::getURL(true))
             ->assign('imageBaseURL', Shop::getImageBaseURL())
-            ->assign('isAjax', Request::isAjaxRequest());
+            ->assign('isAjax', $this->request->isAjax);
         $tplService->save();
     }
 
@@ -619,5 +630,30 @@ abstract class AbstractController implements ControllerInterface
      */
     public function register(RouteGroup $route, string $dynName): void
     {
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function initController(ServerRequestInterface $request, JTLSmarty $smarty): void
+    {
+        $this->smarty  = $smarty;
+        $this->request = new RequestParser($request);
+        $this->validateToken();
+    }
+
+    protected function validateToken(): void
+    {
+        $sess = $_SESSION['jtl_token'] ?? null;
+        if ($sess === null) {
+            $this->tokenIsValid = false;
+            return;
+        }
+        $token = $this->request->post('jtl_token') ?? $this->request->get('token') ?? null;
+        if ($token === null) {
+            $this->tokenIsValid = false;
+            return;
+        }
+        $this->tokenIsValid = Shop::Container()->getCryptoService()->stableStringEquals($sess, $token);
     }
 }

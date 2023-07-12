@@ -2,7 +2,8 @@
 
 namespace JTL\Router\Strategy;
 
-use JTL\Router\Controller\Backend\ControllerInterface;
+use JTL\Router\Controller\Backend\ControllerInterface as BackendControllerInterface;
+use JTL\Router\Controller\ControllerInterface as FrontendControllerInterface;
 use JTL\Router\State;
 use JTL\Smarty\JTLSmarty;
 use League\Route\Route;
@@ -36,10 +37,11 @@ class SmartyStrategy extends ApplicationStrategy
      */
     public function invokeRouteCallable(Route $route, ServerRequestInterface $request): ResponseInterface
     {
+        /** @var \Closure $controller */
         $controller = $route->getCallable($this->getContainer());
         if (\is_array($controller) && \count($controller) === 2) {
             $instance = $controller[0];
-            if ($instance instanceof ControllerInterface) {
+            if ($instance instanceof BackendControllerInterface || $instance instanceof FrontendControllerInterface) {
                 $instance->initController($request, $this->smarty);
             }
         }

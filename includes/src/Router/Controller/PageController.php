@@ -55,7 +55,6 @@ class PageController extends AbstractController
         array                  $args,
         JTLSmarty              $smarty
     ): ResponseInterface {
-        $this->smarty = $smarty;
         if ($this->state->languageID === 0) {
             $this->state->languageID = Shop::getLanguageID();
         }
@@ -109,13 +108,13 @@ class PageController extends AbstractController
     public function register(RouteGroup $route, string $dynName): void
     {
         $name = \SLUG_ALLOW_SLASHES ? 'name:.+' : 'name';
-        $route->get('/' . \ROUTE_PREFIX_PAGES . '/id/{id:\d+}', $this->getResponse(...))
+        $route->get('/' . \ROUTE_PREFIX_PAGES . '/id/{id:\d+}', [$this, 'getResponse'])
             ->setName('ROUTE_PAGE_BY_ID' . $dynName);
-        $route->get('/' . \ROUTE_PREFIX_PAGES . '/{' . $name . '}', $this->getResponse(...))
+        $route->get('/' . \ROUTE_PREFIX_PAGES . '/{' . $name . '}', [$this, 'getResponse'])
             ->setName('ROUTE_PAGE_BY_NAME' . $dynName);
-        $route->post('/' . \ROUTE_PREFIX_PAGES . '/id/{id:\d+}', $this->getResponse(...))
+        $route->post('/' . \ROUTE_PREFIX_PAGES . '/id/{id:\d+}', [$this, 'getResponse'])
             ->setName('ROUTE_PAGE_BY_ID' . $dynName . 'POST');
-        $route->post('/' . \ROUTE_PREFIX_PAGES . '/{' . $name . '}', $this->getResponse(...))
+        $route->post('/' . \ROUTE_PREFIX_PAGES . '/{' . $name . '}', [$this, 'getResponse'])
             ->setName('ROUTE_PAGE_BY_NAME' . $dynName . 'POST');
     }
 
@@ -132,7 +131,6 @@ class PageController extends AbstractController
         } elseif ($this->currentLink === null) {
             $this->initHome();
         }
-        $this->smarty = $smarty;
         Shop::setPageType($this->state->pageType);
         if (!$this->currentLink->isVisible()) {
             $this->currentLink = Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_STARTSEITE);
@@ -169,8 +167,9 @@ class PageController extends AbstractController
             ));
         } elseif ($linkType === \LINKTYP_VERSAND) {
             $error = '';
-            if (isset($_POST['land'], $_POST['plz'])
-                && !ShippingMethod::getShippingCosts($_POST['land'], $_POST['plz'], $error)
+            if ($this->request->post('land') !== null
+                && $this->request->post('plz') !== null
+                && !ShippingMethod::getShippingCosts($this->request->post('land'), $this->request->post('plz'), $error)
             ) {
                 $this->alertService->addError(
                     Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages'),

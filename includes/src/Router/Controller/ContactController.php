@@ -4,7 +4,6 @@ namespace JTL\Router\Controller;
 
 use JTL\CheckBox;
 use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
@@ -36,7 +35,6 @@ class ContactController extends AbstractController
         array                  $args,
         JTLSmarty              $smarty
     ): ResponseInterface {
-        $this->smarty = $smarty;
         Shop::setPageType(\PAGE_KONTAKT);
         $linkHelper         = Shop::Container()->getLinkService();
         $link               = $linkHelper->getSpecialPage(\LINKTYP_KONTAKT);
@@ -66,15 +64,20 @@ class ContactController extends AbstractController
         $lang           = Shop::getLanguageCode();
         $step           = 'formular';
         $missingData    = [];
-        if (Request::postInt('kontakt') === 1 && Form::validateToken()) {
+        if ($this->tokenIsValid && $this->request->postInt('kontakt') === 1) {
             $missingData = Form::getMissingContactFormData();
             $checkBox    = new CheckBox(0, $this->db);
             $missingData = \array_merge(
                 $missingData,
-                $checkBox->validateCheckBox(\CHECKBOX_ORT_KONTAKT, $this->customerGroupID, $_POST, true)
+                $checkBox->validateCheckBox(
+                    \CHECKBOX_ORT_KONTAKT,
+                    $this->customerGroupID,
+                    $this->request->getBody(),
+                    true
+                )
             );
             $ok          = Form::eingabenKorrekt($missingData);
-            $this->smarty->assign('cPost_arr', Text::filterXSS($_POST));
+            $this->smarty->assign('cPost_arr', Text::filterXSS($this->request->getBody()));
             \executeHook(\HOOK_KONTAKT_PAGE_PLAUSI);
 
             if ($ok) {
@@ -85,9 +88,9 @@ class ContactController extends AbstractController
                         \CHECKBOX_ORT_KONTAKT,
                         $this->customerGroupID,
                         true,
-                        $_POST,
+                        $this->request->getBody(),
                         ['oKunde' => $msg, 'oNachricht' => $msg]
-                    )->checkLogging(\CHECKBOX_ORT_KONTAKT, $this->customerGroupID, $_POST, true);
+                    )->checkLogging(\CHECKBOX_ORT_KONTAKT, $this->customerGroupID, $this->request->getBody(), true);
                     Form::editMessage();
                     $step = 'nachricht versendet';
                 }

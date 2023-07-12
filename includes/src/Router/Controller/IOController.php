@@ -22,8 +22,8 @@ class IOController extends AbstractController
      */
     public function register(RouteGroup $route, string $dynName): void
     {
-        $route->get('/io', $this->getResponse(...))->setName('ROUTE_IO' . $dynName);
-        $route->post('/io', $this->getResponse(...))->setName('ROUTE_IOPOST' . $dynName);
+        $route->get('/io', [$this, 'getResponse'])->setName('ROUTE_IO' . $dynName);
+        $route->post('/io', [$this, 'getResponse'])->setName('ROUTE_IOPOST' . $dynName);
     }
 
     /**
@@ -38,18 +38,11 @@ class IOController extends AbstractController
         $smarty->setCaching(false)
             ->assign('nSeitenTyp', \PAGE_IO)
             ->assign('imageBaseURL', Shop::getImageBaseURL())
-            ->assign('ShopURL', Shop::getURL())
-            ->assignDeprecated('BILD_KEIN_KATEGORIEBILD_VORHANDEN', \BILD_KEIN_KATEGORIEBILD_VORHANDEN, '5.0.0')
-            ->assignDeprecated('BILD_KEIN_ARTIKELBILD_VORHANDEN', \BILD_KEIN_ARTIKELBILD_VORHANDEN, '5.0.0')
-            ->assignDeprecated('BILD_KEIN_HERSTELLERBILD_VORHANDEN', \BILD_KEIN_HERSTELLERBILD_VORHANDEN, '5.0.0')
-            ->assignDeprecated('BILD_KEIN_MERKMALBILD_VORHANDEN', \BILD_KEIN_MERKMALBILD_VORHANDEN, '5.0.0')
-            ->assignDeprecated('BILD_KEIN_MERKMALWERTBILD_VORHANDEN', \BILD_KEIN_MERKMALWERTBILD_VORHANDEN, '5.0.0');
+            ->assign('ShopURL', Shop::getURL());
 
-        if (!isset($_REQUEST['io'])) {
+        if (($requestData = $this->request->request('io', null)) === null) {
             return (new Response())->withStatus(400);
         }
-
-        $requestData = $_REQUEST['io'];
 
         \executeHook(\HOOK_IO_HANDLE_REQUEST, [
             'io'      => &$io,

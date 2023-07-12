@@ -9,4 +9,5 @@ Plausibilitätsprüfung nach dem Ändern von Kundendaten
 Parameter
 """""""""
 
-``--``
+``int`` **returnCode** (ab 5.3.0)
+    **returnCode** Rückgabewert der Formularvalidierung

@@ -203,17 +203,17 @@ class OrderCompleteController extends CheckoutController
                         && $_POST['inhaber'])
                 ) {
                     $_SESSION['Zahlungsart']->ZahlungsInfo->cBankName =
-                        Text::htmlentities(\stripslashes($_POST['bankname']), \ENT_QUOTES);
+                        Text::htmlentities(\stripslashes($_POST['bankname'] ?? ''), \ENT_QUOTES);
                     $_SESSION['Zahlungsart']->ZahlungsInfo->cKontoNr  =
-                        Text::htmlentities(\stripslashes($_POST['kontonr']), \ENT_QUOTES);
+                        Text::htmlentities(\stripslashes($_POST['kontonr'] ?? ''), \ENT_QUOTES);
                     $_SESSION['Zahlungsart']->ZahlungsInfo->cBLZ      =
-                        Text::htmlentities(\stripslashes($_POST['blz']), \ENT_QUOTES);
+                        Text::htmlentities(\stripslashes($_POST['blz'] ?? ''), \ENT_QUOTES);
                     $_SESSION['Zahlungsart']->ZahlungsInfo->cIBAN     =
-                        Text::htmlentities(\stripslashes($_POST['iban']), \ENT_QUOTES);
+                        Text::htmlentities(\stripslashes($_POST['iban'] ?? ''), \ENT_QUOTES);
                     $_SESSION['Zahlungsart']->ZahlungsInfo->cBIC      =
-                        Text::htmlentities(\stripslashes($_POST['bic']), \ENT_QUOTES);
+                        Text::htmlentities(\stripslashes($_POST['bic'] ?? ''), \ENT_QUOTES);
                     $_SESSION['Zahlungsart']->ZahlungsInfo->cInhaber  =
-                        Text::htmlentities(\stripslashes($_POST['inhaber']), \ENT_QUOTES);
+                        Text::htmlentities(\stripslashes($_POST['inhaber'] ?? ''), \ENT_QUOTES);
                     $hasAdditionalInformation                         = true;
                 }
             }

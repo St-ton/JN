@@ -1344,7 +1344,7 @@ class AccountController
         $returnCode         = Form::hasNoMissingData($missingData);
 
         \executeHook(\HOOK_JTL_PAGE_KUNDENDATEN_PLAUSI, [
-            'nReturnValue' => &$returnCode
+            'returnCode' => &$returnCode
         ]);
 
         if ($returnCode) {

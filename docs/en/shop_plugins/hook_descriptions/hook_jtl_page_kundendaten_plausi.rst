@@ -9,5 +9,5 @@ Plausibility check after changing customer data
 Parameter
 """""""""
 
-``int`` **nReturnValue** (since 5.3.0)
-    **nReturnValue** Return value of form validation
+``int`` **returnCode** (since 5.3.0)
+    **returnCode** Return value of form validation

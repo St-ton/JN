@@ -8,6 +8,7 @@ use InvalidArgumentException;
 use JTL\Cache\JTLCacheInterface;
 use JTL\Campaign;
 use JTL\Catalog\Product\Artikel;
+use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
 use JTL\dbeS\Mapper;
 use JTL\dbeS\Starter;
@@ -22,6 +23,7 @@ use JTL\Mail\Template\TemplateFactory;
 use JTL\Optin\Optin;
 use JTL\Optin\OptinAvailAgain;
 use JTL\Redirect;
+use JTL\Session\Frontend;
 use JTL\Shop;
 use Psr\Log\LoggerInterface;
 use stdClass;
@@ -211,7 +213,7 @@ abstract class AbstractSync
 
         $options                             = Artikel::getDefaultOptions();
         $options->nKeineSichtbarkeitBeachten = 1;
-        $product                             = new Artikel($this->db);
+        $product                             = new Artikel($this->db, null, null, $this->cache);
         $product->fuelleArtikel($productID, $options);
         if ($product->kArtikel === null) {
             return;
@@ -228,6 +230,7 @@ abstract class AbstractSync
             'dBenachrichtigtAm' => 'NOW()',
             'cAbgeholt'         => 'N'
         ];
+        $currency = Frontend::getCurrency();
         foreach (\collect($subscriptions)->groupBy('kSprache') as $languageID => $byCustomerGroupID) {
             // if original language was deleted between ActivationOptIn and now, try to send it in english,
             // if there is no english, use the shop-default.
@@ -235,7 +238,8 @@ abstract class AbstractSync
                 ?? LanguageHelper::getAllLanguages(2)['eng']
                 ?? LanguageHelper::getDefaultLanguage();
             foreach ($byCustomerGroupID->groupBy('customerGroupID') as $customerGroupID => $items) {
-                $product = new Artikel($this->db);
+                $customerGroup = new CustomerGroup($customerGroupID, $this->db);
+                $product       = new Artikel($this->db, $customerGroup, $currency, $this->cache);
                 try {
                     $product->fuelleArtikel($productID, $options, $customerGroupID, $languageID);
                 } catch (InvalidArgumentException) {

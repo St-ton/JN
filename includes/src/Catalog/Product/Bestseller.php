@@ -204,13 +204,14 @@ class Bestseller
             return $bestseller->fetch();
         }
         $db             = Shop::Container()->getDB();
+        $cache          = Shop::Container()->getCache();
         $bestsellers    = [];
         $defaultOptions = Artikel::getDefaultOptions();
         $languageID     = Shop::getLanguageID();
         $customerGroup  = CustomerGroup::getByID($customerGroupID);
         $currency       = Frontend::getCurrency();
         foreach ($bestseller->fetch() as $productID) {
-            $product = new Artikel($db, $customerGroup, $currency);
+            $product = new Artikel($db, $customerGroup, $currency, $cache);
             $product->fuelleArtikel($productID, $defaultOptions, $customerGroupID, $languageID);
             if ($product->kArtikel > 0) {
                 $bestsellers[] = $product;

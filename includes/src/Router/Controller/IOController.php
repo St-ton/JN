@@ -33,7 +33,7 @@ class IOController extends AbstractController
     {
         Shop::setPageType(\PAGE_IO);
         $io        = IO::getInstance();
-        $ioMethods = new IOMethods($io, $this->db);
+        $ioMethods = new IOMethods($io, $this->db, $this->cache);
         $ioMethods->registerMethods();
         $smarty->setCaching(false)
             ->assign('nSeitenTyp', \PAGE_IO)

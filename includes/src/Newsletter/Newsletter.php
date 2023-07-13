@@ -379,6 +379,7 @@ class Newsletter
         $shopURL        = Shop::getURL() . '/';
         $imageBaseURL   = Shop::getImageBaseURL();
         $db             = Shop::Container()->getDB();
+        $cache          = Shop::Container()->getCache();
         $defaultOptions = Artikel::getDefaultOptions();
         $currency       = Frontend::getCurrency();
         $customerGroup  = CustomerGroup::reset($customerGroupID);
@@ -388,7 +389,7 @@ class Newsletter
             if ($id <= 0) {
                 continue;
             }
-            $product = new Artikel($db, $customerGroup, $currency);
+            $product = new Artikel($db, $customerGroup, $currency, $cache);
             $product->fuelleArtikel($id, $defaultOptions, $customerGroupID, $langID);
             if ($product->kArtikel <= 0) {
                 Shop::Container()->getLogService()->notice(

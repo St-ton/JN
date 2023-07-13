@@ -94,7 +94,7 @@ class GiftsController extends AbstractBackendController
         $customerGroup                      = Frontend::getCustomerGroup();
         $currency                           = Frontend::getCurrency();
         foreach ($data as $productID) {
-            $product = new Artikel($this->db, $customerGroup, $currency);
+            $product = new Artikel($this->db, $customerGroup, $currency, $this->cache);
             $product->fuelleArtikel($productID, $options, 0, 0, true);
             if ($product->kArtikel > 0) {
                 $res[] = $product;
@@ -130,7 +130,7 @@ class GiftsController extends AbstractBackendController
         $customerGroup                      = Frontend::getCustomerGroup();
         $currency                           = Frontend::getCurrency();
         foreach ($data as $item) {
-            $product = new Artikel($this->db, $customerGroup, $currency);
+            $product = new Artikel($this->db, $customerGroup, $currency, $this->cache);
             $product->fuelleArtikel((int)$item->kArtikel, $options, 0, 0, true);
             if ($product->kArtikel > 0) {
                 $product->nGGAnzahl = (int)$item->nAnzahl;
@@ -168,7 +168,7 @@ class GiftsController extends AbstractBackendController
         $customerGroup                      = Frontend::getCustomerGroup();
         $currency                           = Frontend::getCurrency();
         foreach ($data as $item) {
-            $product = new Artikel($this->db, $customerGroup, $currency);
+            $product = new Artikel($this->db, $customerGroup, $currency, $this->cache);
             $product->fuelleArtikel((int)$item->kArtikel, $options, 0, 0, true);
             if ($product->kArtikel > 0) {
                 $product->nGGAnzahl = (int)$item->nAnzahl;

@@ -6,6 +6,7 @@ use Exception;
 use JTL\Alert\Alert;
 use JTL\Boxes\Factory;
 use JTL\Boxes\Renderer\DefaultRenderer;
+use JTL\Cache\JTLCacheInterface;
 use JTL\Campaign;
 use JTL\Cart\CartHelper;
 use JTL\Cart\PersistentCart;
@@ -41,6 +42,7 @@ use stdClass;
 use function Functional\filter;
 use function Functional\flatten;
 use function Functional\pluck;
+use function Symfony\Component\Translation\t;
 
 /**
  * Class IOMethods
@@ -50,12 +52,17 @@ class IOMethods
 {
     /**
      * IOMethods constructor.
-     * @param IO               $io
-     * @param DbInterface|null $db
+     * @param IO                     $io
+     * @param DbInterface|null       $db
+     * @param JTLCacheInterface|null $cache
      */
-    public function __construct(private readonly IO $io, private ?DbInterface $db = null)
-    {
-        $this->db = $db ?? Shop::Container()->getDB();
+    public function __construct(
+        private readonly IO        $io,
+        private ?DbInterface       $db = null,
+        private ?JTLCacheInterface $cache = null
+    ) {
+        $this->db    = $this->db ?? Shop::Container()->getDB();
+        $this->cache = $this->cache ?? Shop::Container()->getCache();
     }
 
     /**
@@ -164,7 +171,7 @@ class IOMethods
     public function pushToBasket(int $productID, $amount, $properties = ''): IOResponse
     {
         require_once \PFAD_ROOT . \PFAD_INCLUDES . 'sprachfunktionen.php';
-        $config     = Shopsetting::getInstance()->getAll();
+        $config     = Shopsetting::getInstance($this->db, $this->cache)->getAll();
         $smarty     = Shop::Smarty();
         $response   = new stdClass();
         $ioResponse = new IOResponse();
@@ -172,7 +179,7 @@ class IOMethods
         if ($amount <= 0 || $productID <= 0) {
             return $ioResponse;
         }
-        $product               = new Artikel($this->db);
+        $product               = new Artikel($this->db, null, null, $this->cache);
         $options               = Artikel::getDefaultOptions();
         $options->nStueckliste = 1;
         $product->fuelleArtikel($productID, $options);
@@ -291,7 +298,7 @@ class IOMethods
      */
     public function pushToComparelist(int $productID): IOResponse
     {
-        $conf       = Shopsetting::getInstance()->getAll();
+        $conf       = Shopsetting::getInstance($this->db, $this->cache)->getAll();
         $response   = new stdClass();
         $ioResponse = new IOResponse();
         $smarty     = Shop::Smarty();
@@ -349,7 +356,7 @@ class IOMethods
      */
     public function removeFromComparelist(int $productID): IOResponse
     {
-        $conf       = Shopsetting::getInstance()->getAll();
+        $conf       = Shopsetting::getInstance($this->db, $this->cache)->getAll();
         $response   = new stdClass();
         $ioResponse = new IOResponse();
         $smarty     = Shop::Smarty();
@@ -423,7 +430,7 @@ class IOMethods
     public function pushToWishlist(int $productID, $qty, array $data): IOResponse
     {
         $_POST      = $data;
-        $conf       = Shopsetting::getInstance()->getAll();
+        $conf       = Shopsetting::getInstance($this->db, $this->cache)->getAll();
         $response   = new stdClass();
         $ioResponse = new IOResponse();
         $qty        = empty($qty) ? 1 : $qty;
@@ -514,7 +521,7 @@ class IOMethods
      */
     public function removeFromWishlist(int $productID): IOResponse
     {
-        $conf       = Shopsetting::getInstance()->getAll();
+        $conf       = Shopsetting::getInstance($this->db, $this->cache)->getAll();
         $response   = new stdClass();
         $ioResponse = new IOResponse();
         $smarty     = Shop::Smarty();
@@ -642,7 +649,7 @@ class IOMethods
         $_POST['jtl_token'] = $aValues['jtl_token'];
         $smarty             = Shop::Smarty();
         $response           = new IOResponse();
-        $product            = new Artikel($this->db);
+        $product            = new Artikel($this->db, null, null, $this->cache);
         $productID          = (int)($aValues['VariKindArtikel'] ?? $aValues['a']);
         $items              = $aValues['item'] ?? [];
         $quantities         = $aValues['quantity'] ?? [];
@@ -796,7 +803,7 @@ class IOMethods
         if ($productID <= 0) {
             return $result;
         }
-        $product                            = new Artikel($this->db);
+        $product                            = new Artikel($this->db, null, null, $this->cache);
         $options                            = Artikel::getDefaultOptions();
         $options->nKeinLagerbestandBeachten = 1;
 
@@ -845,7 +852,7 @@ class IOMethods
         $options->nMain                     = 1;
         $options->nWarenlager               = 1;
         $options->nVariationen              = 1;
-        $product                            = new Artikel($this->db);
+        $product                            = new Artikel($this->db, null, null, $this->cache);
         $product->fuelleArtikel($parentID, $checkBulk ? null : $options, Frontend::getCustomerGroup()->getID());
         $weightDiff   = 0;
         $newProductNr = '';
@@ -1006,7 +1013,7 @@ class IOMethods
         $options->nMain                     = 1;
         $options->nWarenlager               = 1;
         $options->nVariationen              = 1;
-        $product                            = new Artikel($this->db);
+        $product                            = new Artikel($this->db, null, null, $this->cache);
         $product->fuelleArtikel($parentProductID, $options);
         // Alle Variationen ohne Freifeld
         $keyValueVariations = $product->keyValueVariations($product->VariationenOhneFreifeld);
@@ -1443,9 +1450,9 @@ class IOMethods
         $_POST      = $formData;
         $controller = new ReviewController(
             $this->db,
-            Shop::Container()->getCache(),
+            $this->cache,
             new State(),
-            Shopsetting::getInstance()->getAll(),
+            Shopsetting::getInstance($this->db, $this->cache)->getAll(),
             Shop::Container()->getAlertService()
         );
         if (Form::validateToken()) {
@@ -1459,7 +1466,7 @@ class IOMethods
         $ioResponse       = new IOResponse();
         $response         = new stdClass();
         $response->review = flatten(filter(
-            (new Artikel($this->db))
+            (new Artikel($this->db, null, null, $this->cache))
                 ->fuelleArtikel((int)($formData['a'] ?? 0), Artikel::getDetailOptions())?->Bewertungen->oBewertung_arr,
             static function ($e) use ($formData): bool {
                 return (int)$e->kBewertung === (int)$formData['reviewID'];

@@ -312,6 +312,7 @@ class CMS
             ? ' LIMIT ' . (int)$conf['sonstiges']['sonstiges_gratisgeschenk_anzahl']
             : '';
         $db             = Shop::Container()->getDB();
+        $cache          = Shop::Container()->getCache();
         $tmpGifts       = $db->getObjects(
             'SELECT tartikel.kArtikel, tartikelattribut.cWert
                 FROM tartikel
@@ -329,7 +330,7 @@ class CMS
         $defaultOptions = Artikel::getDefaultOptions();
         $languageID     = Shop::getLanguageID();
         foreach ($tmpGifts as $item) {
-            $product = new Artikel($db, $customerGroup, $currency);
+            $product = new Artikel($db, $customerGroup, $currency, $cache);
             $product->fuelleArtikel((int)$item->kArtikel, $defaultOptions, $customerGroupID, $languageID);
             $product->cBestellwert = Preise::getLocalizedPriceString((float)$item->cWert, $currency);
             if ($product->kEigenschaftKombi > 0 || \count($product->Variationen) === 0) {

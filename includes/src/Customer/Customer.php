@@ -1040,11 +1040,10 @@ class Customer
      */
     public function getOpenOrders()
     {
-        $cancellationTime = Shopsetting::getInstance()->getValue(\CONF_GLOBAL, 'global_cancellation_time');
-        $db               = $this->db;
+        $cancellationTime = Shopsetting::getInstance($this->db)->getValue(\CONF_GLOBAL, 'global_cancellation_time');
         $customerID       = $this->getID();
 
-        $openOrders               = $db->getSingleObject(
+        $openOrders               = $this->db->getSingleObject(
             'SELECT COUNT(kBestellung) AS orderCount
                 FROM tbestellung
                 WHERE cStatus NOT IN (:orderSent, :orderCanceled)
@@ -1055,7 +1054,7 @@ class Customer
                 'orderCanceled' => \BESTELLUNG_STATUS_STORNO,
             ]
         );
-        $ordersInCancellationTime = $db->getSingleObject(
+        $ordersInCancellationTime = $this->db->getSingleObject(
             'SELECT COUNT(kBestellung) AS orderCount
                     FROM tbestellung
                     WHERE kKunde = :customerId
@@ -1070,8 +1069,8 @@ class Customer
 
         if (!empty($openOrders->orderCount) || !empty($ordersInCancellationTime->orderCount)) {
             return (object)[
-                'openOrders'               => (int)$openOrders->orderCount,
-                'ordersInCancellationTime' => (int)$ordersInCancellationTime->orderCount
+                'openOrders'               => (int)($openOrders->orderCount ?? 0),
+                'ordersInCancellationTime' => (int)($ordersInCancellationTime->orderCount ?? 0)
             ];
         }
 

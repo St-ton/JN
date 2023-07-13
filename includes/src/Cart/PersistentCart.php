@@ -310,6 +310,7 @@ class PersistentCart
         }
         $customerGroup = Frontend::getCustomerGroup();
         $currency      = Frontend::getCurrency();
+        $cache         = Shop::Container()->getCache();
         // Hole alle Eigenschaften für eine Position
         foreach ($cartItems as $item) {
             $item->kWarenkorbPersPos = (int)$item->kWarenkorbPersPos;
@@ -349,7 +350,7 @@ class PersistentCart
                 );
             }
             if ($addProducts) {
-                $persItem->Artikel = new Artikel($this->db, $customerGroup, $currency);
+                $persItem->Artikel = new Artikel($this->db, $customerGroup, $currency, $cache);
                 $persItem->Artikel->fuelleArtikel($persItem->kArtikel, $defaultOptions);
                 $persItem->cArtikelName = $persItem->Artikel->cName;
 

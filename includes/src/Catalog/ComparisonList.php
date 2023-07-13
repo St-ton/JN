@@ -48,12 +48,13 @@ class ComparisonList
             return;
         }
         $db             = Shop::Container()->getDB();
+        $cache          = Shop::Container()->getCache();
         $defaultOptions = Artikel::getDefaultOptions();
         $baseURL        = Shop::Container()->getLinkService()->getStaticRoute('vergleichsliste.php');
         $customerGroup  = Frontend::getCustomerGroup();
         $currency       = Frontend::getCurrency();
         foreach ($compareList->oArtikel_arr as $key => $item) {
-            $product = new Artikel($db, $customerGroup, $currency);
+            $product = new Artikel($db, $customerGroup, $currency, $cache);
             $product->fuelleArtikel($item->kArtikel, $defaultOptions);
             if ($product->getID() === null) {
                 unset($compareList->oArtikel_arr[$key]);
@@ -78,10 +79,11 @@ class ComparisonList
         }
         $defaultOptions = Artikel::getDefaultOptions();
         $db             = Shop::Container()->getDB();
+        $cache          = Shop::Container()->getCache();
         $customerGroup  = Frontend::getCustomerGroup();
         $currency       = Frontend::getCurrency();
         foreach ($compareList->oArtikel_arr as $i => $item) {
-            $tmpProduct = new Artikel($db, $customerGroup, $currency);
+            $tmpProduct = new Artikel($db, $customerGroup, $currency, $cache);
             try {
                 $tmpProduct->fuelleArtikel($item->kArtikel, $defaultOptions);
             } catch (Exception) {

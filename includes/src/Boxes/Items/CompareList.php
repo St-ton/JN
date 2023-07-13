@@ -47,12 +47,13 @@ final class CompareList extends AbstractBox
             $defaultOptions = Artikel::getDefaultOptions();
             $baseURL        = LinkService::getInstance()->getStaticRoute('vergleichsliste.php');
             $db             = Shop::Container()->getDB();
+            $cache          = Shop::Container()->getCache();
             $languageID     = Shop::getLanguageID();
             $currency       = Frontend::getCurrency();
             $cGroup         = Frontend::getCustomerGroup();
             $cGroupID       = $cGroup->getID();
             foreach ($productList as $item) {
-                $product = new Artikel($db, $cGroup, $currency);
+                $product = new Artikel($db, $cGroup, $currency, $cache);
                 $product->fuelleArtikel($item->kArtikel, $defaultOptions, $cGroupID, $languageID);
                 $product->cURLDEL = $baseURL . '?vlplo=' . $item->kArtikel . $extra;
                 if (isset($item->oVariationen_arr) && \count($item->oVariationen_arr) > 0) {

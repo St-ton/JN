@@ -4,6 +4,7 @@ namespace JTL\Console\Command\Cache;
 
 use JTL\Cache\JTLCacheInterface;
 use JTL\Catalog\Category\Kategorie;
+use JTL\Catalog\Currency;
 use JTL\Catalog\Hersteller;
 use JTL\Catalog\Product\Artikel;
 use JTL\Console\Command\Command;
@@ -66,6 +67,11 @@ class WarmCacheCommand extends Command
     private ?DbInterface $db = null;
 
     /**
+     * @var JTLCacheInterface|null
+     */
+    private ?JTLCacheInterface $cache = null;
+
+    /**
      * @inheritdoc
      */
     protected function configure(): void
@@ -112,6 +118,8 @@ class WarmCacheCommand extends Command
         $bar->setFormat('cache');
         $bar->setMessage('Warming products');
         $bar->start();
+        $currency = new Currency();
+        $currency->getDefault();
         foreach ($this->db->getInts('SELECT kArtikel AS id FROM tartikel' . $where, 'id') as $pid) {
             foreach ($customerGroups as $customerGroup) {
                 $_SESSION['Kundengruppe'] = $customerGroup;
@@ -122,7 +130,7 @@ class WarmCacheCommand extends Command
                     $_SESSION['cISOSprache'] = $language->getCode();
                     Shop::setLanguage($languageID, $language->getCode());
                     if ($this->details === true) {
-                        $product = (new Artikel($this->db, $customerGroup))->fuelleArtikel(
+                        $product = (new Artikel($this->db, $customerGroup, $currency, $this->cache))->fuelleArtikel(
                             $pid,
                             $detailOpt,
                             $customerGroup->getID(),
@@ -137,7 +145,7 @@ class WarmCacheCommand extends Command
                                 : ' could not be loaded'));
                     }
                     if ($this->list === true) {
-                        $product = (new Artikel($this->db, $customerGroup))->fuelleArtikel(
+                        $product = (new Artikel($this->db, $customerGroup, $currency, $this->cache))->fuelleArtikel(
                             $pid,
                             $listOpt,
                             $customerGroup->getID(),
@@ -263,10 +271,10 @@ class WarmCacheCommand extends Command
 
     private function warm(): void
     {
-        $start    = \microtime(true);
-        $io       = $this->getIO();
-        $this->db = Shop::Container()->getDB();
-        $cache    = Shop::Container()->getCache();
+        $start       = \microtime(true);
+        $io          = $this->getIO();
+        $this->db    = Shop::Container()->getDB();
+        $this->cache = Shop::Container()->getCache();
         ProgressBar::setFormatDefinition(
             'cache',
             " \033[44;37m %message:-37s% \033[0m\n %current%/%max% %bar% %percent:3s%%"

@@ -585,6 +585,7 @@ class Bestellung
         $languageID               = Shop::getLanguageID();
         $customerGroupID          = $customer?->getGroupID() ?? 0;
         $customerGroup            = new CustomerGroup($customerGroupID, $this->db);
+        $cache                    = Shop::Container()->getCache();
         if ($customerGroup->getID() === 0) {
             $customerGroup->loadDefaultGroup();
         }
@@ -621,7 +622,7 @@ class Bestellung
 
             if ($item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL) {
                 if ($initProduct) {
-                    $item->Artikel = (new Artikel($this->db, $customerGroup, $this->Waehrung))
+                    $item->Artikel = (new Artikel($this->db, $customerGroup, $this->Waehrung, $cache))
                         ->fuelleArtikel($item->kArtikel, $defaultOptions, $customerGroupID, $languageID);
                 }
                 if ($item->kWarenkorbPos > 0) {
@@ -827,10 +828,10 @@ class Bestellung
                     $orderItem->nPosTyp     = (int)$orderItem->nPosTyp;
                     $orderItem->kBestellpos = (int)$orderItem->kBestellpos;
                     if (\in_array(
-                            $orderItem->nPosTyp,
-                            [\C_WARENKORBPOS_TYP_ARTIKEL, \C_WARENKORBPOS_TYP_GRATISGESCHENK],
-                            true
-                        )
+                        $orderItem->nPosTyp,
+                        [\C_WARENKORBPOS_TYP_ARTIKEL, \C_WARENKORBPOS_TYP_GRATISGESCHENK],
+                        true
+                    )
                         && $lineItem->getBestellPos() === $orderItem->kBestellpos
                     ) {
                         $orderItem->kLieferschein_arr[]  = $note->getLieferschein();

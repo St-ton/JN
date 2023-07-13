@@ -10,7 +10,7 @@ ob_start();
 require_once __DIR__ . '/includes/globalinclude.php';
 
 $io        = IO::getInstance();
-$ioMethods = new IOMethods($io, Shop::Container()->getDB());
+$ioMethods = new IOMethods($io, Shop::Container()->getDB(), Shop::Container()->getCache());
 $ioMethods->registerMethods();
 Shop::Smarty()->setCaching(false)
     ->assign('nSeitenTyp', PAGE_IO)

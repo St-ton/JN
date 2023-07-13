@@ -74,16 +74,15 @@ class Application extends BaseApplication
         $this->devMode     = \APPLICATION_BUILD_SHA === '#DEV#' ?? false;
         $this->isInstalled = \defined('BLOWFISH_KEY');
         if ($this->isInstalled) {
+            $db    = Shop::Container()->getDB();
             $cache = Shop::Container()->getCache();
-            $cache->setJtlCacheConfig(
-                Shop::Container()->getDB()->selectAll('teinstellungen', 'kEinstellungenSektion', \CONF_CACHING)
-            );
+            $cache->setJtlCacheConfig($db->selectAll('teinstellungen', 'kEinstellungenSektion', \CONF_CACHING));
             Shop::setRouter(new Router(
-                Shop::Container()->getDB(),
+                $db,
                 $cache,
                 new State(),
                 Shop::Container()->getAlertService(),
-                Shopsetting::getInstance()->getAll()
+                Shopsetting::getInstance($db, $cache)->getAll()
             ));
         }
 

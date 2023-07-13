@@ -51,7 +51,7 @@ final class TopRatedProducts extends AbstractBox
             $cgroup         = Frontend::getCustomerGroup();
             $currency       = Frontend::getCurrency();
             foreach ($res as $id) {
-                $item = (new Artikel($db, $cgroup, $currency))->fuelleArtikel($id, $defaultOptions);
+                $item = (new Artikel($db, $cgroup, $currency, $cache))->fuelleArtikel($id, $defaultOptions);
                 if ($item !== null) {
                     $item->fDurchschnittsBewertung = \round($item->fDurchschnittsBewertung * 2) / 2;
                     $products[]                    = $item;

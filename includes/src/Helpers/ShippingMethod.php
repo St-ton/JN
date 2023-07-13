@@ -405,6 +405,7 @@ class ShippingMethod
         $currency = Frontend::getCurrency();
         $cgroupID = $cgroup->getID();
         $db       = Shop::Container()->getDB();
+        $cache    = Shop::Container()->getCache();
         // Baue ZusatzArtikel
         $additionalProduct                  = new stdClass();
         $additionalProduct->fAnzahl         = 0;
@@ -428,7 +429,8 @@ class ShippingMethod
             if ($nArtikelAssoc !== 1) {
                 continue;
             }
-            $tmpProduct = (new Artikel($db, $cgroup, $currency))->fuelleArtikel($productID, $defaultOptions, $cgroupID);
+            $tmpProduct = (new Artikel($db, $cgroup, $currency, $cache))
+                ->fuelleArtikel($productID, $defaultOptions, $cgroupID);
             // Normaler Variationsartikel
             if ($tmpProduct !== null
                 && $tmpProduct->nIstVater === 0
@@ -456,7 +458,7 @@ class ShippingMethod
             $products = \array_merge($products);
         }
         foreach ($products as $product) {
-            $tmpProduct = (new Artikel($db, $cgroup, $currency))
+            $tmpProduct = (new Artikel($db, $cgroup, $currency, $cache))
                 ->fuelleArtikel($product['kArtikel'], $defaultOptions, $cgroupID);
             if ($tmpProduct === null || $tmpProduct->kArtikel <= 0) {
                 continue;

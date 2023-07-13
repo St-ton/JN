@@ -1707,7 +1707,7 @@ class ProductFilter
         $customerGroup = Frontend::getCustomerGroup();
         $languageID    = Shop::getLanguageID();
         foreach ($productKeys->forPage($this->nSeite, $productsPerPage) as $idx => $id) {
-            $product = (new Artikel($this->db, $customerGroup, $currency))
+            $product = (new Artikel($this->db, $customerGroup, $currency, $this->cache))
                 ->fuelleArtikel($id, $opt, $customerGroup->getID(), $languageID);
             if ($product !== null && $product->getID() > 0) {
                 $productList->push($product);

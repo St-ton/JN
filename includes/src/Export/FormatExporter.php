@@ -169,7 +169,7 @@ class FormatExporter extends AbstractExporter
         $imageBaseURL = Shop::getImageBaseURL();
         $res          = $this->db->getPDOStatement($this->getExportSQL());
         while (($productData = $res->fetch(PDO::FETCH_OBJ)) !== false) {
-            $product = new Product($this->db, $customerGroup, $currency);
+            $product = new Product($this->db, $customerGroup, $currency, $this->cache);
             $product->fuelleArtikel(
                 (int)$productData->kArtikel,
                 $options,

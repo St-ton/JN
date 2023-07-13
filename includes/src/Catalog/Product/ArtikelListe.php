@@ -81,7 +81,7 @@ class ArtikelListe
             $currency       = Frontend::getCurrency();
             $customerGroup  = CustomerGroup::getByID($customerGroupID);
             foreach ($items as $item) {
-                $product = new Artikel($this->db, $customerGroup, $currency);
+                $product = new Artikel($this->db, $customerGroup, $currency, $this->cache);
                 $product->fuelleArtikel((int)$item->kArtikel, $defaultOptions, $customerGroupID, $languageID);
                 $this->elemente[] = $product;
             }
@@ -153,7 +153,7 @@ class ArtikelListe
             $currency       = Frontend::getCurrency();
             $customerGroup  = CustomerGroup::getByID($customerGroupID);
             foreach ($items as $item) {
-                $product = new Artikel($this->db, $customerGroup, $currency);
+                $product = new Artikel($this->db, $customerGroup, $currency, $this->cache);
                 $product->fuelleArtikel((int)$item->kArtikel, $defaultOptions, $customerGroupID, $languageID);
                 if ($product->kArtikel > 0) {
                     $this->elemente[] = $product;
@@ -189,7 +189,7 @@ class ArtikelListe
         $customerGroupID = Frontend::getCustomerGroup()->getID();
         $currency        = Frontend::getCurrency();
         for ($i = $start; $i < $cnt; $i++) {
-            $product = new Artikel($this->db, $customerGroup, $currency);
+            $product = new Artikel($this->db, $customerGroup, $currency, $this->cache);
             $product->fuelleArtikel($productIDs[$i], $defaultOptions, $customerGroupID, $languageID);
             if ($product->kArtikel > 0) {
                 ++$total;
@@ -268,7 +268,7 @@ class ArtikelListe
         $currency       = Frontend::getCurrency();
         $customerGroup  = CustomerGroup::getByID($customerGroupID);
         foreach ($items as $obj) {
-            $product = new Artikel($this->db, $customerGroup, $currency);
+            $product = new Artikel($this->db, $customerGroup, $currency, $this->cache);
             $product->fuelleArtikel((int)$obj->kArtikel, $defaultOptions, $customerGroupID, $languageID);
             if ($product->kArtikel > 0) {
                 $this->elemente[] = $product;
@@ -358,7 +358,7 @@ class ArtikelListe
             $currency       = Frontend::getCurrency();
             $customerGroup  = CustomerGroup::getByID($customerGroupID);
             foreach ($items as $item) {
-                $product = new Artikel($this->db, $customerGroup, $currency);
+                $product = new Artikel($this->db, $customerGroup, $currency, $this->cache);
                 $product->fuelleArtikel((int)$item->kArtikel, $defaultOptions, $customerGroupID, $languageID);
                 if ($product->kArtikel > 0) {
                     $this->elemente[] = $product;

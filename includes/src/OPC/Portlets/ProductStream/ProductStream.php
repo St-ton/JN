@@ -163,10 +163,12 @@ class ProductStream extends Portlet
         $products       = [];
         $defaultOptions = Artikel::getDefaultOptions();
         $db             = Shop::Container()->getDB();
+        $cache          = Shop::Container()->getCache();
         $customerGroup  = Frontend::getCustomerGroup();
         $currency       = Frontend::getCurrency();
         foreach ($this->getFilteredProductIds($instance) as $productID) {
-            $products[] = (new Artikel($db, $customerGroup, $currency))->fuelleArtikel($productID, $defaultOptions);
+            $products[] = (new Artikel($db, $customerGroup, $currency, $cache))
+                ->fuelleArtikel($productID, $defaultOptions);
         }
 
         return Product::separateByAvailability($products);

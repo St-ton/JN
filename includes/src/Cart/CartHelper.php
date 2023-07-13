@@ -1332,10 +1332,11 @@ class CartHelper
         $errors         = [];
         $defaultOptions = Artikel::getDefaultOptions();
         $db             = Shop::Container()->getDB();
+        $cache          = Shop::Container()->getCache();
         $customerGroup  = Frontend::getCustomerGroup();
         $currency       = Frontend::getCurrency();
         foreach ($attributes as $key => $attribute) {
-            $product = new Artikel($db, $customerGroup, $currency);
+            $product = new Artikel($db, $customerGroup, $currency, $cache);
             $product->fuelleArtikel($attribute->kArtikel, $defaultOptions);
             $redirects = self::addToCartCheck(
                 $product,
@@ -1358,7 +1359,7 @@ class CartHelper
         }
 
         if (\count($errors) > 0) {
-            $product = new Artikel($db, $customerGroup, $currency);
+            $product = new Artikel($db, $customerGroup, $currency, $cache);
             $product->fuelleArtikel($isParent ? $parentID : $productID, $defaultOptions);
             $redirectURL = $product->cURLFull . '?a=';
             if ($isParent) {
@@ -1638,6 +1639,7 @@ class CartHelper
             return;
         }
         $db            = Shop::Container()->getDB();
+        $cache         = Shop::Container()->getCache();
         $updated       = false;
         $freeGiftID    = 0;
         $cartNotices   = $_SESSION['Warenkorbhinweise'] ?? [];
@@ -1652,7 +1654,7 @@ class CartHelper
                 }
                 //stückzahlen verändert?
                 if (isset($_POST['anzahl'][$i])) {
-                    $product = new Artikel($db, $customerGroup, $currency);
+                    $product = new Artikel($db, $customerGroup, $currency, $cache);
                     $valid   = true;
                     $product->fuelleArtikel($item->kArtikel, $options);
                     $quantity = (float)\str_replace(',', '.', $_POST['anzahl'][$i]);
@@ -1941,6 +1943,7 @@ class CartHelper
             return $xSelling;
         }
         $db         = Shop::Container()->getDB();
+        $cache      = Shop::Container()->getCache();
         $productIDs = \implode(', ', $productIDs);
         $xsellData  = $db->getInts(
             'SELECT DISTINCT kXSellArtikel
@@ -1960,7 +1963,7 @@ class CartHelper
         $customerGroup           = Frontend::getCustomerGroup();
         $currency                = Frontend::getCurrency();
         foreach ($xsellData as $productID) {
-            $product = new Artikel($db, $customerGroup, $currency);
+            $product = new Artikel($db, $customerGroup, $currency, $cache);
             $product->fuelleArtikel($productID, $defaultOptions);
             if ($product->kArtikel > 0 && $product->aufLagerSichtbarkeit()) {
                 $xSelling->Kauf->Artikel[] = $product;
@@ -1991,6 +1994,7 @@ class CartHelper
             $sqlSort = ' ORDER BY tartikel.fLagerbestand DESC';
         }
         $db            = Shop::Container()->getDB();
+        $cache         = Shop::Container()->getCache();
         $limit         = $conf['sonstiges']['sonstiges_gratisgeschenk_anzahl'] > 0
             ? ' LIMIT ' . (int)$conf['sonstiges']['sonstiges_gratisgeschenk_anzahl']
             : '';
@@ -2012,7 +2016,7 @@ class CartHelper
         $customerGroup = Frontend::getCustomerGroup();
         $currency      = Frontend::getCurrency();
         foreach ($giftsTmp as $gift) {
-            $product = new Artikel($db, $customerGroup, $currency);
+            $product = new Artikel($db, $customerGroup, $currency, $cache);
             $product->fuelleArtikel((int)$gift->kArtikel, Artikel::getDefaultOptions());
             if ($product->kArtikel > 0
                 && ($product->kEigenschaftKombi > 0

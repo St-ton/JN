@@ -98,9 +98,10 @@ class Plugins
             }
             $customerGroup = Frontend::getCustomerGroup();
             $currency      = Frontend::getCurrency();
+            $options       = Artikel::getDefaultOptions();
             foreach ($params['kArtikel'] as $productID) {
-                $product    = new Artikel($this->db, $customerGroup, $currency);
-                $products[] = $product->fuelleArtikel($productID, Artikel::getDefaultOptions());
+                $product    = new Artikel($this->db, $customerGroup, $currency, $this->cache);
+                $products[] = $product->fuelleArtikel($productID, $options);
             }
         } else {
             $products = (new ProductFilter(

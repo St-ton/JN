@@ -1052,6 +1052,7 @@ class Product
         $xSelling   = (object)$xSelling;
         $options    = Artikel::getDefaultOptions();
         $db         = Shop::Container()->getDB();
+        $cache      = Shop::Container()->getCache();
         $languageID = Shop::getLanguageID();
         $currency   = Frontend::getCurrency();
         $cgroup     = Frontend::getCustomerGroup();
@@ -1059,7 +1060,7 @@ class Product
         foreach ($xSelling->Standard->XSellGruppen as $group) {
             $group->Artikel = [];
             foreach ($group->productIDs as $id) {
-                $product = new Artikel($db, $cgroup, $currency);
+                $product = new Artikel($db, $cgroup, $currency, $cache);
                 $product->fuelleArtikel($id, $options, $cgroupID, $languageID);
                 if ($product->kArtikel > 0 && $product->aufLagerSichtbarkeit()) {
                     $group->Artikel[] = $product;
@@ -1069,7 +1070,7 @@ class Product
             unset($group->productIDs);
         }
         foreach ($xSelling->Kauf->productIDs as $id) {
-            $product = new Artikel($db, $cgroup, $currency);
+            $product = new Artikel($db, $cgroup, $currency, $cache);
             $product->fuelleArtikel($id, $options, $cgroupID, $languageID);
             if ($product->kArtikel > 0 && $product->aufLagerSichtbarkeit()) {
                 $xSelling->Kauf->Artikel[] = $product;
@@ -1493,6 +1494,7 @@ class Product
         $languageID      = Shop::getLanguageID();
         $customerGroupID = $customerGroup->getID();
         $db              = Shop::Container()->getDB();
+        $cache           = Shop::Container()->getCache();
         // Wurde der Artikel von der Artikelübersicht aus angeklickt?
         if ($productID > 0
             && isset($_SESSION['oArtikelUebersichtKey_arr'])
@@ -1517,14 +1519,14 @@ class Product
                 $prevID = $collection[$index - 1];
             }
             if ($nextID > 0) {
-                $nav->naechsterArtikel = (new Artikel($db, $customerGroup, $currency))
+                $nav->naechsterArtikel = (new Artikel($db, $customerGroup, $currency, $cache))
                     ->fuelleArtikel($nextID, Artikel::getDefaultOptions(), $customerGroupID, $languageID);
                 if ($nav->naechsterArtikel === null) {
                     unset($nav->naechsterArtikel);
                 }
             }
             if ($prevID > 0) {
-                $nav->vorherigerArtikel = (new Artikel($db, $customerGroup, $currency))
+                $nav->vorherigerArtikel = (new Artikel($db, $customerGroup, $currency, $cache))
                     ->fuelleArtikel($prevID, Artikel::getDefaultOptions(), $customerGroupID, $languageID);
                 if ($nav->vorherigerArtikel === null) {
                     unset($nav->vorherigerArtikel);
@@ -1566,11 +1568,11 @@ class Product
             );
 
             if ($prev !== null && !empty($prev->kArtikel)) {
-                $nav->vorherigerArtikel = (new Artikel($db, $customerGroup, $currency))
+                $nav->vorherigerArtikel = (new Artikel($db, $customerGroup, $currency, $cache))
                     ->fuelleArtikel((int)$prev->kArtikel, Artikel::getDefaultOptions(), $customerGroupID, $languageID);
             }
             if ($next !== null && !empty($next->kArtikel)) {
-                $nav->naechsterArtikel = (new Artikel($db, $customerGroup, $currency))
+                $nav->naechsterArtikel = (new Artikel($db, $customerGroup, $currency, $cache))
                     ->fuelleArtikel((int)$next->kArtikel, Artikel::getDefaultOptions(), $customerGroupID, $languageID);
             }
         }
@@ -1898,6 +1900,7 @@ class Product
                 $limit = ' LIMIT ' . (int)$conf['artikeldetails_aehnlicheartikel_anzahl'];
             }
             $db                = Shop::Container()->getDB();
+            $cache             = Shop::Container()->getCache();
             $stockFilterSQL    = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $currency          = Frontend::getCurrency();
             $customerGroup     = Frontend::getCustomerGroup();
@@ -1926,7 +1929,7 @@ class Product
             if (\count($productAttributes) > 0) {
                 $defaultOptions = Artikel::getDefaultOptions();
                 foreach ($productAttributes as $productAttribute) {
-                    $product = new Artikel($db, $customerGroup, $currency);
+                    $product = new Artikel($db, $customerGroup, $currency, $cache);
                     $id      = $productAttribute->kVaterArtikel > 0
                         ? $productAttribute->kVaterArtikel
                         : $productAttribute->kArtikel;
@@ -1962,7 +1965,7 @@ class Product
                 if (\count($searchCacheHits) > 0) {
                     $defaultOptions = Artikel::getDefaultOptions();
                     foreach ($searchCacheHits as $hit) {
-                        $product = new Artikel($db, $customerGroup, $currency);
+                        $product = new Artikel($db, $customerGroup, $currency, $cache);
                         $id      = ($hit->kVaterArtikel > 0)
                             ? $hit->kVaterArtikel
                             : $hit->kArtikel;

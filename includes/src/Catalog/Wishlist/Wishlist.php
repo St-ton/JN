@@ -1200,7 +1200,6 @@ class Wishlist
             $item->kWunschlistePos = (int)$item->kWunschlistePos;
             $item->kWunschliste    = (int)$item->kWunschliste;
             $item->kArtikel        = (int)$item->kArtikel;
-
             try {
                 $product = (new Artikel($this->db))->fuelleArtikel($item->kArtikel, $defaultOptions, 0, $langID);
             } catch (Exception) {

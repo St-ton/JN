@@ -868,7 +868,7 @@ class CouponsController extends AbstractBackendController
             }
             $products = [];
             foreach ($productIDs as $productID) {
-                $product = new Artikel($this->db, $cGroup, $defaultCurrency);
+                $product = new Artikel($this->db, $cGroup, $defaultCurrency, $this->cache);
                 $product->fuelleArtikel(
                     $productID,
                     $defaultOptions,

@@ -50,7 +50,7 @@ class ReviewController extends PageController
             return $this->smarty->getResponse('productdetails/review_form.tpl');
         }
         try {
-            $product = (new Artikel($this->db))->fuelleArtikel($this->state->productID);
+            $product = (new Artikel($this->db, null, null, $this->cache))->fuelleArtikel($this->state->productID);
 
             return new RedirectResponse($product !== null ? $product->cURLFull : Shop::getURL() . '/');
         } catch (Exception) {
@@ -105,7 +105,7 @@ class ReviewController extends PageController
      */
     private function getProductURL(int $productID): string
     {
-        $product = new Artikel($this->db);
+        $product = new Artikel($this->db, null, null, $this->cache);
         $product->fuelleArtikel($productID, Artikel::getDefaultOptions());
         if (!empty($product->cURLFull)) {
             return !\str_contains($product->cURLFull, '?')
@@ -199,7 +199,7 @@ class ReviewController extends PageController
             );
             exit;
         }
-        $this->currentProduct = new Artikel($this->db);
+        $this->currentProduct = new Artikel($this->db, null, null, $this->cache);
         $this->currentProduct->fuelleArtikel($params['kArtikel'], Artikel::getDefaultOptions());
         if (!$this->currentProduct->kArtikel) {
             \header('Location: ' . Shop::getURL() . '/', true, 303);

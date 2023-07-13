@@ -901,13 +901,14 @@ class Cart
         $currency        = Frontend::getCurrency();
         $langID          = Shop::getLanguageID();
         $db              = Shop::Container()->getDB();
+        $cache           = Shop::Container()->getCache();
         foreach ($this->PositionenArr as $item) {
             if ($item->kArtikel <= 0 || $item->nPosTyp !== \C_WARENKORBPOS_TYP_ARTIKEL) {
                 $this->setzeKonfig($item, true, false);
                 continue;
             }
             $oldItem                             = clone $item;
-            $product                             = new Artikel($db, $customerGroup, $currency);
+            $product                             = new Artikel($db, $customerGroup, $currency, $cache);
             $options->nKeineSichtbarkeitBeachten = 1;
             if ($item->kKonfigitem === 0) {
                 $options->nKeineSichtbarkeitBeachten = 0;

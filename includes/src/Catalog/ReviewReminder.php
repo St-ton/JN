@@ -100,6 +100,7 @@ class ReviewReminder
         $reciepients    = [];
         $defaultOptions = Artikel::getDefaultOptions();
         $db             = Shop::Container()->getDB();
+        $cache          = Shop::Container()->getCache();
         $currency       = Frontend::getCurrency();
         $logger         = Shop::Container()->getLogService();
         foreach ($this->orders as $orderData) {
@@ -115,7 +116,7 @@ class ReviewReminder
                 if ($item->kArtikel <= 0) {
                     continue;
                 }
-                $productVisible = (new Artikel($db, $customerGroup, $currency))->fuelleArtikel(
+                $productVisible = (new Artikel($db, $customerGroup, $currency, $cache))->fuelleArtikel(
                     (int)$item->kArtikel,
                     $defaultOptions,
                     (int)$customer->kKundengruppe

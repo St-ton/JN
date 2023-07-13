@@ -3,6 +3,7 @@
 namespace JTL\Catalog\Product;
 
 use DateTime;
+use JTL\Cache\JTLCacheInterface;
 use JTL\Catalog\Category\KategorieListe;
 use JTL\Catalog\Currency;
 use JTL\Catalog\Hersteller;
@@ -1045,11 +1046,6 @@ class Artikel implements RoutableInterface
     protected ?stdClass $options = null;
 
     /**
-     * @var DbInterface|null
-     */
-    private ?DbInterface $db = null;
-
-    /**
      * @var stdClass|null
      */
     public ?stdClass $SieSparenX = null;
@@ -1095,16 +1091,6 @@ class Artikel implements RoutableInterface
     public ?bool $isKonfigItem = null;
 
     /**
-     * @var Currency
-     */
-    protected Currency $currency;
-
-    /**
-     * @var CustomerGroup
-     */
-    protected CustomerGroup $customerGroup;
-
-    /**
      * @var self[]
      */
     private static $products = [];
@@ -1143,21 +1129,29 @@ class Artikel implements RoutableInterface
     public function __sleep()
     {
         return select(\array_keys(\get_object_vars($this)), static function ($e): bool {
-            return $e !== 'conf' && $e !== 'db' && $e !== 'oFavourableShipping';
+            return $e !== 'conf' && $e !== 'db' && $e !== 'cache' && $e !== 'oFavourableShipping';
         });
     }
 
     /**
-     * Artikel constructor.
-     * @param DbInterface|null $db
+     * @param DbInterface|null       $db
+     * @param CustomerGroup|null     $customerGroup
+     * @param Currency|null          $currency
+     * @param JTLCacheInterface|null $cache
      */
-    public function __construct(DbInterface $db = null, CustomerGroup $customerGroup = null, Currency $currency = null)
+    public function __construct(
+        private ?DbInterface       $db = null,
+        protected ?CustomerGroup   $customerGroup = null,
+        protected ?Currency        $currency = null,
+        private ?JTLCacheInterface $cache = null
+    )
     {
         $this->setRouteType(Router::TYPE_PRODUCT);
         $this->setImageType(Image::TYPE_PRODUCT);
-        $this->db            = $db ?? Shop::Container()->getDB();
-        $this->customerGroup = $customerGroup ?? Frontend::getCustomerGroup();
-        $this->currency      = $currency ?? Frontend::getCurrency();
+        $this->db            = $this->db ?? Shop::Container()->getDB();
+        $this->cache         = $this->cache ?? Shop::Container()->getCache();
+        $this->customerGroup = $this->customerGroup ?? Frontend::getCustomerGroup();
+        $this->currency      = $this->currency ?? Frontend::getCurrency();
         $this->options       = new stdClass();
         $this->conf          = $this->getConfig();
     }
@@ -1180,6 +1174,26 @@ class Artikel implements RoutableInterface
     public function setDB(DbInterface $db): void
     {
         $this->db = $db;
+    }
+
+    /**
+     * @return JTLCacheInterface
+     */
+    public function getCache(): JTLCacheInterface
+    {
+        if ($this->cache === null) {
+            $this->setCache(Shop::Container()->getCache());
+        }
+
+        return $this->cache;
+    }
+
+    /**
+     * @param JTLCacheInterface $cache
+     */
+    public function setCache(JTLCacheInterface $cache): void
+    {
+        $this->cache = $cache;
     }
 
     /**
@@ -1771,7 +1785,7 @@ class Artikel implements RoutableInterface
         $options                             = self::getDefaultOptions();
         $options->nKeineSichtbarkeitBeachten = $getInvisibleParts ? 1 : 0;
         foreach ($parts as $i => $partList) {
-            $product = new self($this->getDB(), $this->customerGroup, $this->currency);
+            $product = new self($this->getDB(), $this->customerGroup, $this->currency), $this->getCache();
             $product->fuelleArtikel((int)$partList->kArtikel, $options, $customerGroupID, $this->kSprache);
             $product->holeBewertungDurchschnitt();
             $this->oStueckliste_arr[$i]                      = $product;
@@ -1788,7 +1802,12 @@ class Artikel implements RoutableInterface
      */
     private function getProductBundle(): self
     {
-        $this->oProduktBundleMain              = new self($this->getDB());
+        $this->oProduktBundleMain              = new self(
+            $this->getDB(),
+            $this->customerGroup,
+            $this->currency,
+            $this->getCache()
+        );
         $this->oProduktBundlePrice             = new stdClass();
         $this->oProduktBundlePrice->fVKNetto   = 0.0;
         $this->oProduktBundlePrice->fPriceDiff = 0.0;
@@ -1819,7 +1838,7 @@ class Artikel implements RoutableInterface
                 'kArtikel, fAnzahl'
             );
             foreach ($bundles as $bundle) {
-                $product = new self($this->getDB(), $this->customerGroup, $this->currency);
+                $product = new self($this->getDB(), $this->customerGroup, $this->currency, $this->getCache());
                 $product->fuelleArtikel((int)$bundle->kArtikel, $opt, $this->kKundengruppe, $this->kSprache);
                 if ($product->kArtikel > 0) {
                     $this->oProduktBundle_arr[]           = $product;
@@ -2900,7 +2919,7 @@ class Artikel implements RoutableInterface
                 if (isset($tmp[$productID])) {
                     $varCombChildren[$i] = $tmp[$productID];
                 } else {
-                    $product = new self($this->getDB(), $this->customerGroup, $this->currency);
+                    $product = new self($this->getDB(), $this->customerGroup, $this->currency, $this->getCache());
                     $product->fuelleArtikel($productID, $options, $customerGroupID, $this->kSprache);
                     $tmp[$productID]     = $product;
                     $varCombChildren[$i] = $product;
@@ -3068,7 +3087,7 @@ class Artikel implements RoutableInterface
             $idx = $varDetailPrice->kEigenschaftWert;
             if ($varDetailPrice->kArtikel !== $lastProduct || $tmpProduct === null) {
                 $lastProduct = $varDetailPrice->kArtikel;
-                $tmpProduct  = new self($this->getDB(), $this->customerGroup, $this->currency);
+                $tmpProduct  = new self($this->getDB(), $this->customerGroup, $this->currency, $this->getCache());
                 $tmpProduct->getPriceData($varDetailPrice->kArtikel, $customerGroupID, $customerID);
             }
 
@@ -3351,7 +3370,7 @@ class Artikel implements RoutableInterface
                 'cached'    => false
             ]);
             if ($noCache === false) {
-                Shop::Container()->getCache()->set($this->cacheID, null, $cacheTags);
+                $this->cache->set($this->cacheID, null, $cacheTags);
             }
             if ($tmpProduct !== null && $tmpProduct->kArtikel === $tmpProduct->kVaterArtikel) {
                 Shop::Container()->getLogService()->warning(
@@ -3511,7 +3530,7 @@ class Artikel implements RoutableInterface
                 $toSave->cKurzbezeichnung = \gzcompress($toSave->cKurzbezeichnung, \COMPRESSION_LEVEL);
                 $toSave->compressed       = true;
             }
-            Shop::Container()->getCache()->set($this->cacheID, $toSave, $cacheTags);
+            $this->cache->set($this->cacheID, $toSave, $cacheTags);
             self::$products[$this->cacheID] = $toSave;
         }
         $this->getCustomerPrice($customerGroupID, Frontend::getCustomer()->getID());
@@ -3560,12 +3579,12 @@ class Artikel implements RoutableInterface
     {
         $langID        = $this->kSprache;
         $options       = $this->options;
-        $baseID        = Shop::Container()->getCache()->getBaseID(false, false, $customerGroupID, $langID);
+        $baseID        = $this->cache->getBaseID(false, false, $customerGroupID, $langID);
         $taxClass      = isset($_SESSION['Steuersatz']) ? \implode('_', $_SESSION['Steuersatz']) : '';
         $customerID    = Frontend::getCustomer()->getID();
         $productHash   = \md5($baseID . $this->getOptionsHash($options) . $taxClass);
         $this->cacheID = 'fa_' . $productID . '_' . $productHash;
-        $product       = Shop::Container()->getCache()->get($this->cacheID);
+        $product       = $this->cache->get($this->cacheID);
         if ($product === false) {
             if (isset(self::$products[$this->cacheID])) {
                 $product = self::$products[$this->cacheID];
@@ -4371,7 +4390,7 @@ class Artikel implements RoutableInterface
     private function setToParentStockText(string $stockTextConstant, string $stockTextLangVar): void
     {
         if ($this->kVaterArtikel > 0 && empty($this->AttributeAssoc[$stockTextConstant])) {
-            $parentProduct = new self($this->getDB(), $this->customerGroup, $this->currency);
+            $parentProduct = new self($this->getDB(), $this->customerGroup, $this->currency, $this->getCache());
             $parentProduct->fuelleArtikel(
                 $this->kVaterArtikel,
                 (object)['nAttribute' => 1],
@@ -5209,7 +5228,7 @@ class Artikel implements RoutableInterface
         if (\is_array($products) && \count($products) > 0) {
             $defaultOptions = self::getDefaultOptions();
             foreach ($products as $productData) {
-                $product = new self($this->getDB(), $this->customerGroup, $this->currency);
+                $product = new self($this->getDB(), $this->customerGroup, $this->currency, $this->getCache());
                 $product->fuelleArtikel(
                     ($productData->kVaterArtikel > 0)
                         ? (int)$productData->kVaterArtikel
@@ -5579,14 +5598,14 @@ class Artikel implements RoutableInterface
             return \trim($e);
         }));
         $cacheID = 'jtl_ola_' . \md5($shippingFreeCountries) . '_' . $this->kSprache;
-        if (($countries = $allCountries[$cacheID] ?? Shop::Container()->getCache()->get($cacheID)) === false) {
+        if (($countries = $allCountries[$cacheID] ?? $this->cache->get($cacheID)) === false) {
             $countries = Shop::Container()->getCountryService()->getFilteredCountryList($codes)->mapWithKeys(
                 function (Country $country) {
                     return [$country->getISO() => $country->getName($this->kSprache)];
                 }
             )->toArray();
 
-            Shop::Container()->getCache()->set(
+            $this->cache->set(
                 $cacheID,
                 $countries,
                 [\CACHING_GROUP_CORE, \CACHING_GROUP_CATEGORY, \CACHING_GROUP_OPTION]

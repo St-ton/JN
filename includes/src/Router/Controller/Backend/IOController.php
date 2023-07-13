@@ -162,7 +162,8 @@ class IOController extends AbstractBackendController
                     null,
                     Permissions::SETTINGS_ARTICLEOVERVIEW_VIEW
                 )
-                ->register('clearSearchCache',
+                ->register(
+                    'clearSearchCache',
                     $this->clearSearchCache(...),
                     null,
                     Permissions::SETTINGS_ARTICLEOVERVIEW_VIEW

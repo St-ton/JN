@@ -13,6 +13,8 @@ abstract class AbstractDataObject implements DataObjectInterface
 {
     abstract public function getMapping(): array;
 
+    abstract public function getColumnMapping(): array;
+
     abstract public function getReverseMapping(): array;
 
     /**

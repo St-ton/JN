@@ -6,6 +6,7 @@ use Exception;
 use InvalidArgumentException;
 use JTL\Cache\JTLCacheInterface;
 use JTL\Checkbox\CheckboxDataTableObject;
+use JTL\Checkbox\CheckboxDomainObject;
 use JTL\Checkbox\CheckboxFunction\CheckboxFunctionService;
 use JTL\Checkbox\CheckboxLanguage\CheckboxLanguageService;
 use JTL\Checkbox\CheckboxLanguage\CheckboxLanguageDataTableObject;
@@ -17,6 +18,7 @@ use JTL\DB\DbInterface;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
+use JTL\Helpers\Typifier;
 use JTL\Language\LanguageHelper;
 use JTL\Link\Link;
 use JTL\Mail\Mail\Mail;
@@ -250,6 +252,7 @@ class CheckBox
             }
             $this->loadLink();
             $this->checkAndUpdateFunctionIfNecessary($checkbox);
+
             return $this;
         }
         $checkbox = $this->service->get($id);
@@ -591,36 +594,36 @@ class CheckBox
     }
 
     /**
-     * @param CheckboxDataTableObject $checkboxDTO
+     * @param CheckboxDomainObject $checkboxDO
      * @return $this
      */
-    public function save(CheckboxDataTableObject $checkboxDTO): self
+    public function save(CheckboxDomainObject $checkboxDO): self
     {
-        $this->populateSelf($checkboxDTO);
-        if (\count($checkboxDTO->getLanguages()) === 0) {
+        $this->populateSelf($checkboxDO);
+        if (\count($checkboxDO->getLanguages()) === 0) {
             return $this;
         }
-        $this->insertDB(null, null, $checkboxDTO);
-        $this->fillProperties($checkboxDTO);
-        $this->cache->flushTags(['checkbox']);
+        $this->insertDB(null, null, $checkboxDO);
+        $this->fillProperties($checkboxDO);
+        $this->saveToCache('chkbx_' . $checkboxDO->getID());
 
         return $this;
     }
 
     /**
-     * @param CheckboxDataTableObject $checkboxDTO
+     * @param CheckboxDomainObject $checkboxDO
      * @return void
      */
-    private function populateSelf(CheckboxDataTableObject $checkboxDTO): void
+    private function populateSelf(CheckboxDomainObject $checkboxDO): void
     {
-        foreach ($checkboxDTO->toArray() as $property => $value) {
+        foreach ($checkboxDO->toArray() as $property => $value) {
             if (\array_key_exists($property, \get_object_vars($this))) {
                 $this->$property = \is_bool($value) ? (int)$value : $value;
             }
         }
-        foreach ($checkboxDTO->getLanguages() as $iso => $texts) {
+        foreach ($checkboxDO->getLanguages() as $iso => $texts) {
             $this->oCheckBoxSprache_arr[$iso] = [
-                'kCheckBox'     => $checkboxDTO->getID(),
+                'kCheckBox'     => $checkboxDO->getID(),
                 'kSprache'      => $this->getSprachKeyByISO($iso),
                 'cText'         => $texts['text'],
                 'cBeschreibung' => $texts['descr'],
@@ -629,39 +632,39 @@ class CheckBox
     }
 
     /**
-     * @param array|null                   $texts
-     * @param array|null                   $descriptions
-     * @param CheckboxDataTableObject|null $checkboxDTO
+     * @param array|null                $texts
+     * @param array|null                $descriptions
+     * @param CheckboxDomainObject|null $checkboxDO
      * @return $this
      */
     public function insertDB(
         ?array                   $texts = [],
         ?array                   $descriptions = [],
-        ?CheckboxDataTableObject $checkboxDTO = null
+        ?CheckboxDomainObject $checkboxDO = null
     ): self {
-        if (!isset($checkboxDTO)) {
-            $checkboxDTO = $this->getCheckBoxDataTableObject();
-            $this->addLanguagesToDTO($texts, $checkboxDTO, $descriptions);
+        if (!isset($checkboxDO)) {
+            $checkboxDO = $this->getCheckBoxDomainObject();
+            $this->addLanguagesToDTO($texts, $checkboxDO, $descriptions);
         }
         //Since method used to do the update too
-        if ($checkboxDTO->getID() > 0) {
-            return $this->updateDB($checkboxDTO);
+        if ($checkboxDO->getID() > 0) {
+            return $this->updateDB($checkboxDO);
         }
-        $checkboxDTO->setCheckboxID($this->service->insert($checkboxDTO));
-        $this->kCheckBox = $checkboxDTO->getCheckboxID();
-        $this->addLocalization($checkboxDTO);
+        $checkboxDO->setCheckboxID($this->service->insert($checkboxDO));
+        $this->kCheckBox = $checkboxDO->getCheckboxID();
+        $this->addLocalization($checkboxDO);
 
         return $this;
     }
 
     /**
-     * @param CheckboxDataTableObject $checkboxDTO
+     * @param CheckboxDomainObject $checkboxDO
      * @return $this
      */
-    public function updateDB(CheckboxDataTableObject $checkboxDTO): self
+    public function updateDB(CheckboxDomainObject $checkboxDO): self
     {
-        $this->service->update($checkboxDTO);
-        $this->updateLocalization($checkboxDTO);
+        $this->service->update($checkboxDO);
+        $this->updateLocalization($checkboxDO);
 
         return $this;
     }
@@ -680,17 +683,16 @@ class CheckBox
     }
 
     /**
-     * @param CheckboxDataTableObject $checkboxDTO
+     * @param CheckboxDomainObject $checkboxDO
      * @return void
      */
-    private function updateLocalization(CheckboxDataTableObject $checkboxDTO): void
+    private function updateLocalization(CheckboxDomainObject $checkboxDO): void
     {
-        $this->dismissObsoleteLanguages($checkboxDTO->getCheckboxID());
+        $this->dismissObsoleteLanguages($checkboxDO->getCheckboxID());
 
-        foreach ($checkboxDTO->getLanguages() as $iso => $texts) {
-            $checkboxLanguageDTO = $this->prepareLocalizationObject($checkboxDTO->getID(), $iso, $texts);
+        foreach ($checkboxDO->getLanguages() as $iso => $texts) {
+            $checkboxLanguageDTO = $this->prepareLocalizationObject($checkboxDO->getID(), $iso, $texts);
             $this->languageService->update($checkboxLanguageDTO);
-            $checkboxDTO->addCheckBoxLanguageArr($checkboxLanguageDTO);
         }
     }
 
@@ -824,14 +826,32 @@ class CheckBox
     }
 
     /**
-     * @return CheckboxDataTableObject
+     * @return CheckboxDomainObject
      */
-    protected function getCheckBoxDataTableObject(): CheckboxDataTableObject
+    protected function getCheckBoxDomainObject(): CheckboxDomainObject
     {
-        $dataObject = new CheckboxDataTableObject();
-        $dataObject->hydrate(\get_object_vars($this));
+        $domainObject = new CheckboxDomainObject(
+            $this->kCheckBox,
+            $this->kLink,
+            $this->kCheckBoxFunktion,
+            $this->cName,
+            $this->cKundengruppe,
+            $this->cAnzeigeOrt,
+            Typifier::boolify($this->nAktiv),
+            Typifier::boolify($this->nPflicht),
+            Typifier::boolify($this->nLogging),
+            $this->nSort,
+            $this->dErstellt,
+            Typifier::boolify($this->nInternal),
+            $this->dErstellt_DE,
+            $this->oCheckBoxSprache_arr,
+            Typifier::boolify($this->cLink),
+            $this->oCheckBoxSprache_arr,
+            $this->kKundengruppe_arr,
+            $this->kAnzeigeOrt_arr
+        );
 
-        return $dataObject;
+        return $domainObject;
     }
 
     /**
@@ -867,10 +887,10 @@ class CheckBox
     }
 
     /**
-     * @param CheckboxDataTableObject $checkbox
+     * @param CheckboxDomainObject $checkbox
      * @return void
      */
-    public function fillProperties(CheckboxDataTableObject $checkbox): void
+    public function fillProperties(CheckboxDomainObject $checkbox): void
     {
         $this->kCheckBox         = $checkbox->getID();
         $this->kLink             = $checkbox->getLinkID();
@@ -899,10 +919,10 @@ class CheckBox
     }
 
     /**
-     * @param CheckboxDataTableObject|stdClass $checkbox
+     * @param CheckboxDomainObject|stdClass $checkbox
      * @return void
      */
-    public function checkAndUpdateFunctionIfNecessary(CheckboxDataTableObject|stdClass $checkbox): void
+    public function checkAndUpdateFunctionIfNecessary(CheckboxDomainObject|stdClass $checkbox): void
     {
         $functionData = $this->functionService->get($this->kCheckBoxFunktion);
         if ($functionData !== null) {

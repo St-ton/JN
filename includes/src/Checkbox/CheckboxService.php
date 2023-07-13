@@ -4,6 +4,7 @@ namespace JTL\Checkbox;
 
 use JTL\Abstracts\AbstractService;
 use JTL\CheckBox;
+use JTL\Helpers\Typifier;
 
 /**
  * Class CheckboxService
@@ -18,16 +19,36 @@ class CheckboxService extends AbstractService
 
     /**
      * @param int $id
-     * @return ?CheckboxDataTableObject
+     * @return ?CheckboxDomainObject
      */
-    public function get(int $id): ?CheckboxDataTableObject
+    public function get(int $id): ?CheckboxDomainObject
     {
         $data = $this->repository->get($id);
         if ($data === null) {
             return null;
         }
+        $checkBoxDO = new CheckboxDomainObject(
+            Typifier::intify($data->kCheckBox),
+            (isset($data->nLink) && (int)$data->nLink === -1) ? 0 : Typifier::intify($data->kLink),
+            Typifier::intify($data->kCheckBoxFunktion),
+            Typifier::stringify($data->cName),
+            Typifier::stringify($data->cKundengruppe),
+            Typifier::stringify($data->cAnzeigeOrt),
+            Typifier::boolify($data->nAktiv),
+            Typifier::boolify($data->nPflicht),
+            Typifier::boolify($data->nLogging),
+            Typifier::intify($data->nSort),
+            'NOW()',
+            Typifier::boolify($data->nInternal),
+            Typifier::stringify($data->dErstellt_DE),
+            [],
+            Typifier::boolify($data->cLink),
+            [],
+            Typifier::arrify($data->kKundengruppe),
+            Typifier::arrify($data->cAnzeigeOrt),
+        );
 
-        return (new CheckboxDataTableObject())->hydrateWithObject($data);
+        return $checkBoxDO;
     }
 
     /**

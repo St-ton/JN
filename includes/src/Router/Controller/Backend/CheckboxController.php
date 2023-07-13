@@ -5,11 +5,13 @@ namespace JTL\Router\Controller\Backend;
 use JTL\Backend\Permissions;
 use JTL\CheckBox;
 use JTL\Checkbox\CheckboxDataTableObject;
+use JTL\Checkbox\CheckboxDomainObject;
 use JTL\Customer\CustomerGroup;
 use JTL\Exceptions\PermissionException;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
+use JTL\Helpers\Typifier;
 use JTL\Language\LanguageHelper;
 use JTL\Pagination\Pagination;
 use JTL\Smarty\JTLSmarty;
@@ -73,14 +75,14 @@ class CheckboxController extends AbstractBackendController
             $tab        = $step;
             $smarty->assign('oCheckBox', new CheckBox($checkboxID, $this->db));
         } elseif (Request::verifyGPCDataInt('erstellen') === 1 && Form::validateToken()) {
-            $post        = Text::filterXSS($_POST);
-            $step        = 'erstellen';
-            $checkboxID  = Request::verifyGPCDataInt('kCheckBox');
-            $languages   = LanguageHelper::getAllLanguages(0, true, true);
-            $checkboxDTO = $this->getCheckboxDTO($post, $languages);
-            $checks      = $this->validate($checkboxDTO, $languages);
+            $post       = Text::filterXSS($_POST);
+            $step       = 'erstellen';
+            $checkboxID = Request::verifyGPCDataInt('kCheckBox');
+            $languages  = LanguageHelper::getAllLanguages(0, true, true);
+            $checkboxDO = $this->getCheckboxDOFromRequest($post, $languages);
+            $checks     = $this->validate($checkboxDO, $languages);
             if (\count($checks) === 0) {
-                $checkbox = $this->save($checkboxDTO);
+                $checkbox = $this->save($checkbox, $checkboxDO);
                 $step     = 'uebersicht';
                 $this->alertService->addSuccess(\__('successCheckboxCreate'), 'successCheckboxCreate');
             } else {
@@ -93,18 +95,10 @@ class CheckboxController extends AbstractBackendController
 
                     $customerGroupID = $post['kKundengruppe'] ?? ';;';
                     if ((int)$post['nInternal'] === 1) {
-                        $postBox = [
-                            'nInternal'         => $post['nInternal'],
-                            'kCheckBox'         => $checkboxID,
-                            'cAnzeigeOrt'       => ';' . $post['cAnzeigeOrt'][0] . ';',
-                            'cName'             => $post['cName'],
-                            'nPflicht'          => $post['nPflicht'],
-                            'nLink'             => $post['nLink'],
-                            'nAktiv'            => $post['nAktiv'],
-                            'nLogging'          => $post['nLogging'],
-                            'kCheckBoxFunktion' => $post['kCheckBoxFunktion'],
-                            'kKundengruppe'     => $customerGroupID,
-                        ];
+                        $postBox =  $this->internalBoxDefaults[CheckBox::CHECKBOX_DOWNLOAD_ORDER_COMPLETE];
+                        $postBox['kCheckBox'] = $checkboxID;
+                        $postBox['kKundengruppe'] = $customerGroupID;
+
                     } else {
                         $postBox = [
                             'nInternal'         => $post['nInternal'],
@@ -147,12 +141,12 @@ class CheckboxController extends AbstractBackendController
     }
 
     /**
-     * @param CheckboxDataTableObject $checkboxDTO
-     * @param array                   $languages
+     * @param CheckboxDomainObject $checkboxDO
+     * @param array                $languages
      * @return array
      * @former plausiCheckBox()
      */
-    private function validate(CheckboxDataTableObject $checkboxDTO, array $languages): array
+    private function validate(CheckboxDomainObject $checkboxDO, array $languages): array
     {
         $checks = [];
         if (\count($languages) === 0) {
@@ -160,13 +154,13 @@ class CheckboxController extends AbstractBackendController
 
             return $checks;
         }
-        if (\mb_strlen($checkboxDTO->getName()) === 0) {
+        if (\mb_strlen($checkboxDO->getName()) === 0) {
             $checks['cName'] = 1;
         }
         $text = false;
         $link = true;
         foreach ($languages as $language) {
-            if (\mb_strlen($checkboxDTO->getLanguages()[$language->getIso()]['text']) > 0) {
+            if (\mb_strlen($checkboxDO->getLanguages()[$language->getIso()]['text']) > 0) {
                 $text = true;
                 break;
             }
@@ -174,25 +168,25 @@ class CheckboxController extends AbstractBackendController
         if (!$text) {
             $checks['cText'] = 1;
         }
-        if ($checkboxDTO->getHasLink() === true) {
-            $link = $checkboxDTO->getLinkID() > 0;
+        if ($checkboxDO->getHasLink() === true) {
+            $link = $checkboxDO->getLinkID() > 0;
         }
         if ($link === false) {
             $checks['kLink'] = 1;
         }
-        if (\mb_strlen($checkboxDTO->getDisplayAt()) === 0) {
+        if (\mb_strlen($checkboxDO->getDisplayAt()) === 0) {
             $checks['cAnzeigeOrt'] = 1;
         } else {
-            foreach (\explode(';', $checkboxDTO->getDisplayAt()) as $item) {
-                if ((int)$item === 3 && $checkboxDTO->getCheckboxFunctionID() === 1) {
+            foreach (\explode(';', $checkboxDO->getDisplayAt()) as $item) {
+                if ((int)$item === 3 && $checkboxDO->getCheckboxFunctionID() === 1) {
                     $checks['cAnzeigeOrt'] = 2;
                 }
             }
         }
-        if ($checkboxDTO->getSort() === 0) {
+        if ($checkboxDO->getSort() === 0) {
             $checks['nSort'] = 1;
         }
-        if (\mb_strlen($checkboxDTO->getCustomerGroupsSelected()) === 0) {
+        if (\mb_strlen($checkboxDO->getCustomerGroupsSelected()) === 0) {
             $checks['kKundengruppe'] = 1;
         }
 
@@ -200,13 +194,14 @@ class CheckboxController extends AbstractBackendController
     }
 
     /**
-     * @param CheckboxDataTableObject $checkboxDTO
+     * @param CheckBox             $checkBox
+     * @param CheckboxDomainObject $checkboxDO
      * @return CheckBox
      * @former speicherCheckBox()
      */
-    private function save(CheckboxDataTableObject $checkboxDTO): CheckBox
+    private function save(CheckBox $checkBox, CheckboxDomainObject $checkboxDO): CheckBox
     {
-        return (new CheckBox(0, $this->db))->save($checkboxDTO);
+        return $checkBox->save($checkboxDO);
     }
 
     /**
@@ -214,26 +209,33 @@ class CheckboxController extends AbstractBackendController
      * @param array $languages
      * @return CheckboxDataTableObject
      */
-    private function getCheckboxDTO(array $post, array $languages): CheckboxDataTableObject
+    private function getCheckboxDOFromRequest(array $post, $languages): CheckboxDomainObject
     {
-        $checkBoxDTO = new CheckboxDataTableObject();
-        if (isset($post['kCheckBox'])) {
-            $checkBoxDTO->setCheckboxID((int)$post['kCheckBox']);
+        if (Typifier::boolify($post['nInternal']) === true) {
+            $post = array_merge($post, $this->internalBoxDefaults[CheckBox::CHECKBOX_DOWNLOAD_ORDER_COMPLETE]);
         }
-        if (isset($post['nLink']) && (int)$post['nLink'] === -1) {
-            $post['kLink'] = 0;
-        }
-        $checkBoxDTO->hydrate(
-            \array_merge(
-                $post,
-                (isset($this->internalBoxDefaults[$post['cName']])
-                    && \is_array($this->internalBoxDefaults[$post['cName']]))
-                    ? $this->internalBoxDefaults[$post['cName']] : []
-            )
+        $checkBoxDO = new CheckboxDomainObject(
+            Typifier::intify($post['kCheckBox']),
+            (isset($post['nLink']) && (int)$post['nLink'] === -1) ? 0 : Typifier::intify($post['kLink']),
+            Typifier::intify($post['kCheckBoxFunktion']),
+            Typifier::stringify($post['cName']),
+            Typifier::stringify(';' . implode(';', Typifier::arrify($post['kKundengruppe'])) . ';'),
+            Typifier::stringify(';' . implode(';', Typifier::arrify($post['cAnzeigeOrt'])) . ';'),
+            Typifier::boolify($post['nAktiv']),
+            Typifier::boolify($post['nPflicht']),
+            Typifier::boolify($post['nLogging']),
+            Typifier::intify($post['nSort']),
+            'NOW()',
+            Typifier::boolify($post['nInternal']),
+            Typifier::stringify($post['dErstellt_DE']),
+            $this->addTranslationsToDTO($languages, $post),
+            Typifier::boolify($post['cLink']),
+            $this->addTranslationsToDTO($languages, $post),
+            Typifier::arrify($post['kKundengruppe']),
+            Typifier::arrify($post['cAnzeigeOrt']),
         );
-        $checkBoxDTO->setCreated('NOW()');
 
-        return $this->addTranslationsToDTO($languages, $post, $checkBoxDTO);
+        return $checkBoxDO;
     }
 
     /**
@@ -243,31 +245,27 @@ class CheckboxController extends AbstractBackendController
      * @return CheckboxDataTableObject
      */
     private function addTranslationsToDTO(
-        array                   $languages,
-        array                   $post,
-        CheckboxDataTableObject $checkboxDTO
-    ): CheckboxDataTableObject {
+        array $languages,
+        array $post
+    ): array {
         $texts = [];
         $descr = [];
         foreach ($languages as $language) {
-            $code         = $language->getIso();
-            $textCode     = 'cText_' . $code;
-            $descrCode    = 'cBeschreibung_' . $code;
-            $texts[$code] = isset($post[$textCode])
+            $code                = $language->getIso();
+            $textCode            = 'cText_' . $code;
+            $descrCode           = 'cBeschreibung_' . $code;
+            $texts[$code]        = isset($post[$textCode])
                 ? \str_replace('"', '&quot;', $post[$textCode])
                 : '';
-            $descr[$code] = isset($post[$descrCode])
+            $descr[$code]        = isset($post[$descrCode])
                 ? \str_replace('"', '&quot;', $post[$descrCode])
                 : '';
-            $checkboxDTO->addLanguage(
-                $code,
-                language: [
-                    'text'  => $texts[$code],
-                    'descr' => $descr[$code]
-                ]
-            );
+            $language_arr[$code] = [
+                'text' => $texts[$code],
+                'descr' => $descr[$code]
+            ];
         }
 
-        return $checkboxDTO;
+        return $language_arr;
     }
 }

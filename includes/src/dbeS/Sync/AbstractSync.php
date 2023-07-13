@@ -223,9 +223,9 @@ abstract class AbstractSync
             $sep            = !\str_contains($product->cURL, '.php') ? '?' : '&';
             $product->cURL .= $sep . $campaign->cParameter . '=' . $campaign->cWert;
         }
-        $factory = new TemplateFactory($this->db);
-        $mailer  = Shop::Container()->get(Mailer::class);
-        $upd     = (object)[
+        $factory  = new TemplateFactory($this->db);
+        $mailer   = Shop::Container()->get(Mailer::class);
+        $upd      = (object)[
             'nStatus'           => 1,
             'dBenachrichtigtAm' => 'NOW()',
             'cAbgeholt'         => 'N'

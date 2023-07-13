@@ -46,7 +46,7 @@ class AuthMiddleware implements MiddlewareInterface
                 \unlink(\SAFE_MODE_LOCK);
             }
         }
-        if (!Backend::getInstance()->isValid()) {
+        if (!$this->account->isValid() || !Backend::getInstance()->isValid()) {
             $this->account->logout();
 
             return new RedirectResponse(Shop::getAdminURL() . '/?errCode=' . AdminLoginStatus::ERROR_SESSION_INVALID);

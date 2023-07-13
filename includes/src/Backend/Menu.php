@@ -97,9 +97,10 @@ class Menu
                 ];
 
                 if ($secondEntry === 'DYNAMIC_PLUGINS') {
-                    if (\SAFE_MODE === true || !$this->account->permission(Permissions::PLUGIN_ADMIN_VIEW)) {
+                    if (\SAFE_MODE === true) {
                         continue;
                     }
+                    $mayViewAll  = $this->account->permission(Permissions::PLUGIN_DETAIL_VIEW_ALL);
                     $pluginLinks = $this->db->getObjects(
                         'SELECT DISTINCT p.kPlugin, p.cName, p.nPrio
                             FROM tplugin AS p INNER JOIN tpluginadminmenu AS pam
@@ -110,7 +111,11 @@ class Menu
                     );
 
                     foreach ($pluginLinks as $pluginLink) {
-                        $pluginID = (int)$pluginLink->kPlugin;
+                        $pluginID   = (int)$pluginLink->kPlugin;
+                        $permission = Permissions::PLUGIN_DETAIL_VIEW_ID . $pluginID;
+                        if (!$mayViewAll && !$this->account->permission($permission)) {
+                            continue;
+                        }
                         $this->getText->loadPluginLocale(
                             'base',
                             PluginHelper::getLoaderByPluginID($pluginID)->init($pluginID)
@@ -119,7 +124,7 @@ class Menu
                         $link = (object)[
                             'cLinkname' => \__($pluginLink->cName),
                             'cURL'      => $this->adminURL . Route::PLUGIN . '/' . $pluginID,
-                            'cRecht'    => 'PLUGIN_ADMIN_VIEW',
+                            'cRecht'    => $permission,
                             'key'       => $rootKey . $secondKey . $pluginID,
                             'active'    => false
                         ];
@@ -168,7 +173,7 @@ class Menu
                                 continue;
                             }
                             $urlPath = \parse_url($link->cURL, \PHP_URL_PATH) ?? '';
-                            if (\str_contains($link->cURL, '?group') && $requestedGroup !== null) {
+                            if ($requestedGroup !== null && \str_contains($link->cURL, '?group')) {
                                 if (\str_ends_with(\parse_url($link->cURL, \PHP_URL_QUERY) ?? '', $requestedGroup)) {
                                     $mainGroup->active  = true;
                                     $linkGruppe->active = true;

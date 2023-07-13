@@ -224,3 +224,6 @@ msgstr "Delete user?"
 
 msgid "newUserTitle"
 msgstr "Creating a user"
+
+msgid "All (ignore the following items)"
+msgstr "All (ignore the following items)"

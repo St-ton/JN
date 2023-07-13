@@ -4,6 +4,7 @@ namespace JTL\Widgets;
 
 use JsonException;
 use JTL\Backend\AdminAccount;
+use JTL\Backend\Permissions;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Helpers\Request;
@@ -46,7 +47,7 @@ class Controller
      */
     public function getWidgets(bool $active = true, bool $getAll = false): array
     {
-        if (!$getAll || !$this->account->permission('DASHBOARD_VIEW')) {
+        if (!$getAll || !$this->account->permission(Permissions::DASHBOARD_VIEW)) {
             return [];
         }
         $loaderLegacy = Helper::getLoader(false, $this->db, $this->cache);

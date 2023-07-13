@@ -27,9 +27,9 @@ class Country
     ];
 
     /**
-     * @var string
+     * @var string|null
      */
-    private string $iso;
+    private ?string $iso = null;
 
     /**
      * @var int
@@ -141,6 +141,11 @@ class Country
      */
     public function getISO(): string
     {
+        if ($this->iso === null && $this->nameDE !== null) {
+            $countryData = Shop::Container()->getDB()->select('tland', 'cDeutsch', 'nameDE');
+            $this->iso   = $countryData->cISO ?? 'DE';
+        }
+
         return $this->iso;
     }
 

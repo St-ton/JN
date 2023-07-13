@@ -116,9 +116,9 @@ class Preise
     public $rabatt;
 
     /**
-     * @var array
+     * @var array|null
      */
-    public array $alterVKLocalized = [];
+    public ?array $alterVKLocalized = [];
 
     /**
      * @var array

@@ -539,19 +539,19 @@ class Artikel implements RoutableInterface
     public ?bool $cVariationenbilderVorhanden = null;
 
     /**
-     * @var int
+     * @var int|null
      */
-    public int $nVariationenVerfuegbar = 0;
+    public ?int $nVariationenVerfuegbar = 0;
 
     /**
-     * @var int
+     * @var int|null
      */
-    public int $nVariationAnzahl = 0;
+    public ?int $nVariationAnzahl = 0;
 
     /**
-     * @var int
+     * @var int|null
      */
-    public int $nVariationOhneFreifeldAnzahl = 0;
+    public ?int $nVariationOhneFreifeldAnzahl = 0;
 
     /**
      * @var Bewertung|null
@@ -5785,6 +5785,7 @@ class Artikel implements RoutableInterface
         if (!isset($_SESSION['Kundengruppe']) || !\is_a($_SESSION['Kundengruppe'], CustomerGroup::class)) {
             $_SESSION['Kundengruppe'] = (new CustomerGroup())->loadDefaultGroup();
         }
+        $this->customerGroup = $_SESSION['Kundengruppe'];
         if (!isset($_SESSION['Link_Versandseite'])) {
             Frontend::setSpecialLinks();
         }

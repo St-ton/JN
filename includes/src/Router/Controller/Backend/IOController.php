@@ -8,6 +8,7 @@ use JTL\Backend\AdminFavorite;
 use JTL\Backend\AdminIO;
 use JTL\Backend\JSONAPI;
 use JTL\Backend\Notification;
+use JTL\Backend\Permissions;
 use JTL\Backend\Settings\Manager as SettingsManager;
 use JTL\Backend\TwoFA;
 use JTL\Backend\Wizard\WizardIO;
@@ -92,7 +93,7 @@ class IOController extends AbstractBackendController
                     'notifyImportedCustomers',
                     [$customerImport, 'notifyCustomers'],
                     null,
-                    'IMPORT_CUSTOMER_VIEW'
+                    Permissions::IMPORT_CUSTOMER_VIEW
                 )
                 ->register('getPagesByLinkGroup', $jsonApi->getPagesByLinkGroup(...))
                 ->register('getPages', $jsonApi->getPages(...))
@@ -109,67 +110,106 @@ class IOController extends AbstractBackendController
                 ->register('getNotifyDropIO', Notification::getNotifyDropIO(...))
                 ->register('getNewTwoFA', TwoFA::getNewTwoFA(...))
                 ->register('genTwoFAEmergencyCodes', TwoFA::genTwoFAEmergencyCodes(...))
-                ->register('setWidgetPosition', $widgets->setWidgetPosition(...), null, 'DASHBOARD_VIEW')
-                ->register('closeWidget', $widgets->closeWidget(...), null, 'DASHBOARD_VIEW')
-                ->register('addWidget', $widgets->addWidget(...), null, 'DASHBOARD_VIEW')
-                ->register('expandWidget', $widgets->expandWidget(...), null, 'DASHBOARD_VIEW')
-                ->register('getAvailableWidgets', $widgets->getAvailableWidgetsIO(...), null, 'DASHBOARD_VIEW')
-                ->register('getRemoteData', $widgets->getRemoteDataIO(...), null, 'DASHBOARD_VIEW')
-                ->register('getShopInfo', $widgets->getShopInfoIO(...), null, 'DASHBOARD_VIEW')
-                ->register('truncateJtllog', Jtllog::truncateLog(...), null, 'DASHBOARD_VIEW')
+                ->register('setWidgetPosition', $widgets->setWidgetPosition(...), null, Permissions::DASHBOARD_VIEW)
+                ->register('closeWidget', $widgets->closeWidget(...), null, Permissions::DASHBOARD_VIEW)
+                ->register('addWidget', $widgets->addWidget(...), null, Permissions::DASHBOARD_VIEW)
+                ->register('expandWidget', $widgets->expandWidget(...), null, Permissions::DASHBOARD_VIEW)
+                ->register(
+                    'getAvailableWidgets',
+                    $widgets->getAvailableWidgetsIO(...),
+                    null,
+                    Permissions::DASHBOARD_VIEW
+                )
+                ->register('getRemoteData', $widgets->getRemoteDataIO(...), null, Permissions::DASHBOARD_VIEW)
+                ->register('getShopInfo', $widgets->getShopInfoIO(...), null, Permissions::DASHBOARD_VIEW)
+                ->register('truncateJtllog', Jtllog::truncateLog(...), null, Permissions::DASHBOARD_VIEW)
                 ->register('addFav', $this->addFav(...))
                 ->register('reloadFavs', $this->reloadFavs(...))
-                ->register('loadStats', $images->loadStats(...), null, 'DISPLAY_IMAGES_VIEW')
-                ->register('cleanupStorage', $images->cleanupStorage(...), null, 'DISPLAY_IMAGES_VIEW')
-                ->register('clearImageCache', $images->clearImageCache(...), null, 'DISPLAY_IMAGES_VIEW')
-                ->register('generateImageCache', $images->generateImageCache(...), null, 'DISPLAY_IMAGES_VIEW')
-                ->register('dbUpdateIO', $updateIO->update(...), null, 'SHOP_UPDATE_VIEW')
-                ->register('dbupdaterBackup', $updateIO->backup(...), null, 'SHOP_UPDATE_VIEW')
-                ->register('dbupdaterDownload', $updateIO->download(...), null, 'SHOP_UPDATE_VIEW')
-                ->register('dbupdaterStatusTpl', $updateIO->getStatus(...), null, 'SHOP_UPDATE_VIEW')
-                ->register('dbupdaterMigration', $updateIO->executeMigration(...), null, 'SHOP_UPDATE_VIEW')
-                ->register('finishWizard', $wizardIO->answerQuestions(...), null, 'WIZARD_VIEW')
-                ->register('validateStepWizard', $wizardIO->validateStep(...), null, 'WIZARD_VIEW')
+                ->register('loadStats', $images->loadStats(...), null, Permissions::DISPLAY_IMAGES_VIEW)
+                ->register('cleanupStorage', $images->cleanupStorage(...), null, Permissions::DISPLAY_IMAGES_VIEW)
+                ->register('clearImageCache', $images->clearImageCache(...), null, Permissions::DISPLAY_IMAGES_VIEW)
+                ->register(
+                    'generateImageCache',
+                    $images->generateImageCache(...),
+                    null,
+                    Permissions::DISPLAY_IMAGES_VIEW
+                )
+                ->register('dbUpdateIO', $updateIO->update(...), null, Permissions::SHOP_UPDATE_VIEW)
+                ->register('dbupdaterBackup', $updateIO->backup(...), null, Permissions::SHOP_UPDATE_VIEW)
+                ->register('dbupdaterDownload', $updateIO->download(...), null, Permissions::SHOP_UPDATE_VIEW)
+                ->register('dbupdaterStatusTpl', $updateIO->getStatus(...), null, Permissions::SHOP_UPDATE_VIEW)
+                ->register('dbupdaterMigration', $updateIO->executeMigration(...), null, Permissions::SHOP_UPDATE_VIEW)
+                ->register('finishWizard', $wizardIO->answerQuestions(...), null, Permissions::WIZARD_VIEW)
+                ->register('validateStepWizard', $wizardIO->validateStep(...), null, Permissions::WIZARD_VIEW)
                 ->register(
                     'migrateToInnoDB_utf8',
                     DBMigrationHelper::doMigrateToInnoDB_utf8(...),
                     null,
-                    'DBCHECK_VIEW'
+                    Permissions::DBCHECK_VIEW
                 )
                 ->register('redirectCheckAvailability', Redirect::checkAvailability(...))
-                ->register('updateRedirectState', $this->updateRedirectState(...), null, 'REDIRECT_VIEW')
-                ->register('getRandomPassword', $this->getRandomPassword(...), null, 'ACCOUNT_VIEW')
-                ->register('saveBannerAreas', BannerController::saveAreasIO(...), null, 'DISPLAY_BANNER_VIEW')
-                ->register('createSearchIndex', $this->createSearchIndex(...), null, 'SETTINGS_ARTICLEOVERVIEW_VIEW')
-                ->register('clearSearchCache', $this->clearSearchCache(...), null, 'SETTINGS_ARTICLEOVERVIEW_VIEW')
-                ->register('adminSearch', $searchController->adminSearch(...), null, 'SETTINGS_SEARCH_VIEW')
-                ->register('saveShippingSurcharge', $this->saveShippingSurcharge(...), null, 'ORDER_SHIPMENT_VIEW')
-                ->register('deleteShippingSurcharge', $this->deleteShippingSurcharge(...), null, 'ORDER_SHIPMENT_VIEW')
+                ->register('updateRedirectState', $this->updateRedirectState(...), null, Permissions::REDIRECT_VIEW)
+                ->register('getRandomPassword', $this->getRandomPassword(...), null, Permissions::ACCOUNT_VIEW)
+                ->register(
+                    'saveBannerAreas',
+                    BannerController::saveAreasIO(...),
+                    null,
+                    Permissions::DISPLAY_BANNER_VIEW
+                )
+                ->register(
+                    'createSearchIndex',
+                    $this->createSearchIndex(...),
+                    null,
+                    Permissions::SETTINGS_ARTICLEOVERVIEW_VIEW
+                )
+                ->register('clearSearchCache',
+                    $this->clearSearchCache(...),
+                    null,
+                    Permissions::SETTINGS_ARTICLEOVERVIEW_VIEW
+                )
+                ->register('adminSearch', $searchController->adminSearch(...), null, Permissions::SETTINGS_SEARCH_VIEW)
+                ->register(
+                    'saveShippingSurcharge',
+                    $this->saveShippingSurcharge(...),
+                    null,
+                    Permissions::ORDER_SHIPMENT_VIEW
+                )
+                ->register(
+                    'deleteShippingSurcharge',
+                    $this->deleteShippingSurcharge(...),
+                    null,
+                    Permissions::ORDER_SHIPMENT_VIEW
+                )
                 ->register(
                     'deleteShippingSurchargeZIP',
                     $this->deleteShippingSurchargeZIP(...),
                     null,
-                    'ORDER_SHIPMENT_VIEW'
+                    Permissions::ORDER_SHIPMENT_VIEW
                 )
                 ->register(
                     'createShippingSurchargeZIP',
                     $this->createShippingSurchargeZIP(...),
                     null,
-                    'ORDER_SHIPMENT_VIEW'
+                    Permissions::ORDER_SHIPMENT_VIEW
                 )
-                ->register('getShippingSurcharge', $this->getShippingSurcharge(...), null, 'ORDER_SHIPMENT_VIEW')
+                ->register(
+                    'getShippingSurcharge',
+                    $this->getShippingSurcharge(...),
+                    null,
+                    Permissions::ORDER_SHIPMENT_VIEW
+                )
                 ->register(
                     'exportformatSyntaxCheck',
                     ExportSyntaxChecker::ioCheckSyntax(...),
                     null,
-                    'EXPORT_FORMATS_VIEW'
+                    Permissions::EXPORT_FORMATS_VIEW
                 )
-                ->register('testExport', ExportSyntaxChecker::testExport(...), null, 'EXPORT_FORMATS_VIEW')
+                ->register('testExport', ExportSyntaxChecker::testExport(...), null, Permissions::EXPORT_FORMATS_VIEW)
                 ->register(
                     'mailvorlageSyntaxCheck',
                     SyntaxChecker::ioCheckSyntax(...),
                     null,
-                    'CONTENT_EMAIL_TEMPLATE_VIEW'
+                    Permissions::CONTENT_EMAIL_TEMPLATE_VIEW
                 )
                 ->register('notificationAction', Notification::ioNotification(...))
                 ->register('pluginTestLoading', Helper::ioTestLoading(...));

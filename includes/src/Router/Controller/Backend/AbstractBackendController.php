@@ -3,6 +3,7 @@
 namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\AdminAccount;
+use JTL\Backend\Permissions;
 use JTL\Backend\Settings\Manager;
 use JTL\Backend\Settings\SectionFactory;
 use JTL\Backend\Settings\Sections\Subsection;
@@ -112,10 +113,28 @@ abstract class AbstractBackendController implements ControllerInterface
         if ($account !== false && (int)$account->oGroup->kAdminlogingruppe === \ADMINGROUP) {
             return;
         }
-        $hasAccess = (isset($_SESSION['AdminAccount']->oGroup->oPermission_arr)
-            && \is_array($_SESSION['AdminAccount']->oGroup->oPermission_arr)
-            && \in_array($permissions, $_SESSION['AdminAccount']->oGroup->oPermission_arr, true));
-        if (!$hasAccess) {
+        if (!\in_array($permissions, $_SESSION['AdminAccount']->oGroup->oPermission_arr ?? [], true)) {
+            throw new PermissionException('No permissions to access page');
+        }
+    }
+
+    /**
+     * @param int $pluginID
+     * @return void
+     * @throws PermissionException
+     */
+    protected function checkPluginPermission(int $pluginID): void
+    {
+        $account = $this->account->account();
+        if ($account !== false && (int)$account->oGroup->kAdminlogingruppe === \ADMINGROUP) {
+            return;
+        }
+        $userPermissions = $_SESSION['AdminAccount']->oGroup->oPermission_arr ?? [];
+        if (\in_array(Permissions::PLUGIN_DETAIL_VIEW_ALL, $userPermissions, true)) {
+            return;
+        }
+        $permissions = Permissions::PLUGIN_DETAIL_VIEW_ID . $pluginID;
+        if (!\in_array($permissions, $userPermissions, true)) {
             throw new PermissionException('No permissions to access page');
         }
     }

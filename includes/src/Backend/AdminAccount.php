@@ -35,6 +35,11 @@ class AdminAccount
     /**
      * @var bool
      */
+    private bool $valid = true;
+
+    /**
+     * @var bool
+     */
     private bool $twoFaAuthenticated = false;
 
     /**
@@ -323,8 +328,8 @@ class AdminAccount
                 return $e->cName;
             });
             if (!empty($attributes) && isset($attributes['useAvatarUpload'])) {
-                $attributes['useAvatarUpload']->cAttribValue = Shop::getImageBaseURL() .
-                    \ltrim($attributes['useAvatarUpload']->cAttribValue, '/');
+                $attributes['useAvatarUpload']->cAttribValue = Shop::getImageBaseURL()
+                    . \ltrim($attributes['useAvatarUpload']->cAttribValue, '/');
             }
         } catch (Exception) {
             $attributes = null;
@@ -349,6 +354,7 @@ class AdminAccount
      */
     public function logout(): self
     {
+        $this->db->delete('active_admin_sessions', 'sessionID', \session_id());
         $this->loggedIn = false;
         \session_destroy();
         new Backend();
@@ -412,7 +418,7 @@ class AdminAccount
     /**
      * @return bool|stdClass
      */
-    public function account()
+    public function account(): bool|stdClass
     {
         return $this->getIsAuthenticated() ? $_SESSION['AdminAccount'] : false;
     }
@@ -433,9 +439,7 @@ class AdminAccount
         if ($account !== false && (int)$account->oGroup->kAdminlogingruppe === \ADMINGROUP) {
             return true;
         }
-        $hasAccess = (isset($_SESSION['AdminAccount']->oGroup->oPermission_arr)
-            && \is_array($_SESSION['AdminAccount']->oGroup->oPermission_arr)
-            && \in_array($permission, $_SESSION['AdminAccount']->oGroup->oPermission_arr, true));
+        $hasAccess = \in_array($permission, $_SESSION['AdminAccount']->oGroup->oPermission_arr ?? [], true);
         if ($showNoAccessPage && !$hasAccess) {
             Shop::Smarty()->display('tpl_inc/berechtigung.tpl');
             exit;
@@ -482,9 +486,43 @@ class AdminAccount
             if ((int)($account->b2FAauth ?? 0) === 1) {
                 $this->twoFaAuthenticated = ($_SESSION['AdminAccount']->TwoFA_valid ?? false) === true;
             }
+            $this->checkIfValid();
         }
 
         return $this;
+    }
+
+    private function checkIfValid(): void
+    {
+        // handle upgrade path to 5.3.0
+        $exists = $this->db->getSingleObject(
+            'SELECT * 
+                FROM INFORMATION_SCHEMA.TABLES
+                WHERE TABLE_NAME = \'active_admin_sessions\''
+        );
+        if ($exists === null) {
+            return;
+        }
+        $persisted = $this->db->getSingleObject(
+            'SELECT *
+                FROM active_admin_sessions
+                WHERE sessionID = :sid',
+            ['sid' => \session_id()]
+        );
+        if ($persisted !== null) {
+            $this->db->update('active_admin_sessions', 'sessionID', \session_id(), (object)['updated' => 'NOW()']);
+            if ((int)$persisted->valid === 0) {
+                $this->valid = false;
+            }
+        } else {
+            $ins = (object)[
+                'valid'     => 1,
+                'userID'    => $_SESSION['AdminAccount']->kAdminlogin,
+                'sessionID' => \session_id()
+            ];
+            $this->db->insert('active_admin_sessions', $ins);
+        }
+        $this->db->query('DELETE FROM active_admin_sessions WHERE DATEDIFF(NOW(), updated) > 14');
     }
 
     /**
@@ -492,17 +530,16 @@ class AdminAccount
      */
     public function doTwoFA(): bool
     {
-        if (isset($_SESSION['AdminAccount']->cLogin, $_POST['TwoFA_code'])) {
-            $twoFA = new TwoFA($this->db);
-            $twoFA->setUserByName($_SESSION['AdminAccount']->cLogin);
-            $valid                                 = $twoFA->isCodeValid($_POST['TwoFA_code'] ?? '');
-            $this->twoFaAuthenticated              = $valid;
-            $_SESSION['AdminAccount']->TwoFA_valid = $valid;
-
-            return $valid;
+        if (!isset($_SESSION['AdminAccount']->cLogin, $_POST['TwoFA_code'])) {
+            return false;
         }
+        $twoFA = new TwoFA($this->db);
+        $twoFA->setUserByName($_SESSION['AdminAccount']->cLogin);
+        $valid                                 = $twoFA->isCodeValid($_POST['TwoFA_code']);
+        $this->twoFaAuthenticated              = $valid;
+        $_SESSION['AdminAccount']->TwoFA_valid = $valid;
 
-        return false;
+        return $valid;
     }
 
     /**
@@ -522,7 +559,7 @@ class AdminAccount
     private function toSession(stdClass $admin): self
     {
         $group = $this->getPermissionsByGroup($admin->kAdminlogingruppe);
-        if (\is_object($group) || (int)$admin->kAdminlogingruppe === \ADMINGROUP) {
+        if ($group !== null || (int)$admin->kAdminlogingruppe === \ADMINGROUP) {
             $_SESSION['AdminAccount']              = new stdClass();
             $_SESSION['AdminAccount']->cURL        = \URL_SHOP;
             $_SESSION['AdminAccount']->kAdminlogin = (int)$admin->kAdminlogin;
@@ -540,8 +577,8 @@ class AdminAccount
             $_SESSION['AdminAccount']->oGroup = $group;
 
             $this->setLastLogin($admin->cLogin)
-                 ->setRetryCount($admin->cLogin, true)
-                 ->validateSession();
+                ->setRetryCount($admin->cLogin, true)
+                ->validateSession();
         }
 
         return $this;
@@ -592,29 +629,28 @@ class AdminAccount
 
     /**
      * @param int $groupID
-     * @return bool|object
+     * @return stdClass|null
      */
-    private function getPermissionsByGroup(int $groupID)
+    private function getPermissionsByGroup(int $groupID): ?stdClass
     {
         $group = $this->db->select(
             'tadminlogingruppe',
             'kAdminlogingruppe',
             $groupID
         );
-        if ($group !== null && isset($group->kAdminlogingruppe)) {
-            $group->kAdminlogingruppe = (int)$group->kAdminlogingruppe;
-            $permissions              = $this->db->selectAll(
-                'tadminrechtegruppe',
-                'kAdminlogingruppe',
-                $groupID,
-                'cRecht'
-            );
-            $group->oPermission_arr   = pluck($permissions, 'cRecht');
-
-            return $group;
+        if ($group === null) {
+            return null;
         }
+        $group->kAdminlogingruppe = (int)$group->kAdminlogingruppe;
+        $permissions              = $this->db->selectAll(
+            'tadminrechtegruppe',
+            'kAdminlogingruppe',
+            $groupID,
+            'cRecht'
+        );
+        $group->oPermission_arr   = pluck($permissions, 'cRecht');
 
-        return false;
+        return $group;
     }
 
     /**
@@ -658,5 +694,13 @@ class AdminAccount
     public function getGetText(): GetText
     {
         return $this->getText;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isValid(): bool
+    {
+        return $this->valid;
     }
 }

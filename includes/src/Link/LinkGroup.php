@@ -70,10 +70,11 @@ final class LinkGroup implements LinkGroupInterface
 
     /**
      * LinkGroup constructor.
-     * @param DbInterface $db
+     * @param DbInterface|null $db
      */
-    public function __construct(private DbInterface $db)
+    public function __construct(private ?DbInterface $db = null)
     {
+        $this->db    = $this->db ?? Shop::Container()->getDB();
         $this->links = new Collection();
     }
 

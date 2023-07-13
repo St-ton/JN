@@ -67,9 +67,9 @@ class CustomerGroup
     protected ?array $Attribute = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private string $nameLocalized;
+    private ?string $nameLocalized = null;
 
     /**
      * @var array

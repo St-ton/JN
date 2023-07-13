@@ -1144,8 +1144,7 @@ class Artikel implements RoutableInterface
         protected ?CustomerGroup   $customerGroup = null,
         protected ?Currency        $currency = null,
         private ?JTLCacheInterface $cache = null
-    )
-    {
+    ) {
         $this->setRouteType(Router::TYPE_PRODUCT);
         $this->setImageType(Image::TYPE_PRODUCT);
         $this->db            = $this->db ?? Shop::Container()->getDB();

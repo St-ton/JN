@@ -207,9 +207,9 @@ class IpAnonymizer
      */
     public function anonymizeLegacy(): string
     {
-        $maskParts = \preg_split('/[\.:]/', $this->ipMask);
-        $ipParts   = \preg_split('/[\.:]/', $this->ip);
-        $len       = \count($ipParts);
+        $maskParts           = \preg_split('/[\.:]/', $this->ipMask);
+        $ipParts             = \preg_split('/[\.:]/', $this->ip);
+        $len                 = \count($ipParts);
         ($len === 4) ? $glue = '.' : $glue = ':';
         for ($i = 0; $i < $len; $i++) {
             (\hexdec($maskParts[$i]) !== 0) ?: $ipParts[$i] = '*';

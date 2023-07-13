@@ -35,11 +35,11 @@
                                     <td style="max-width:150px"><i>{$var->name}</i></td>
                                     <td>{__($var->description)}</td>
                                 </tr>
-                                {foreach $pluginLanguages as $lang}
+                                {foreach $pluginLanguages as $pluginLanguage}
                                     <tr>
-                                        {assign var=cISOSprache value=strtoupper($lang->getIso())}
+                                        {assign var=cISOSprache value=strtoupper($pluginLanguage->getIso())}
                                         <td>
-                                            <label for="lv-{$var->id}_{$cISOSprache}">{$lang->getLocalizedName()}</label>
+                                            <label for="lv-{$var->id}_{$cISOSprache}">{$pluginLanguage->getLocalizedName()}</label>
                                         </td>
                                         <td>
                                             {if isset($var->values[$cISOSprache]) && $var->values[$cISOSprache]|strlen > 0}

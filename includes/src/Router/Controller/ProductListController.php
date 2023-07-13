@@ -68,7 +68,10 @@ class ProductListController extends AbstractController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         if (!$this->productFilter->getBaseState()->isInitialized()) {
-            $this->updateProductFilter();
+            $state = $this->updateProductFilter();
+            if ($state->is404 === true) {
+                return $this->notFoundResponse($request, $args, $smarty);
+            }
         }
         $this->init();
         Shop::setPageType(\PAGE_ARTIKELLISTE);

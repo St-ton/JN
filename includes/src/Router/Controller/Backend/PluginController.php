@@ -3,7 +3,6 @@
 namespace JTL\Router\Controller\Backend;
 
 use InvalidArgumentException;
-use JTL\Backend\Permissions;
 use JTL\Helpers\Text;
 use JTL\Plugin\Admin\InputType;
 use JTL\Plugin\Admin\Installation\MigrationManager;
@@ -59,15 +58,14 @@ class PluginController extends AbstractBackendController
      */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
-        $this->checkPermissions(Permissions::PLUGIN_ADMIN_VIEW);
+        $pluginID = (int)$args['id'];
+        $this->checkPluginPermission($pluginID);
         $this->getText->loadAdminLocale('pages/plugin');
-
-        $pluginID           = (int)$args['id'];
-        $plugin             = null;
-        $loader             = null;
-        $activeTab          = -1;
-        $this->step         = 'plugin_uebersicht';
-        $this->handledRoute = \str_replace('{id}', (string)$pluginID, $this->route);
+        $plugin      = null;
+        $loader      = null;
+        $activeTab   = -1;
+        $this->step  = 'plugin_uebersicht';
+        $this->route = \str_replace('{id}', (string)$pluginID, $this->route);
         $this->smarty->assign('hasDifferentVersions', false)
             ->assign('currentDatabaseVersion', 0)
             ->assign('currentFileVersion', 0)
@@ -105,7 +103,7 @@ class PluginController extends AbstractBackendController
         }
         if ($plugin !== null) {
             $oPlugin = $plugin;
-            if (ADMIN_MIGRATION && $plugin instanceof Plugin) {
+            if (\ADMIN_MIGRATION && $plugin instanceof Plugin) {
                 $this->getText->loadAdminLocale('pages/dbupdater');
                 $manager    = new MigrationManager(
                     $this->db,

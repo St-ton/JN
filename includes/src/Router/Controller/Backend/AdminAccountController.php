@@ -135,6 +135,30 @@ class AdminAccountController extends AbstractBackendController
                 ]]
             ];
         }
+        $activePluginIDs = $this->db->getObjects('SELECT kPlugin, cName FROM tplugin WHERE nStatus = 2');
+        if (\count($activePluginIDs) > 0) {
+            foreach ($permissionsOrdered as $item) {
+                if ($item->name !== \__('Plug-ins')) {
+                    continue;
+                }
+                $children = [(object)[
+                    'name'          => \__('All (ignore the following items)'),
+                    'cBeschreibung' => \__('All (ignore the following items)'),
+                    'cRecht'        => Permissions::PLUGIN_DETAIL_VIEW_ALL
+                ]];
+                foreach ($activePluginIDs as $plugin) {
+                    $children[] = (object)[
+                        'name'          => $plugin->cName,
+                        'cBeschreibung' => $plugin->cName,
+                        'cRecht'        => Permissions::PLUGIN_DETAIL_VIEW_ID . $plugin->kPlugin
+                    ];
+                }
+                $item->children[] = (object)[
+                    'name'        => \__('Plugindetails'),
+                    'permissions' => $children
+                ];
+            }
+        }
 
         return $permissionsOrdered;
     }
@@ -392,6 +416,7 @@ class AdminAccountController extends AbstractBackendController
                     'messages' => &$this->messages,
                     'result'   => &$result
                 ]);
+                $this->db->update('active_admin_sessions', 'userID', $adminID, (object)['valid' => 0]);
                 if ($result === true) {
                     $this->addNotice(\__('successLock'));
                 }
@@ -506,11 +531,12 @@ class AdminAccountController extends AbstractBackendController
             }
             if ($tmpAcc->kAdminlogin > 0) {
                 $oldAcc     = $this->getAdminLogin($tmpAcc->kAdminlogin);
-                $groupCount = (int)$this->db->getSingleObject(
+                $groupCount = $this->db->getSingleInt(
                     'SELECT COUNT(*) AS cnt
                         FROM tadminlogin
-                        WHERE kAdminlogingruppe = 1'
-                )->cnt;
+                        WHERE kAdminlogingruppe = 1',
+                    'cnt'
+                );
                 if ($oldAcc !== null
                     && (int)$oldAcc->kAdminlogingruppe === \ADMINGROUP
                     && (int)$tmpAcc->kAdminlogingruppe !== \ADMINGROUP
@@ -631,11 +657,12 @@ class AdminAccountController extends AbstractBackendController
             'content'  => &$extContent
         ]);
 
-        $groupCount = (int)$this->db->getSingleObject(
+        $groupCount = $this->db->getSingleInt(
             'SELECT COUNT(*) AS cnt
                 FROM tadminlogin
-                WHERE kAdminlogingruppe = 1'
-        )->cnt;
+                WHERE kAdminlogingruppe = 1',
+            'cnt'
+        );
         $this->smarty->assign('oAccount', $account)
             ->assign('nAdminCount', $groupCount)
             ->assign('extContent', $extContent);
@@ -649,11 +676,12 @@ class AdminAccountController extends AbstractBackendController
     public function actionAccountDelete(): string
     {
         $adminID    = $this->request->postInt('id');
-        $groupCount = (int)$this->db->getSingleObject(
+        $groupCount = $this->db->getSingleInt(
             'SELECT COUNT(*) AS cnt
                 FROM tadminlogin
-                WHERE kAdminlogingruppe = 1'
-        )->cnt;
+                WHERE kAdminlogingruppe = 1',
+            'cnt'
+        );
         $account    = $this->db->select('tadminlogin', 'kAdminlogin', $adminID);
         if ($account !== null && (int)$account->kAdminlogin === (int)$_SESSION['AdminAccount']->kAdminlogin) {
             $this->addError(\__('errorSelfDelete'));
@@ -662,6 +690,7 @@ class AdminAccountController extends AbstractBackendController
                 $this->addError(\__('errorAtLeastOneAdmin'));
             } elseif ($this->deleteAttributes($account) &&
                 $this->db->delete('tadminlogin', 'kAdminlogin', $adminID)) {
+                $this->db->update('active_admin_sessions', 'userID', $adminID, (object)['valid' => 0]);
                 $result = true;
                 \executeHook(\HOOK_BACKEND_ACCOUNT_EDIT, [
                     'oAccount' => $account,
@@ -731,10 +760,18 @@ class AdminAccountController extends AbstractBackendController
                     );
                     $permission                    = new stdClass();
                     $permission->kAdminlogingruppe = (int)$adminGroup->kAdminlogingruppe;
-                    foreach ($groupPermissions as $oAdminGroupPermission) {
-                        $permission->cRecht = $oAdminGroupPermission;
+                    foreach ($groupPermissions as $groupPermission) {
+                        $permission->cRecht = $groupPermission;
                         $this->db->insert('tadminrechtegruppe', $permission);
                     }
+                    $this->db->queryPrepared(
+                        'UPDATE active_admin_sessions
+                            SET valid = 0
+                            WHERE userID IN (SELECT kAdminlogin
+                                FROM tadminlogin
+                                WHERE kAdminlogingruppe = :id)',
+                        ['id' => $permission->kAdminlogingruppe]
+                    );
                     $this->addNotice(\__('successGroupEdit'));
 
                     return 'group_redirect';
@@ -744,8 +781,8 @@ class AdminAccountController extends AbstractBackendController
                 $this->db->delete('tadminrechtegruppe', 'kAdminlogingruppe', $groupID);
                 $permission                    = new stdClass();
                 $permission->kAdminlogingruppe = $groupID;
-                foreach ($groupPermissions as $oAdminGroupPermission) {
-                    $permission->cRecht = $oAdminGroupPermission;
+                foreach ($groupPermissions as $groupPermission) {
+                    $permission->cRecht = $groupPermission;
                     $this->db->insert('tadminrechtegruppe', $permission);
                 }
                 $this->addNotice(\__('successGroupCreate'));
@@ -770,12 +807,13 @@ class AdminAccountController extends AbstractBackendController
     public function actionGroupDelete(): string
     {
         $groupID = $this->request->postInt('id');
-        $count   = (int)$this->db->getSingleObject(
+        $count   = $this->db->getSingleInt(
             'SELECT COUNT(*) AS cnt
                 FROM tadminlogin
                 WHERE kAdminlogingruppe = :gid',
+            'cnt',
             ['gid' => $groupID]
-        )->cnt;
+        );
         if ($count !== 0) {
             $this->addError(\__('errorGroupDeleteCustomer'));
 

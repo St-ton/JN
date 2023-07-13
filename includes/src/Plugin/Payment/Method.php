@@ -80,6 +80,11 @@ class Method implements MethodInterface
     public $kZahlungsart;
 
     /**
+     * @var stdClass|null
+     */
+    public $ZahlungsInfo;
+
+    /**
      * @var DbInterface
      */
     private DbInterface $db;

@@ -224,3 +224,6 @@ msgstr "Möchten Sie den User wirklich löschen?"
 
 msgid "newUserTitle"
 msgstr "Benutzer erstellen"
+
+msgid "All (ignore the following items)"
+msgstr "Alle (ignoriert die folgenden Einträge)"

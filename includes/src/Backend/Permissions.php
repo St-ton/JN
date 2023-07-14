@@ -17,6 +17,7 @@ class Permissions
     public const CONTENT_PAGE_VIEW               = 'CONTENT_PAGE_VIEW';
     public const COUNTRY_VIEW                    = 'COUNTRY_VIEW';
     public const CRON_VIEW                       = 'CRON_VIEW';
+    public const DASHBOARD_VIEW                  = 'DASHBOARD_VIEW';
     public const DBCHECK_VIEW                    = 'DBCHECK_VIEW';
     public const DIAGNOSTIC_VIEW                 = 'DIAGNOSTIC_VIEW';
     public const DISPLAY_ARTICLEOVERLAYS_VIEW    = 'DISPLAY_ARTICLEOVERLAYS_VIEW';

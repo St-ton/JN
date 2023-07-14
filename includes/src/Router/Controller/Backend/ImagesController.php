@@ -30,7 +30,7 @@ class ImagesController extends AbstractBackendController
     ): ResponseInterface {
         $this->getText->loadAdminLocale('pages/bilder');
         $this->smarty = $smarty;
-        $this->checkPermissions(Permissions::SETTINGS_SITEMAP_VIEW);
+        $this->checkPermissions(Permissions::SETTINGS_IMAGES_VIEW);
         if (isset($_POST['speichern']) && Form::validateToken()) {
             $this->actionSaveConfig();
         }

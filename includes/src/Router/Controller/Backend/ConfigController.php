@@ -66,9 +66,11 @@ class ConfigController extends AbstractBackendController
             case \CONF_KAUFABWICKLUNG:
                 $this->checkPermissions(Permissions::SETTINGS_BASKET_VIEW);
                 break;
-            case \CONF_BILDER:
-                $this->checkPermissions(Permissions::SETTINGS_IMAGES_VIEW);
+            case \CONF_BOXEN:
+                $this->checkPermissions(Permissions::SETTINGS_BOXES_VIEW);
                 break;
+            case \CONF_BILDER:
+                return new RedirectResponse($this->baseURL . '/' . Route::IMAGES);
             case 0:
                 break;
             default:

@@ -98,7 +98,7 @@
 		}
 	}
 	.blog-overview-hr {
-		margin-top: - map-get($spacers, 1);
+		margin-top: -(map-get($spacers, 1));
 		margin-bottom: map-get($spacers, 5);
 	}
 }

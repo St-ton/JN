@@ -30,6 +30,7 @@ final class Manufacturer extends AbstractFactory
                     ON tseo.cKey = 'kHersteller'
                     AND tseo.kKey = thersteller.kHersteller
                     AND tseo.kSprache IN (" . \implode(',', $languageIDs) . ')
+                WHERE thersteller.nAktiv = 1
                 ORDER BY thersteller.kHersteller'
         );
         while (($mf = $res->fetch(PDO::FETCH_OBJ)) !== false) {

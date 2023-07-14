@@ -533,7 +533,7 @@ class GUI
 
     deleteBlueprint()
     {
-        let blueprintId = this.blueprintDeleteId.val();
+        let blueprintId = parseInt(this.blueprintDeleteId.val());
 
         this.io.deleteBlueprint(blueprintId).then(() => this.updateBlueprintList());
         this.blueprintDeleteModal.modal('hide');

@@ -17,6 +17,7 @@ class Permissions
     public const CONTENT_PAGE_VIEW               = 'CONTENT_PAGE_VIEW';
     public const COUNTRY_VIEW                    = 'COUNTRY_VIEW';
     public const CRON_VIEW                       = 'CRON_VIEW';
+    public const DASHBOARD_VIEW                  = 'DASHBOARD_VIEW';
     public const DBCHECK_VIEW                    = 'DBCHECK_VIEW';
     public const DIAGNOSTIC_VIEW                 = 'DIAGNOSTIC_VIEW';
     public const DISPLAY_ARTICLEOVERLAYS_VIEW    = 'DISPLAY_ARTICLEOVERLAYS_VIEW';
@@ -58,6 +59,8 @@ class Permissions
     public const ORDER_VIEW                      = 'ORDER_VIEW';
     public const PERMISSIONCHECK_VIEW            = 'PERMISSIONCHECK_VIEW';
     public const PLUGIN_ADMIN_VIEW               = 'PLUGIN_ADMIN_VIEW';
+    public const PLUGIN_DETAIL_VIEW_ALL          = 'PLUGIN_DETAIL_VIEW_ALL';
+    public const PLUGIN_DETAIL_VIEW_ID           = 'PLUGIN_DETAIL_VIEW_';
     public const PLZ_ORT_IMPORT_VIEW             = 'PLZ_ORT_IMPORT_VIEW';
     public const PROFILER_VIEW                   = 'PROFILER_VIEW';
     public const REDIRECT_VIEW                   = 'REDIRECT_VIEW';

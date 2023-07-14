@@ -106,7 +106,7 @@ function prepareLineChartStatsMulti($series, $axis, $mod = 1): Linechart
 
 /**
  * @param int $number
- * @return mixed
+ * @return array
  * @deprecated since 5.2.0
  */
 function GetLineChartColors($number)

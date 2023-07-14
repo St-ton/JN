@@ -84,7 +84,7 @@ class CacheSqlite implements ICachingMethod
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function store($cacheID, $content, int $expiration = null): bool
     {
@@ -99,7 +99,7 @@ class CacheSqlite implements ICachingMethod
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function storeMulti(array $idContent, int $expiration = null): bool
     {
@@ -112,7 +112,7 @@ class CacheSqlite implements ICachingMethod
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function load($cacheID)
     {
@@ -129,7 +129,7 @@ class CacheSqlite implements ICachingMethod
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function loadMulti(array $cacheIDs): array
     {
@@ -150,7 +150,7 @@ class CacheSqlite implements ICachingMethod
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function isAvailable(): bool
     {
@@ -161,7 +161,7 @@ class CacheSqlite implements ICachingMethod
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function flush($cacheID): bool
     {
@@ -174,7 +174,7 @@ class CacheSqlite implements ICachingMethod
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function flushAll(): bool
     {
@@ -206,7 +206,7 @@ class CacheSqlite implements ICachingMethod
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setCacheTag($tags, $cacheID): bool
     {
@@ -223,7 +223,7 @@ class CacheSqlite implements ICachingMethod
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function flushTags($tags): int
     {
@@ -245,7 +245,7 @@ class CacheSqlite implements ICachingMethod
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getKeysByTag($tags): array
     {

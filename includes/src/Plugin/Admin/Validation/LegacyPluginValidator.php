@@ -17,12 +17,12 @@ final class LegacyPluginValidator extends AbstractValidator
     protected const BASE_DIR = \PFAD_ROOT . \PFAD_PLUGIN;
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function validateByPluginID(int $pluginID, bool $forUpdate = false): int
     {
         $plugin = $this->db->select('tplugin', 'kPlugin', $pluginID);
-        if (empty($plugin->kPlugin)) {
+        if ($plugin === null || empty($plugin->kPlugin)) {
             return InstallCode::NO_PLUGIN_FOUND;
         }
         $dir  = self::BASE_DIR . $plugin->cVerzeichnis;
@@ -40,7 +40,7 @@ final class LegacyPluginValidator extends AbstractValidator
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function validateByPath(string $path, bool $forUpdate = false): int
     {
@@ -62,7 +62,7 @@ final class LegacyPluginValidator extends AbstractValidator
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function pluginPlausiIntern(?array $xml, bool $forUpdate): int
     {
@@ -88,8 +88,8 @@ final class LegacyPluginValidator extends AbstractValidator
             return InstallCode::INVALID_PLUGIN_ID;
         }
         if ($forUpdate === false) {
-            $oPluginTMP = $this->db->select('tplugin', 'cPluginID', $baseNode['PluginID']);
-            if (isset($oPluginTMP->kPlugin) && $oPluginTMP->kPlugin > 0) {
+            $tmpPlugin = $this->db->select('tplugin', 'cPluginID', $baseNode['PluginID']);
+            if ($tmpPlugin !== null && $tmpPlugin->kPlugin > 0) {
                 return InstallCode::DUPLICATE_PLUGIN_ID;
             }
         }

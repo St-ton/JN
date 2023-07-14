@@ -49,9 +49,9 @@ abstract class AbstractExporter implements ExporterInterface
      * @param ExportWriterInterface|null $writer
      */
     public function __construct(
-        protected DbInterface $db,
-        protected LoggerInterface $logger,
-        protected JTLCacheInterface $cache,
+        protected DbInterface            $db,
+        protected LoggerInterface        $logger,
+        protected JTLCacheInterface      $cache,
         protected ?ExportWriterInterface $writer = null
     ) {
     }
@@ -85,7 +85,7 @@ abstract class AbstractExporter implements ExporterInterface
     {
         \header(
             'Location: ' . Shop::getAdminURL() . '/' . Route::EXPORT_START
-            . '?e=' . (int)$this->getQueue()->jobQueueID
+            . '?e=' . $this->getQueue()->jobQueueID
             . '&back=admin&token=' . $_SESSION['jtl_token']
             . '&max=' . $cb->getProductCount()
         );

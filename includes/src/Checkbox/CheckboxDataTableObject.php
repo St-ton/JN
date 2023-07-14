@@ -73,6 +73,11 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
     protected string $created = '';
 
     /**
+     * @var bool
+     */
+    protected bool $internal = false;
+
+    /**
      * @var string
      */
     private string $created_DE = '';
@@ -81,6 +86,11 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
      * @var array
      */
     private array $languages = [];
+
+    /**
+     * @var bool
+     */
+    private bool $nLink = false;
 
     /**
      * @var CheckboxLanguageDataTableObject[]
@@ -113,10 +123,13 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
         'hasLogging'             => 'hasLogging',
         'sort'                   => 'sort',
         'created'                => 'created',
+        'nlink'                  => 'hasLink',
+        'nFunction'              => 'hasFunction',
         'created_DE'             => 'createdDE',
         'oCheckBoxLanguage_arr'  => 'checkBoxLanguage_arr',
         'customerGroup_arr'      => 'customerGroup_arr',
         'displayAt_arr'          => 'displayAt_arr',
+        'internal'               => 'internal',
     ];
 
     /**
@@ -138,6 +151,7 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
         'oCheckBoxSprache_arr' => 'checkBoxLanguage_arr',
         'kKundengruppe_arr'    => 'customerGroup_arr',
         'kAnzeigeOrt_arr'      => 'displayAt_arr',
+        'nInternal'            => 'internal',
     ];
 
     /**
@@ -305,7 +319,7 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
     /**
      * @return bool
      */
-    public function getActive(): bool
+    public function isActive(): bool
     {
         return $this->active;
     }
@@ -324,7 +338,7 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
     /**
      * @return bool
      */
-    public function getIsMandatory(): bool
+    public function isMandatory(): bool
     {
         return $this->isMandatory;
     }
@@ -343,7 +357,7 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
     /**
      * @return bool
      */
-    public function getHasLogging(): bool
+    public function isLogging(): bool
     {
         return $this->hasLogging;
     }
@@ -396,6 +410,23 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
 
         return $this;
     }
+
+    /**
+     * @return bool
+     */
+    public function getInternal(): bool
+    {
+        return $this->internal;
+    }
+
+    /**
+     * @param bool $internal
+     */
+    public function setInternal(bool|int|string $internal): void
+    {
+        $this->internal = $this->checkAndReturnBoolValue($internal);
+    }
+
 
     /**
      * @return string
@@ -500,6 +531,25 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
     public function setDisplayAtArr(array $displayAt_arr): CheckboxDataTableObject
     {
         $this->displayAt_arr = $displayAt_arr;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getHasLink(): bool
+    {
+        return $this->nLink;
+    }
+
+    /**
+     * @param bool $nLink
+     * @return CheckboxDataTableObject
+     */
+    public function setHasLink(bool $nLink): CheckboxDataTableObject
+    {
+        $this->nLink = $this->checkAndReturnBoolValue($nLink);
 
         return $this;
     }

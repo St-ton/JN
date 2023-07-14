@@ -29,6 +29,7 @@ use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Media\Image;
+use JTL\Media\Image\Overlay;
 use JTL\Media\Image\Variation as VariationImage;
 use JTL\Media\Image\Product;
 use JTL\Media\MediaImageRequest;
@@ -751,7 +752,7 @@ class Artikel implements RoutableInterface
     /**
      * @var string|null
      */
-    public ?string  $dSonderpreisStart_de = null;
+    public ?string $dSonderpreisStart_de = null;
 
     /**
      * @var string|null
@@ -1109,6 +1110,11 @@ class Artikel implements RoutableInterface
     private static $products = [];
 
     /**
+     * @var bool
+     */
+    private bool $compressed = false;
+
+    /**
      *
      */
     public function __wakeup()
@@ -1121,6 +1127,11 @@ class Artikel implements RoutableInterface
         }
         $this->conf    = $this->getConfig();
         $this->taxData = $this->getShippingAndTaxData();
+        if ($this->compressed === true) {
+            $this->cBeschreibung    = \gzuncompress($this->cBeschreibung);
+            $this->cKurzbezeichnung = \gzuncompress($this->cKurzbezeichnung);
+            $this->compressed       = false;
+        }
         if ($this->favourableShippingID > 0) {
             $this->oFavourableShipping = new Versandart($this->favourableShippingID);
         }
@@ -1489,7 +1500,7 @@ class Artikel implements RoutableInterface
         }
         $paths = [];
         foreach ($images as $i => $item) {
-            if (\in_array($item->cPfad, $paths)) {
+            if (\in_array($item->cPfad, $paths, true)) {
                 continue;
             }
             $paths[] = $item->cPfad;
@@ -1555,9 +1566,9 @@ class Artikel implements RoutableInterface
     private function getProductImageSize(stdClass $image, string $size)
     {
         $imagePath = match ($size) {
-            'xs' => $image->cPfadMini,
-            'sm' => $image->cPfadKlein,
-            'md' => $image->cPfadNormal,
+            'xs'    => $image->cPfadMini,
+            'sm'    => $image->cPfadKlein,
+            'md'    => $image->cPfadNormal,
             default => $image->cPfadGross,
         };
         if ($imagePath !== null && \file_exists(\PFAD_ROOT . $imagePath)) {
@@ -1666,7 +1677,7 @@ class Artikel implements RoutableInterface
                     'kSprache',
                     $this->kSprache
                 );
-                if (!empty($attributsprache->cName)) {
+                if ($attributsprache !== null && !empty($attributsprache->cName)) {
                     $attribute->cName = $attributsprache->cName;
                     if ($attributsprache->cStringWert) {
                         $attribute->cWert = $attributsprache->cStringWert;
@@ -2006,12 +2017,12 @@ class Artikel implements RoutableInterface
      * @return $this
      */
     public function holeBewertung(
-        int $perPage = 10,
-        int $page = 1,
-        int $stars = 0,
+        int    $perPage = 10,
+        int    $page = 1,
+        int    $stars = 0,
         string $unlock = 'N',
-        int $opt = 0,
-        bool $allLanguages = false
+        int    $opt = 0,
+        bool   $allLanguages = false
     ): self {
         $this->Bewertungen = new Bewertung(
             $this->kArtikel,
@@ -3118,7 +3129,7 @@ class Artikel implements RoutableInterface
     private function getLocalizationSQL(int $productID): SqlObject
     {
         $lang = new SqlObject();
-        if ($this->kSprache > 0 && !LanguageHelper::isDefaultLanguageActive()) {
+        if ($this->kSprache > 0 && !LanguageHelper::isDefaultLanguageActive(false, $this->kSprache)) {
             $lang->setSelect('tartikelsprache.cName AS cName_spr, tartikelsprache.cBeschreibung AS cBeschreibung_spr,
                               tartikelsprache.cKurzBeschreibung AS cKurzBeschreibung_spr, ');
             $lang->setJoin(' LEFT JOIN tartikelsprache
@@ -3297,11 +3308,11 @@ class Artikel implements RoutableInterface
      * @throws \Exception
      */
     public function fuelleArtikel(
-        int $productID,
+        int       $productID,
         ?stdClass $options = null,
-        int $customerGroupID = 0,
-        int $langID = 0,
-        bool $noCache = false
+        int       $customerGroupID = 0,
+        int       $langID = 0,
+        bool      $noCache = false
     ): ?self {
         if (!$productID) {
             return null;
@@ -3384,7 +3395,7 @@ class Artikel implements RoutableInterface
             $tmpProduct->fNettoPreis       = null;
         }
         $this->holPreise($customerGroupID, $tmpProduct);
-        $this->initLanguageID($this->kSprache, LanguageHelper::getIsoFromLangID($this->kSprache)->cISO);
+        $this->initLanguageID($this->kSprache, LanguageHelper::getIsoFromLangID($this->kSprache)->cISO ?? null);
         if ($this->getOption('nArtikelAttribute', 0) === 1) {
             $this->holArtikelAttribute();
         }
@@ -3497,6 +3508,11 @@ class Artikel implements RoutableInterface
             $toSave                                 = clone $this;
             $toSave->oVariationKombiKinderAssoc_arr = null;
             $toSave->Preise                         = $basePrice;
+            if (\COMPRESS_DESCRIPTIONS === true) {
+                $toSave->cBeschreibung    = \gzcompress($toSave->cBeschreibung, \COMPRESSION_LEVEL);
+                $toSave->cKurzbezeichnung = \gzcompress($toSave->cKurzbezeichnung, \COMPRESSION_LEVEL);
+                $toSave->compressed       = true;
+            }
             Shop::Container()->getCache()->set($this->cacheID, $toSave, $cacheTags);
             self::$products[$this->cacheID] = $toSave;
         }
@@ -4080,6 +4096,36 @@ class Artikel implements RoutableInterface
      */
     private function getSearchSpecialOverlay(): self
     {
+        $customBadge       = new \stdClass();
+        $tmp               = \explode(
+            ';',
+            $this->getFunctionalAttributevalue(\FKT_ATTRIBUT_CUSTOM_ITEM_BADGE) ?? ''
+        );
+        $customBadge->text = $tmp[0] ?? '';
+        if ($customBadge->text !== '') {
+            $customBadge->text  = Shop::Lang()->get($customBadge->text, 'custom');
+            $customBadge->class = '';
+            $customBadge->style = '';
+            $textColor          = $tmp[1] ?? '';
+            $bgColor            = $tmp[2] ?? '';
+
+            if (\str_starts_with($textColor, '#')) {
+                $customBadge->style .= 'color:' . $textColor . ';';
+            } else {
+                $customBadge->class .= ' text-' . $textColor;
+            }
+            if (\str_starts_with($bgColor, '#')) {
+                $customBadge->style .= 'border-right-color: ' . $bgColor . ';background-color:' . $bgColor . ';';
+            } else {
+                $customBadge->class .= ' bg-' . $bgColor;
+            }
+            $overlay = new Overlay(\SEARCHSPECIALS_CUSTOMBADGE, Shop::getLanguageID());
+            $overlay->setPriority(0);
+            $overlay->setCssAndText($customBadge);
+            $this->oSuchspecialBild = $overlay;
+            return $this;
+        }
+
         $searchSpecials = SearchSpecial::getAll($this->kSprache);
         // Suchspecialbildoverlay
         // Kleinste Prio und somit die Wichtigste, steht immer im Element 0 vom Array (nPrio ASC)
@@ -4721,7 +4767,7 @@ class Artikel implements RoutableInterface
             return false;
         }
         $att = $this->getDB()->select('tattribut', 'kArtikel', $this->kArtikel, 'cName', $name);
-        if ($this->kSprache > 0 && isset($att->kAttribut) && $att->kAttribut > 0) {
+        if ($att !== null && $this->kSprache > 0 && isset($att->kAttribut) && $att->kAttribut > 0) {
             $att   = $this->getDB()->select(
                 'tattributsprache',
                 'kAttribut',
@@ -6097,6 +6143,7 @@ class Artikel implements RoutableInterface
 
     /**
      * @return int|null
+     * @noinspection PhpHierarchyChecksInspection
      */
     public function getID()
     {
@@ -6134,7 +6181,7 @@ class Artikel implements RoutableInterface
     /**
      * @return string
      */
-    public function getBackorderString():string
+    public function getBackorderString(): string
     {
         $backorder = '';
         if ($this->cLagerBeachten === 'Y'

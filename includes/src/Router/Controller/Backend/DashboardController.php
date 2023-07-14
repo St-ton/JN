@@ -4,8 +4,8 @@ namespace JTL\Router\Controller\Backend;
 
 use Exception;
 use JTL\Alert\Alert;
-use JTL\Backend\AdminAccount;
 use JTL\Backend\AdminLoginStatus;
+use JTL\Backend\Permissions;
 use JTL\Backend\Status;
 use JTL\Exceptions\LoginException;
 use JTL\Helpers\Form;
@@ -93,7 +93,7 @@ class DashboardController extends AbstractBackendController
             }
         }
 
-        if ($this->hasPermissions('DASHBOARD_VIEW')) {
+        if ($this->hasPermissions(Permissions::DASHBOARD_VIEW)) {
             $smarty->assign('bDashboard', true)
                 ->assign('bUpdateError', (Request::postInt('shopupdate') === 1 ? '1' : false))
                 ->assign('oActiveWidget_arr', $this->getWidgets())
@@ -111,7 +111,7 @@ class DashboardController extends AbstractBackendController
      */
     public function getWidgets(bool $active = true, bool $getAll = false): array
     {
-        if (!$getAll && !$this->hasPermissions('DASHBOARD_VIEW')) {
+        if (!$getAll && !$this->hasPermissions(Permissions::DASHBOARD_VIEW)) {
             return [];
         }
 

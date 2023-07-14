@@ -89,7 +89,7 @@ class CustomerFields implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getIterator(): Traversable
     {
@@ -97,7 +97,7 @@ class CustomerFields implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function offsetExists($offset): bool
     {
@@ -105,7 +105,7 @@ class CustomerFields implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     #[\ReturnTypeWillChange]
     public function offsetGet($offset)
@@ -123,7 +123,7 @@ class CustomerFields implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function offsetSet($offset, $value): void
     {
@@ -139,7 +139,7 @@ class CustomerFields implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function offsetUnset($offset): void
     {
@@ -147,7 +147,7 @@ class CustomerFields implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function count(): int
     {

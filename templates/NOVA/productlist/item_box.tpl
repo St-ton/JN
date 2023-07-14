@@ -36,11 +36,10 @@
                         {/if}
                         {block name='productlist-item-box-image'}
                             {counter assign=imgcounter print=0}
-                            {if isset($Artikel->oSuchspecialBild)}
-                                {block name='productlist-item-box-include-ribbon'}
-                                    {include file='snippets/ribbon.tpl'}
-                                {/block}
-                            {/if}
+
+                            {block name='productlist-item-box-include-ribbon'}
+                                {include file='snippets/ribbon.tpl'}
+                            {/block}
                             <div class="productbox-images list-gallery">
                                 {link href=$Artikel->cURLFull}
                                     {block name="productlist-item-list-image"}

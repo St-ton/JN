@@ -18,7 +18,7 @@ class Migration_20170228163100 extends Migration implements IMigration
     protected $description = 'Set nofollow for special pages';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -28,7 +28,7 @@ class Migration_20170228163100 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

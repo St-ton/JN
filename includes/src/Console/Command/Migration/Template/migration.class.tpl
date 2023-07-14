@@ -18,14 +18,14 @@ class Migration_{$timestamp} extends Migration implements IMigration
     protected $description = '{$description}';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

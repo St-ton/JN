@@ -5,7 +5,6 @@ namespace JTL\Export;
 use Exception;
 use InvalidArgumentException;
 use JTL\Backend\AdminIO;
-use JTL\Catalog\Category\Kategorie;
 use JTL\Cron\QueueEntry;
 use JTL\DB\DbInterface;
 use JTL\Session\Frontend;
@@ -38,7 +37,7 @@ class SyntaxChecker
      * @param int         $id
      * @param DbInterface $db
      */
-    public function __construct(private int $id, private DbInterface $db)
+    public function __construct(private readonly int $id, private readonly DbInterface $db)
     {
     }
 

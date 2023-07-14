@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 // Version
-const APPLICATION_VERSION         = '5.2.3';
+const APPLICATION_VERSION         = '5.3.0-alpha';
 const APPLICATION_BUILD_SHA       = '#DEV#';
 const JTL_MIN_WAWI_VERSION        = 100000;
 const JTL_MIN_SHOP_UPDATE_VERSION = '4.2.0';
@@ -274,6 +274,7 @@ const FKT_ATTRIBUT_CANONICALURL_VARKOMBI    = 'varkombi_canonicalurl';
 const FKT_ATTRIBUT_VOUCHER                  = 'jtl_voucher';
 const FKT_ATTRIBUT_VOUCHER_FLEX             = 'jtl_voucher_flex';
 const FKT_ATTRIBUT_NO_GAL_VAR_PREVIEW       = 'no_gall_var_preview';
+const FKT_ATTRIBUT_CUSTOM_ITEM_BADGE        = 'custom_item_badge';
 
 /**
  * @deprecated
@@ -282,6 +283,7 @@ const FKT_ATTRIBUT_KONFIG_MAX_ITEMS = 'konfig_max_items';
 // Special Content
 const SC_KONTAKTFORMULAR = '1';
 // Suchspecials
+const SEARCHSPECIALS_CUSTOMBADGE      = 0;
 const SEARCHSPECIALS_BESTSELLER       = 1;
 const SEARCHSPECIALS_SPECIALOFFERS    = 2;
 const SEARCHSPECIALS_NEWPRODUCTS      = 3;

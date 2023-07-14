@@ -124,16 +124,16 @@ class ProductController extends AbstractController
     {
         $name                 = \SLUG_ALLOW_SLASHES ? 'name:.+' : 'name';
         $visibilityMiddleware = new VisibilityMiddleware();
-        $route->get('/' . \ROUTE_PREFIX_PRODUCTS . '/id/{id:\d+}', [$this, 'getResponse'])
+        $route->get('/' . \ROUTE_PREFIX_PRODUCTS . '/id/{id:\d+}', $this->getResponse(...))
             ->setName('ROUTE_PRODUCT_BY_ID' . $dynName)
             ->middleware($visibilityMiddleware);
-        $route->get('/' . \ROUTE_PREFIX_PRODUCTS . '/{' . $name . '}', [$this, 'getResponse'])
+        $route->get('/' . \ROUTE_PREFIX_PRODUCTS . '/{' . $name . '}', $this->getResponse(...))
             ->setName('ROUTE_PRODUCT_BY_NAME' . $dynName)
             ->middleware($visibilityMiddleware);
-        $route->post('/' . \ROUTE_PREFIX_PRODUCTS . '/id/{id:\d+}', [$this, 'getResponse'])
+        $route->post('/' . \ROUTE_PREFIX_PRODUCTS . '/id/{id:\d+}', $this->getResponse(...))
             ->setName('ROUTE_PRODUCT_BY_ID' . $dynName . 'POST')
             ->middleware($visibilityMiddleware);
-        $route->post('/' . \ROUTE_PREFIX_PRODUCTS . '/{' . $name . '}', [$this, 'getResponse'])
+        $route->post('/' . \ROUTE_PREFIX_PRODUCTS . '/{' . $name . '}', $this->getResponse(...))
             ->setName('ROUTE_PRODUCT_BY_NAME' . $dynName . 'POST')
             ->middleware($visibilityMiddleware);
     }

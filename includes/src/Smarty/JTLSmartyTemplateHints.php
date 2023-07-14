@@ -9,9 +9,9 @@ namespace JTL\Smarty;
 class JTLSmartyTemplateHints extends JTLSmartyTemplateClass
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
-    public function fetch($template = null, $cache_id = null, $compile_id = null, $parent = null)
+    public function fetch($template = null, $cache_id = null, $compile_id = null, $parent = null): string
     {
         $prefix  = '';
         $postfix = '';
@@ -34,7 +34,7 @@ class JTLSmartyTemplateHints extends JTLSmartyTemplateClass
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function _subTemplateRender(
         $template,

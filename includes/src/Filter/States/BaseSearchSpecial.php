@@ -38,8 +38,8 @@ class BaseSearchSpecial extends AbstractFilter
         parent::__construct($productFilter);
         $this->setRouteType(Router::TYPE_SEARCH_SPECIAL);
         $this->setIsCustom(false)
-             ->setUrlParam('q')
-             ->setUrlParamSEO(null);
+            ->setUrlParam('q')
+            ->setUrlParamSEO(null);
     }
 
     /**
@@ -100,10 +100,7 @@ class BaseSearchSpecial extends AbstractFilter
                 break;
             default:
                 // invalid search special ID
-                Shop::$is404                      = true;
-                Shop::$kSuchspecial               = 0;
-                Shop::getState()->is404           = true;
-                Shop::getState()->searchSpecialID = 0;
+                $this->fail();
                 break;
         }
 

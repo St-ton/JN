@@ -74,7 +74,7 @@ class Versand
 
         $this->oData = $oData;
 
-        if (!empty($item->kVersand)) {
+        if ($item !== null && !empty($item->kVersand)) {
             foreach (\array_keys(\get_object_vars($item)) as $member) {
                 $this->$member = $item->$member;
             }

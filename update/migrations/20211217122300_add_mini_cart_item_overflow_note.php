@@ -12,7 +12,7 @@ class Migration_20211217122300 extends Migration implements IMigration
     protected $description = 'Add mini cart item overflow note';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -21,7 +21,7 @@ class Migration_20211217122300 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

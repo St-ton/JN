@@ -95,7 +95,7 @@ interface ValidationServiceInterface
 
     /**
      * @param array $set
-     * @param array        $rulesConfig
+     * @param array $rulesConfig
      * @return SetValidationResultInterface
      */
     public function validateSet($set, $rulesConfig): SetValidationResultInterface;

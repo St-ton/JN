@@ -773,6 +773,9 @@ msgstr "Invalid consent vendor company."
 msgid "INVALID_LINK_IDENTIFIER"
 msgstr "Invalid link identifier."
 
+msgid "INVALID_MIGRATION"
+msgstr "Invalid migration."
+
 msgid "Deaktiviert"
 msgstr "Disabled"
 

@@ -28,7 +28,7 @@ function holeBanner(int $imageMapID, bool $fill = true)
 
 /**
  * @param int $imageMapID
- * @return mixed
+ * @return stdClass|null
  * @deprecated since 5.2.0
  */
 function holeExtension(int $imageMapID)

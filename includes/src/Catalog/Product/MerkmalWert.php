@@ -195,7 +195,7 @@ class MerkmalWert implements RoutableInterface
                     ON def.kMerkmalWert = tmerkmalwert.kMerkmalWert
                     AND def.kSprache = :lid
                 JOIN tmerkmal
-					ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
+                    ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
                 LEFT JOIN tmerkmalwertsprache AS loc 
                     ON loc.kMerkmalWert = tmerkmalwert.kMerkmalWert
                 LEFT JOIN tmerkmalsprache
@@ -204,7 +204,6 @@ class MerkmalWert implements RoutableInterface
                 WHERE tmerkmalwert.kMerkmalWert = :mid',
             ['mid' => $id, 'lid' => $defaultLanguageID]
         );
-        $this->setID($id);
         $this->map($data);
         $this->createBySlug($id);
         $this->setCurrentLanguageID($languageID);

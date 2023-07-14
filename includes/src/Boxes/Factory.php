@@ -46,7 +46,7 @@ class Factory implements FactoryInterface
      *
      * @param array $config
      */
-    public function __construct(private array $config)
+    public function __construct(private readonly array $config)
     {
     }
 

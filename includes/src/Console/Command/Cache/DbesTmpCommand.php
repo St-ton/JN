@@ -18,7 +18,7 @@ use Throwable;
 class DbesTmpCommand extends Command
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function configure(): void
     {
@@ -27,7 +27,7 @@ class DbesTmpCommand extends Command
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {

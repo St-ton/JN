@@ -26,10 +26,10 @@ class Panel extends Portlet
     {
         return [
             'panel-state' => [
-                'label' => \__('panelType'),
-                'type'  => InputType::SELECT,
-                'width' => 30,
-                'options'    => [
+                'label'   => \__('panelType'),
+                'type'    => InputType::SELECT,
+                'width'   => 30,
+                'options' => [
                     'default' => \__('standard'),
                     'primary' => \__('stylePrimary'),
                     'success' => \__('styleSuccess'),

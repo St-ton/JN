@@ -65,8 +65,10 @@ class Navigation
      * @param LanguageHelper       $language
      * @param LinkServiceInterface $linkService
      */
-    public function __construct(private LanguageHelper $language, private LinkServiceInterface $linkService)
-    {
+    public function __construct(
+        private readonly LanguageHelper       $language,
+        private readonly LinkServiceInterface $linkService
+    ) {
         $this->baseURL = Shop::getURL() . '/';
     }
 
@@ -203,6 +205,9 @@ class Navigation
      */
     private function getProductFilterName(): string
     {
+        if ($this->productFilter->getBaseState()->isNotFound()) {
+            return Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_404)->getName();
+        }
         if ($this->productFilter->hasCategory()) {
             return $this->productFilter->getCategory()->getName() ?? '';
         }
@@ -216,10 +221,10 @@ class Navigation
             return $this->productFilter->getSearchSpecial()->getName() ?? '';
         }
         if ($this->productFilter->hasSearch()) {
-            return Shop::Lang()->get('for') . ' ' .  $this->productFilter->getSearch()->getName();
+            return Shop::Lang()->get('for') . ' ' . $this->productFilter->getSearch()->getName();
         }
         if ($this->productFilter->getSearchQuery()->isInitialized()) {
-            return Shop::Lang()->get('for') . ' ' .  $this->productFilter->getSearchQuery()->getName();
+            return Shop::Lang()->get('for') . ' ' . $this->productFilter->getSearchQuery()->getName();
         }
 
         return '';

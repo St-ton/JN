@@ -129,14 +129,14 @@ class JTLSmarty extends BC
     protected function init(?string $parent = null): void
     {
         $pluginCollection = new PluginCollection($this->config, LanguageHelper::getInstance());
-        $this->registerPlugin(self::PLUGIN_FUNCTION, 'lang', [$pluginCollection, 'translate'])
-            ->registerPlugin(self::PLUGIN_MODIFIER, 'replace_delim', [$pluginCollection, 'replaceDelimiters'])
-            ->registerPlugin(self::PLUGIN_MODIFIER, 'count_characters', [$pluginCollection, 'countCharacters'])
-            ->registerPlugin(self::PLUGIN_MODIFIER, 'string_format', [$pluginCollection, 'stringFormat'])
-            ->registerPlugin(self::PLUGIN_MODIFIER, 'string_date_format', [$pluginCollection, 'dateFormat'])
-            ->registerPlugin(self::PLUGIN_MODIFIERCOMPILER, 'default', [$pluginCollection, 'compilerModifierDefault'])
-            ->registerPlugin(self::PLUGIN_MODIFIER, 'truncate', [$pluginCollection, 'truncate'])
-            ->registerPlugin(self::PLUGIN_BLOCK, 'inline_script', [$pluginCollection, 'inlineScript']);
+        $this->registerPlugin(self::PLUGIN_FUNCTION, 'lang', $pluginCollection->translate(...))
+            ->registerPlugin(self::PLUGIN_MODIFIER, 'replace_delim', $pluginCollection->replaceDelimiters(...))
+            ->registerPlugin(self::PLUGIN_MODIFIER, 'count_characters', $pluginCollection->countCharacters(...))
+            ->registerPlugin(self::PLUGIN_MODIFIER, 'string_format', $pluginCollection->stringFormat(...))
+            ->registerPlugin(self::PLUGIN_MODIFIER, 'string_date_format', $pluginCollection->dateFormat(...))
+            ->registerPlugin(self::PLUGIN_MODIFIERCOMPILER, 'default', $pluginCollection->compilerModifierDefault(...))
+            ->registerPlugin(self::PLUGIN_MODIFIER, 'truncate', $pluginCollection->truncate(...))
+            ->registerPlugin(self::PLUGIN_BLOCK, 'inline_script', $pluginCollection->inlineScript(...));
 
         $this->cache_lifetime = 86400;
         $this->template_class = \SHOW_TEMPLATE_HINTS > 0
@@ -199,7 +199,7 @@ class JTLSmarty extends BC
         if (GeneralObject::hasCount(\HOOK_SMARTY_OUTPUTFILTER, $hookList)
             || \count(Dispatcher::getInstance()->getListeners('shop.hook.' . \HOOK_SMARTY_OUTPUTFILTER)) > 0
         ) {
-            $this->unregisterFilter('output', [$this, 'outputFilter']);
+            $this->unregisterFilter('output', $this->outputFilter(...));
             $doc = phpQuery::newDocumentHTML($tplOutput, \JTL_CHARSET);
             \executeHook(\HOOK_SMARTY_OUTPUTFILTER, ['smarty' => $this, 'document' => $doc]);
             $tplOutput = $doc->htmlOuter();
@@ -215,7 +215,7 @@ class JTLSmarty extends BC
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function isCached($template = null, $cacheID = null, $compileID = null, $parent = null): bool
     {
@@ -318,12 +318,12 @@ class JTLSmarty extends BC
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function display($template = null, $cacheID = null, $compileID = null, $parent = null): void
     {
         if ($this->context === ContextType::FRONTEND) {
-            $this->registerFilter('output', [$this, 'outputFilter']);
+            $this->registerFilter('output', $this->outputFilter(...));
         }
         parent::display($this->getResourceName($template), $cacheID, $compileID, $parent);
     }
@@ -335,7 +335,7 @@ class JTLSmarty extends BC
     public function getResponse(string $template): ResponseInterface
     {
         if ($this->context === ContextType::FRONTEND) {
-            $this->registerFilter('output', [$this, 'outputFilter']);
+            $this->registerFilter('output', $this->outputFilter(...));
             $template = $this->createTemplate($this->getResourceName($template), null, null, $this, false);
             /** @var JTLSmartyTemplateClass $template */
             $template->noOutputFilter = false;

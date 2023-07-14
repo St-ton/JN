@@ -56,12 +56,12 @@ class PersistentCartItemProperty
      * @param int         $kWarenkorbPersPos
      */
     public function __construct(
-        int $propertyID,
-        int $propertyValueID,
+        int     $propertyID,
+        int     $propertyValueID,
         ?string $freeText,
         ?string $propertyName,
         ?string $propertyValueName,
-        int $kWarenkorbPersPos
+        int     $kWarenkorbPersPos
     ) {
         $this->kWarenkorbPersPos    = $kWarenkorbPersPos;
         $this->kEigenschaft         = $propertyID;

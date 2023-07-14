@@ -12,7 +12,7 @@ class Migration_20200825095900 extends Migration implements IMigration
     protected $description = 'Add tfloodprotect table';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -49,7 +49,7 @@ class Migration_20200825095900 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

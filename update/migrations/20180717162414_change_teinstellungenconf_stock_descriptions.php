@@ -18,7 +18,7 @@ class Migration_20180717162414 extends Migration implements IMigration
     protected $description = 'Change teinstellungenconf stock descriptions';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -33,7 +33,7 @@ class Migration_20180717162414 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

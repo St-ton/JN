@@ -126,7 +126,10 @@ class CheckoutController extends RegistrationController
         if (!Upload::pruefeWarenkorbUploads($this->cart)) {
             Upload::redirectWarenkorb(\UPLOAD_ERROR_NEED_UPLOAD);
         }
+        // SHOP-4236 Checkbox zum Widerrufsrecht bei Downloadartikeln im Checkout
+        $hasDownloads = false;
         if (Download::hasDownloads($this->cart)) {
+            $hasDownloads = true;
             // Nur registrierte Benutzer
             $this->config['kaufabwicklung']['bestellvorgang_unregistriert'] = 'N';
         }
@@ -329,6 +332,7 @@ class CheckoutController extends RegistrationController
             ->assign('Steuerpositionen', $this->cart->gibSteuerpositionen())
             ->assign('bestellschritt', $this->getNextOrderStep($this->step))
             ->assign('unregForm', Request::verifyGPCDataInt('unreg_form'))
+            ->assign('hasDownloads', $hasDownloads)
             ->assignDeprecated('C_WARENKORBPOS_TYP_ARTIKEL', \C_WARENKORBPOS_TYP_ARTIKEL, '5.0.0')
             ->assignDeprecated('C_WARENKORBPOS_TYP_GRATISGESCHENK', \C_WARENKORBPOS_TYP_GRATISGESCHENK, '5.0.0');
 
@@ -612,7 +616,7 @@ class CheckoutController extends RegistrationController
                         $info->cBankName = Text::htmlentities(\stripslashes($_POST['bankname'] ?? ''), \ENT_QUOTES);
                         $info->cKontoNr  = Text::htmlentities(\stripslashes($_POST['kontonr'] ?? ''), \ENT_QUOTES);
                         $info->cBLZ      = Text::htmlentities(\stripslashes($_POST['blz'] ?? ''), \ENT_QUOTES);
-                        $info->cIBAN     = Text::htmlentities(\stripslashes($_POST['iban']), \ENT_QUOTES);
+                        $info->cIBAN     = Text::htmlentities(\stripslashes($_POST['iban'] ?? ''), \ENT_QUOTES);
                         $info->cBIC      = Text::htmlentities(\stripslashes($_POST['bic'] ?? ''), \ENT_QUOTES);
                         $info->cInhaber  = Text::htmlentities(\stripslashes($_POST['inhaber'] ?? ''), \ENT_QUOTES);
 
@@ -813,7 +817,10 @@ class CheckoutController extends RegistrationController
      */
     public function getPaymentMethod(int $paymentMethodID): ?stdClass
     {
-        $method    = $this->db->select('tzahlungsart', 'kZahlungsart', $paymentMethodID);
+        $method = $this->db->select('tzahlungsart', 'kZahlungsart', $paymentMethodID);
+        if ($method === null) {
+            return null;
+        }
         $localized = $this->db->getObjects(
             'SELECT cISOSprache, cName
                 FROM tzahlungsartsprache
@@ -904,32 +911,30 @@ class CheckoutController extends RegistrationController
             return false;
         }
         $accountData = $this->db->select('tkundenkontodaten', 'kKunde', $customerID);
-
-        if (isset($accountData->kKunde) && $accountData->kKunde > 0) {
-            $cryptoService = Shop::Container()->getCryptoService();
-            if (\mb_strlen($accountData->cBLZ) > 0) {
-                $accountData->cBLZ = (int)$cryptoService->decryptXTEA($accountData->cBLZ);
-            }
-            if (\mb_strlen($accountData->cInhaber) > 0) {
-                $accountData->cInhaber = \trim($cryptoService->decryptXTEA($accountData->cInhaber));
-            }
-            if (\mb_strlen($accountData->cBankName) > 0) {
-                $accountData->cBankName = \trim($cryptoService->decryptXTEA($accountData->cBankName));
-            }
-            if (\mb_strlen($accountData->nKonto) > 0) {
-                $accountData->nKonto = \trim($cryptoService->decryptXTEA($accountData->nKonto));
-            }
-            if (\mb_strlen($accountData->cIBAN) > 0) {
-                $accountData->cIBAN = \trim($cryptoService->decryptXTEA($accountData->cIBAN));
-            }
-            if (\mb_strlen($accountData->cBIC) > 0) {
-                $accountData->cBIC = \trim($cryptoService->decryptXTEA($accountData->cBIC));
-            }
-
-            return $accountData;
+        if ($accountData === null || $accountData->kKunde <= 0) {
+            return false;
+        }
+        $cryptoService = Shop::Container()->getCryptoService();
+        if (\mb_strlen($accountData->cBLZ) > 0) {
+            $accountData->cBLZ = (int)$cryptoService->decryptXTEA($accountData->cBLZ);
+        }
+        if (\mb_strlen($accountData->cInhaber) > 0) {
+            $accountData->cInhaber = \trim($cryptoService->decryptXTEA($accountData->cInhaber));
+        }
+        if (\mb_strlen($accountData->cBankName) > 0) {
+            $accountData->cBankName = \trim($cryptoService->decryptXTEA($accountData->cBankName));
+        }
+        if (\mb_strlen($accountData->nKonto) > 0) {
+            $accountData->nKonto = \trim($cryptoService->decryptXTEA($accountData->nKonto));
+        }
+        if (\mb_strlen($accountData->cIBAN) > 0) {
+            $accountData->cIBAN = \trim($cryptoService->decryptXTEA($accountData->cIBAN));
+        }
+        if (\mb_strlen($accountData->cBIC) > 0) {
+            $accountData->cBIC = \trim($cryptoService->decryptXTEA($accountData->cBIC));
         }
 
-        return false;
+        return $accountData;
     }
 
     /**
@@ -1850,7 +1855,7 @@ class CheckoutController extends RegistrationController
                     $localizedNames,
                     1,
                     $fBrutto,
-                    (int)$packagings->kSteuerklasse,
+                    $packagings->kSteuerklasse,
                     \C_WARENKORBPOS_TYP_VERPACKUNG,
                     false
                 );
@@ -1923,7 +1928,7 @@ class CheckoutController extends RegistrationController
                 false,
                 'cName, cHinweisTextShop'
             );
-            if (isset($loc->cName)) {
+            if ($loc !== null && isset($loc->cName)) {
                 $specialItem->cName[$lang->cISO]                     = $loc->cName;
                 $shippingMethod->angezeigterName[$lang->cISO]        = $loc->cName;
                 $shippingMethod->angezeigterHinweistext[$lang->cISO] = $loc->cHinweisTextShop;
@@ -1966,7 +1971,7 @@ class CheckoutController extends RegistrationController
                     false,
                     'cName'
                 );
-                $specialItem->cName[$lang->cISO] = $loc->cName;
+                $specialItem->cName[$lang->cISO] = $loc->cName ?? '';
             }
             $this->cart->erstelleSpezialPos(
                 $specialItem->cName,

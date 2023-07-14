@@ -13,7 +13,7 @@ class Migration_20200514090200 extends Migration implements IMigration
     protected $description = 'Remove box visibilites of invalid/deprecated page types';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -22,7 +22,7 @@ class Migration_20200514090200 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

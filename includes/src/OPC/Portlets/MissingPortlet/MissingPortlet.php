@@ -34,7 +34,7 @@ class MissingPortlet extends Portlet
 
     /**
      * @param PortletInstance $instance
-     * @param bool $inContainer
+     * @param bool            $inContainer
      * @return string
      */
     public function getFinalHtml(PortletInstance $instance, bool $inContainer = true): string

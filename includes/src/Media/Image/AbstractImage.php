@@ -55,7 +55,7 @@ abstract class AbstractImage implements IMedia
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getDB(): DbInterface
     {
@@ -63,7 +63,7 @@ abstract class AbstractImage implements IMedia
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setDB(DbInterface $db): void
     {
@@ -150,7 +150,7 @@ abstract class AbstractImage implements IMedia
         $id,
         $mixed,
         string $size,
-        int $number = 1,
+        int    $number = 1,
         string $sourcePath = null
     ): MediaImageRequest {
         return MediaImageRequest::create([
@@ -308,7 +308,7 @@ abstract class AbstractImage implements IMedia
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function cacheImage(MediaImageRequest $req, bool $overwrite = false): array
     {

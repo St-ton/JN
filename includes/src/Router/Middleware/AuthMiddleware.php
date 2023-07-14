@@ -21,7 +21,7 @@ class AuthMiddleware implements MiddlewareInterface
     /**
      * @param AdminAccount $account
      */
-    public function __construct(private AdminAccount $account)
+    public function __construct(private readonly AdminAccount $account)
     {
     }
 
@@ -46,7 +46,7 @@ class AuthMiddleware implements MiddlewareInterface
                 \unlink(\SAFE_MODE_LOCK);
             }
         }
-        if (!Backend::getInstance()->isValid()) {
+        if (!$this->account->isValid() || !Backend::getInstance()->isValid()) {
             $this->account->logout();
 
             return new RedirectResponse(Shop::getAdminURL() . '/?errCode=' . AdminLoginStatus::ERROR_SESSION_INVALID);

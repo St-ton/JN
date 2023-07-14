@@ -17,7 +17,7 @@ class Mapper
      * Mapper constructor.
      * @param Manager $manager
      */
-    public function __construct(private Manager $manager)
+    public function __construct(private readonly Manager $manager)
     {
     }
 

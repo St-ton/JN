@@ -11,6 +11,8 @@ use JTL\Checkbox\CheckboxLanguage\CheckboxLanguageService;
 use JTL\Checkbox\CheckboxLanguage\CheckboxLanguageDataTableObject;
 use JTL\Checkbox\CheckboxFunction\CheckboxFunctionDataTableObject;
 use JTL\Checkbox\CheckboxService;
+use JTL\Checkbox\CheckboxValidationDataObject;
+use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
@@ -34,6 +36,8 @@ use stdClass;
  */
 class CheckBox
 {
+    public const CHECKBOX_DOWNLOAD_ORDER_COMPLETE = 'RightOfWithdrawalOfDownloadItems';
+
     /**
      * @var int
      */
@@ -130,6 +134,11 @@ class CheckBox
     public ?Link $oLink = null;
 
     /**
+     * @var string
+     */
+    public string $identifier;
+
+    /**
      * @var DbInterface
      */
     private DbInterface $db;
@@ -183,10 +192,16 @@ class CheckBox
      * @var Logger
      */
     protected Logger $logService;
+
     /**
      * @var bool
      */
     protected bool $loggerAvailable = true;
+
+    /**
+     * @var int
+     */
+    public int $nInternal = 0;
 
     /**
      * @param int              $id
@@ -301,39 +316,24 @@ class CheckBox
         bool $logging = false
     ): array {
         if ($customerGroupID === 0) {
-            $customerGroupID = Frontend::getCustomer()->getGroupID();
+            if (isset($_SESSION['Kundengruppe']->kKundengruppe)) {
+                $customerGroupID = Frontend::getCustomerGroup()->getID();
+            } else {
+                $customerGroupID = CustomerGroup::getDefaultGroupID();
+            }
         }
-        $sql = '';
-        if ($active) {
-            $sql .= ' AND nAktiv = 1';
-        }
-        if ($special) {
-            $sql .= ' AND kCheckBoxFunktion > 0';
-        }
-        if ($logging) {
-            $sql .= ' AND nLogging = 1';
-        }
-        $checkboxes = $this->db->getCollection(
-            "SELECT kCheckBox AS id
-                FROM tcheckbox
-                WHERE FIND_IN_SET('" . $location . "', REPLACE(cAnzeigeOrt, ';', ',')) > 0
-                    AND FIND_IN_SET('" . $customerGroupID . "', REPLACE(cKundengruppe, ';', ',')) > 0
-                    " . $sql . '
-                ORDER BY nSort'
-        )->map(function (stdClass $e): self {
-            return new self((int)$e->id, $this->db);
-        })->all();
-        \executeHook(\HOOK_CHECKBOX_CLASS_GETCHECKBOXFRONTEND, [
-            'oCheckBox_arr' => &$checkboxes,
-            'nAnzeigeOrt'   => $location,
-            'kKundengruppe' => $customerGroupID,
-            'bAktiv'        => $active,
-            'bSprache'      => $lang,
-            'bSpecial'      => $special,
-            'bLogging'      => $logging
-        ]);
+        $validationData = (new CheckboxValidationDataObject())->hydrate(
+            [
+                'customerGroupId' => $customerGroupID,
+                'location'        => $location,
+                'active'          => $active,
+                'logging'         => $logging,
+                'special'         => $special,
+                'language'        => $lang,
+            ]
+        );
 
-        return $checkboxes;
+        return $this->service->getCheckBoxValidationData($validationData);
     }
 
     /**
@@ -569,19 +569,10 @@ class CheckBox
      */
     public function delete(array $checkboxIDs): bool
     {
-        if (\count($checkboxIDs) === 0) {
-            return false;
-        }
-        $this->db->query(
-            'DELETE tcheckbox, tcheckboxsprache
-                FROM tcheckbox
-                LEFT JOIN tcheckboxsprache
-                    ON tcheckboxsprache.kCheckBox = tcheckbox.kCheckBox
-                WHERE tcheckbox.kCheckBox IN (' . \implode(',', \array_map('\intval', $checkboxIDs)) . ')'
-        );
+        $res = $this->service->delete($checkboxIDs);
         $this->cache->flushTags(['checkbox']);
 
-        return true;
+        return $res;
     }
 
     /**
@@ -611,7 +602,7 @@ class CheckBox
         }
         $this->insertDB(null, null, $checkboxDTO);
         $this->fillProperties($checkboxDTO);
-        $this->saveToCache('chkbx_' . $checkboxDTO->getID());
+        $this->cache->flushTags(['checkbox']);
 
         return $this;
     }
@@ -887,15 +878,16 @@ class CheckBox
         $this->cName             = $checkbox->getName();
         $this->cKundengruppe     = $checkbox->getCustomerGroupsSelected();
         $this->cAnzeigeOrt       = $checkbox->getDisplayAt();
-        $this->nAktiv            = (int)$checkbox->getActive();
-        $this->nPflicht          = (int)$checkbox->getIsMandatory();
-        $this->nLogging          = (int)$checkbox->getHasLogging();
+        $this->nAktiv            = (int)$checkbox->isActive();
+        $this->nPflicht          = (int)$checkbox->isMandatory();
+        $this->nLogging          = (int)$checkbox->isLogging();
         $this->nSort             = $checkbox->getSort();
         $this->cID               = 'CheckBox_' . $this->kCheckBox;
         $this->dErstellt         = $checkbox->getCreated();
         $this->dErstellt_DE      = $checkbox->getCreatedDE();
         $this->kKundengruppe_arr = Text::parseSSKint($checkbox->getCustomerGroupsSelected());
         $this->kAnzeigeOrt_arr   = Text::parseSSKint($checkbox->getDisplayAt());
+        $this->nInternal         = (int)$checkbox->getInternal();
         if ($this->kCheckBoxFunktion > 0) {
             $this->checkAndUpdateFunctionIfNecessary($checkbox);
         }

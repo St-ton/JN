@@ -3,6 +3,7 @@
 namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\AdminAccount;
+use JTL\Backend\Permissions;
 use JTL\Backend\Settings\Manager;
 use JTL\Backend\Settings\SectionFactory;
 use JTL\Backend\Settings\Sections\Subsection;
@@ -68,11 +69,11 @@ abstract class AbstractBackendController implements ControllerInterface
      * @param GetText               $getText
      */
     public function __construct(
-        protected DbInterface $db,
-        protected JTLCacheInterface $cache,
+        protected DbInterface           $db,
+        protected JTLCacheInterface     $cache,
         protected AlertServiceInterface $alertService,
-        protected AdminAccount $account,
-        protected GetText $getText
+        protected AdminAccount          $account,
+        protected GetText               $getText
     ) {
         $this->baseURL = Shop::getAdminURL(true);
         $this->setLanguage();
@@ -111,10 +112,28 @@ abstract class AbstractBackendController implements ControllerInterface
         if ($account !== false && (int)$account->oGroup->kAdminlogingruppe === \ADMINGROUP) {
             return;
         }
-        $hasAccess = (isset($_SESSION['AdminAccount']->oGroup->oPermission_arr)
-            && \is_array($_SESSION['AdminAccount']->oGroup->oPermission_arr)
-            && \in_array($permissions, $_SESSION['AdminAccount']->oGroup->oPermission_arr, true));
-        if (!$hasAccess) {
+        if (!\in_array($permissions, $_SESSION['AdminAccount']->oGroup->oPermission_arr ?? [], true)) {
+            throw new PermissionException('No permissions to access page');
+        }
+    }
+
+    /**
+     * @param int $pluginID
+     * @return void
+     * @throws PermissionException
+     */
+    protected function checkPluginPermission(int $pluginID): void
+    {
+        $account = $this->account->account();
+        if ($account !== false && (int)$account->oGroup->kAdminlogingruppe === \ADMINGROUP) {
+            return;
+        }
+        $userPermissions = $_SESSION['AdminAccount']->oGroup->oPermission_arr ?? [];
+        if (\in_array(Permissions::PLUGIN_DETAIL_VIEW_ALL, $userPermissions, true)) {
+            return;
+        }
+        $permissions = Permissions::PLUGIN_DETAIL_VIEW_ID . $pluginID;
+        if (!\in_array($permissions, $userPermissions, true)) {
             throw new PermissionException('No permissions to access page');
         }
     }
@@ -134,8 +153,8 @@ abstract class AbstractBackendController implements ControllerInterface
      */
     public function notFoundResponse(
         ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty
+        array                  $args,
+        JTLSmarty              $smarty
     ): ResponseInterface {
         return (new Response())->withStatus(404);
     }
@@ -396,8 +415,8 @@ abstract class AbstractBackendController implements ControllerInterface
      * @return array
      */
     public static function getCampaigns(
-        bool $getInternal = false,
-        bool $activeOnly = true,
+        bool         $getInternal = false,
+        bool         $activeOnly = true,
         ?DbInterface $db = null
     ): array {
         $activeSQL  = $activeOnly ? ' WHERE nAktiv = 1' : '';

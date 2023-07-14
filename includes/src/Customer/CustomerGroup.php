@@ -106,11 +106,11 @@ class CustomerGroup
         if ($item !== null) {
             $conf = Shop::getSettingValue(\CONF_GLOBAL, 'global_sichtbarkeit');
             $this->setID((int)$item->kKundengruppe)
-                 ->setName($item->cName)
-                 ->setDiscount($item->fRabatt)
-                 ->setDefault($item->cStandard)
-                 ->setShopLogin($item->cShopLogin)
-                 ->setIsMerchant((int)$item->nNettoPreise);
+                ->setName($item->cName)
+                ->setDiscount($item->fRabatt)
+                ->setDefault($item->cStandard)
+                ->setShopLogin($item->cShopLogin)
+                ->setIsMerchant((int)$item->nNettoPreise);
             if ($this->isDefault()) {
                 if ((int)$conf === 2) {
                     $this->mayViewPrices = 0;
@@ -138,7 +138,7 @@ class CustomerGroup
                 'kSprache',
                 (int)$this->languageID
             );
-            if (isset($localized->cName)) {
+            if ($localized !== null && isset($localized->cName)) {
                 $this->nameLocalized = $localized->cName;
             }
         }
@@ -158,11 +158,11 @@ class CustomerGroup
             throw new InvalidArgumentException('Cannot load customer group with id ' . $id);
         }
         $this->setID((int)$item->kKundengruppe)
-             ->setName($item->cName)
-             ->setDiscount($item->fRabatt)
-             ->setDefault($item->cStandard)
-             ->setShopLogin($item->cShopLogin)
-             ->setIsMerchant((int)$item->nNettoPreise);
+            ->setName($item->cName)
+            ->setDiscount($item->fRabatt)
+            ->setDefault($item->cStandard)
+            ->setShopLogin($item->cShopLogin)
+            ->setIsMerchant((int)$item->nNettoPreise);
 
         return $this;
     }

@@ -18,7 +18,7 @@ class Migration_20181121155840 extends Migration implements IMigration
     protected $description = 'Refactor tanonjournaldata';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -74,7 +74,7 @@ class Migration_20181121155840 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

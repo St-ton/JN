@@ -12,7 +12,7 @@ class Migration_20210208144100 extends Migration implements IMigration
     protected $description = 'Add settings log table';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -349,7 +349,7 @@ class Migration_20210208144100 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

@@ -208,7 +208,6 @@ class TwoFA
         return \trim($this->shopName);
     }
 
-
     /**
      * serialize this objects data into a string,
      * mostly for debugging and logging

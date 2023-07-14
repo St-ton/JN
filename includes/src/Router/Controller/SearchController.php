@@ -33,9 +33,9 @@ class SearchController extends ProductListController
      */
     public function register(RouteGroup $route, string $dynName): void
     {
-        $route->get('/' . \ROUTE_PREFIX_SEARCH . '[/{query:.+}]', [$this, 'getResponse'])
+        $route->get('/' . \ROUTE_PREFIX_SEARCH . '[/{query:.+}]', $this->getResponse(...))
             ->setName('ROUTE_SEARCH' . $dynName);
-        $route->post('/' . \ROUTE_PREFIX_SEARCH . '[/{query:.+}]', [$this, 'getResponse'])
+        $route->post('/' . \ROUTE_PREFIX_SEARCH . '[/{query:.+}]', $this->getResponse(...))
             ->setName('ROUTE_SEARCH' . $dynName . 'POST');
     }
 

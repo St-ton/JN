@@ -18,7 +18,7 @@ class Migration_20191115154100 extends Migration implements IMigration
     protected $description = 'Remove mosaic setting';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -81,7 +81,7 @@ class Migration_20191115154100 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

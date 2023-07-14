@@ -34,7 +34,7 @@ class BaseCharacteristic extends AbstractFilter
     {
         parent::__construct($productFilter);
         $this->setIsCustom(false)
-             ->setUrlParam('m');
+            ->setUrlParam('m');
     }
 
     /**
@@ -57,6 +57,9 @@ class BaseCharacteristic extends AbstractFilter
     {
         $currentLanguageID   = $this->getLanguageID();
         $characteristicValue = new MerkmalWert($this->getValue(), $currentLanguageID);
+        if ($characteristicValue->getID() === 0) {
+            $this->fail();
+        }
         foreach ($languages as $language) {
             $id              = $language->getId();
             $this->cSeo[$id] = \ltrim($characteristicValue->getURLPath($id), '/');

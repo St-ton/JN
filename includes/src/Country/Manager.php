@@ -23,20 +23,20 @@ class Manager
 {
     /**
      * Manager constructor.
-     * @param DbInterface $db
-     * @param JTLSmarty $smarty
+     * @param DbInterface             $db
+     * @param JTLSmarty               $smarty
      * @param CountryServiceInterface $countryService
-     * @param JTLCacheInterface $cache
-     * @param AlertServiceInterface $alertService
-     * @param GetText $getText
+     * @param JTLCacheInterface       $cache
+     * @param AlertServiceInterface   $alertService
+     * @param GetText                 $getText
      */
     public function __construct(
-        protected DbInterface $db,
-        protected JTLSmarty $smarty,
+        protected DbInterface             $db,
+        protected JTLSmarty               $smarty,
         protected CountryServiceInterface $countryService,
-        protected JTLCacheInterface $cache,
-        protected AlertServiceInterface $alertService,
-        protected GetText $getText
+        protected JTLCacheInterface       $cache,
+        protected AlertServiceInterface   $alertService,
+        protected GetText                 $getText
     ) {
         $this->getText->loadAdminLocale('pages/countrymanager');
     }
@@ -210,10 +210,9 @@ class Manager
         exit;
     }
 
-
     /**
      * @param array $inactiveCountries
-     * @param bool $showAlerts
+     * @param bool  $showAlerts
      */
     public function updateRegistrationCountries(array $inactiveCountries = [], bool $showAlerts = true): void
     {

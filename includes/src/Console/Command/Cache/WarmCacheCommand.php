@@ -66,7 +66,7 @@ class WarmCacheCommand extends Command
     private ?DbInterface $db = null;
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function configure(): void
     {
@@ -307,7 +307,7 @@ class WarmCacheCommand extends Command
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {

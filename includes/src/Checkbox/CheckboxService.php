@@ -3,7 +3,7 @@
 namespace JTL\Checkbox;
 
 use JTL\Abstracts\AbstractService;
-use JTL\Interfaces\RepositoryInterface;
+use JTL\CheckBox;
 
 /**
  * Class CheckboxService
@@ -11,6 +11,11 @@ use JTL\Interfaces\RepositoryInterface;
  */
 class CheckboxService extends AbstractService
 {
+    /**
+     * @var CheckboxRepository
+     */
+    protected CheckboxRepository $repository;
+
     /**
      * @param int $id
      * @return ?CheckboxDataTableObject
@@ -31,11 +36,7 @@ class CheckboxService extends AbstractService
      */
     public function activate(array $checkboxIDs): bool
     {
-        if ($this->repository instanceof CheckboxRepository) {
-            return $this->repository->activate($checkboxIDs);
-        }
-
-        return false;
+        return $this->getRepository()->activate($checkboxIDs);
     }
 
     /**
@@ -44,26 +45,75 @@ class CheckboxService extends AbstractService
      */
     public function deactivate(array $checkboxIDs): bool
     {
-        if ($this->repository instanceof CheckboxRepository) {
-            return $this->repository->deactivate($checkboxIDs);
-        }
-
-        return false;
+        return $this->getRepository()->deactivate($checkboxIDs);
     }
 
     /**
-     * @inheritdoc
+     * @param array $checkboxIDs
+     * @return bool
      */
-    protected function initRepository(): void
+    public function delete(array $checkboxIDs): bool
+    {
+        return $this->getRepository()->delete($checkboxIDs);
+    }
+
+    /**
+     * @return void
+     */
+    protected function initDependencies(): void
     {
         $this->repository = new CheckboxRepository();
     }
 
     /**
-     * @return RepositoryInterface
+     * @return CheckboxRepository
      */
-    public function getRepository(): RepositoryInterface
+    public function getRepository(): CheckboxRepository
     {
         return $this->repository;
+    }
+
+    /**
+     * @param CheckboxValidationDataObject $data
+     * @param array                        $post
+     * @return array
+     */
+    public function validateCheckBox(CheckboxValidationDataObject $data, array $post): array
+    {
+        $checks = [];
+        foreach ($this->getCheckBoxValidationData($data) as $checkBox) {
+            if ($checkBox->nPflicht === 1 && !isset($post[$checkBox->cID])) {
+                if ($checkBox->cName === CheckBox::CHECKBOX_DOWNLOAD_ORDER_COMPLETE
+                    && $data->getHasDownloads() === false) {
+                    continue;
+                }
+                $checks[$checkBox->cID] = 1;
+            }
+        }
+
+        return $checks;
+    }
+
+    /**
+     * @param CheckboxValidationDataObject $data
+     * @return CheckBox[]
+     */
+    public function getCheckBoxValidationData(
+        CheckboxValidationDataObject $data
+    ): array {
+        $checkboxes = $this->repository->getCheckBoxValidationData(
+            $data
+        );
+        \executeHook(\HOOK_CHECKBOX_CLASS_GETCHECKBOXFRONTEND, [
+            'oCheckBox_arr' => &$checkboxes,
+            'nAnzeigeOrt'   => $data->getLocation(),
+            'kKundengruppe' => $data->getCustomerGroupId(),
+            'bAktiv'        => $data->getActive(),
+            'bSprache'      => $data->getLanguage(),
+            'bSpecial'      => $data->getSpecial(),
+            'bLogging'      => $data->getLogging(),
+        ]);
+
+        return $checkboxes;
     }
 }

@@ -94,7 +94,7 @@ class Metadata implements MetadataInterface
      * Metadata constructor.
      * @param ProductFilter $productFilter
      */
-    public function __construct(private ProductFilter $productFilter)
+    public function __construct(private readonly ProductFilter $productFilter)
     {
         $this->conf = $productFilter->getFilterConfig()->getConfig();
     }
@@ -274,25 +274,28 @@ class Metadata implements MetadataInterface
      */
     public static function getGlobalMetaData(): array
     {
-        return Shop::Container()->getCache()->get('jtl_glob_meta', static function ($cache, $id, &$content, &$tags): bool {
-            $globalTmp = Shop::Container()->getDB()->getObjects(
-                'SELECT cName, kSprache, cWertName 
-                    FROM tglobalemetaangaben
-                    ORDER BY kSprache'
-            );
-            $content   = map(group($globalTmp, static function ($g) {
-                return (int)$g->kSprache;
-            }), static function ($item) {
-                return reduce_left($item, static function ($value, $index, $collection, $reduction) {
-                    $reduction->{$value->cName} = $value->cWertName;
+        return Shop::Container()->getCache()->get(
+            'jtl_glob_meta',
+            static function ($cache, $id, &$content, &$tags): bool {
+                $globalTmp = Shop::Container()->getDB()->getObjects(
+                    'SELECT cName, kSprache, cWertName 
+                        FROM tglobalemetaangaben
+                        ORDER BY kSprache'
+                );
+                $content   = map(group($globalTmp, static function ($g) {
+                    return (int)$g->kSprache;
+                }), static function ($item) {
+                    return reduce_left($item, static function ($value, $index, $collection, $reduction) {
+                        $reduction->{$value->cName} = $value->cWertName;
 
-                    return $reduction;
-                }, new stdClass());
-            });
-            $tags      = [\CACHING_GROUP_CORE];
+                        return $reduction;
+                    }, new stdClass());
+                });
+                $tags      = [\CACHING_GROUP_CORE];
 
-            return true;
-        });
+                return true;
+            }
+        );
     }
 
     /**
@@ -338,9 +341,9 @@ class Metadata implements MetadataInterface
      * @inheritdoc
      */
     public function generateMetaDescription(
-        array $products,
+        array                  $products,
         SearchResultsInterface $searchResults,
-        array $globalMeta,
+        array                  $globalMeta,
         $category = null
     ): string {
         \executeHook(\HOOK_FILTER_INC_GIBNAVIMETADESCRIPTION);
@@ -557,12 +560,12 @@ class Metadata implements MetadataInterface
         }
         $parts = $parts->merge(
             \collect($this->productFilter->getSearchFilter())
-            ->map(static function (FilterInterface $filter) {
-                return $filter->getName();
-            })
-            ->reject(static function ($name): bool {
-                return $name === null;
-            })
+                ->map(static function (FilterInterface $filter) {
+                    return $filter->getName();
+                })
+                ->reject(static function ($name): bool {
+                    return $name === null;
+                })
         );
         if ($this->productFilter->hasSearchSpecialFilter()) {
             switch ($this->productFilter->getSearchSpecialFilter()->getValue()) {
@@ -597,12 +600,12 @@ class Metadata implements MetadataInterface
         // MerkmalWertfilter
         $parts = $parts->merge(
             \collect($this->productFilter->getCharacteristicFilter())
-            ->map(static function (FilterInterface $filter) {
-                return $filter->getName();
-            })
-            ->reject(static function ($name): bool {
-                return $name === null;
-            })
+                ->map(static function (FilterInterface $filter) {
+                    return $filter->getName();
+                })
+                ->reject(static function ($name): bool {
+                    return $name === null;
+                })
         );
 
         return $parts->implode(' ');
@@ -623,30 +626,37 @@ class Metadata implements MetadataInterface
      */
     public function getHeader(): string
     {
+        if ($this->productFilter->getBaseState()->isNotFound()) {
+            return '';
+        }
         if ($this->productFilter->hasCategory()) {
-            $this->breadCrumb = $this->productFilter->getCategory()->getName();
+            $this->breadCrumb = $this->productFilter->getCategory()->getName() ?? '';
 
-            return $this->breadCrumb ?? '';
+            return $this->breadCrumb;
         }
         if ($this->productFilter->hasManufacturer()) {
-            $this->breadCrumb = $this->productFilter->getManufacturer()->getName();
+            $this->breadCrumb = $this->productFilter->getManufacturer()->getName() ?? '';
 
-            return Shop::Lang()->get('productsFrom') . ' ' . $this->breadCrumb;
+            return $this->breadCrumb === ''
+                ? ''
+                : Shop::Lang()->get('productsFrom') . ' ' . $this->breadCrumb;
         }
         if ($this->productFilter->hasCharacteristicValue()) {
-            $this->breadCrumb = $this->productFilter->getCharacteristicValue()->getName();
+            $this->breadCrumb = $this->productFilter->getCharacteristicValue()->getName() ?? '';
 
-            return Shop::Lang()->get('productsWith') . ' ' . $this->breadCrumb;
+            return $this->breadCrumb === ''
+                ? ''
+                : Shop::Lang()->get('productsWith') . ' ' . $this->breadCrumb;
         }
         if ($this->productFilter->hasSearchSpecial()) {
-            $this->breadCrumb = $this->productFilter->getSearchSpecial()->getName();
+            $this->breadCrumb = $this->productFilter->getSearchSpecial()->getName() ?? '';
 
-            return $this->breadCrumb ?? '';
+            return $this->breadCrumb;
         }
         if ($this->productFilter->hasSearch()) {
-            $this->breadCrumb = $this->productFilter->getSearch()->getName();
+            $this->breadCrumb = $this->productFilter->getSearch()->getName() ?? '';
         } elseif ($this->productFilter->getSearchQuery()->isInitialized()) {
-            $this->breadCrumb = $this->productFilter->getSearchQuery()->getName();
+            $this->breadCrumb = $this->productFilter->getSearchQuery()->getName() ?? '';
         }
         if (!empty($this->productFilter->getSearch()->getName())
             || !empty($this->productFilter->getSearchQuery()->getName())

@@ -16,7 +16,7 @@ use stdClass;
 class ReferencedPlugin extends ReferencedItem
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function initByExsID(DbInterface $db, stdClass $license, Releases $releases): void
     {

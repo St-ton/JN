@@ -85,7 +85,7 @@ class Emailhistory
     protected function loadFromDB(int $id): self
     {
         $data = $this->db->select('temailhistory', 'kEmailhistory', $id);
-        if (isset($data->kEmailhistory) && $data->kEmailhistory > 0) {
+        if ($data !== null && $data->kEmailhistory > 0) {
             foreach (\array_keys(\get_object_vars($data)) as $member) {
                 $this->$member = $data->$member;
             }

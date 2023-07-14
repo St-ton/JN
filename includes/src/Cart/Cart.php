@@ -83,6 +83,11 @@ class Cart
     public $favourableShippingString = '';
 
     /**
+     * @var object[]
+     */
+    public array $OrderAttributes = [];
+
+    /**
      * @var array
      */
     public static array $updatedPositions = [];
@@ -293,13 +298,13 @@ class Cart
      * @return $this
      */
     public function fuegeEin(
-        int $productID,
+        int    $productID,
         $qty,
-        array $attributeValues,
-        int $type = \C_WARENKORBPOS_TYP_ARTIKEL,
+        array  $attributeValues,
+        int    $type = \C_WARENKORBPOS_TYP_ARTIKEL,
         $unique = false,
-        int $configItemID = 0,
-        bool $setzePositionsPreise = true,
+        int    $configItemID = 0,
+        bool   $setzePositionsPreise = true,
         string $responsibility = 'core'
     ): self {
         $iso           = Shop::getLanguageCode();
@@ -412,7 +417,7 @@ class Cart
                     'kSprache',
                     $lang->getId()
                 );
-                if (!empty($stateLocalized->cName)) {
+                if ($stateLocalized !== null && !empty($stateLocalized->cName)) {
                     $cartItem->cLieferstatus[$code] = $stateLocalized->cName;
                 }
             }
@@ -572,7 +577,7 @@ class Cart
     }
 
     /**
-     * @param int $type
+     * @param int  $type
      * @param bool $force
      * @return $this
      */
@@ -1052,7 +1057,7 @@ class Cart
      *
      * @param string $countryCode
      * @return int
-     *@todo: param?
+     * @todo: param?
      */
     public function gibVersandkostenSteuerklasse($countryCode = ''): int
     {
@@ -1154,9 +1159,9 @@ class Cart
      * @return float|int
      */
     public function gibGesamtsummeWarenExt(
-        array $types,
-        bool $gross = false,
-        bool $excludeShippingCostAttributes = false,
+        array  $types,
+        bool   $gross = false,
+        bool   $excludeShippingCostAttributes = false,
         string $iso = ''
     ) {
         $total = 0;
@@ -1557,7 +1562,7 @@ class Cart
 
     /**
      * @param string $iso
-     * @param bool $excludeShippingCostAttributes
+     * @param bool   $excludeShippingCostAttributes
      * @return int|float
      */
     public function getWeight(bool $excludeShippingCostAttributes = false, string $iso = '')
@@ -1615,11 +1620,11 @@ class Cart
         if ($this->posTypEnthalten(\C_WARENKORBPOS_TYP_KUPON)) {
             // Kupon darf nicht im leeren Warenkorb eingelöst werden
             if (isset($_SESSION['Warenkorb']) && $this->gibAnzahlArtikelExt([\C_WARENKORBPOS_TYP_ARTIKEL]) > 0) {
-                $Kupon = Shop::Container()->getDB()->select('tkupon', 'kKupon', (int)$_SESSION['Kupon']->kKupon);
-                if (isset($Kupon->kKupon) && $Kupon->kKupon > 0 && $Kupon->cKuponTyp === Kupon::TYPE_STANDARD) {
-                    $isValid = (Form::hasNoMissingData(Kupon::checkCoupon($Kupon)) === 1);
+                $coupon = Shop::Container()->getDB()->select('tkupon', 'kKupon', (int)$_SESSION['Kupon']->kKupon);
+                if ($coupon !== null && $coupon->kKupon > 0 && $coupon->cKuponTyp === Kupon::TYPE_STANDARD) {
+                    $isValid = (Form::hasNoMissingData(Kupon::checkCoupon($coupon)) === 1);
                     $this->updateCouponValue();
-                } elseif (!empty($Kupon->kKupon) && $Kupon->cKuponTyp === Kupon::TYPE_SHIPPING) {
+                } elseif (!empty($coupon->kKupon) && $coupon->cKuponTyp === Kupon::TYPE_SHIPPING) {
                     $isValid = true;
                 } else {
                     $isValid = false;
@@ -1628,7 +1633,7 @@ class Cart
             if ($isValid === false) {
                 unset($_SESSION['Kupon']);
                 $this->loescheSpezialPos(\C_WARENKORBPOS_TYP_KUPON)
-                     ->setzePositionsPreise();
+                    ->setzePositionsPreise();
             }
         } elseif (isset($_SESSION['Kupon']->nGanzenWKRabattieren)
             && (int)$_SESSION['Kupon']->nGanzenWKRabattieren === 0
@@ -1636,16 +1641,16 @@ class Cart
             && $_SESSION['Kupon']->cWertTyp === 'prozent'
         ) {
             if (isset($_SESSION['Warenkorb']) && $this->gibAnzahlArtikelExt([\C_WARENKORBPOS_TYP_ARTIKEL]) > 0) {
-                $Kupon   = Shop::Container()->getDB()->select('tkupon', 'kKupon', (int)$_SESSION['Kupon']->kKupon);
+                $coupon  = Shop::Container()->getDB()->select('tkupon', 'kKupon', (int)$_SESSION['Kupon']->kKupon);
                 $isValid = false;
-                if (isset($Kupon->kKupon) && $Kupon->kKupon > 0 && $Kupon->cKuponTyp === Kupon::TYPE_STANDARD) {
-                    $isValid = (Form::hasNoMissingData(Kupon::checkCoupon($Kupon)) === 1);
+                if (isset($coupon->kKupon) && $coupon->kKupon > 0 && $coupon->cKuponTyp === Kupon::TYPE_STANDARD) {
+                    $isValid = (Form::hasNoMissingData(Kupon::checkCoupon($coupon)) === 1);
                 }
             }
             if ($isValid === false) {
                 unset($_SESSION['Kupon']);
                 $this->loescheSpezialPos(\C_WARENKORBPOS_TYP_KUPON)
-                     ->setzePositionsPreise();
+                    ->setzePositionsPreise();
             }
         } elseif (isset($_SESSION['Kupon']->nGanzenWKRabattieren)
             && (int)$_SESSION['Kupon']->nGanzenWKRabattieren === 0
@@ -1692,7 +1697,7 @@ class Cart
                 false,
                 'cName'
             );
-            $specialPosition->cName[$language->getCode()] = $localized->cName;
+            $specialPosition->cName[$language->getCode()] = $localized->cName ?? '';
         }
         $this->loescheSpezialPos(\C_WARENKORBPOS_TYP_KUPON);
         $this->erstelleSpezialPos(
@@ -2014,7 +2019,7 @@ class Cart
                 $delete = true;
                 \executeHook(\HOOK_CART_DELETE_PARENT_CART_ITEM, [
                     'positionItem' => $item,
-                    'delete'    => &$delete
+                    'delete'       => &$delete
                 ]);
             }
             if ($delete) {

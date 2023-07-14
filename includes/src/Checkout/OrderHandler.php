@@ -49,8 +49,11 @@ class OrderHandler
      * @param Customer    $customer
      * @param Cart        $cart
      */
-    public function __construct(private DbInterface $db, private Customer $customer, private Cart $cart)
-    {
+    public function __construct(
+        private readonly DbInterface $db,
+        private Customer             $customer,
+        private readonly Cart        $cart
+    ) {
         $this->languageID   = Shop::getLanguageID();
         $this->stockUpdater = new StockUpdater($db, $customer, $cart);
     }

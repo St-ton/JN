@@ -16,7 +16,7 @@ class Migration_20190326121200 extends Migration implements IMigration
     protected $description = 'Change nVersion type';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -24,7 +24,7 @@ class Migration_20190326121200 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

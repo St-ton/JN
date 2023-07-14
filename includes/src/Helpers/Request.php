@@ -41,6 +41,7 @@ class Request
     {
         return isset($_GET[$var]) ? (int)$_GET[$var] : $default;
     }
+
     /**
      * @param string $var
      * @param mixed  $default
@@ -300,10 +301,10 @@ class Request
      */
     public static function make_http_request(
         string $url,
-        int $timeout = 5,
+        int    $timeout = 5,
         $post = null,
-        bool $state = false,
-        bool $skipStatusCheck = false
+        bool   $state = false,
+        bool   $skipStatusCheck = false
     ) {
         $status = 0;
         $data   = '';

@@ -19,7 +19,7 @@ class Migration_20221014111716 extends Migration implements IMigration
     protected $description = 'Remove review orphans and recalculate review values';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -43,7 +43,7 @@ class Migration_20221014111716 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

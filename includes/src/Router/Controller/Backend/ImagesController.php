@@ -25,7 +25,8 @@ class ImagesController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->getText->loadAdminLocale('pages/bilder');
-        $this->checkPermissions(Permissions::SETTINGS_SITEMAP_VIEW);
+        $this->smarty = $smarty;
+        $this->checkPermissions(Permissions::SETTINGS_IMAGES_VIEW);
         if ($this->tokenIsValid && $this->request->post('speichern') !== null) {
             $this->actionSaveConfig();
         }

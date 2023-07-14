@@ -79,10 +79,10 @@ class CheckboxController extends AbstractBackendController
             $step       = 'erstellen';
             $checkboxID = Request::verifyGPCDataInt('kCheckBox');
             $languages  = LanguageHelper::getAllLanguages(0, true, true);
-            $checkboxDO = $this->getCheckboxDOFromRequest($post, $languages);
+            $checkboxDO = $this->getCheckboxDOFromRequest($checkbox, $post, $languages);
             $checks     = $this->validate($checkboxDO, $languages);
             if (\count($checks) === 0) {
-                $checkbox = $this->save($checkbox, $checkboxDO);
+                $checkbox = $checkbox->save($checkboxDO, $languages);
                 $step     = 'uebersicht';
                 $this->alertService->addSuccess(\__('successCheckboxCreate'), 'successCheckboxCreate');
             } else {
@@ -194,22 +194,11 @@ class CheckboxController extends AbstractBackendController
     }
 
     /**
-     * @param CheckBox             $checkBox
-     * @param CheckboxDomainObject $checkboxDO
-     * @return CheckBox
-     * @former speicherCheckBox()
-     */
-    private function save(CheckBox $checkBox, CheckboxDomainObject $checkboxDO): CheckBox
-    {
-        return $checkBox->save($checkboxDO);
-    }
-
-    /**
      * @param array $post
      * @param array $languages
      * @return CheckboxDataTableObject
      */
-    private function getCheckboxDOFromRequest(array $post, $languages): CheckboxDomainObject
+    private function getCheckboxDOFromRequest(CheckBox $checkBox, array $post, $languages): CheckboxDomainObject
     {
         if (Typifier::boolify($post['nInternal']) === true) {
             $post = array_merge($post, $this->internalBoxDefaults[CheckBox::CHECKBOX_DOWNLOAD_ORDER_COMPLETE]);
@@ -228,9 +217,9 @@ class CheckboxController extends AbstractBackendController
             'NOW()',
             Typifier::boolify($post['nInternal']),
             Typifier::stringify($post['dErstellt_DE']),
-            $this->addTranslationsToDTO($languages, $post),
+            $checkBox->getTranslations($languages, $post),
             Typifier::boolify($post['cLink']),
-            $this->addTranslationsToDTO($languages, $post),
+            $checkBox->getTranslations($languages, $post),
             Typifier::arrify($post['kKundengruppe']),
             Typifier::arrify($post['cAnzeigeOrt']),
         );

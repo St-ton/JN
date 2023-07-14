@@ -137,4 +137,35 @@ class CheckboxService extends AbstractService
 
         return $checkboxes;
     }
+
+    /**
+     * @param array $languages
+     * @param array $post
+     * @return array
+     */
+    public function getTranslations(
+        array $languages,
+        array $post
+    ): array {
+        $texts = [];
+        $descr = [];
+        $language_arr = [];
+        foreach ($languages as $language) {
+            $code                = $language->getIso();
+            $textCode            = 'cText_' . $code;
+            $descrCode           = 'cBeschreibung_' . $code;
+            $texts[$code]        = isset($post[$textCode])
+                ? \str_replace('"', '&quot;', $post[$textCode])
+                : '';
+            $descr[$code]        = isset($post[$descrCode])
+                ? \str_replace('"', '&quot;', $post[$descrCode])
+                : '';
+            $language_arr[$code] = [
+                'text' => $texts[$code],
+                'descr' => $descr[$code]
+            ];
+        }
+
+        return $language_arr;
+    }
 }

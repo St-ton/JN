@@ -597,10 +597,10 @@ class CheckBox
      * @param CheckboxDomainObject $checkboxDO
      * @return $this
      */
-    public function save(CheckboxDomainObject $checkboxDO): self
+    public function save(CheckboxDomainObject $checkboxDO, array $languages = []): self
     {
         $this->populateSelf($checkboxDO);
-        if (\count($checkboxDO->getLanguages()) === 0) {
+        if (\count($checkboxDO->getLanguages()) === 0 && \count($languages) === 0) {
             return $this;
         }
         $this->insertDB(null, null, $checkboxDO);
@@ -638,18 +638,19 @@ class CheckBox
      * @return $this
      */
     public function insertDB(
-        ?array                   $texts = [],
-        ?array                   $descriptions = [],
+        ?array                $texts = [],
+        ?array                $descriptions = [],
         ?CheckboxDomainObject $checkboxDO = null
     ): self {
         if (!isset($checkboxDO)) {
             $checkboxDO = $this->getCheckBoxDomainObject();
-            $this->addLanguagesToDTO($texts, $checkboxDO, $descriptions);
+            $this->addLocalization($checkboxDO);
         }
         //Since method used to do the update too
         if ($checkboxDO->getID() > 0) {
             return $this->updateDB($checkboxDO);
         }
+        //ToDo: create new Object from insert
         $checkboxDO->setCheckboxID($this->service->insert($checkboxDO));
         $this->kCheckBox = $checkboxDO->getCheckboxID();
         $this->addLocalization($checkboxDO);
@@ -670,15 +671,15 @@ class CheckBox
     }
 
     /**
-     * @param CheckboxDataTableObject $checkboxDTO
+     * @param CheckboxDomainObject $checkboxDO
      * @return void
      */
-    private function addLocalization(CheckboxDataTableObject $checkboxDTO): void
+    private function addLocalization(CheckboxDomainObject $checkboxDO): void
     {
-        foreach ($checkboxDTO->getLanguages() as $iso => $texts) {
-            $checkboxLanguageDTO = $this->prepareLocalizationObject($checkboxDTO->getID(), $iso, $texts);
+        foreach ($checkboxDO->getLanguages() as $iso => $texts) {
+            $checkboxLanguageDTO = $this->prepareLocalizationObject($checkboxDO->getID(), $iso, $texts);
             $this->languageService->update($checkboxLanguageDTO);
-            $checkboxDTO->addCheckBoxLanguageArr($checkboxLanguageDTO);
+            $checkboxDO->addCheckBoxLanguageArr($checkboxLanguageDTO);
         }
     }
 
@@ -868,23 +869,17 @@ class CheckBox
     }
 
     /**
-     * @param array|null              $texts
-     * @param CheckboxDataTableObject $checkboxDTO
-     * @param array|null              $descriptions
-     * @return void
+     * @param array $languages
+     * @param array $data
+     * @return array
      */
-    public function addLanguagesToDTO(?array $texts, CheckboxDataTableObject $checkboxDTO, ?array $descriptions): void
-    {
-        foreach ($texts as $iso => $language) {
-            $checkboxDTO->addLanguage(
-                $iso,
-                language: [
-                    'text'  => $language,
-                    'descr' => $descriptions[$iso] ?? ''
-                ]
-            );
-        }
+    public function getTranslations(
+        array $languages,
+        array $data
+    ): array {
+        return $this->service->getTranslations($languages, $data);
     }
+
 
     /**
      * @param CheckboxDomainObject $checkbox

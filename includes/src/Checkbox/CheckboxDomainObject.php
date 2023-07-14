@@ -18,7 +18,7 @@ class CheckboxDomainObject extends AbstractDataObject implements DataTableObject
     private string $primaryKey = 'kCheckBox';
 
     public function __construct(
-        readonly protected int    $checkboxID = 0,
+        protected int             $checkboxID = 0,
         readonly protected int    $linkID = 0,
         readonly protected int    $checkboxFunctionID = 0,
         readonly protected string $name = '',
@@ -31,12 +31,36 @@ class CheckboxDomainObject extends AbstractDataObject implements DataTableObject
         readonly protected string $created = '',
         readonly protected bool   $internal = false,
         readonly private string   $created_DE = '',
-        readonly private array    $languages = [],
+        private array             $languages = [],
         readonly private bool     $nLink = false,
-        readonly private array    $checkBoxLanguage_arr = [],
+        private array             $checkBoxLanguage_arr = [],
         readonly private array    $customerGroup_arr = [],
         readonly private array    $displayAt_arr = [],
     ) {
+    }
+
+    /**
+     * @param int $checkboxID
+     */
+    public function setCheckboxID(int $checkboxID): void
+    {
+        $this->checkboxID = $checkboxID;
+    }
+
+    /**
+     * @param array $languages
+     */
+    public function setLanguages(array $languages): void
+    {
+        $this->languages = $languages;
+    }
+
+    /**
+     * @param CheckboxLanguageDataTableObject $checkBoxLanguage
+     */
+    public function addCheckBoxLanguageArr(CheckboxLanguageDataTableObject $checkBoxLanguage): void
+    {
+        $this->checkBoxLanguage_arr[] = $checkBoxLanguage;
     }
 
     private array $mapping = [

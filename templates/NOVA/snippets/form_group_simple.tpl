@@ -92,7 +92,7 @@
                             required=$isRequired
                             autocomplete=$autocomplete
                             maxlength=$maxLength
-                            data=["chars-left-msg"=>"{$charsLeftMsg}"]
+                            data=["chars-left-msg"=>$charsLeftMsg]
                         }
                     {inputgroupaddon append=true data=["type"=>"minus", "field"=>"quant[1]"]}
                         +
@@ -110,7 +110,7 @@
                     autocomplete=$autocomplete
                     size-class=$size
                     maxlength=$maxLength
-                    data=["chars-left-msg"=>"{$charsLeftMsg}"]
+                    data=["chars-left-msg"=>$charsLeftMsg]
                 }
             {/block}
         {/if}

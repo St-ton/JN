@@ -568,7 +568,7 @@ $(document).ready(function () {
         autoExpand(event.target);
     });
 
-    $('input[maxlength][data-chars-left-msg]').keyup(function (event) {
+    $('input[maxlength][data-chars-left-msg]').on('input', function (event) {
         let maxLength = $(this).attr('maxlength'),
             limit     = .75 * maxLength,
             remaining  = maxLength - $(this).val().length;

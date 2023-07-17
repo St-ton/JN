@@ -192,7 +192,6 @@ class Download
      */
     public static function getDownloads(array $keys = [], int $languageID = 0): array
     {
-        Shop::dbg($keys, false, 'getting for lang ' . $languageID);
         $productID  = (int)($keys['kArtikel'] ?? 0);
         $orderID    = (int)($keys['kBestellung'] ?? 0);
         $customerID = (int)($keys['kKunde'] ?? 0);
@@ -345,7 +344,7 @@ class Download
             return self::ERROR_INVALID_CUSTOMER;
         }
         $order->fuelleBestellung();
-        $download = new self($downloadID, 0, false);
+        $download = new self($downloadID, $order->kSprache, false);
         // Gibt es einen Artikel der zum Download passt?
         if (\count($download->oArtikelDownload_arr) === 0) {
             return self::ERROR_PRODUCT_NOT_FOUND;

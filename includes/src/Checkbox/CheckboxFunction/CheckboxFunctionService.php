@@ -14,7 +14,10 @@ class CheckboxFunctionService extends AbstractService
     /**
      * @var CheckboxFunctionRepository
      */
-    protected CheckboxFunctionRepository $repository;
+    public function __construct(protected ?CheckboxFunctionRepository $repository = null)
+    {
+        parent::__construct();
+    }
 
     /**
      * @inheritdoc

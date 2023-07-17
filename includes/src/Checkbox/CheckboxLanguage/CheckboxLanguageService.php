@@ -12,9 +12,12 @@ use JTL\DataObjects\AbstractDataObject;
 class CheckboxLanguageService extends AbstractService
 {
     /**
-     * @var CheckboxLanguageRepository
+     * @param CheckboxLanguageRepository|null $repository
      */
-    protected CheckboxLanguageRepository $repository;
+    public function __construct(protected ?CheckboxLanguageRepository $repository = null)
+    {
+        parent::__construct();
+    }
 
     /**
      * @return void

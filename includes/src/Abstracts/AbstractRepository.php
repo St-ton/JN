@@ -20,9 +20,7 @@ abstract class AbstractRepository implements RepositoryInterface
     /**
      * @var DbInterface
      */
-    protected DbInterface $db;
-
-    public function __construct()
+    public function __construct(protected ?DbInterface $db = null)
     {
         $this->db = Shop::Container()->getDB();
     }

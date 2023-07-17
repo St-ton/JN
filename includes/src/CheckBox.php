@@ -139,11 +139,6 @@ class CheckBox
     public string $identifier;
 
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
      * @var bool|null
      */
     public ?bool $isActive = null;
@@ -169,31 +164,6 @@ class CheckBox
     public ?string $cErrormsg = null;
 
     /**
-     * @var CheckboxService
-     */
-    protected CheckboxService $service;
-
-    /**
-     * @var CheckboxLanguageService
-     */
-    protected CheckboxLanguageService $languageService;
-
-    /**
-     * @var CheckboxFunctionService
-     */
-    protected CheckboxFunctionService $functionService;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    protected JTLCacheInterface $cache;
-
-    /**
-     * @var Logger
-     */
-    protected Logger $logService;
-
-    /**
      * @var bool
      */
     protected bool $loggerAvailable = true;
@@ -207,9 +177,15 @@ class CheckBox
      * @param int              $id
      * @param DbInterface|null $db
      */
-    public function __construct(int $id = 0, DbInterface $db = null)
-    {
-        $this->db = $db ?? Shop::Container()->getDB();
+    public function __construct(
+        int $id = 0,
+        protected ?DbInterface $db = null,
+        protected ?CheckboxService $service = null,
+        protected ?CheckboxLanguageService $languageService = null,
+        protected ?CheckboxFunctionService $functionService = null,
+        protected ?Logger $logService = null,
+        protected ?JTLCacheInterface $cache = null
+    ) {
         $this->dependencies();
         $this->oLink = new Link($this->db);
         $this->loadFromDB($id);
@@ -220,12 +196,13 @@ class CheckBox
      */
     private function dependencies(): void
     {
-        $this->service         = new CheckboxService();
-        $this->languageService = new CheckboxLanguageService();
-        $this->functionService = new CheckboxFunctionService();
+        $this->db              = $this->db ?? Shop::Container()->getDB();
+        $this->service         = $this->service ?? new CheckboxService();
+        $this->languageService = $this->languageService ?? new CheckboxLanguageService();
+        $this->functionService = $this->functionService ?? new CheckboxFunctionService();
         try {
-            $this->logService = Shop::Container()->getLogService();
-            $this->cache      = Shop::Container()->getCache();
+            $this->logService = $this->logService ?? Shop::Container()->getLogService();
+            $this->cache      = $this->cache ?? Shop::Container()->getCache();
         } catch (Exception) {
             $this->loggerAvailable = false;
         }

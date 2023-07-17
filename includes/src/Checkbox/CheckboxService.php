@@ -12,9 +12,22 @@ use JTL\CheckBox;
 class CheckboxService extends AbstractService
 {
     /**
-     * @var CheckboxRepository
+     * @param CheckboxRepository|null $repository
      */
-    protected CheckboxRepository $repository;
+    public function __construct(protected ?CheckboxRepository $repository = null)
+    {
+        parent::__construct();
+    }
+
+    /**
+     * @return void
+     */
+    protected function initDependencies(): void
+    {
+        if ($this->repository === null) {
+            $this->repository = new CheckboxRepository();
+        }
+    }
 
     /**
      * @param int $id
@@ -55,14 +68,6 @@ class CheckboxService extends AbstractService
     public function delete(array $checkboxIDs): bool
     {
         return $this->getRepository()->delete($checkboxIDs);
-    }
-
-    /**
-     * @return void
-     */
-    protected function initDependencies(): void
-    {
-        $this->repository = new CheckboxRepository();
     }
 
     /**

@@ -1784,7 +1784,7 @@ class Artikel implements RoutableInterface
         $options                             = self::getDefaultOptions();
         $options->nKeineSichtbarkeitBeachten = $getInvisibleParts ? 1 : 0;
         foreach ($parts as $i => $partList) {
-            $product = new self($this->getDB(), $this->customerGroup, $this->currency), $this->getCache();
+            $product = new self($this->getDB(), $this->customerGroup, $this->currency, $this->getCache());
             $product->fuelleArtikel((int)$partList->kArtikel, $options, $customerGroupID, $this->kSprache);
             $product->holeBewertungDurchschnitt();
             $this->oStueckliste_arr[$i]                      = $product;

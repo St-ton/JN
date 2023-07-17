@@ -1093,7 +1093,7 @@ class Artikel implements RoutableInterface
     /**
      * @var self[]
      */
-    private static $products = [];
+    private static array $products = [];
 
     /**
      * @var bool
@@ -1111,6 +1111,11 @@ class Artikel implements RoutableInterface
         if (Shop::getLanguageID() === 0 && isset($_SESSION['kSprache'], $_SESSION['cISOSprache'])) {
             Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
         }
+        // for some reason, db and cache will not be NULL after cache load
+        // and a fatal error will be thrown when checking against NULL:
+        // "must not be accessed before initialization"
+        $this->db      = null;
+        $this->cache   = null;
         $this->conf    = $this->getConfig();
         $this->taxData = $this->getShippingAndTaxData();
         if ($this->compressed === true) {
@@ -3369,7 +3374,7 @@ class Artikel implements RoutableInterface
                 'cached'    => false
             ]);
             if ($noCache === false) {
-                $this->cache->set($this->cacheID, null, $cacheTags);
+                $this->getCache()->set($this->cacheID, null, $cacheTags);
             }
             if ($tmpProduct !== null && $tmpProduct->kArtikel === $tmpProduct->kVaterArtikel) {
                 Shop::Container()->getLogService()->warning(
@@ -3529,7 +3534,7 @@ class Artikel implements RoutableInterface
                 $toSave->cKurzbezeichnung = \gzcompress($toSave->cKurzbezeichnung, \COMPRESSION_LEVEL);
                 $toSave->compressed       = true;
             }
-            $this->cache->set($this->cacheID, $toSave, $cacheTags);
+            $this->getCache()->set($this->cacheID, $toSave, $cacheTags);
             self::$products[$this->cacheID] = $toSave;
         }
         $this->getCustomerPrice($customerGroupID, Frontend::getCustomer()->getID());
@@ -3578,12 +3583,12 @@ class Artikel implements RoutableInterface
     {
         $langID        = $this->kSprache;
         $options       = $this->options;
-        $baseID        = $this->cache->getBaseID(false, false, $customerGroupID, $langID);
+        $baseID        = $this->getCache()->getBaseID(false, false, $customerGroupID, $langID);
         $taxClass      = isset($_SESSION['Steuersatz']) ? \implode('_', $_SESSION['Steuersatz']) : '';
         $customerID    = Frontend::getCustomer()->getID();
         $productHash   = \md5($baseID . $this->getOptionsHash($options) . $taxClass);
         $this->cacheID = 'fa_' . $productID . '_' . $productHash;
-        $product       = $this->cache->get($this->cacheID);
+        $product       = $this->getCache()->get($this->cacheID);
         if ($product === false) {
             if (isset(self::$products[$this->cacheID])) {
                 $product = self::$products[$this->cacheID];
@@ -5597,14 +5602,14 @@ class Artikel implements RoutableInterface
             return \trim($e);
         }));
         $cacheID = 'jtl_ola_' . \md5($shippingFreeCountries) . '_' . $this->kSprache;
-        if (($countries = $allCountries[$cacheID] ?? $this->cache->get($cacheID)) === false) {
+        if (($countries = $allCountries[$cacheID] ?? $this->getCache()->get($cacheID)) === false) {
             $countries = Shop::Container()->getCountryService()->getFilteredCountryList($codes)->mapWithKeys(
                 function (Country $country) {
                     return [$country->getISO() => $country->getName($this->kSprache)];
                 }
             )->toArray();
 
-            $this->cache->set(
+            $this->getCache()->set(
                 $cacheID,
                 $countries,
                 [\CACHING_GROUP_CORE, \CACHING_GROUP_CATEGORY, \CACHING_GROUP_OPTION]

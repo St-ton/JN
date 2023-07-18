@@ -506,8 +506,12 @@ class Bestellung
             'kBestellung',
             $this->kBestellung
         );
-        $this->BestellstatusURL = Shop::Container()->getLinkService()->getStaticRoute('status.php')
-            . '?uid=' . ($orderState->cUID ?? '');
+        $this->BestellstatusURL = Shop::Container()->getLinkService()->getStaticRoute(
+                'status.php',
+                true,
+                true,
+                Shop::Lang()->getIsoFromLangID($this->kSprache)->cISO ?? 'ger'
+            ) . '?uid=' . ($orderState->cUID ?? '');
         $sum                    = $this->db->getSingleObject(
             'SELECT SUM(((fPreis * fMwSt)/100 + fPreis) * nAnzahl) AS wert
                 FROM twarenkorbpos

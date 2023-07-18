@@ -12,7 +12,7 @@
                     <tbody>
                     <tr>
                         <th scope="row">{{ $t('licenseKey') }}</th>
-                        <td>{{ $t('licenseKeyDescr') }} <icon name="external-link-alt" class="d-print-none"></icon> <a href="https://kundencenter.jtl-software.de/" rel="noopener" target="_blank">{{ $t('customerCenter') }}</a></td>
+                        <td>{{ $t('licenseKeyDescr') }} <b-icon icon="box-arrow-up-right" class="d-print-none"></b-icon> <a href="https://kundencenter.jtl-software.de/" rel="noopener" target="_blank">{{ $t('customerCenter') }}</a></td>
                     </tr>
                     <tr>
                         <th scope="row">{{ $t('webshopURL') }}</th>
@@ -54,7 +54,7 @@
                 </table>
                 <div class="d-print-none">
                     <b-alert variant="warning" show>
-                        <icon name="exclamation-triangle"></icon> {{$t('msgDeleteInstallDir') }} <code>includes/config.JTL-Shop.ini.php</code>.
+                        <b-icon icon="exclamation-triangle"></b-icon> {{$t('msgDeleteInstallDir') }} <code>includes/config.JTL-Shop.ini.php</code>.
                     </b-alert>
 
                     <b-alert variant="info" show>
@@ -63,13 +63,13 @@
                     </b-alert>
                     <span class="btn-group">
                         <b-btn variant="secondary" @click="print">
-                            <icon name="print"></icon> {{$t('printPage') }}
+                            <b-icon icon="printer-fill"></b-icon> {{$t('printPage') }}
                         </b-btn>
                         <b-btn variant="primary" :href="shopURL + 'admin'">
-                            <icon name="share"></icon> {{$t('gotoBackend') }}
+                            <b-icon icon="arrow-up-right"></b-icon> {{$t('gotoBackend') }}
                         </b-btn>
                         <b-btn variant="secondary" :href="shopURL">
-                            <icon name="share"></icon> {{$t('gotoFrontend') }}
+                            <b-icon icon="arrow-up-right"></b-icon> {{$t('gotoFrontend') }}
                         </b-btn>
                     </span>
                 </div>

@@ -1,36 +1,35 @@
-# vue-install
+# vue-installer
 
-> A JTL Shop installer
+This template should help get you started developing with Vue 3 in Vite.
 
-## Prepare the installer
+## Recommended IDE Setup
 
-``` bash
-$> cd /var/www/html/shoproot/build/components/vue-installer/
-$> composer install
+[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+
+## Customize configuration
+
+See [Vite Configuration Reference](https://vitejs.dev/config/).
+
+## Project Setup
+
+```sh
+npm install
 ```
-The composer run will initiate a `npm` dependency update and will execute all necessary steps needed for the preparation of the installation process.
 
-## Run the installation
+### Compile and Hot-Reload for Development
 
-After the preparation of the installer open your browser and surf to the `/install`-folder in your shop-root:
+```sh
+npm run dev
 ```
-http://host/shoproot/install/
+
+### Compile and Minify for Production
+
+```sh
+npm run build
 ```
-Now follow the instructions of the installer.
 
-### Build Setup by hand (without composer-run)
+### Lint with [ESLint](https://eslint.org/)
 
-``` bash
-# install dependencies
-$> npm install
-
-# serve with hot reload at localhost:8080
-$> npm run dev
-
-# build for production with minification
-$> npm run build
-
-# build for production and view the bundle analyzer report
-$> npm run build --report
+```sh
+npm run lint
 ```
-For detailed explanation on how "vue-things" work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).

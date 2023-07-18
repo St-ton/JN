@@ -9,12 +9,12 @@
                 <b-card show-header no-block>
                     <h3 slot="header">
                         <span class="badge" :class="{'badge-danger': serverStatus === 2, 'badge-warning': serverStatus === 1, 'badge-success': serverStatus === 0}">
-                            <icon name="check" v-if="serverStatus === 0"></icon>
-                            <icon name="exclamation-triangle" v-else></icon>
+                            <b-icon icon="check" v-if="serverStatus === 0"></b-icon>
+                            <b-icon icon="exclamation-triangle" v-else></b-icon>
                         </span>
                         {{ $t('systemRequirements') }} <b-btn v-b-toggle="'collapse-programs'" size="sm">
-                        <span class="when-opened">{{ $t('hide') }}</span>
-                        <span class="when-closed">{{ $t('show') }}</span>
+                        <span class="when-opened"><b-icon icon="arrow-up-short"></b-icon> {{ $t('hide') }}</span>
+                        <span class="when-closed"><b-icon icon="arrow-down-short"></b-icon> {{ $t('show') }}</span>
                     </b-btn>
                     </h3>
                     <span id="server-status-msg" class="alert alert-success" v-if="serverStatus === 0 && !collapseIsVisible">{{ $t('ok') }}</span>
@@ -37,7 +37,7 @@
                                     <h4 class="badge-wrap">
                                         <span class="badge" :class="conf.className">
                                             <span v-if="conf.currentState">{{ conf.currentState }}</span>
-                                            <icon :name="conf.icon" v-else></icon>
+                                            <b-icon :icon="conf.icon" v-else></b-icon>
                                         </span>
                                     </h4>
                                 </span>
@@ -64,7 +64,7 @@
                                         <h4 class="badge-wrap">
                                             <span class="badge" :class="conf.className">
                                                 <span v-if="conf.currentState">{{ conf.currentState }}</span>
-                                                <icon :name="conf.icon" v-else></icon>
+                                                <b-icon :icon="conf.icon" v-else></b-icon>
                                             </span>
                                         </h4>
                                     </span>
@@ -89,7 +89,7 @@
                                         <h4 class="badge-wrap">
                                             <span v-b-tooltip.hover :title="conf.description.replace(/(<([^>]+)>)/ig, '')" class="badge" :class="conf.className">
                                                 <span v-if="conf.currentState">{{ conf.currentState }}</span>
-                                                <icon :name="conf.icon" v-else></icon>
+                                                <b-icon :icon="conf.icon" v-else></b-icon>
                                             </span>
                                         </h4>
                                     </span>
@@ -99,16 +99,16 @@
                         </table>
                     </b-collapse>
                     <b-btn class="mt-3" size="sm" v-if="serverStatus !== 0" @click="check()" style="margin-left: 15px">
-                        <icon name="sync"></icon> {{ $t('checkAgain') }}
+                        <b-icon icon="arrow-repeat"></b-icon> {{ $t('checkAgain') }}
                     </b-btn>
                 </b-card>
             </div>
         </div>
         <b-alert variant="info" show v-if="!checkedServer">
-            <icon name="sync" spin></icon> {{ $t('validateServerRequirements') }}
+            <b-icon icon="arrow-repeat" animation="spin"></b-icon> {{ $t('validateServerRequirements') }}
         </b-alert>
         <b-alert variant="danger" show v-if="networkError !== false">
-            <icon name="exclamation-triangle"></icon> {{ $t('networkError') }} <div v-html="networkError"></div>
+            <b-icon icon="exclamation-triangle"></b-icon> {{ $t('networkError') }} <div v-html="networkError"></div>
         </b-alert>
         <continue :disableBack="false" :disable="!checkedServer || serverStatus === 2 || modulesStatus === 2 || networkError !== false"></continue>
     </div>

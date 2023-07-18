@@ -1,7 +1,7 @@
 import { mapGetters } from 'vuex';
 import store from './store';
-import Continue from '../components/Continue';
-import Jumbotron from '../components/Jumbotron';
+import Continue from '../components/Continue.vue';
+import Jumbotron from '../components/Jumbotron.vue';
 
 export default {
     data() {

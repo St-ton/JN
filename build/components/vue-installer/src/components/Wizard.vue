@@ -28,7 +28,7 @@
                 </div>
                 <hr>
                 <b-btn :class="{'pulse-button': true}" size="sm" variant="primary" @click="submitData()">
-                    <icon name="save"></icon> speichern
+                  <b-icon icon="save"></b-icon> speichern
                 </b-btn>
                 <continue :disableBack="false" :disable="error !== false"></continue>
             </div>

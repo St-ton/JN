@@ -12,7 +12,7 @@
                             <b-form-input size="35" required v-model="db.host" type="text" :placeholder="$t('dbhost')"
                                           :state="db.host.length ? true : false"></b-form-input>
                             <b-input-group-append is-text>
-                                <icon name="home"></icon>
+                                <b-icon icon="house-fill"></b-icon>
                             </b-input-group-append>
                         </b-input-group>
                     </div>
@@ -22,7 +22,7 @@
                                           autocomplete="off"
                                           :placeholder="$t('socketPlaceholder')"></b-form-input>
                             <b-input-group-append is-text>
-                                <icon name="exchange-alt"></icon>
+                                <b-icon icon="arrow-left-right"></b-icon>
                             </b-input-group-append>
                         </b-input-group>
                     </div>
@@ -33,7 +33,7 @@
                                           autocomplete="off"
                                           :state="db.user.length > 0"></b-form-input>
                             <b-input-group-append is-text>
-                                <icon name="user"></icon>
+                                <b-icon icon="person-fill"></b-icon>
                             </b-input-group-append>
                         </b-input-group>
                     </div>
@@ -44,7 +44,7 @@
                                           autocomplete="new-password"
                                           :state="db.pass.length > 0"></b-form-input>
                             <b-input-group-append is-text>
-                                <icon name="lock"></icon>
+                                <b-icon icon="key-fill"></b-icon>
                             </b-input-group-append>
                         </b-input-group>
                     </div>
@@ -55,7 +55,7 @@
                                           autocomplete="off"
                                           :state="db.name.length > 0"></b-form-input>
                             <b-input-group-append is-text>
-                                <icon name="database"></icon>
+                                <b-icon icon="clipboard-data"></b-icon>
                             </b-input-group-append>
                         </b-input-group>
                     </div>
@@ -68,7 +68,7 @@
                     <b-btn
                         :class="{'pulse-button': db.name.length && db.pass.length && db.user.length && db.host.length && error !== false}"
                         size="sm" variant="primary" @click="checkCredentials(db)">
-                        <icon name="sync"></icon>
+                        <b-icon icon="check-circle"></b-icon>
                         {{ $t('verify')}}
                     </b-btn>
                 </div>
@@ -76,12 +76,12 @@
         </form>
         <div class="result mt-3" v-if="error !== null">
             <b-alert :variant="error ? 'danger' : 'success'" show>
-                <icon :name="error ? 'exclamation-triangle' : 'check'"></icon>
+                <b-icon :icon="error ? 'exclamation-triangle' : 'check'"></b-icon>
                 {{ $t(msg) }}
             </b-alert>
         </div>
         <b-alert class="result mt-3" variant="danger" show v-if="networkError !== false">
-            <icon name="exclamation-triangle"></icon> {{ $t('networkError') }} <div v-html="networkError"></div>
+            <b-icon icon="exclamation-triangle"></b-icon> {{ $t('networkError') }} <div v-html="networkError"></div>
         </b-alert>
         <continue :disableBack="false" :disable="error !== false"></continue>
     </div>

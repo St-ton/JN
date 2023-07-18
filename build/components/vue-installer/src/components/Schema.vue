@@ -10,15 +10,15 @@
         </div>
 
         <div class="result mt-3" v-if="!finished">
-            <b-alert variant="info" show><icon name="sync" spin></icon> {{ $t('installing') }}.</b-alert>
+            <b-alert variant="info" show><b-icon icon="arrow-repeat" animation="spin"></b-icon> {{ $t('installing') }}.</b-alert>
         </div>
         <b-alert variant="danger" show v-if="networkError !== false">
-            <icon name="exclamation-triangle"></icon> {{ $t('networkError') }} <div v-html="networkError"></div>
+            <b-icon icon="exclamation-triangle"></b-icon> {{ $t('networkError') }} <div v-html="networkError"></div>
         </b-alert>
 
         <div class="result mt-3" v-if="error !== null">
             <b-alert :variant="error ? 'danger' : 'success'" show>
-                <icon :name="error ? 'exclamation-triangle' : 'check'"></icon> <span v-html="$t(msg)"></span>
+                <b-icon :icon="error ? 'exclamation-triangle' : 'check'"></b-icon> <span v-html="$t(msg)"></span>
             </b-alert>
         </div>
         <continue :disableBack="false" :disable="error !== false"></continue>

@@ -22,14 +22,14 @@
 </template>
 
 <script>
-import InstalledCheck from './InstalledCheck';
-import Hello from './Hello';
-import ServerCheck from './ServerCheck';
-import DirectoryCheck from './DirectoryCheck';
-import DatabaseParameters from './DatabaseParameters';
-import AdminUser from './AdminUser';
-import Schema from './Schema';
-import InstallationSummary from './InstallationSummary';
+import InstalledCheck from './InstalledCheck.vue';
+import Hello from './Hello.vue';
+import ServerCheck from './ServerCheck.vue';
+import DirectoryCheck from './DirectoryCheck.vue';
+import DatabaseParameters from './DatabaseParameters.vue';
+import AdminUser from './AdminUser.vue';
+import Schema from './Schema.vue';
+import InstallationSummary from './InstallationSummary.vue';
 export default {
     name:       'installer',
     components: {

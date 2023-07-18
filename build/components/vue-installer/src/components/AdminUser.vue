@@ -10,18 +10,18 @@
                     <b-input-group size="md" :prepend="$t('adminUser')">
                         <b-form-input size="35" required v-model="admin.name" type="text" :state="admin.name.length > 0"></b-form-input>
                         <b-input-group-append is-text>
-                            <icon name="user"></icon>
+                          <b-icon icon="person-fill"></b-icon>
                         </b-input-group-append>
                     </b-input-group>
                 </div>
                 <div class="form-group">
                     <b-input-group size="md">
                         <b-input-group-prepend is-text>
-                            {{ $t('adminPassword') }} &nbsp; <a @click="admin.pass = generatePassword()"><icon name="sync"></icon></a>
+                            {{ $t('adminPassword') }} &nbsp; <a @click="admin.pass = generatePassword()"><b-icon icon="arrow-repeat"></b-icon></a>
                         </b-input-group-prepend>
                         <b-form-input size="35" required v-model="admin.pass" type="text" :state="admin.pass.length > 0"></b-form-input>
                         <b-input-group-append is-text>
-                            <icon name="lock"></icon>
+                            <b-icon icon="lock-fill"></b-icon>
                         </b-input-group-append>
                     </b-input-group>
                 </div>
@@ -34,18 +34,18 @@
                     <b-input-group size="md" :prepend="$t('syncUser')">
                         <b-form-input size="35" required v-model="wawi.name" type="text" :state="wawi.name.length > 0"></b-form-input>
                         <b-input-group-append is-text>
-                            <icon name="user"></icon>
+                          <b-icon icon="person-fill"></b-icon>
                         </b-input-group-append>
                     </b-input-group>
                 </div>
                 <div class="form-group">
                     <b-input-group size="md">
                         <b-input-group-prepend is-text>
-                            {{ $t('syncPassword') }} &nbsp; <a @click="wawi.pass = generatePassword()"><icon name="sync"></icon></a>
+                            {{ $t('syncPassword') }} &nbsp; <a @click="wawi.pass = generatePassword()"><b-icon icon="arrow-repeat"></b-icon></a>
                         </b-input-group-prepend>
                         <b-form-input size="35" required v-model="wawi.pass" type="text" :state="wawi.pass.length > 0 && checkPassword(wawi.pass)"></b-form-input>
                         <b-input-group-append is-text>
-                            <icon name="lock"></icon>
+                            <b-icon icon="lock-fill"></b-icon>
                         </b-input-group-append>
                     </b-input-group>
                 </div>

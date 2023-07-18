@@ -8,7 +8,7 @@
         <div class="row">
             <div class="col">
                 <b-alert variant="info" show v-if="!syncOK">
-                    <icon name="exclamation-triangle"></icon> {{ $t('startSync') }}
+                    <b-icon icon="exclamation-triangle"></b-icon> {{ $t('startSync') }}
                 </b-alert>
                 <table class="table b-table table-striped table-hover" v-if="syncOK">
                     <thead>
@@ -124,7 +124,7 @@
         <div class="row">
             <div class="col">
                 <b-btn :class="{'pulse-button': !syncOK}" size="sm" variant="primary" @click="checkWawi()">
-                    <icon name="sync"></icon> {{ $t('checkAgain') }}
+                    <b-icon icon="arrow-repeat"></b-icon> {{ $t('checkAgain') }}
                 </b-btn>
                 <continue :disableBack="false" :disable="error !== false"></continue>
             </div>

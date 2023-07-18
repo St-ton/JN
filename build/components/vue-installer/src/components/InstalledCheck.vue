@@ -7,20 +7,20 @@
         <div class="row">
             <div class="col">
                 <b-alert variant="danger" show v-if="isInstalled">
-                    <icon name="exclamation-triangle"></icon> {{ $t('msgInstalled') }}
+                    <b-icon icon="exclamation-triangle"></b-icon> {{ $t('msgInstalled') }}
                 </b-alert>
                 <b-alert variant="success" show v-else>
-                    <icon name="check"></icon> {{ $t('msgNoConfig') }}
+                    <b-icon icon="check"></b-icon> {{ $t('msgNoConfig') }}
                 </b-alert>
                 <b-alert variant="warning" show v-if="protoWarning && !isInstalled">
-                    <icon name="exclamation-triangle"></icon> {{ $t('titleProtoWarning') }} {{ shopURL }}<br>
+                    <b-icon icon="exclamation-triangle"></b-icon> {{ $t('titleProtoWarning') }} {{ shopURL }}<br>
                     {{ $t('msgProtoWarning') }}
                 </b-alert>
                 <b-alert variant="danger" show v-if="networkError !== false">
-                    <icon name="exclamation-triangle"></icon> {{ $t('networkError') }} <div v-html="networkError"></div>
+                    <b-icon icon="exclamation-triangle"></b-icon> {{ $t('networkError') }} <div v-html="networkError"></div>
                 </b-alert>
                 <b-alert variant="danger" show v-if="phpError !== false">
-                    <icon name="exclamation-triangle"></icon> {{ phpError }}
+                    <b-icon icon="exclamation-triangle"></b-icon> {{ phpError }}
                 </b-alert>
                 <b-form-checkbox v-model="anyway" value="true" unchecked-value="false" v-if="protoWarning && !isInstalled">
                     {{ $t('continueAnyway') }}

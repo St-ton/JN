@@ -4,10 +4,10 @@
         <div class="row">
             <div class="col btn-group">
                 <b-btn size="lg" variant="warning" @click="setStep(istep - 1)" v-if="istep > 0 && disableBack === false">
-                    <icon name="arrow-left"></icon> {{ $t('back') }}
+                  <b-icon icon="arrow-left-circle"></b-icon> {{ $t('back') }}
                 </b-btn>
                 <b-btn size="lg" variant="primary" @click="continueInstallation(istep + 1)" :class="{'pulse-button': disable !== true, disabled: disable === true}" v-if="istep + 1 < isteps.length">
-                    <icon name="share"></icon> {{ $t('continueToStep') }} {{ istep + 1}} - {{ $t(isteps[istep + 1]) }}
+                  <b-icon icon="arrow-right-circle-fill"></b-icon> {{ $t('continueToStep') }} {{ istep + 1}} - {{ $t(isteps[istep + 1]) }}
                 </b-btn>
             </div>
         </div>

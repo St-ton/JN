@@ -5,10 +5,10 @@
         <div v-html="content"></div>
         <span class="btn-group">
             <b-btn v-if="typeof btn1 !== 'undefined'" variant="primary" :href="btn1.href" :target="btn1.target" :rel="btn1.target == '_blank' ? 'noopener' : ''">
-                <icon name="external-link-alt" v-if="btn1.target === '_blank'"></icon> {{ btn1.text}}
+                <b-icon icon="box-arrow-up-right" v-if="btn1.target === '_blank'"></b-icon> {{ btn1.text}}
             </b-btn>
             <b-btn v-if="typeof btn2 !== 'undefined'" variant="secondary" :href="btn2.href" :target="btn1.target" :rel="btn2.target == '_blank' ? 'noopener' : ''">
-                <icon name="external-link-alt" v-if="btn2.target === '_blank'"></icon> {{ btn2.text}}
+                <b-icon icon="box-arrow-up-right" v-if="btn2.target === '_blank'"></b-icon> {{ btn2.text}}
             </b-btn>
             </span>
     </b-jumbotron>

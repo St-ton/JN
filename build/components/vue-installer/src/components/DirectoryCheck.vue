@@ -9,36 +9,36 @@
                 <b-card show-header no-block>
                     <h3 slot="header">
                         <span class="badge" :class="{'badge-danger': directoriesStatus === 0, 'badge-success': directoriesStatus === 1}">
-                            <icon name="check" v-if="directoriesStatus === 1"></icon>
-                            <icon name="exclamation-triangle" v-else></icon>
+                            <b-icon icon="check" v-if="directoriesStatus === 1"></b-icon>
+                            <b-icon icon="exclamation-triangle" v-else></b-icon>
                         </span> {{ $t('writePermissions') }} <b-btn v-b-toggle.collapse-directories size="sm">
-                        <span class="when-opened">{{ $t('hide') }}</span>
-                        <span class="when-closed">{{ $t('show') }}</span>
+                        <span class="when-opened"><b-icon icon="arrow-up-short"></b-icon> {{ $t('hide') }}</span>
+                        <span class="when-closed"><b-icon icon="arrow-down-short"></b-icon> {{ $t('show') }}</span>
                     </b-btn>
                     </h3>
-                    <span id="dir-status-msg" class="alert alert-success" v-if="directoriesStatus === 1 && !collapseIsVisible">{{ $t('ok') }}</span>
+                  <span id="dir-status-msg" class="alert alert-success" v-if="directoriesStatus === 1 && !collapseIsVisible"><b-icon icon="check"></b-icon>{{ $t('ok') }}</span>
                     <b-collapse id="collapse-directories" :visible="directoriesStatus === 0" @hidden="collapseHide()" @show="collapseShow()">
                         <b-list-group class="list-group-flush">
                             <b-list-group-item v-for="dir in directories" :key="dir.idx">
                             <span class="badge" :class="{'badge-success': dir.isWriteable === true, 'badge-danger': dir.isWriteable === false}">
-                                <icon name="check" v-if="dir.isWriteable === true"></icon>
-                                <icon name="exclamation-triangle" v-else></icon>
+                                <b-icon icon="check" v-if="dir.isWriteable === true"></b-icon>
+                                <b-icon icon="exclamation-triangle" v-else></b-icon>
                             </span>
                                 <span class="ml-2">{{ dir.dir }}</span>
                             </b-list-group-item>
                         </b-list-group>
                         <b-btn class="mt-3 ml-4" size="sm" v-if="directoriesStatus === 0" @click="check()">
-                            <icon name="sync"></icon> {{ $t('checkAgain') }}
+                            <b-icon icon="arrow-repeat"></b-icon> {{ $t('checkAgain') }}
                         </b-btn>
                     </b-collapse>
                 </b-card>
             </div>
         </div>
         <b-alert variant="info" show v-if="!checkedDirectories">
-            <icon name="sync" spin></icon> {{ $t('verifyWritePermissions') }}
+            <b-icon icon="arrow-repeat" animation="spin"></b-icon> {{ $t('verifyWritePermissions') }}
         </b-alert>
         <b-alert variant="danger" show v-if="networkError !== false">
-            <icon name="exclamation-triangle"></icon> {{ $t('networkError') }} <div v-html="networkError"></div>
+            <b-icon icon="exclamation-triangle"></b-icon> {{ $t('networkError') }} <div v-html="networkError"></div>
         </b-alert>
         <continue :disableBack="false" :disable="!checkedDirectories || networkError !== false || directoriesStatus === 0"></continue>
     </div>

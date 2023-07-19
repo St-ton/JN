@@ -77,7 +77,7 @@ Shop::setRouter(new Router(
     Shop::Container()->getAlertService(),
     Shopsetting::getInstance($db, $cache)->getAll()
 ));
-$smarty = new BackendSmarty($db);
+$smarty = new BackendSmarty($db, $cache);
 
 Shop::Container()->singleton(CaptchaServiceInterface::class, static function () {
     return new SimpleCaptchaService(true);

@@ -171,21 +171,22 @@ class Campaign
     public static function getAvailable(): array
     {
         $cacheID = 'campaigns';
-        if (($campaigns = Shop::Container()->getCache()->get($cacheID)) === false) {
-            $campaigns = Shop::Container()->getDB()->selectAll(
-                'tkampagne',
-                'nAktiv',
-                1,
-                '*, DATE_FORMAT(dErstellt, \'%d.%m.%Y %H:%i:%s\') AS dErstellt_DE'
-            );
-            foreach ($campaigns as $campaign) {
-                $campaign->kKampagne  = (int)$campaign->kKampagne;
-                $campaign->nDynamisch = (int)$campaign->nDynamisch;
-                $campaign->nAktiv     = (int)$campaign->nAktiv;
-                $campaign->nInternal  = (int)$campaign->nInternal;
-            }
-            Shop::Container()->getCache()->set($cacheID, $campaigns, [\CACHING_GROUP_CORE]);
+        if (($campaigns = Shop::Container()->getCache()->get($cacheID)) !== false) {
+            return $campaigns;
         }
+        $campaigns = Shop::Container()->getDB()->selectAll(
+            'tkampagne',
+            'nAktiv',
+            1,
+            '*, DATE_FORMAT(dErstellt, \'%d.%m.%Y %H:%i:%s\') AS dErstellt_DE'
+        );
+        foreach ($campaigns as $campaign) {
+            $campaign->kKampagne  = (int)$campaign->kKampagne;
+            $campaign->nDynamisch = (int)$campaign->nDynamisch;
+            $campaign->nAktiv     = (int)$campaign->nAktiv;
+            $campaign->nInternal  = (int)$campaign->nInternal;
+        }
+        Shop::Container()->getCache()->set($cacheID, $campaigns, [\CACHING_GROUP_CORE]);
 
         return $campaigns;
     }
@@ -214,7 +215,7 @@ class Campaign
      * @param string $campaignValue
      * @return bool
      */
-    private static function paramMatches($given, $campaignValue): bool
+    private static function paramMatches(string $given, string $campaignValue): bool
     {
         return \mb_convert_case($campaignValue, \MB_CASE_LOWER) === \mb_convert_case($given, \MB_CASE_LOWER);
     }
@@ -300,41 +301,40 @@ class Campaign
     /**
      * @param int         $id
      * @param int         $kKey
-     * @param float       $fWert
+     * @param float|int   $value
      * @param string|null $customData
      * @return int
      * @former setzeKampagnenVorgang()
      */
-    public static function setCampaignAction(int $id, int $kKey, $fWert, $customData = null): int
+    public static function setCampaignAction(int $id, int $kKey, $value, $customData = null): int
     {
-        if ($id > 0 && $kKey > 0 && $fWert > 0 && isset($_SESSION['Kampagnenbesucher'])) {
-            $events = [];
-            if (!\is_array($_SESSION['Kampagnenbesucher'])) {
-                $tmpCampaign = $_SESSION['Kampagnenbesucher'];
-                unset($_SESSION['Kampagnenbesucher']);
-                $_SESSION['Kampagnenbesucher'] = $tmpCampaign instanceof self
-                    ? [$tmpCampaign->kKampagne => $tmpCampaign]
-                    : [];
-            }
-            foreach ($_SESSION['Kampagnenbesucher'] as $campaign) {
-                $event               = new stdClass();
-                $event->kKampagne    = $campaign->kKampagne;
-                $event->kKampagneDef = $id;
-                $event->kKey         = $kKey;
-                $event->fWert        = $fWert;
-                $event->cParamWert   = $campaign->cWert;
-                $event->dErstellt    = 'NOW()';
+        $campaigns = Frontend::get('Kampagnenbesucher');
+        if ($id <= 0 || $kKey <= 0 || $value <= 0 || $campaigns === null) {
+            return 0;
+        }
+        $events = [];
+        if (!\is_array($campaigns)) {
+            $campaigns = $campaigns instanceof self
+                ? [$campaigns->kKampagne => $campaigns]
+                : [];
+            Frontend::set('Kampagnenbesucher', $campaigns);
+        }
+        foreach ($campaigns as $campaign) {
+            $event               = new stdClass();
+            $event->kKampagne    = $campaign->kKampagne;
+            $event->kKampagneDef = $id;
+            $event->kKey         = $kKey;
+            $event->fWert        = $value;
+            $event->cParamWert   = $campaign->cWert;
+            $event->dErstellt    = 'NOW()';
 
-                if ($customData !== null) {
-                    $event->cCustomData = \mb_substr($customData, 0, 255);
-                }
-                $events[] = $event;
+            if ($customData !== null) {
+                $event->cCustomData = \mb_substr($customData, 0, 255);
             }
-
-            return Shop::Container()->getDB()->insertBatch('tkampagnevorgang', $events);
+            $events[] = $event;
         }
 
-        return 0;
+        return Shop::Container()->getDB()->insertBatch('tkampagnevorgang', $events);
     }
 
     /**

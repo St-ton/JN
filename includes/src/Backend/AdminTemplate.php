@@ -2,6 +2,8 @@
 
 namespace JTL\Backend;
 
+use JTL\Cache\JTLCacheInterface;
+use JTL\DB\DbInterface;
 use JTL\Shop;
 use JTL\Template\XMLReader;
 use SimpleXMLElement;
@@ -33,20 +35,23 @@ class AdminTemplate
     public string $version = '1.0.0';
 
     /**
-     * AdminTemplate constructor.
+     * @param DbInterface       $db
+     * @param JTLCacheInterface $cache
      */
-    public function __construct()
+    public function __construct(private readonly DbInterface $db, private readonly JTLCacheInterface $cache)
     {
         $this->init();
         self::$instance = $this;
     }
 
     /**
-     * @return AdminTemplate
+     * @param DbInterface|null       $db
+     * @param JTLCacheInterface|null $cache
+     * @return self
      */
-    public static function getInstance(): self
+    public static function getInstance(?DbInterface $db = null, ?JTLCacheInterface $cache = null): self
     {
-        return self::$instance ?? new self();
+        return self::$instance ?? new self($db ?? Shop::Container()->getDB(), $cache ?? Shop::Container()->getCache());
     }
 
     /**
@@ -76,14 +81,14 @@ class AdminTemplate
     public function init(): self
     {
         $cacheID = 'crnt_tpl_adm';
-        if (($template = Shop::Container()->getCache()->get($cacheID)) !== false) {
+        if (($template = $this->cache->get($cacheID)) !== false) {
             self::$cTemplate = $template->cTemplate;
         } else {
-            $template = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'admin');
+            $template = $this->db->select('ttemplate', 'eTyp', 'admin');
             //dump('$oTemplate', $oTemplate);
             if ($template) {
                 self::$cTemplate = $template->cTemplate;
-                Shop::Container()->getCache()->set($cacheID, $template, [\CACHING_GROUP_TEMPLATE]);
+                $this->cache->set($cacheID, $template, [\CACHING_GROUP_TEMPLATE]);
 
                 return $this;
             }
@@ -104,7 +109,7 @@ class AdminTemplate
         $folders   = [];
         $folders[] = $dir;
         $cacheID   = 'tpl_mnfy_dta_adm_' . $dir . (($absolute === true) ? '_a' : '');
-        if (($tplGroups = Shop::Container()->getCache()->get($cacheID)) === false) {
+        if (($tplGroups = $this->cache->get($cacheID)) === false) {
             $tplGroups = [
                 'admin_css' => [],
                 'admin_js'  => []
@@ -168,7 +173,7 @@ class AdminTemplate
             if (!self::$isAdmin) {
                 \executeHook(\HOOK_CSS_JS_LIST, ['groups' => &$tplGroups, 'cache_tags' => &$cacheTags]);
             }
-            Shop::Container()->getCache()->set($cacheID, $tplGroups, $cacheTags);
+            $this->cache->set($cacheID, $tplGroups, $cacheTags);
         }
 
         return $tplGroups;

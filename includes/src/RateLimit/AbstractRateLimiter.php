@@ -14,12 +14,12 @@ class AbstractRateLimiter implements RateLimiterInterface
     /**
      * @var string
      */
-    protected $ip;
+    protected string $ip;
 
     /**
      * @var int
      */
-    protected $key;
+    protected int $key;
 
     /**
      * @var string

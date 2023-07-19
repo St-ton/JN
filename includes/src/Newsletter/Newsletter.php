@@ -363,11 +363,10 @@ class Newsletter
 
     /**
      * Benoetigt ein Array von kArtikel und gibt ein Array mit Artikelobjekten zurueck
-     *
-     * @param array         $productIDs
-     * @param string|object $campaign
-     * @param int           $customerGroupID
-     * @param int           $langID
+     * @param array           $productIDs
+     * @param string|Campaign $campaign
+     * @param int             $customerGroupID
+     * @param int             $langID
      * @return Artikel[]
      */
     public function getProducts($productIDs, $campaign = '', int $customerGroupID = 0, int $langID = 0): array
@@ -423,10 +422,9 @@ class Newsletter
 
     /**
      * Benoetigt ein Array von kHersteller und gibt ein Array mit Herstellerobjekten zurueck
-     *
-     * @param array      $manufacturerIDs
-     * @param int|object $campaign
-     * @param int        $langID
+     * @param array        $manufacturerIDs
+     * @param int|Campaign $campaign
+     * @param int          $langID
      * @return array
      */
     public function getManufacturers($manufacturerIDs, $campaign = 0, int $langID = 0): array
@@ -464,9 +462,8 @@ class Newsletter
 
     /**
      * Benoetigt ein Array von kKategorie und gibt ein Array mit Kategorieobjekten zurueck
-     *
-     * @param array      $categoryIDs
-     * @param int|object $campaign
+     * @param array        $categoryIDs
+     * @param int|Campaign $campaign
      * @return array
      */
     public function getCategories($categoryIDs, $campaign = 0): array

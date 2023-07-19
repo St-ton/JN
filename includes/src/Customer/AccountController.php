@@ -448,9 +448,7 @@ class AccountController
             $_SESSION['NeukundenKupon'],
             $_SESSION['Kupon']
         );
-        if (isset($_SESSION['Kampagnenbesucher'])) {
-            Campaign::setCampaignAction(\KAMPAGNE_DEF_LOGIN, $customerID, 1.0); // Login
-        }
+        Campaign::setCampaignAction(\KAMPAGNE_DEF_LOGIN, $customerID, 1.0); // Login
     }
 
     /**

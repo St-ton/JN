@@ -1276,9 +1276,7 @@ class Product
             Shop::Lang()->get('thankYouForQuestion', 'messages'),
             'thankYouForQuestion'
         );
-        if (isset($_SESSION['Kampagnenbesucher'])) {
-            Campaign::setCampaignAction(\KAMPAGNE_DEF_FRAGEZUMPRODUKT, $inquiryID, 1.0);
-        }
+        Campaign::setCampaignAction(\KAMPAGNE_DEF_FRAGEZUMPRODUKT, $inquiryID, 1.0);
 
         return Shop::Lang()->get('thankYouForQuestion', 'messages');
     }

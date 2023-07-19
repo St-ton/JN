@@ -209,11 +209,7 @@ class RegistrationController extends PageController
                     'customerID' => $customerData->kKunde,
                 ]);
 
-                // Kampagne
-                if (isset($_SESSION['Kampagnenbesucher'])) {
-                    Campaign::setCampaignAction(\KAMPAGNE_DEF_ANMELDUNG, $customerData->kKunde, 1.0); // Anmeldung
-                }
-                // Insert Kundenattribute
+                Campaign::setCampaignAction(\KAMPAGNE_DEF_ANMELDUNG, $customerData->kKunde, 1.0); // Anmeldung
                 $customerAttributes->setCustomerID($customerData->kKunde);
                 $customerAttributes->save();
                 if ($conf !== 'A') {

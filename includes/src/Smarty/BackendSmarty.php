@@ -4,6 +4,7 @@ namespace JTL\Smarty;
 
 use JTL\Backend\AdminTemplate;
 use JTL\Backend\Notification;
+use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -27,9 +28,10 @@ class BackendSmarty extends JTLSmarty
     protected string $templateDir = 'bootstrap';
 
     /**
-     * @param DbInterface $db
+     * @param DbInterface       $db
+     * @param JTLCacheInterface $cache
      */
-    public function __construct(private readonly DbInterface $db)
+    public function __construct(private readonly DbInterface $db, private readonly JTLCacheInterface $cache)
     {
         parent::__construct(false, ContextType::BACKEND);
     }
@@ -61,7 +63,7 @@ class BackendSmarty extends JTLSmarty
         $plugins = new BackendPlugins($this->db);
         $scc     = new DefaultComponentRegistrator(new Bs3sccRenderer($this));
         $scc->registerComponents();
-        $pluginCollection = new PluginCollection($this->config, LanguageHelper::getInstance());
+        $pluginCollection = new PluginCollection($this->config, LanguageHelper::getInstance($this->db, $this->cache));
         $this->registerPlugin(self::PLUGIN_FUNCTION, 'lang', $pluginCollection->translate(...))
             ->registerPlugin(self::PLUGIN_MODIFIER, 'replace_delim', $pluginCollection->replaceDelimiters(...))
             ->registerPlugin(self::PLUGIN_MODIFIER, 'count_characters', $pluginCollection->countCharacters(...))
@@ -91,11 +93,11 @@ class BackendSmarty extends JTLSmarty
             ->registerPlugin(self::PLUGIN_FUNCTION, 'captchaMarkup', $plugins->captchaMarkup(...))
             ->registerPlugin(self::PLUGIN_MODIFIER, 'permission', $plugins->permission(...));
 
-        $template           = AdminTemplate::getInstance();
+        $template           = AdminTemplate::getInstance($this->db, $this->cache);
         $shopURL            = Shop::getURL();
         $adminURL           = Shop::getAdminURL();
         $currentTemplateDir = $this->getTemplateUrlPath();
-        $availableLanguages = LanguageHelper::getInstance()->gibInstallierteSprachen();
+        $availableLanguages = LanguageHelper::getInstance($this->db, $this->cache)->gibInstallierteSprachen();
         $resourcePaths      = $template->getResources(false);
         $gettext            = Shop::Container()->getGetText();
         $langTag            = $_SESSION['AdminAccount']->language ?? $gettext->getLanguage();

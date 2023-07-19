@@ -351,13 +351,9 @@ class OrderHandler
 
         $_SESSION['BestellNr']   = $order->cBestellNr;
         $_SESSION['kBestellung'] = $order->kBestellung;
-        // evtl. Kupon  Verwendungen hochzählen
         $this->stockUpdater->updateCouponUsages($order);
-        // Kampagne
-        if (isset($_SESSION['Kampagnenbesucher'])) {
-            Campaign::setCampaignAction(\KAMPAGNE_DEF_VERKAUF, $order->kBestellung, 1.0);
-            Campaign::setCampaignAction(\KAMPAGNE_DEF_VERKAUFSSUMME, $order->kBestellung, $order->fGesamtsumme);
-        }
+        Campaign::setCampaignAction(\KAMPAGNE_DEF_VERKAUF, $order->kBestellung, 1.0);
+        Campaign::setCampaignAction(\KAMPAGNE_DEF_VERKAUFSSUMME, $order->kBestellung, $order->fGesamtsumme);
         \executeHook(\HOOK_BESTELLABSCHLUSS_INC_BESTELLUNGINDB_ENDE, [
             'oBestellung'   => &$order,
             'bestellID'     => &$bestellid,

@@ -278,10 +278,7 @@ class IOMethods
         $response->cNotification   = Shop::Lang()->get('basketAllAdded', 'messages');
 
         $ioResponse->assignVar('response', $response);
-        if (isset($_SESSION['Kampagnenbesucher'])) {
-            Campaign::setCampaignAction(\KAMPAGNE_DEF_WARENKORB, $productID, $amount); // Warenkorb
-        }
-
+        Campaign::setCampaignAction(\KAMPAGNE_DEF_WARENKORB, $productID, $amount);
         if ($config['global']['global_warenkorb_weiterleitung'] === 'Y') {
             $response->nType     = 1;
             $response->cLocation = Shop::Container()->getLinkService()->getStaticRoute('warenkorb.php');

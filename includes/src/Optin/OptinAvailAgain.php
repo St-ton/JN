@@ -125,9 +125,7 @@ class OptinAvailAgain extends OptinBase implements OptinInterface
             \get_object_vars($data),
             ReturnType::LAST_INSERTED_ID
         );
-        if (isset($_SESSION['Kampagnenbesucher'])) {
-            Campaign::setCampaignAction(\KAMPAGNE_DEF_VERFUEGBARKEITSANFRAGE, $inquiryID, 1.0);
-        }
+        Campaign::setCampaignAction(\KAMPAGNE_DEF_VERFUEGBARKEITSANFRAGE, $inquiryID, 1.0);
     }
 
     /**

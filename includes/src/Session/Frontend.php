@@ -3,7 +3,6 @@
 namespace JTL\Session;
 
 use Exception;
-use JTL\Campaign;
 use JTL\Cart\Cart;
 use JTL\Cart\PersistentCart;
 use JTL\Catalog\ComparisonList;
@@ -125,8 +124,6 @@ class Frontend extends AbstractSession
             self::checkReset($lang);
         }
         $this->checkWishlistDeletes()->checkComparelistDeletes();
-        // Kampagnen in die Session laden
-        Campaign::getAvailable();
         if (!isset($_SESSION['cISOSprache'])) {
             \session_destroy();
             die('<h1>Ihr Shop wurde installiert. Lesen Sie in unserem Guide ' .

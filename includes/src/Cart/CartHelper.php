@@ -753,9 +753,7 @@ class CartHelper
                 $attributes,
                 $qty
             );
-            if (isset($_SESSION['Kampagnenbesucher'])) {
-                Campaign::setCampaignAction(\KAMPAGNE_DEF_WUNSCHLISTE, $itemID, $qty);
-            }
+            Campaign::setCampaignAction(\KAMPAGNE_DEF_WUNSCHLISTE, $itemID, $qty);
 
             $obj = (object)['kArtikel' => $productID];
             \executeHook(\HOOK_TOOLS_GLOBAL_CHECKEWARENKORBEINGANG_WUNSCHLISTE, [
@@ -1512,9 +1510,7 @@ class CartHelper
             ->assign('cartNote', Shop::Lang()->get('basketAdded', 'messages'))
             ->assign('bWarenkorbHinzugefuegt', true)
             ->assign('bWarenkorbAnzahl', $qty);
-        if (isset($_SESSION['Kampagnenbesucher'])) {
-            Campaign::setCampaignAction(\KAMPAGNE_DEF_WARENKORB, $productID, $qty);
-        }
+        Campaign::setCampaignAction(\KAMPAGNE_DEF_WARENKORB, $productID, $qty);
         Frontend::getCart()->redirectTo((bool)$redirect, $unique);
 
         return true;

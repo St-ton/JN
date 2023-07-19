@@ -5,6 +5,7 @@ namespace JTL;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Customer\Visitor;
+use JTL\Session\Frontend;
 use stdClass;
 
 /**
@@ -175,6 +176,12 @@ class Campaign
                 1,
                 '*, DATE_FORMAT(dErstellt, \'%d.%m.%Y %H:%i:%s\') AS dErstellt_DE'
             );
+            foreach ($campaigns as $campaign) {
+                $campaign->kKampagne  = (int)$campaign->kKampagne;
+                $campaign->nDynamisch = (int)$campaign->nDynamisch;
+                $campaign->nAktiv     = (int)$campaign->nAktiv;
+                $campaign->nInternal  = (int)$campaign->nInternal;
+            }
             Shop::Container()->getCache()->set($cacheID, $campaigns, [\CACHING_GROUP_CORE]);
         }
 
@@ -216,38 +223,41 @@ class Campaign
     public static function checkCampaignParameters(): void
     {
         $campaigns = self::getAvailable();
-        if (empty($_SESSION['oBesucher']->kBesucher) || \count($campaigns) === 0) {
+        if (\count($campaigns) === 0) {
             return;
         }
-        $db  = Shop::Container()->getDB();
-        $hit = false;
+        $visitorID = Frontend::get('oBesucher')->kBesucher ?? 0;
+        if ($visitorID <= 0) {
+            return;
+        }
+        $db       = Shop::Container()->getDB();
+        $hit      = false;
+        $referrer = Visitor::getReferer();
         foreach ($campaigns as $campaign) {
             // Wurde für die aktuelle Kampagne der Parameter via GET oder POST uebergeben?
             $given = Request::verifyGPDataString($campaign->cParameter);
-            if ($given !== '' && ((int)$campaign->nDynamisch === 1 || self::validateStaticParams($campaign))) {
-                $hit      = true;
-                $referrer = Visitor::getReferer();
+            if ($given !== '' && ($campaign->nDynamisch === 1 || self::validateStaticParams($campaign))) {
+                $hit = true;
                 // wurde der HIT für diesen Besucher schon gezaehlt?
                 $event = $db->select(
                     'tkampagnevorgang',
                     ['kKampagneDef', 'kKampagne', 'kKey', 'cCustomData'],
                     [
                         \KAMPAGNE_DEF_HIT,
-                        (int)$campaign->kKampagne,
-                        (int)$_SESSION['oBesucher']->kBesucher,
+                        $campaign->kKampagne,
+                        $visitorID,
                         Text::filterXSS($_SERVER['REQUEST_URI']) . ';' . $referrer
                     ]
                 );
-
                 if (!isset($event->kKampagneVorgang)) {
                     $event               = new stdClass();
                     $event->kKampagne    = $campaign->kKampagne;
                     $event->kKampagneDef = \KAMPAGNE_DEF_HIT;
-                    $event->kKey         = $_SESSION['oBesucher']->kBesucher;
+                    $event->kKey         = $visitorID;
                     $event->fWert        = 1.0;
                     $event->cParamWert   = $given;
                     $event->cCustomData  = Text::filterXSS($_SERVER['REQUEST_URI']) . ';' . $referrer;
-                    if ((int)$campaign->nDynamisch === 0) {
+                    if ($campaign->nDynamisch === 0) {
                         $event->cParamWert = $campaign->cWert;
                     }
                     $event->dErstellt = 'NOW()';
@@ -262,7 +272,7 @@ class Campaign
                 $event = $db->select(
                     'tkampagnevorgang',
                     ['kKampagneDef', 'kKampagne', 'kKey'],
-                    [\KAMPAGNE_DEF_HIT, \KAMPAGNE_INTERN_GOOGLE, (int)$_SESSION['oBesucher']->kBesucher]
+                    [\KAMPAGNE_DEF_HIT, \KAMPAGNE_INTERN_GOOGLE, $visitorID]
                 );
 
                 if (!isset($event->kKampagneVorgang)) {
@@ -270,7 +280,7 @@ class Campaign
                     $event               = new stdClass();
                     $event->kKampagne    = \KAMPAGNE_INTERN_GOOGLE;
                     $event->kKampagneDef = \KAMPAGNE_DEF_HIT;
-                    $event->kKey         = $_SESSION['oBesucher']->kBesucher;
+                    $event->kKey         = $visitorID;
                     $event->fWert        = 1.0;
                     $event->cParamWert   = $campaign->cWert;
                     $event->dErstellt    = 'NOW()';
@@ -304,7 +314,6 @@ class Campaign
                     ? [$tmpCampaign->kKampagne => $tmpCampaign]
                     : [];
             }
-
             foreach ($_SESSION['Kampagnenbesucher'] as $campaign) {
                 $event               = new stdClass();
                 $event->kKampagne    = $campaign->kKampagne;

@@ -10,6 +10,7 @@ use JTL\Exceptions\FatalThrowableError;
 /**
  * Class HandleExceptions
  * @package JTL
+ * @deprecated since 5.3.0
  */
 class HandleExceptions
 {
@@ -18,6 +19,7 @@ class HandleExceptions
      */
     public function __construct()
     {
+        \trigger_error(__CLASS__ . ' is deprecated and should not be used anymore.', \E_USER_DEPRECATED);
         \error_reporting(-1);
         \set_error_handler($this->handleError(...));
         \set_exception_handler($this->handleException(...));

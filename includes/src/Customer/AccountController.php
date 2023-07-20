@@ -216,7 +216,7 @@ class AccountController
             $step = $this->rmaOrder($rmaID);
         }
         if (Request::verifyGPCDataInt('RMAs') > 0) {
-            $step = $this->rmaOrders($customerID);
+            $step = $this->rmaOrders();
         }
         if (Request::verifyGPCDataInt('editLieferadresse') > 0
             && Request::verifyGPDataString('editAddress') === 'neu'
@@ -263,7 +263,9 @@ class AccountController
             $this->smarty->assign('oWunschliste_arr', Wishlist::getWishlists());
         }
         if ($step === 'mein Konto') {
-            $this->smarty->assign('RMAService', new RMAService());
+            $rmaService = new RMAService();
+            $this->smarty->assign('RMAService', $rmaService)
+                ->assign('rmas', $rmaService->loadRMAs($customerID)->rmas);
             $deliveryAddresses = $this->getDeliveryAddresses();
             \executeHook(\HOOK_JTL_PAGE_MEINKKONTO, ['deliveryAddresses' => &$deliveryAddresses]);
             $this->smarty->assign('compareList', new ComparisonList());
@@ -983,24 +985,24 @@ class AccountController
         $this->getDeliveryAddresses(['shippingAddresses', 'shippingCountries']);
         $rmaService         = new RMAService();
         $returnableProducts = $rmaService->getReturnableProducts();
-        $rmaReasons         = $rmaService->getReasons();
 
-        $this->smarty->assign('rma', $rmaService->getRMA($rmaID))
+        $this->smarty->assign('rma', $rmaService->loadRMA($rmaID))
+            ->assign('rmas', $rmaService->loadRMAs())
             ->assign('returnableProducts', $returnableProducts)
-            ->assign('reasons', $rmaReasons)
-            ->assign('returnableOrders', $rmaService->getOrderIDs($returnableProducts));
-        
+            ->assign('reasons', $rmaService->loadReasons()->reasons)
+            ->assign('returnableOrders', $rmaService->getOrderIDs($returnableProducts))
+            ->assign('rmaService', $rmaService);
+
         return 'rma';
     }
 
     /**
-     * @param int $customerID
      * @return string
      * @since 5.3.0
      */
-    private function rmaOrders(int $customerID): string
+    private function rmaOrders(): string
     {
-        $this->smarty->assign('RMAService', (new RMAService)->getRepository()->getList(['customerID' => $customerID]));
+        $this->smarty->assign('RMAService', new RMAService());
         return 'rmas';
     }
 

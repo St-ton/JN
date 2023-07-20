@@ -4,8 +4,8 @@
             {card no-body=true class="rma-step-1 sticky-card"}
                 <div id="rmaStickyPositions">
                     <div class="rmaPosContainer">
-                        {include file='account/rma_positions.tpl' rmaPositions=$rma->getPositions()
-                        rmaTotal=$rma->getPriceLocalized()}
+                        {include file='account/rma_positions.tpl' rmaPositions=$rmaService->getItems($rma)
+                        rmaTotal=$rmaService->getTotalPriceLocalized($rma) rmaService=$rmaService}
                     </div>
                 </div>
 
@@ -73,15 +73,18 @@
                                 <tbody>
                                 {block name='account-rmas-returnable-items'}
                                     {foreach $returnableProducts as $product}
-                                        {assign var=rmaPos value=$rma->getPos($product->shippingNotePosID)}
+                                        {assign var=rmaPos value=$rmaService->getPosition(
+                                            $rma,
+                                            $product->shippingNotePosID
+                                        )}
                                         <tr>
-                                            <td class="d-none">{$product->orderNo}</td>
+                                            <td class="d-none">{$product->getOrderNo()}</td>
                                             <td class="product">
                                                 <div class="d-flex flex-wrap">
                                                     <div class="d-flex flex-nowrap flex-grow-1">
                                                         <div class="d-block">
                                                             {image lazy=true webp=true fluid=true
-                                                            src=$product->Artikel->Bilder[0]->cURLKlein|default:$smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN
+                                                            src=$product->getProduct()->Bilder[0]->cURLKlein|default:$smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN
                                                             alt=$product->name
                                                             class="img-aspect-ratio product-thumbnail pr-2"}
                                                         </div>
@@ -94,7 +97,7 @@
                                                                            class='custom-control-input ra-switch'
                                                                            id="switch-{$product->shippingNotePosID}"
                                                                            name="returnItem"
-                                                                           {if $rmaPos->getID() > 0}checked{/if}
+                                                                           {if $rmaPos->id > 0}checked{/if}
                                                                            aria-label="Lorem ipsum">
                                                                     <label class="custom-control-label"
                                                                            for="switch-{$product->shippingNotePosID}">
@@ -102,21 +105,21 @@
                                                                 </div>
                                                             </div>
                                                             <small class="text-muted-util d-block">
-                                                                {lang key='orderNo' section='login'}: {$product->orderNo}<br>
+                                                                {lang key='orderNo' section='login'}: {$product->getOrderNo()}<br>
                                                                 {lang key='productNo'}: {link
-                                                                    href=$product->Artikel->cURLFull target="_blank"}
-                                                                    {$product->productNR}
+                                                                    href=$product->getProduct()->cURLFull target="_blank"}
+                                                                    {$product->getProductNR()}
                                                                 {/link}<br>
-                                                                {if $product->property->name !== ''
-                                                                    && $product->property->value !== ''}
-                                                                    {$product->property->name}: {$product->property->value}<br>
+                                                                {if $product->getProperty()->name !== ''
+                                                                    && $product->getProperty()->value !== ''}
+                                                                    {$product->getProperty()->name}: {$product->getProperty()->value}<br>
                                                                 {/if}
-                                                                {$product->quantity} {$product->unit|default:''} x {$product->unitPriceNetLocalized}
+                                                                {$product->quantity} {$product->unit|default:''} x {$rmaService->getPriceLocalized($product->unitPriceNet)}
                                                             </small>
                                                         </div>
                                                     </div>
 
-                                                    <div class="{if $rmaPos->getID() > 0}d-flex {else}d-none {/if}rmaFormPositions flex-wrap mt-2 w-100">
+                                                    <div class="{if $rmaPos->id > 0}d-flex {else}d-none {/if}rmaFormPositions flex-wrap mt-2 w-100">
                                                         <div class="qty-wrapper max-w-sm mr-2 mb-2">
                                                             {inputgroup id="quantity-grp{$product->shippingNotePosID}" class="form-counter choose_quantity"}
                                                             {inputgroupprepend}
@@ -127,16 +130,16 @@
                                                             {/button}
                                                             {/inputgroupprepend}
                                                             {input type="number"
-                                                            required=($product->Artikel->fAbnahmeintervall > 0)
-                                                            step="{if $product->Artikel->cTeilbar === 'Y' && $product->Artikel->fAbnahmeintervall == 0}any{elseif $product->Artikel->fAbnahmeintervall > 0}{$product->Artikel->fAbnahmeintervall}{else}1{/if}"
+                                                            required=($product->getProduct()->fAbnahmeintervall > 0)
+                                                            step="{if $product->getProduct()->cTeilbar === 'Y' && $product->getProduct()->fAbnahmeintervall == 0}any{elseif $product->getProduct()->fAbnahmeintervall > 0}{$product->getProduct()->fAbnahmeintervall}{else}1{/if}"
                                                             min="1"
                                                             max="{$product->quantity}"
                                                             id="qty-{$product->shippingNotePosID}" class="quantity" name="quantity"
                                                             aria=["label"=>"{lang key='quantity'}"]
-                                                            value="{if $rmaPos->getID() > 0}{$rmaPos->getQuantity()}{else}{$product->quantity}{/if}"
+                                                            value="{if $rmaPos->id > 0}{$rmaPos->quantity}{else}{$product->quantity}{/if}"
                                                             data=[
                                                                 "snposid" => {$product->shippingNotePosID},
-                                                                "decimals" => {$product->Artikel->fAbnahmeintervall}
+                                                                "decimals" => {$product->getProduct()->fAbnahmeintervall}
                                                             ]
                                                             }
                                                             {inputgroupappend}
@@ -154,9 +157,9 @@
                                                             name="reason"
                                                             data=["snposid" => "{$product->shippingNotePosID}"]
                                                             class="custom-select form-control"}
-                                                                <option value="-1"{if $rmaPos->getID() === 0} selected{/if}>{lang key='rma_comment_choose' section='rma'}</option>
+                                                                <option value="-1"{if $rmaPos->id === 0} selected{/if}>{lang key='rma_comment_choose' section='rma'}</option>
                                                                 {foreach $reasons as $reason}
-                                                                    <option value="{$reason->reasonID}"{if $rmaPos->getReasonID() === $reason->reasonID} selected{/if}>{$reason->title}</option>
+                                                                    <option value="{$reason->reasonID}"{if $rmaPos->reasonID === $reason->reasonID} selected{/if}>{$reason->title}</option>
                                                                 {/foreach}
                                                             {/select}
                                                         </div>
@@ -167,8 +170,8 @@
                                                             rows=1
                                                             maxlength="255"
                                                             placeholder="{lang key='comment' section='productDetails'}"}
-                                                                {if $rmaPos->getComment() !== null}
-                                                                    {$rmaPos->getComment()}
+                                                                {if $rmaPos->comment !== null}
+                                                                    {$rmaPos->comment}
                                                                 {/if}
                                                             {/textarea}
                                                         </div>
@@ -205,7 +208,7 @@
 {/block}
 {block name='account-rma-form-script'}
     {inline_script}<script>
-        var rmaID = parseInt("{$rma->getID()}"),
+        var rmaID = parseInt("{$rma->id}"),
             formData = [],
             updPosRequest,
             goToStep = 1;

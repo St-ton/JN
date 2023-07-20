@@ -1,25 +1,57 @@
 <?php declare(strict_types=1);
 
-namespace JTL\RMA;
+namespace JTL\RMA\Repositories;
 
-use JTL\Abstracts\AbstractRepository;
+use JTL\Abstracts\AbstractRepositoryTim;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\DB\ReturnType;
-use JTL\RMA\PickupAddress\PickupAddressDataTableObject;
-use JTL\RMA\PickupAddress\PickupAddressRepository;
-use JTL\Session\Frontend;
-use JTL\Shop;
-use JTL\Shopsetting;
+use JTL\RMA\DomainObjects\RMAPositionDomainObject;
+use JTL\RMA\DomainObjects\RMAProductDomainObject;
 
 /**
  * Class RMARepository
  * @package JTL\RMA
  * @since 5.3.0
  */
-class RMARepository extends AbstractRepository
+class RMARepository extends AbstractRepositoryTim
 {
-    
+
+    /**
+     * @return array
+     */
+    public function getColumnMapping(): array
+    {
+        return [
+            'rmaID'           => 'id',
+            'wawiID'          => 'wawiID',
+            'customerID'      => 'customerID',
+            'pickupAddressID' => 'pickupAddressID',
+            'rmaStatus'       => 'status',
+            'rmaCreateDate'   => 'createDate',
+            'rmaLastModified' => 'lastModified'
+        ];
+    }
+
+    /**
+     * @param array $data
+     * @return array
+     */
+    public function getDefaultValues(array $data = []): array
+    {
+        $default = [
+            'id'              => 0,
+            'wawiID'          => null,
+            'customerID'      => 0,
+            'pickupAddressID' => 0,
+            'status'          => null,
+            'createDate'      => \date('Y-m-d H:i:s'),
+            'lastModified'    => null,
+            'positions'       => null
+        ];
+        return $this->arrayCombine($default, $data);
+    }
+
     /**
      * @return string
      */
@@ -39,6 +71,7 @@ class RMARepository extends AbstractRepository
     /**
      * @param int $customerID
      * @param int $langID
+     * @param int|null $id
      * @param string|null $status
      * @param string|null $createdBeforeDate
      * @param int|null $pickupAddressID
@@ -185,7 +218,7 @@ class RMARepository extends AbstractRepository
             return $results;
         }
 
-        $data = $this->getDB()->executeQuery(
+        return $this->getDB()->executeQuery(
             $this->buildQuery(
                 $filters['customerID'],
                 $filters['langID'],
@@ -198,20 +231,83 @@ class RMARepository extends AbstractRepository
             ),
             ReturnType::ARRAY_OF_OBJECTS
         );
+    }
 
-        $positions = [];
-        foreach ($data as $obj) {
-            if (!isset($results[$obj->rmaID])) {
-                $results[$obj->rmaID] = (new RMADataTableObject())->hydrateWithObject($obj);
-                $results[$obj->rmaID]->setPickupAddress(
-                    (new PickupAddressDataTableObject())->hydrateWithObject($obj)
-                );
-            }
-            $results[$obj->rmaID]->addPosition(
-                (new RMAPosDataTableObject())->hydrateWithObject($obj)
-            );
-        }
 
-        return $results;
+    /**
+     * @param int $customerID
+     * @param $languageID
+     * @param int $cancellationTime
+     * @return array
+     * @since 5.3.0
+     */
+    public function getReturnableProducts(int $customerID, $languageID, int $cancellationTime): array
+    {
+        //ToDo: Test if product has already been requested for an RMA
+        return $this->getDB()->getCollection(
+            "SELECT twarenkorbpos.kArtikel AS id, twarenkorbpos.cEinheit AS unit,
+       twarenkorbpos.cArtNr AS productNR, twarenkorbpos.fPreisEinzelNetto AS unitPriceNet, twarenkorbpos.fMwSt AS vat,
+       twarenkorbpos.cName AS name, tbestellung.kKunde AS customerID,
+       tbestellung.kLieferadresse AS shippingAddressID, tbestellung.cStatus AS orderStatus,
+       tbestellung.cBestellNr AS orderNo, tbestellung.kBestellung AS orderID,
+       tlieferscheinpos.kLieferscheinPos AS shippingNotePosID, tlieferscheinpos.kLieferschein AS shippingNoteID,
+       tlieferscheinpos.fAnzahl AS quantity, tartikel.cSeo AS seo,
+       DATE_FORMAT(FROM_UNIXTIME(tversand.dErstellt), '%d-%m-%Y') AS createDate,
+       twarenkorbposeigenschaft.cEigenschaftName AS propertyName,
+       twarenkorbposeigenschaft.cEigenschaftWertName AS propertyValue,
+       teigenschaftsprache.cName AS propertyNameLocalized, teigenschaftwertsprache.cName AS propertyValueLocalized
+            FROM tbestellung
+            JOIN twarenkorbpos
+                ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
+                AND twarenkorbpos.kArtikel > 0
+            JOIN tlieferscheinpos
+                ON tlieferscheinpos.kBestellPos = twarenkorbpos.kBestellpos
+            JOIN tversand
+                ON tversand.kLieferschein = tlieferscheinpos.kLieferschein
+                AND DATE(FROM_UNIXTIME(tversand.dErstellt)) >= DATE_SUB(NOW(), INTERVAL :cancellationTime DAY)
+            LEFT JOIN tartikelattribut
+                ON tartikelattribut.kArtikel = twarenkorbpos.kArtikel
+                AND tartikelattribut.cName = :notReturnable
+            LEFT JOIN tartikeldownload
+                ON tartikeldownload.kArtikel = twarenkorbpos.kArtikel
+            LEFT JOIN twarenkorbposeigenschaft
+                ON twarenkorbposeigenschaft.kWarenkorbPos = twarenkorbpos.kWarenkorbPos
+            LEFT JOIN teigenschaftsprache
+                ON teigenschaftsprache.kEigenschaft = twarenkorbposeigenschaft.kEigenschaft
+                AND teigenschaftsprache.kSprache = :langID
+            LEFT JOIN teigenschaftwertsprache
+                ON teigenschaftwertsprache.kEigenschaftWert = twarenkorbposeigenschaft.kEigenschaftWert
+                AND teigenschaftwertsprache.kSprache = :langID
+            JOIN tartikel
+                ON tartikel.kArtikel = twarenkorbpos.kArtikel
+            WHERE tbestellung.kKunde = :customerID
+                AND tbestellung.cStatus IN (:status_versandt, :status_teilversandt)
+                AND tartikelattribut.cWert IS NULL
+                AND tartikeldownload.kArtikel IS NULL",
+            [
+                'customerID' => $customerID,
+                'langID' => $languageID,
+                'status_versandt' => \BESTELLUNG_STATUS_VERSANDT,
+                'status_teilversandt' => \BESTELLUNG_STATUS_TEILVERSANDT,
+                'cancellationTime' => $cancellationTime,
+                'notReturnable' => \PRODUCT_NOT_RETURNABLE
+            ]
+        )->map(static function ($product): object {
+            $product->property        = new \stdClass();
+            $product->property->name  = $product->propertyNameLocalized ?? $product->propertyName ?? '';
+            $product->property->value = $product->propertyValueLocalized ?? $product->propertyValue ?? '';
+
+            unset($product->propertyNameLocalized);
+            unset($product->propertyValueLocalized);
+            unset($product->propertyName);
+            unset($product->propertyValue);
+
+            $product->product           = new Artikel();
+            $product->product->kArtikel = (int)$product->id;
+            $product->product->cName    = '';
+            $product->product->holBilder();
+
+            return $product;
+        })->keyBy('shippingNotePosID')->all();
     }
 }

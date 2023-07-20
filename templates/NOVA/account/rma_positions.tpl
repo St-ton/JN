@@ -6,7 +6,7 @@
                 <span class="h3 mb-0">
                     {lang key='rma_products' section='rma'}
                 </span>
-                <span class="badge badge-secondary badge-pill">{$rmaPositions|count}</span>
+                <span class="badge badge-secondary badge-pill">{count($rmaPositions)}</span>
             </div>
         {/block}
         {/cardheader}
@@ -15,12 +15,14 @@
             {foreach $rmaPositions as $pos}
                 <li class="list-group-item justify-content-between lh-condensed">
                     <div class="pr-2">
-                        <h6 class="my-0 line-clamp rmaPosOverviewTitle">{$pos->getName()}</h6>
+                        <h6 class="my-0 line-clamp rmaPosOverviewTitle">{$pos->name}</h6>
                         <small class="text-muted rmaPosOverviewContent">
-                            {$pos->getQuantity()}{$pos->getUnit()} x {$pos->getUnitPriceLocalized()}
+                            {$pos->quantity}{$pos->unit} x {$rmaService->getPriceLocalized($pos->unitPriceNet)}
                         </small>
                     </div>
-                    <span class="text-muted text-nowrap rmaPosOverviewTotal">{$pos->getPriceLocalized()}</span>
+                    <span class="text-muted text-nowrap rmaPosOverviewTotal">
+                        {$rmaService->getPriceLocalized($pos->unitPriceNet * $pos->quantity)}
+                    </span>
                 </li>
             {/foreach}
             <li class="list-group-item justify-content-start bg-light{if count($rmaPositions) < 6} d-none{/if}">
@@ -29,7 +31,7 @@
                     <span class="fa fa-chevron-down toggle"></span>
                 </a>
             </li>
-            <li class="list-group-item justify-content-between bg-light">
+            <li class="list-group-item justify-content-between bg-light border-0">
                 <span>Total ({JTL\Session\Frontend::getCurrency()->getName()})</span>
                 <strong>{$rmaTotal}</strong>
             </li>

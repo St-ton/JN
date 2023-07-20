@@ -16,6 +16,7 @@ use JTL\Catalog\Product\EigenschaftWert;
 use JTL\Catalog\Product\Preise;
 use JTL\Catalog\Separator;
 use JTL\Catalog\Wishlist\Wishlist;
+use JTL\Checkout\DeliveryAddressTemplate;
 use JTL\Checkout\Kupon;
 use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
@@ -29,8 +30,8 @@ use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Helpers\URL;
-use JTL\RMA\RMADataTableObject;
-use JTL\RMA\RMAPosDataTableObject;
+use JTL\RMA\DomainObjects\RMADomainObject;
+use JTL\RMA\DomainObjects\RMAPositionDomainObject;
 use JTL\RMA\RMAService;
 use JTL\Router\Controller\ReviewController;
 use JTL\Router\Route;
@@ -40,7 +41,6 @@ use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
 use SmartyException;
-use JTL\Checkout\DeliveryAddressTemplate;
 use stdClass;
 use function Functional\filter;
 use function Functional\flatten;
@@ -89,7 +89,6 @@ class IOMethods
             ->register('updateWishlistItem', $this->updateWishlistItem(...))
             ->register('updateReviewHelpful', $this->updateReviewHelpful(...))
             ->register('setDeliveryaddressDefault', $this->setDeliveryaddressDefault(...))
-            ->register('createRMA', $this->createRMA(...))
             ->register('deleteRMA', $this->deleteRMA(...))
             ->register('rmaSummary', $this->rmaSummary(...))
             ->register('rmaPositions', $this->rmaPositions(...))
@@ -1448,101 +1447,7 @@ class IOMethods
     /**
      * @param array $args
      * @return IOResponse
-     * @since 5.3.0
-     */
-    public function createRMA(array $args = []): IOResponse
-    {
-        $param = [];
-        foreach ($args as $arg) {
-            if (!isset($param[$arg['name']])) {
-                $param[$arg['name']] = [$arg['value']];
-            } else {
-                $param[$arg['name']][] = $arg['value'];
-            }
-        }
-        $ioResponse = new IOResponse();
-        $response   = new stdClass();
-
-        if (!Form::validateToken($param['jtl_token'][0])) {
-            $response->result = false;
-            $response->msg    = Shop::Lang()->get('missingToken', 'messages');
-            $ioResponse->assignVar('response', $response);
-
-            return $ioResponse;
-        }
-        if (!isset($param['quantity']) || !isset($param['reason']) || !isset($param['comment'])) {
-            $response->result = false;
-            $response->msg    = Shop::Lang()->get('mandatoryFieldNotification', 'errorMessages');
-            $ioResponse->assignVar('response', $response);
-
-            return $ioResponse;
-        }
-
-        $rmaService = new RMAService();
-        $customerID = Frontend::getCustomer()->getID();
-        if ($customerID <= 0) {
-            $response->result = false;
-            $response->msg    = Shop::Lang()->get('rma_login', 'rma');
-            $ioResponse->assignVar('response', $response);
-
-            return $ioResponse;
-        }
-
-        $data                  = new stdClass();
-        $data->customerID      = $customerID;
-        $data->pickupAddressID = 0;
-        $data->createDate      = date('Y-m-d H:i:s');
-        $rmaTableObject        = new RMADataTableObject();
-        $rmaTableObject->hydrateWithObject($data);
-        $rmaID = $rmaService->getRepository()->insert($rmaTableObject);
-        if ($rmaID <= 0) {
-            $response->result = false;
-            $response->msg    = Shop::Lang()->get('unknownError', 'messages');
-            $ioResponse->assignVar('response', $response);
-
-            return $ioResponse;
-        }
-
-        $returnableProducts = $rmaService->getReturnableProducts($customerID);
-
-        foreach ($param['quantity'] as $key => $quantity) {
-            $dbData                    = $returnableProducts[(int)$quantity['shippingNotePosID']];
-            $data                      = new stdClass();
-            $data->rmaID               = $rmaID;
-            $data->shippingNotePosID   = $dbData->shippingNotePosID;
-            $data->orderPosID          = 0;
-            $data->productID           = $dbData->Artikel->kArtikel;
-            $data->reasontID           = $rmaService->getReason(
-                $param['comment'][$key]['value'] ?? 0
-            );
-            $data->name                = $dbData->name;
-            $data->unitPriceNet        = $dbData->unitPriceNet;
-            $data->quantity            = (float)$quantity['value'];
-            $data->vat                 = $dbData->vat;
-            $data->unit                = $dbData->unit;
-            $data->stockBeforePurchase = 0.00;
-            $data->longestMinDelivery  = 0;
-            $data->longestMaxDelivery  = 0;
-            $data->comment             = $param['comment'][$key]['value'];
-            $data->createDate          = date('Y-m-d H:i:s');
-            $rmaPosTableObject         = new RMAPosDataTableObject();
-            $rmaPosTableObject->hydrateWithObject($data);
-            $rmaService->getRepository('RMAPosRepository')->insert($rmaPosTableObject);
-        }
-
-        $response->result = true;
-        $response->rmaID  = $rmaID;
-        $response->msg    = Shop::Lang()->get('rma_info_success', 'rma', [$rmaID]);
-
-        $ioResponse->assignVar('response', $response);
-
-        return $ioResponse;
-    }
-
-
-    /**
-     * @param array $args
-     * @return IOResponse
+     * @throws SmartyException
      * @since 5.3.0
      */
     public function rmaPositions(array $args = []): IOResponse
@@ -1579,42 +1484,66 @@ class IOMethods
             return $ioResponse;
         }
 
-        $data                  = new stdClass();
-        $data->customerID      = $customerID;
-        $data->pickupAddressID = 0;
-        $data->createDate      = date('Y-m-d H:i:s');
-        $rmaDTO                = new RMADataTableObject();
-        $rmaDTO->hydrateWithObject($data);
+        $returnableProducts = $rmaService->getReturnableProducts(
+            $customerID,
+            Shop::getLanguageID(),
+            Shopsetting::getInstance()->getValue(\CONF_GLOBAL, 'global_cancellation_time')
+        );
 
-        $returnableProducts = $rmaService->getReturnableProducts($customerID);
+        $rmaPositions = [];
 
         foreach ($param['quantity'] as $key => $quantity) {
-            $dbData                    = $returnableProducts[(int)$quantity['shippingNotePosID']];
-            $data                      = new stdClass();
-            $data->shippingNotePosID   = $dbData->shippingNotePosID;
-            $data->orderPosID          = 0;
-            $data->productID           = $dbData->Artikel->kArtikel;
-            $data->reasonID            = $param['reason'][$key]['value'] ?? 0;
-            $data->name                = $dbData->name;
-            $data->unitPriceNet        = $dbData->unitPriceNet;
-            $data->quantity            = (float)$quantity['value'];
-            $data->vat                 = $dbData->vat;
-            $data->unit                = $dbData->unit;
-            $data->stockBeforePurchase = 0.00;
-            $data->longestMinDelivery  = 0;
-            $data->longestMaxDelivery  = 0;
-            $data->comment             = $param['comment'][$key]['value'] ?? '';
-            $data->createDate          = date('Y-m-d H:i:s');
-            $rmaPosDTO                 = new RMAPosDataTableObject();
-            $rmaPosDTO->hydrateWithObject($data);
-            $rmaPosDTO->setProduct(null, $dbData->Artikel);
-            $rmaPosDTO->setReason(null, $rmaService);
-            $rmaDTO->addPosition($rmaPosDTO);
+            $returnableProduct = null;
+            foreach ($returnableProducts as $product) {
+                if ($product->shippingNotePosID === (int)$quantity['shippingNotePosID']) {
+                    $returnableProduct = $product;
+                    break;
+                }
+            }
+            if ($returnableProduct === null) {
+                continue;
+            }
+            $data           = [
+                'shippingNotePosID'   => $returnableProduct->shippingNotePosID,
+                'orderPosID'          => 0,
+                'productID'           => $returnableProduct->getProduct()->kArtikel,
+                'reasonID'            => (int)$param['reason'][$key]['value'] ?? 0,
+                'name'                => $returnableProduct->name,
+                'unitPriceNet'        => $returnableProduct->unitPriceNet,
+                'quantity'            => (float)$quantity['value'],
+                'vat'                 => $returnableProduct->vat,
+                'unit'                => $returnableProduct->unit,
+                'stockBeforePurchase' => 0.00,
+                'longestMinDelivery'  => 0,
+                'longestMaxDelivery'  => 0,
+                'comment'             => $param['comment'][$key]['value'] ?? '',
+                'createDate'          => date('Y-m-d H:i:s')
+            ];
+            $rmaPositions[] = $rmaService->generateDomainObject(
+                RMAPositionDomainObject::class,
+                $rmaService->getRMAPositionRepository()->getDefaultValues(
+                    \array_merge(
+                        $data,
+                        [
+                            'product' => $returnableProduct->getProduct(),
+                            'reason' => $rmaService->getReason($data['reasonID'])
+                        ]
+                    )
+                )
+            );
         }
 
+        $rma = $rmaService->generateDomainObject(
+            RMADomainObject::class,
+            $rmaService->getRMARepository()->getDefaultValues([
+                'positions' => $rmaPositions
+            ])
+        );
+
         $response->result = true;
-        $response->html   = Shop::Smarty()->assign('rmaPositions', $rmaDTO->getPositions())
-            ->assign('rmaTotal', $rmaDTO->getPriceLocalized())
+        $response->html   = Shop::Smarty()->assign('rmaPositions', $rmaService->getItems($rma))
+            ->assign('rmaTotal', $rmaService->getTotalPriceLocalized($rma))
+            ->assign('rmaService', $rmaService)
             ->fetch('account/rma_positions.tpl');
 
         $ioResponse->assignVar('response', $response);
@@ -1625,6 +1554,7 @@ class IOMethods
     /**
      * @param array $args
      * @return IOResponse
+     * @throws SmartyException
      * @since 5.3.0
      */
     public function rmaSummary(array $args = []): IOResponse
@@ -1661,44 +1591,74 @@ class IOMethods
             return $ioResponse;
         }
 
-        $data                  = new stdClass();
-        $data->customerID      = $customerID;
-        $data->pickupAddressID = 0;
-        $data->createDate      = date('Y-m-d H:i:s');
-        $rmaDTO                = new RMADataTableObject();
-        $rmaDTO->hydrateWithObject($data);
+        $data = [
+            'customerID' => $customerID,
+            'pickupAddressID' => 0,
+            'createDate' => date('Y-m-d H:i:s')
+        ];
 
-        $returnableProducts = $rmaService->getReturnableProducts($customerID);
+        $returnableProducts = $rmaService->getReturnableProducts(
+            $customerID,
+            Shop::getLanguageID(),
+            Shopsetting::getInstance()->getValue(\CONF_GLOBAL, 'global_cancellation_time')
+        );
 
+        $rmaPositions = [];
         foreach ($param['quantity'] as $key => $quantity) {
-            $dbData                    = $returnableProducts[(int)$quantity['shippingNotePosID']];
-            $data                      = new stdClass();
-            $data->shippingNotePosID   = $dbData->shippingNotePosID;
-            $data->orderID             = $dbData->orderID;
-            $data->orderNo             = $dbData->orderNo;
-            $data->orderPosID          = 0;
-            $data->productID           = $dbData->Artikel->kArtikel;
-            $data->reasonID            = $param['reason'][$key]['value'] ?? 0;
-            $data->name                = $dbData->name;
-            $data->unitPriceNet        = $dbData->unitPriceNet;
-            $data->quantity            = (float)$quantity['value'];
-            $data->vat                 = $dbData->vat;
-            $data->unit                = $dbData->unit;
-            $data->stockBeforePurchase = 0.00;
-            $data->longestMinDelivery  = 0;
-            $data->longestMaxDelivery  = 0;
-            $data->comment             = $param['comment'][$key]['value'] ?? '';
-            $data->createDate          = date('Y-m-d H:i:s');
-            $data->property            = $dbData->property;
-            $rmaPosDTO                 = new RMAPosDataTableObject();
-            $rmaPosDTO->hydrateWithObject($data);
-            $rmaPosDTO->setProduct(null, $dbData->Artikel);
-            $rmaPosDTO->setReason(null, $rmaService);
-            $rmaDTO->addPosition($rmaPosDTO);
+            $returnableProduct = null;
+            foreach ($returnableProducts as $product) {
+                if ($product->shippingNotePosID === (int)$quantity['shippingNotePosID']) {
+                    $returnableProduct = $product;
+                    break;
+                }
+            }
+            if ($returnableProduct === null) {
+                continue;
+            }
+
+            $rmaPositionData = [
+                'shippingNotePosID' => $returnableProduct->shippingNotePosID,
+                'orderID'           => $returnableProduct->orderID,
+                'orderNo'           => $returnableProduct->getOrderNo(),
+                'orderPosID'        => 0,
+                'productID'         => $returnableProduct->getProduct()->kArtikel,
+                'reasonID'          => (int)$param['reason'][$key]['value'] ?? 0,
+                'name'              => $returnableProduct->name,
+                'unitPriceNet'      => $returnableProduct->unitPriceNet,
+                'quantity'          => (float)$quantity['value'],
+                'vat'               => $returnableProduct->vat,
+                'unit'              => $returnableProduct->unit,
+                'stockBeforePurchase' => 0.00,
+                'longestMinDelivery'  => 0,
+                'longestMaxDelivery'  => 0,
+                'comment'             => $param['comment'][$key]['value'] ?? '',
+                'createDate'          => date('Y-m-d H:i:s'),
+                'property'            => $returnableProduct->getProperty()
+            ];
+            $rmaPositions[]  = $rmaService->generateDomainObject(
+                RMAPositionDomainObject::class,
+                $rmaService->getRMAPositionRepository()->getDefaultValues(
+                    \array_merge(
+                        $rmaPositionData,
+                        [
+                            'product' => $returnableProduct->getProduct(),
+                            'reason' => $rmaService->getReason($rmaPositionData['reasonID'])
+                        ]
+                    )
+                )
+            );
         }
 
+        $rmaData['positions'] = $rmaPositions;
+        $rmaDTO               = $rmaService->generateDomainObject(
+            RMADomainObject::class,
+            $rmaService->getRMARepository()->getDefaultValues($rmaData)
+        );
+
         $response->result = true;
-        $response->html   = Shop::Smarty()->assign('rma', $rmaDTO)
+        $response->html   = Shop::Smarty()->assign('rmaService', $rmaService)
+            ->assign('rma', $rmaDTO)
+            ->assign('positions', $rmaService->groupRMAPositions($rmaPositions))
             ->fetch('account/rma_summary.tpl');
 
         $ioResponse->assignVar('response', $response);

@@ -2,11 +2,15 @@
 
 namespace JTL\RMA;
 
-use JTL\Abstracts\AbstractService;
-use JTL\Catalog\Product\Artikel;
+use JTL\Abstracts\AbstractServiceTim;
 use JTL\Catalog\Product\Preise;
-use JTL\Interfaces\RepositoryInterface;
-use JTL\RMA\PickupAddress\PickupAddressRepository;
+use JTL\RMA\DomainObjects\RMADomainObject;
+use JTL\RMA\DomainObjects\RMAPositionDomainObject;
+use JTL\RMA\DomainObjects\RMAReasonLangDomainObject;
+use JTL\RMA\Repositories\RMAPositionRepository;
+use JTL\RMA\Repositories\RMAReasonLangRepository;
+use JTL\RMA\Repositories\RMAReasonRepository;
+use JTL\RMA\Repositories\RMARepository;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
@@ -15,104 +19,128 @@ use JTL\Shopsetting;
  * Class RMAService
  * @package JTL\RMA
  */
-class RMAService extends AbstractService
+class RMAService extends AbstractServiceTim
 {
-    /**
-     * @var RepositoryInterface[]
-     */
-    protected array $repositories;
+
+    private ?RMARepository $RMARepository;
+
+    private ?RMAPositionRepository $RMAPositionRepository;
+
+    private ?RMAReasonRepository $RMAReasonsRepository;
+
+    private ?RMAReasonLangRepository $RMAReasonLangRepository;
 
     /**
-     * @var array
+     * @var RMADomainObject[]
      */
-    private array $reasons;
-    
+    public array $rmas = [];
+
     /**
-     * @param int $id
-     * @return RMADataTableObject
+     * @var RMAReasonLangDomainObject[]|null
      */
-    public function get(int $id): RMADataTableObject
+    public ?array $reasons = null;
+
+    /**
+     * @var RMAPositionDomainObject[]|null
+     */
+    private readonly ?array $returnableProducts;
+
+    /**
+     */
+    public function __construct()
     {
-        if ($id === 0) {
-            return new RMADataTableObject();
-        }
-        return (new RMADataTableObject())->hydrateWithObject($this->getRepository()->get($id) ?? new \stdClass());
     }
-    
+
     /**
-     * @param array $ids
-     * @return bool
-     */
-    public function delete(array $ids): bool
-    {
-        $repo        = $this->getRepository();
-        $deleteItems = Shop::Container()->getDB()->getInts(
-            'SELECT ' . $repo->getTableName() . '.' . $repo->getKeyName()
-            . ' FROM ' . $repo->getTableName()
-            . ' WHERE ' . $repo->getTableName() . '.' . $repo->getKeyName() . ' IN (:' . $repo->getKeyName() . ')'
-            . ' AND ' . $repo->getTableName() . '.customerID = :customerID',
-            $repo->getKeyName(),
-            [
-                $repo->getKeyName() => \implode(',', $ids),
-                'customerID' => Frontend::getCustomer()->getID()
-            ]
-        );
-        return $this->getRepository()->delete($deleteItems);
-    }
-    
-    /**
-     * @param string $name
-     * @return RepositoryInterface
-     */
-    public function getRepository(string $name = ''): RepositoryInterface
-    {
-        $name = $name === '' ? 'RMARepository' : $name;
-        if (!\in_array($name, $this->repositories)) {
-            switch ($name) {
-                case 'RMARepository':
-                    $this->repositories[$name] = new RMARepository();
-                    break;
-                case 'RMAHistoryRepository':
-                    $this->repositories[$name] = new RMAHistoryRepository();
-                    break;
-                case 'RMAPosRepository':
-                    $this->repositories[$name] = new RMAPosRepository();
-                    break;
-                case 'RMAReasonsRepository':
-                    $this->repositories[$name] = new RMAReasonsRepository();
-                    break;
-                case 'RMAReasonsLangRepository':
-                    $this->repositories[$name] = new RMAReasonsLangRepository();
-                    break;
-                case 'PickupAddressRepository':
-                    $this->repositories[$name] = new PickupAddressRepository();
-                    break;
-            }
-        }
-        return $this->repositories[$name];
-    }
-    
-    /**
-     * @return void
-     */
-    protected function initRepository(): void
-    {
-        $this->repositories['RMARepository'] = new RMARepository();
-    }
-    
-    /**
-     * @return void
-     */
-    protected function initDependencies(): void
-    {
-        $this->initRepository();
-    }
-    
-    /**
-     * @param int $id
-     * @return Artikel
+     * @return RMARepository
      * @since 5.3.0
      */
+    public function getRMARepository(): RMARepository
+    {
+        if (!isset($this->RMARepository)) {
+            $this->RMARepository = new RMARepository();
+        }
+
+        return $this->RMARepository;
+    }
+
+    /**
+     * @return RMAPositionRepository
+     * @since 5.3.0
+     */
+    public function getRMAPositionRepository(): RMAPositionRepository
+    {
+        if (!isset($this->RMAPositionRepository)) {
+            $this->RMAPositionRepository = new RMAPositionRepository();
+        }
+
+        return $this->RMAPositionRepository;
+    }
+
+    /**
+     * @return RMAReasonRepository
+     * @since 5.3.0
+     */
+    public function getRMAReasonRepository(): RMAReasonRepository
+    {
+        if (!isset($this->RMAReasonsRepository)) {
+            $this->RMAReasonsRepository = new RMAReasonRepository();
+        }
+
+        return $this->RMAReasonsRepository;
+    }
+
+    /**
+     * @return RMAReasonLangRepository
+     * @since 5.3.0
+     */
+    public function getRMAReasonLangRepository(): RMAReasonLangRepository
+    {
+        if (!isset($this->RMAReasonLangRepository)) {
+            $this->RMAReasonLangRepository = new RMAReasonLangRepository();
+        }
+
+        return $this->RMAReasonLangRepository;
+    }
+
+    /**
+     * @param int|null $customerID
+     * @param int|null $langID
+     * @return $this
+     * @since 5.3.0
+     */
+    public function loadRMAs(?int $customerID = null, ?int $langID = null): self
+    {
+        $customerID = $customerID ?? Frontend::getCustomer()->getID();
+        $langID     = $langID ?? Shop::getLanguageID();
+        foreach ($this->getRMARepository()->getList([
+            'customerID' => $customerID,
+            'langID' => $langID
+        ]) as $rma) {
+            $this->rmas[$rma->getID()] = $rma;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param int $id
+     * @return RMADomainObject
+     * @since 5.3.0
+     */
+    public function loadRMA(int $id): RMADomainObject
+    {
+        if (isset($this->rmas[$id])) {
+            return $this->rmas[$id];
+        }
+
+        return $this->loadRMAs()->rmas[$id] ?? $this->generateDomainObject(
+            RMADomainObject::class,
+            $this->getRMARepository()->getDefaultValues()
+        );
+    }
+
+    /*
     public function getProduct(int $id = 0): Artikel
     {
         $result = new Artikel();
@@ -121,21 +149,36 @@ class RMAService extends AbstractService
         }
         return $result;
     }
-    
+    */
+
     /**
-     * @param array $rmaPositions
+     * @param array $positions
      * @return array
      * @since 5.3.0
      */
-    public function getOrderIDs(array $rmaPositions): array
+    public function getOrderIDs(array $positions): array
     {
         $result = [];
-        foreach ($rmaPositions as $obj) {
-            if ($obj->orderID !== null && !\in_array($obj->orderID, $result)) {
-                $result[] = $obj->orderID;
+        foreach ($positions as $pos) {
+            if ($pos->orderID !== null && !\in_array($pos->orderID, $result)) {
+                $result[] = $pos->orderID;
             }
         }
         return $result;
+    }
+
+    /**
+     * @param RMADomainObject[] $rmas
+     * @return array
+     * @since 5.3.0
+     */
+    public function getRMAPositions(array $rmas): array
+    {
+        $rmaIDs = [];
+        foreach ($rmas as $rma) {
+            $rmaIDs[] = $rma->id;
+        }
+        return $this->getRMAPositionRepository()->getPositionsFor($rmaIDs);
     }
 
     /**
@@ -143,7 +186,7 @@ class RMAService extends AbstractService
      * @return array
      * @since 5.3.0
      */
-    public function getOrderNos(array $orderIDs): array
+    public static function orderIDsToNOs(array $orderIDs): array
     {
         $result = [];
         Shop::Container()->getDB()->getCollection(
@@ -156,165 +199,159 @@ class RMAService extends AbstractService
         });
         return $result;
     }
-    
+
     /**
-     * @param int $customerID
-     * @return array
+     * @param array $positions
+     * @param string $by
+     * @return RMAPositionDomainObject[]
      * @since 5.3.0
      */
-    public function getReturnableProducts(int $customerID = 0): array
+    public function groupRMAPositions(array $positions, string $by = 'order'): array
     {
-        //ToDo: Test if product has already been requested for an RMA
-        $customerID       = ($customerID === 0) ? Frontend::getCustomer()->getID() : $customerID;
-        $cancellationTime = Shopsetting::getInstance()->getValue(\CONF_GLOBAL, 'global_cancellation_time');
-        return Shop::Container()->getDB()->getCollection(
-            "SELECT twarenkorbpos.kArtikel AS id, twarenkorbpos.cEinheit AS unit,
-       twarenkorbpos.cArtNr AS productNR, twarenkorbpos.fPreisEinzelNetto AS unitPriceNet, twarenkorbpos.fMwSt AS vat,
-       twarenkorbpos.cName AS name, tbestellung.kKunde AS clientID,
-       tbestellung.kLieferadresse AS shippingAddressID, tbestellung.cStatus AS orderStatus,
-       tbestellung.cBestellNr AS orderNo, tbestellung.kBestellung AS orderID,
-       tlieferscheinpos.kLieferscheinPos AS shippingNotePosID, tlieferscheinpos.kLieferschein AS shippingNoteID,
-       tlieferscheinpos.fAnzahl AS quantity, tartikel.cSeo AS seo,
-       DATE_FORMAT(FROM_UNIXTIME(tversand.dErstellt), '%d-%m-%Y') AS createDate,
-       twarenkorbposeigenschaft.cEigenschaftName AS propertyName,
-       twarenkorbposeigenschaft.cEigenschaftWertName AS propertyValue,
-       teigenschaftsprache.cName AS propertyNameLocalized, teigenschaftwertsprache.cName AS propertyValueLocalized
-            FROM tbestellung
-            JOIN twarenkorbpos
-                ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
-                AND twarenkorbpos.kArtikel > 0
-            JOIN tlieferscheinpos
-                ON tlieferscheinpos.kBestellPos = twarenkorbpos.kBestellpos
-            JOIN tversand
-                ON tversand.kLieferschein = tlieferscheinpos.kLieferschein
-                AND DATE(FROM_UNIXTIME(tversand.dErstellt)) >= DATE_SUB(NOW(), INTERVAL :cancellationTime DAY)
-            LEFT JOIN tartikelattribut
-                ON tartikelattribut.kArtikel = twarenkorbpos.kArtikel
-                AND tartikelattribut.cName = :notReturnable
-            LEFT JOIN tartikeldownload
-                ON tartikeldownload.kArtikel = twarenkorbpos.kArtikel
-            LEFT JOIN twarenkorbposeigenschaft
-                ON twarenkorbposeigenschaft.kWarenkorbPos = twarenkorbpos.kWarenkorbPos
-            LEFT JOIN teigenschaftsprache
-                ON teigenschaftsprache.kEigenschaft = twarenkorbposeigenschaft.kEigenschaft
-                AND teigenschaftsprache.kSprache = :langID
-            LEFT JOIN teigenschaftwertsprache
-                ON teigenschaftwertsprache.kEigenschaftWert = twarenkorbposeigenschaft.kEigenschaftWert
-                AND teigenschaftwertsprache.kSprache = :langID
-            JOIN tartikel
-                ON tartikel.kArtikel = twarenkorbpos.kArtikel
-            WHERE tbestellung.kKunde = :customerID
-                AND tbestellung.cStatus IN (:status_versandt, :status_teilversandt)
-                AND tartikelattribut.cWert IS NULL
-                AND tartikeldownload.kArtikel IS NULL",
-            [
-                'customerID' => $customerID,
-                'langID' => Shop::getLanguageID(),
-                'status_versandt' => \BESTELLUNG_STATUS_VERSANDT,
-                'status_teilversandt' => \BESTELLUNG_STATUS_TEILVERSANDT,
-                'cancellationTime' => $cancellationTime,
-                'notReturnable' => \PRODUCT_NOT_RETURNABLE
-            ]
-        )->map(static function ($product): \stdClass {
-            $product->id                    = (int)$product->id;
-            $product->vat                   = (float)$product->vat;
-            $product->orderID               = (int)$product->orderID;
-            $product->clientID              = (int)$product->clientID;
-            $product->shippingAddressID     = (int)$product->shippingAddressID;
-            $product->shippingNotePosID     = (int)$product->shippingNotePosID;
-            $product->shippingNoteID        = (int)$product->shippingNoteID;
-            $product->quantity              = (int)$product->quantity;
-            $product->unitPriceNet          = (float)$product->unitPriceNet;
-            $product->unitPriceNetLocalized = Preise::getLocalizedPriceString($product->unitPriceNet);
-            $product->Artikel               = new Artikel();
-            // Set ID and do "$product->Artikel->holBilder();" to get only images
-            $property          = new \stdClass();
-            $property->name    = $product->propertyNameLocalized ?? $product->propertyName ?? '';
-            $property->value   = $product->propertyValueLocalized ?? $product->propertyValue ?? '';
-            $product->property = $property;
+        $result      = [];
+        $allowedKeys = [
+            'order'   => 'orderID',
+            'product' => 'productID',
+            'reason'  => 'reasonID',
+            'status'  => 'status',
+            'date'    => 'createDate' // ToDo: Group by day?
+        ];
+        $arrayKeys   = [];
+        $groupByKey  = $allowedKeys[$by] ?? 'orderID';
 
-            $product->Artikel = (new Artikel())->fuelleArtikel((int)$product->id);
+        if ($by === 'order') {
+            $arrayKeys = $this->orderIDsToNOs(
+                $this->getOrderIDs($positions)
+            );
+        }
+        foreach ($positions as $pos) {
+            $groupBy            = $arrayKeys[$pos->{$groupByKey}] ?? $pos->{$groupByKey};
+            $result[$groupBy][] = $pos;
+        }
+        return $result;
+    }
 
-            return $product;
-        })->keyBy('shippingNotePosID')->all();
+    /**
+     * @param RMADomainObject $rma
+     * @return RMAPositionDomainObject[]
+     * @since 5.3.0
+     */
+    public function getItems(RMADomainObject $rma): array
+    {
+        $result = [];
+
+        foreach ($rma->getPositions() as $item) {
+            $result[] = $this->generateDomainObject(
+                RMAPositionDomainObject::class,
+                $this->getRMAPositionRepository()->getDefaultValues($item->toArray())
+            );
+        }
+        return $result;
+    }
+
+    /**
+     * @param int|null $customerID
+     * @param int|null $languageID
+     * @param int|null $cancellationTime
+     * @return RMAPositionDomainObject[]
+     * @since 5.3.0
+     */
+    public function getReturnableProducts(
+        ?int $customerID = null,
+        ?int $languageID = null,
+        ?int $cancellationTime = null
+    ): array {
+        if (!isset($this->returnableProducts)) {
+            $returnableProducts = [];
+            foreach ($this->getRMARepository()->getReturnableProducts(
+                $customerID ?? Frontend::getCustomer()->getID(),
+                $languageID ?? Shop::getLanguageID(),
+                $cancellationTime ?? Shopsetting::getInstance()->getValue(\CONF_GLOBAL, 'global_cancellation_time')
+            ) as $returnableProduct) {
+                $returnableProducts[] = $this->generateDomainObject(
+                    RMAPositionDomainObject::class,
+                    $this->getRMAPositionRepository()->getDefaultValues(
+                        (array)$returnableProduct
+                    )
+                );
+            }
+            $this->returnableProducts = $returnableProducts;
+        }
+
+        return $this->returnableProducts;
     }
 
     /**
      * @param int|null $langID
-     * @return array
+     * @return $this
      * @since 5.3.0
      */
-    public function getReasons(?int $langID = null): array
+    public function loadReasons(?int $langID = null): self
     {
-        $result          = [];
-        $langID          = $langID ?? Shop::getLanguageID();
-        $reasonsLangRepo = new RMAReasonsLangRepository();
-        foreach ($reasonsLangRepo->getList(['langID' => $langID]) as $reason) {
-            $result[]        = $reason;
-            $this->reasons[] = $reason;
+        $langID = $langID ?? Shop::getLanguageID();
+        foreach ($this->getRMAReasonLangRepository()->getList(['langID' => $langID]) as &$reason) {
+            $reason->id                       = (int)$reason->id;
+            $reason->reasonID                 = (int)$reason->reasonID;
+            $reason->langID                   = (int)$reason->langID;
+            $this->reasons[$reason->reasonID] = $this->generateDomainObject(
+                RMAReasonLangDomainObject::class,
+                $this->getRMAReasonLangRepository()->getDefaultValues((array)$reason)
+            );
         }
-        return $result;
+
+        return $this;
     }
 
     /**
-     * @param int|string $reasonID
-     * @return object
-     * @since 5.3.0
+     * @param int $id
+     * @return RMAReasonLangDomainObject
      */
-    public function getReason(int|string $reasonID): object
+    public function getReason(int $id): RMAReasonLangDomainObject
     {
-        $reasonID = (int)$reasonID;
-        $result   = new \stdClass();
-        if ($reasonID === 0) {
-            return $result;
+        if (!isset($this->reasons)) {
+            $this->loadReasons();
         }
-        $reasons = $this->reasons ?? $this->getReasons();
-        foreach ($reasons as $reason) {
-            if ($reason->reasonID === $reasonID) {
-                $result = $reason;
-                break;
-            }
-        }
-        return $result;
+        return $this->reasons[$id] ?? $this->generateDomainObject(
+            RMAReasonLangDomainObject::class,
+            $this->getRMAReasonLangRepository()->getDefaultValues()
+        );
     }
 
     /**
-     * @return RMADataTableObject
+     * @param RMADomainObject $rma
+     * @param int $shippingNotePosID
+     * @return RMAPositionDomainObject
      * @since 5.3.0
      */
-    public function getRMA(int $id): RMADataTableObject
+    public function getPosition(RMADomainObject $rma, int $shippingNotePosID): RMAPositionDomainObject
     {
-        return \array_values((new RMARepository())->getList([
-            'id'         => $id,
-            'customerID' => Frontend::getCustomer()->getID(),
-            'langID'     => Shop::getLanguageID()
-        ]))[0] ?? new RMADataTableObject();
+        return $rma->getPositions()[$shippingNotePosID] ?? $this->generateDomainObject(
+            RMAPositionDomainObject::class,
+            $this->getRMAPositionRepository()->getDefaultValues()
+        );
     }
 
     /**
-     * @return array
+     * @param float $price
+     * @return string
      * @since 5.3.0
      */
-    public function getRMAs(): array
+    public function getPriceLocalized(float $price): string
     {
-        return \array_values((new RMARepository())->getList([
-            'customerID' => Frontend::getCustomer()->getID(),
-            'langID' => Shop::getLanguageID()
-        ]));
+        return Preise::getLocalizedPriceString($price);
     }
 
     /**
-     * @param int $rmaID
-     * @return array
+     * @param RMADomainObject $rma
+     * @return string
      * @since 5.3.0
      */
-    public static function getItems(int $rmaID): array
+    public function getTotalPriceLocalized(RMADomainObject $rma): string
     {
-        if ($rmaID === 0) {
-            return [];
+        $total = 0;
+        foreach ($rma->getPositions() as $pos) {
+            $total += $pos->quantity * $pos->unitPriceNet;
         }
-        $rmaRepo = new RMARepository();
-        $rma     = $rmaRepo->getList(['customerID' => Frontend::getCustomer()->getID(), 'id' => $rmaID]);
-        return $rma->positions ?? [];
+        return Preise::getLocalizedPriceString($total);
     }
 }

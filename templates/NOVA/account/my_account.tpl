@@ -252,7 +252,6 @@
             {col cols=12 lg=6 class="account-data-item account-data-item-rma"}
                 {block name='account-my-account-rma'}
                     {card no-body=true class="account-rma"}
-                        {assign var=rmas value=$RMAService->getRMAs()}
                         {cardheader}
                             {block name='account-my-account-comparelist-header'}
                                 {row class="align-items-center-util"}

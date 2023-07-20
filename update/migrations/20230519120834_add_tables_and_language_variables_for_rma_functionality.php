@@ -169,7 +169,7 @@ class Migration_20230519120834 extends Migration implements IMigration
                 `name` VARCHAR(255) NOT NULL DEFAULT '',
                 `unitPriceNet` DOUBLE NOT NULL DEFAULT 0,
                 `quantity` DOUBLE(10,4) NOT NULL DEFAULT 0,
-                `vat` FLOAT(5,2) DEFAULT NULL,
+                `vat` FLOAT(5,2) NOT NULL DEFAULT 0.00,
                 `unit` VARCHAR(255) DEFAULT NULL,
                 `stockBeforePurchase` DOUBLE DEFAULT NULL,
                 `longestMinDelivery` INT(11) NOT NULL DEFAULT 0,

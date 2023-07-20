@@ -30,6 +30,7 @@ use JTL\Router\Middleware\CurrencyCheckMiddleware;
 use JTL\Router\Middleware\LocaleCheckMiddleware;
 use JTL\Router\Middleware\LocaleRedirectMiddleware;
 use JTL\Router\Middleware\MaintenanceModeMiddleware;
+use JTL\Router\Middleware\NewsCheckMiddleware;
 use JTL\Router\Middleware\OptinMiddleware;
 use JTL\Router\Middleware\SSLRedirectMiddleware;
 use JTL\Router\Middleware\WishlistCheckMiddleware;
@@ -185,6 +186,7 @@ class Router
             new MaintenanceModeMiddleware($this->config['global']),
             new SSLRedirectMiddleware($this->config['global']),
             new WishlistCheckMiddleware(),
+            new NewsCheckMiddleware(),
             new CartcheckMiddleware(),
             new LocaleCheckMiddleware(),
             new CurrencyCheckMiddleware(),

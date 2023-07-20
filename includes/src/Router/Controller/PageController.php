@@ -134,8 +134,11 @@ class PageController extends AbstractController
         }
         $this->smarty = $smarty;
         Shop::setPageType($this->state->pageType);
-        if (!$this->currentLink->isVisible()) {
+        if (!$this->currentLink->isVisible() && $this->currentLink->getLinkType() !== \LINKTYP_NEWS) {
             $this->currentLink = Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_STARTSEITE);
+            $this->currentLink->setRedirectCode(301);
+        } elseif (!$this->currentLink->isVisible() && $this->currentLink->getLinkType() === \LINKTYP_NEWS) {
+            $this->currentLink = Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_LOGIN);
             $this->currentLink->setRedirectCode(301);
         }
         $requestURL = URL::buildURL($this->currentLink, \URLART_SEITE);

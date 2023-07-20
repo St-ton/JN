@@ -12,6 +12,7 @@ use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Helpers\URL;
+use JTL\Link\SpecialPageNotFoundException;
 use JTL\News\Category;
 use JTL\News\CategoryList;
 use JTL\News\Item;
@@ -19,6 +20,7 @@ use JTL\News\ViewType;
 use JTL\Pagination\Pagination;
 use JTL\Router\DefaultParser;
 use JTL\Router\State;
+use JTL\Services\JTL\LinkServiceInterface;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\SimpleMail;
@@ -36,6 +38,11 @@ use function Functional\every;
  */
 class NewsController extends AbstractController
 {
+    /**
+     * @var LinkServiceInterface|null
+     */
+    protected ?LinkServiceInterface $linkService = null;
+
     /**
      * @var string|null
      */
@@ -60,6 +67,18 @@ class NewsController extends AbstractController
      * @var string
      */
     protected string $tseoSelector = 'kNews';
+
+    /**
+     * @return LinkServiceInterface
+     */
+    private function getLinkService(): LinkServiceInterface
+    {
+        if ($this->linkService === null) {
+            $this->linkService = Shop::Container()->getLinkService();
+        }
+
+        return $this->linkService;
+    }
 
     /**
      * @inheritdoc
@@ -147,8 +166,12 @@ class NewsController extends AbstractController
         $this->metaTitle       = '';
         $this->metaDescription = '';
         $this->metaKeywords    = '';
-        $linkService           = Shop::Container()->getLinkService();
-        $link                  = $linkService->getSpecialPage(\LINKTYP_NEWS);
+        try {
+            $link = $this->getLinkService()->getSpecialPage(\LINKTYP_NEWS);
+        } catch (SpecialPageNotFoundException) {
+            return $this->notFoundResponse($request, $args, $smarty,true);
+        }
+
         switch ($this->getPageType($this->state->getAsParams())) {
             case ViewType::NEWS_DETAIL:
                 Shop::setPageType(\PAGE_NEWSDETAIL);
@@ -198,13 +221,13 @@ class NewsController extends AbstractController
                 Shop::setPageType(\PAGE_NEWS);
                 $newsCategoryID = 0;
                 try {
-                    $page                  = $linkService->getSpecialPage(\LINKTYP_NEWS);
+                    $page                  = $this->getLinkService()->getSpecialPage(\LINKTYP_NEWS);
                     $this->canonicalURL    = $page->getURL($this->languageID);
                     $this->metaTitle       = $page->getMetaTitle();
                     $this->metaDescription = $page->getMetaDescription();
                     $this->metaKeywords    = $page->getMetaKeyword();
                 } catch (Exception) {
-                    $this->canonicalURL = $linkService->getStaticRoute('news.php');
+                    $this->canonicalURL = $this->getLinkService()->getStaticRoute('news.php');
                 }
                 $this->displayOverview($pagination, $newsCategoryID);
 
@@ -765,5 +788,41 @@ class NewsController extends AbstractController
     public function setNoticeMsg(string $noticeMsg): void
     {
         $this->noticeMsg = $noticeMsg;
+    }
+
+
+    /**
+     * @param ServerRequestInterface $request
+     * @param array                  $args
+     * @param JTLSmarty              $smarty
+     * @param bool                   $linkNotVisible
+     * @return ResponseInterface
+     */
+    public function notFoundResponse(
+        ServerRequestInterface $request,
+        array $args,
+        JTLSmarty $smarty,
+        bool $linkNotVisible = false
+    ): ResponseInterface {
+        if ($this->state->languageID === 0) {
+            $this->state->languageID = Shop::getLanguageID();
+        }
+        $this->state->is404  = true;
+        if ($linkNotVisible === true){
+            $this->state->linkID = Shop::Container()->getLinkService()->getSpecialPageID(\LINKTYP_LOGIN, true, false) ?: 0;
+        } else {
+            $this->state->linkID = Shop::Container()->getLinkService()->getSpecialPageID(\LINKTYP_404) ?: 0;
+        }
+
+        $pc                  = new PageController(
+            $this->db,
+            $this->cache,
+            $this->state,
+            $this->config,
+            $this->alertService
+        );
+        $pc->init();
+
+        return $pc->getResponse($request, $args, $smarty)->withStatus(404);
     }
 }

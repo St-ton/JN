@@ -822,6 +822,11 @@ class AccountController
                     '&n=' . Request::verifyGPCDataInt('n');
                 $redir->cName            = Shop::Lang()->get('news', 'redirect');
                 break;
+            case \R_LOGIN_NEWS:
+                $redir->nRedirect        = \R_LOGIN_NEWS;
+                $redir->cURL             = Request::getVar('slug');
+                $redir->cName            = Shop::Lang()->get('news', 'redirect');
+                break;
             default:
                 break;
         }

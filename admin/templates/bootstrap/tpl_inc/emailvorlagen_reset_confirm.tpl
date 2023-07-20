@@ -4,25 +4,25 @@
         <div class="card-body">
             <form method="post" action="{$adminURL}{$route}">
                 {$jtl_token}
-                <input type="hidden" name="resetEmailvorlage" value="1"/>
+                <input type="hidden" name="resetEmailvorlage" value="1">
                 {if isset($mailTemplate) && $mailTemplate->getPluginID() > 0}
-                    <input type="hidden" name="kPlugin" value="{$mailTemplate->getPluginID()}"/>
+                    <input type="hidden" name="kPlugin" value="{$mailTemplate->getPluginID()}">
                 {/if}
                 {if isset($emailTemplateIDsToReset)}
                     {foreach $emailTemplateIDsToReset as $kEmailvorlageID}
-                        <input type="hidden" name="kEmailvorlage[]" value="{$kEmailvorlageID}"/>
+                        <input type="hidden" name="kEmailvorlage[]" value="{$kEmailvorlageID}">
                     {/foreach}
                 {else}
-                    <input type="hidden" name="kEmailvorlage" value="{$mailTemplate->getID()}"/>
+                    <input type="hidden" name="kEmailvorlage" value="{$mailTemplate->getID()}">
                 {/if}
                 <div class="alert alert-danger">
                     {if isset($mailTemplate)}
                         <p><strong>{__('danger')}</strong>: {__('resetEmailTemplate')}</p>
                         <p>{sprintf(__('sureResetEmailTemplate'), __('name_'|cat:$mailTemplate->getModuleID()))}</p>
-                        {else}
+                    {else}
                         <p><strong>{__('danger')}</strong>: {__('resetEmailTemplates')}</p>
                         <p>{(__('sureResetEmailTemplates'))}</p>
-                        <input type="hidden" name="resetSelectedTemplates" value="2"/>
+                        <input type="hidden" name="resetSelectedTemplates" value="2">
                     {/if}
                 </div>
                 <div class="row">

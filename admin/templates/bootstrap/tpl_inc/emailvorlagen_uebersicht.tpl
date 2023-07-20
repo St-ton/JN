@@ -13,7 +13,7 @@
     <form name="uebersichtForm" method="post" action="{$adminURL}{$route}">
     {include file='tpl_inc/mailtemplate_list.tpl' heading=__('emailTemplates') mailTemplates=$mailTemplates}
     {include file='tpl_inc/mailtemplate_list.tpl' heading=__('pluginTemplates') mailTemplates=$pluginMailTemplates isPlugin=true}
-     <div class="save-wrapper">
+    <div class="save-wrapper">
         <div class="row">
             <div class="col-sm-6 col-xl-auto text-left">
                 <div class="custom-control custom-checkbox">
@@ -51,10 +51,10 @@
     function resetTemplate(tplID) {
         simpleAjaxCall(BACKEND_URL + 'emailtemplates', {
             jtl_token: JTL_TOKEN,
-                    "resetEmailvorlage": 1,
-                    "kEmailvorlage": tplID,
-                     "resetConfirmJaSubmit": 1
-                },function (result) {
+            resetEmailvorlage: 1,
+            kEmailvorlage: tplID,
+            resetConfirmJaSubmit: 1
+        }, result => {
             createNotify({
                 title: '{/literal}{__('successTemplateReset')}{literal}',
                 message: '{/literal}{__('ok')}{literal}',

@@ -2,8 +2,10 @@
 
 namespace JTL\Console\Command;
 
+use JTL\Cache\JTLCacheInterface;
 use JTL\Console\Application;
 use JTL\Console\ConsoleIO;
+use JTL\DB\DbInterface;
 use Symfony\Component\Console\Command\Command as BaseCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
@@ -14,14 +16,48 @@ use Symfony\Component\Console\Input\InputOption;
  */
 class Command extends BaseCommand
 {
+    protected DbInterface $db;
+
+    protected JTLCacheInterface $cache;
+
     /**
-     * Command constructor.
-     *
      * @param string|null $name
      */
-    public function __construct($name = null)
+    public function __construct(?string $name = null)
     {
         parent::__construct($name);
+    }
+
+    /**
+     * @return DbInterface
+     */
+    public function getDB(): DbInterface
+    {
+        return $this->db;
+    }
+
+    /**
+     * @param DbInterface $db
+     */
+    public function setDB(DbInterface $db): void
+    {
+        $this->db = $db;
+    }
+
+    /**
+     * @return JTLCacheInterface
+     */
+    public function getCache(): JTLCacheInterface
+    {
+        return $this->cache;
+    }
+
+    /**
+     * @param JTLCacheInterface $cache
+     */
+    public function setCache(JTLCacheInterface $cache): void
+    {
+        $this->cache = $cache;
     }
 
     /**

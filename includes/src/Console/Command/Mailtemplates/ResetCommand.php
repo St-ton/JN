@@ -28,12 +28,11 @@ class ResetCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $db        = Shop::Container()->getDB();
         $io        = $this->getIO();
-        $templates = $db->getObjects('SELECT DISTINCT kEmailVorlage FROM temailvorlagesprache');
+        $templates = $this->db->getObjects('SELECT DISTINCT kEmailVorlage FROM temailvorlagesprache');
         $count     = 0;
         foreach ($templates as $template) {
-            EmailTemplateController::resetTemplate((int)$template->kEmailVorlage, $db);
+            EmailTemplateController::resetTemplate((int)$template->kEmailVorlage, $this->db);
             $count++;
         }
         $io->writeln('<info>' . $count . ' templates have been reset.</info>');

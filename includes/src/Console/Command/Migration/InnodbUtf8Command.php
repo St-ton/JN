@@ -17,10 +17,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 class InnodbUtf8Command extends Command
 {
     /** @var array */
-    private $excludeTables = [];
+    private array $excludeTables = [];
 
     /** @var int */
-    private $errCounter = 0;
+    private int $errCounter = 0;
 
     /**
      * @inheritdoc
@@ -36,8 +36,7 @@ class InnodbUtf8Command extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $db    = Shop::Container()->getDB();
-        $table = DBMigrationHelper::getNextTableNeedMigration($db, $this->excludeTables);
+        $table = DBMigrationHelper::getNextTableNeedMigration($this->db, $this->excludeTables);
         while ($table !== null) {
             if ($this->errCounter > 20) {
                 $this->getIO()->error('aborted due to too many errors');
@@ -47,38 +46,38 @@ class InnodbUtf8Command extends Command
 
             $output->write('migrate ' . $table->TABLE_NAME . '... ');
 
-            if (DBMigrationHelper::isTableInUse($db, $table->TABLE_NAME)) {
-                $table = $this->nextWithFailure($output, $db, $table, false, 'already in use!');
+            if (DBMigrationHelper::isTableInUse($this->db, $table->TABLE_NAME)) {
+                $table = $this->nextWithFailure($output, $table, false, 'already in use!');
                 continue;
             }
 
-            $this->prepareTable($db, $table);
+            $this->prepareTable($table);
             $migrationState = DBMigrationHelper::isTableNeedMigration($table);
             if (($migrationState & DBMigrationHelper::MIGRATE_TABLE) !== DBMigrationHelper::MIGRATE_NONE) {
                 $fkSQLs = DBMigrationHelper::sqlRecreateFKs($table->TABLE_NAME);
                 foreach ($fkSQLs->dropFK as $fkSQL) {
-                    $db->query($fkSQL);
+                    $this->db->query($fkSQL);
                 }
-                $migrate = $db->query(DBMigrationHelper::sqlMoveToInnoDB($table));
+                $migrate = $this->db->query(DBMigrationHelper::sqlMoveToInnoDB($table));
                 foreach ($fkSQLs->createFK as $fkSQL) {
-                    $db->query($fkSQL);
+                    $this->db->query($fkSQL);
                 }
                 if (!$migrate) {
-                    $table = $this->nextWithFailure($output, $db, $table);
+                    $table = $this->nextWithFailure($output, $table);
                     continue;
                 }
             }
             if (($migrationState & DBMigrationHelper::MIGRATE_COLUMN) !== DBMigrationHelper::MIGRATE_NONE) {
                 $sql = DBMigrationHelper::sqlConvertUTF8($table);
-                if (!empty($sql) && !$db->query($sql)) {
-                    $table = $this->nextWithFailure($output, $db, $table);
+                if (!empty($sql) && !$this->db->query($sql)) {
+                    $table = $this->nextWithFailure($output, $table);
                     continue;
                 }
             }
-            $this->releaseTable($db, $table);
+            $this->releaseTable($table);
             $output->writeln('<info> ✔ </info>');
 
-            $table = DBMigrationHelper::getNextTableNeedMigration($db, $this->excludeTables);
+            $table = DBMigrationHelper::getNextTableNeedMigration($this->db, $this->excludeTables);
         }
 
         if ($this->errCounter > 0) {
@@ -91,20 +90,19 @@ class InnodbUtf8Command extends Command
     }
 
     /**
-     * @param DbInterface $db
-     * @param stdClass    $table
+     * @param stdClass $table
      */
-    private function prepareTable(DbInterface $db, $table): void
+    private function prepareTable($table): void
     {
         if (\version_compare(DBMigrationHelper::getMySQLVersion()->innodb->version, '5.6', '<')) {
             // If MySQL version is lower than 5.6 use alternative lock method
             // and delete all fulltext indexes because these are not supported
-            $db->query(DBMigrationHelper::sqlAddLockInfo($table->TABLE_NAME));
+            $this->db->query(DBMigrationHelper::sqlAddLockInfo($table->TABLE_NAME));
             $fulltextIndizes = DBMigrationHelper::getFulltextIndizes($table->TABLE_NAME);
             if ($fulltextIndizes) {
                 foreach ($fulltextIndizes as $fulltextIndex) {
                     /** @noinspection SqlResolve */
-                    $db->query(
+                    $this->db->query(
                         'ALTER TABLE `' . $table->TABLE_NAME . '`
                             DROP KEY `' . $fulltextIndex->INDEX_NAME . '`'
                     );
@@ -114,19 +112,17 @@ class InnodbUtf8Command extends Command
     }
 
     /**
-     * @param DbInterface $db
-     * @param stdClass    $table
+     * @param stdClass $table
      */
-    private function releaseTable(DbInterface $db, $table): void
+    private function releaseTable($table): void
     {
         if (\version_compare(DBMigrationHelper::getMySQLVersion()->innodb->version, '5.6', '<')) {
-            $db->query(DBMigrationHelper::sqlClearLockInfo($table));
+            $this->db->query(DBMigrationHelper::sqlClearLockInfo($table));
         }
     }
 
     /**
      * @param OutputInterface $output
-     * @param DbInterface     $db
      * @param stdClass        $table
      * @param bool            $releaseTable
      * @param string          $msg
@@ -134,7 +130,6 @@ class InnodbUtf8Command extends Command
      */
     private function nextWithFailure(
         OutputInterface $output,
-        DbInterface     $db,
         stdClass        $table,
         bool            $releaseTable = true,
         string          $msg = 'failure!'
@@ -143,9 +138,9 @@ class InnodbUtf8Command extends Command
         $output->writeln('<error>' . $msg . '</error>');
         $this->excludeTables[] = $table->TABLE_NAME;
         if ($releaseTable) {
-            $this->releaseTable($db, $table);
+            $this->releaseTable($table);
         }
 
-        return DBMigrationHelper::getNextTableNeedMigration($db, $this->excludeTables);
+        return DBMigrationHelper::getNextTableNeedMigration($this->db, $this->excludeTables);
     }
 }

@@ -34,9 +34,8 @@ class MigrateCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io                 = $this->getIO();
-        $db                 = Shop::Container()->getDB();
-        $updater            = new Updater($db);
-        $manager            = new MigrationManager($db);
+        $updater            = new Updater($this->db);
+        $manager            = new MigrationManager($this->db);
         $migrations         = $manager->getMigrations();
         $executedMigrations = $manager->getExecutedMigrations();
         $identifier         = \max(\array_merge($executedMigrations, \array_keys($migrations)));

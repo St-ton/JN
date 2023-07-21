@@ -10,6 +10,7 @@ use Symfony\Component\Console\Helper\TableStyle;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Systemcheck\Tests\AbstractTest;
 
 /**
  * Class InstallCommand
@@ -20,17 +21,17 @@ class InstallCommand extends Command
     /**
      * @var int
      */
-    protected $steps;
+    protected int $steps = 6;
 
     /**
      * @var int
      */
-    protected $currentStep;
+    protected int $currentStep = 1;
 
     /**
      * @var string
      */
-    protected $currentUser;
+    protected string $currentUser = '';
 
     /**
      * @var array
@@ -94,8 +95,7 @@ class InstallCommand extends Command
         $this->currentStep = 1;
         $this->currentUser = \trim(\getenv('USER'));
 
-        $this
-            ->setName('shop:install')
+        $this->setName('shop:install')
             ->setDescription('JTL-Shop install')
             ->addOption('shop-url', null, InputOption::VALUE_REQUIRED, 'Shop url')
             ->addOption('database-host', null, InputOption::VALUE_OPTIONAL, 'Database host')
@@ -141,7 +141,6 @@ class InstallCommand extends Command
             'sync-user',
             'sync-password',
         ];
-
         foreach ($requiredOptions as $option) {
             $value = $this->getOption($option);
             if ($value === null) {
@@ -222,18 +221,18 @@ class InstallCommand extends Command
         $systemCheckFailed  = false;
 
         foreach ($systemCheckResults['testresults'] as $resultGroup) {
+            /** @var AbstractTest $test */
             foreach ($resultGroup as $test) {
-                $result = (int)$test->getResult();
-                if ($result !== 0) {
+                $result = $test->getResult();
+                if ($result !== AbstractTest::RESULT_OK && $test->getIsOptional() === false) {
                     $systemCheckFailed = true;
                 }
             }
         }
-
+        if (isset($systemCheckResults['testresults'])) {
+            $this->printSystemCheckTable($systemCheckResults['testresults']['recommendations']);
+        }
         if ($systemCheckFailed) {
-            if (isset($systemCheckResults['testresults'])) {
-                $this->printSystemCheckTable($systemCheckResults['testresults']['recommendations']);
-            }
             $io->error('Failed');
 
             return Command::FAILURE;
@@ -316,13 +315,11 @@ class InstallCommand extends Command
         if ($localFilesystem->fileExists('/install/install.php')) {
             $localFilesystem->deleteDirectory('/install');
         }
-
         if ($localFilesystem->fileExists('/includes/config.JTL-Shop.ini.php')) {
             \chmod('/includes/config.JTL-Shop.ini.php', 0644);
             \chown('/includes/config.JTL-Shop.ini.php', $fileOwner);
             \chgrp('/includes/config.JTL-Shop.ini.php', $fileGroup);
         }
-
         $io->success('Installation completed.');
 
         return Command::SUCCESS;
@@ -335,7 +332,6 @@ class InstallCommand extends Command
     {
         $rows    = [];
         $headers = ['Name', 'Requirement', 'Actual Value'];
-
         foreach ($recommendations as $recommendation) {
             $rows[] = [
                 $recommendation->getName(),
@@ -345,7 +341,6 @@ class InstallCommand extends Command
                     : '<comment> ' . $recommendation->getCurrentState() . ' </comment>'
             ];
         }
-
         $tableStyle = new TableStyle();
         $tableStyle->setPadType(\STR_PAD_BOTH);
         $this->getIO()->writeln('');
@@ -360,12 +355,10 @@ class InstallCommand extends Command
     {
         $rows    = [];
         $headers = ['File/Dir', 'Correct permission', 'Permission'];
-
         foreach ($list as $path => $val) {
             $permission = $localFilesystem->visibility($path);
             $rows[]     = [$path, $val ? '<info> ✔ </info>' : '<comment> • </comment>', $permission];
         }
-
         $tableStyle = new TableStyle();
         $tableStyle->setPadType(\STR_PAD_BOTH);
         $this->getIO()->writeln('');

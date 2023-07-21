@@ -83,7 +83,7 @@ class CreateCommand extends Command
         $relPath   = 'models';
         $modelPath = $relPath . \DIRECTORY_SEPARATOR . $modelName . '.php';
         $tableDesc = [];
-        $attribs   = Shop::Container()->getDB()->getPDO()->query('DESCRIBE ' . $table);
+        $attribs   = $this->db->getPDO()->query('DESCRIBE ' . $table);
         $typeMap   = [
             'bool|boolean',
             'int|tinyint|smallint|mediumint|integer|bigint|decimal|dec',
@@ -99,7 +99,7 @@ class CreateCommand extends Command
                 'name'         => $attrib['Field'],
                 'dataType'     => $dataType,
                 'phpType'      => \array_reduce($typeMap, static function ($carry, $item) use ($dataType) {
-                    if (!isset($carry) && \preg_match("/$item/", $dataType)) {
+                    if (!isset($carry) && \preg_match('/' . $item . '/', $dataType)) {
                         $carry = \explode('|', $item, 2)[0];
                     }
 

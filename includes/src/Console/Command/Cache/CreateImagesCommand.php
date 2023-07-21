@@ -26,11 +26,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 class CreateImagesCommand extends Command
 {
     /**
-     * @var DbInterface|null
-     */
-    private ?DbInterface $db = null;
-
-    /**
      * @var bool
      */
     private bool $products = false;
@@ -109,7 +104,6 @@ class CreateImagesCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->db                   = Shop::Container()->getDB();
         $this->products             = $this->getOption('products');
         $this->manufacturers        = $this->getOption('manufacturers');
         $this->categories           = $this->getOption('categories');

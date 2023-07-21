@@ -85,7 +85,7 @@ class ValidateCommand extends Command
         }
         if (\is_dir($pluginPath)) {
             $io->writeln(\sprintf('<info>Validating plugin at</info> <comment>%s</comment>', $pluginDir));
-            $validator = new PluginValidator(Shop::Container()->getDB(), $parser);
+            $validator = new PluginValidator($this->db, $parser);
             $res       = $validator->validateByPath($pluginPath);
             if ($res === InstallCode::OK) {
                 $io->writeln(\sprintf('<info>Successfully validated</info> <comment>%s</comment>', $pluginDir));

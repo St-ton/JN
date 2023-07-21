@@ -29,7 +29,7 @@ class StatusCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $list               = [];
-        $manager            = new MigrationManager(Shop::Container()->getDB());
+        $manager            = new MigrationManager($this->db);
         $executedMigrations = $manager->getExecutedMigrations();
         foreach ($manager->getMigrations() as $key => $migration) {
             $list[] = (object)[
@@ -58,10 +58,13 @@ class StatusCommand extends Command
         $rows    = [];
         $headers = ['Migration', 'Description', 'Author', ''];
         foreach ($list as $item) {
-            $rows[] = [$item->id, $item->description, $item->author,
-                $item->executed ? '<info> ✔ </info>' : '<comment> • </comment>',];
+            $rows[] = [
+                $item->id,
+                $item->description,
+                $item->author,
+                $item->executed ? '<info> ✔ </info>' : '<comment> • </comment>'
+            ];
         }
-
         $this->getIO()->writeln('');
         $this->getIO()->table($headers, $rows);
     }

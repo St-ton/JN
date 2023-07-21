@@ -33,7 +33,7 @@ class DatabaseCommand extends Command
     {
         $io       = $this->getIO();
         $compress = $this->getOption('compress');
-        $updater  = new Updater(Shop::Container()->getDB());
+        $updater  = new Updater($this->getDB());
         try {
             $file = $updater->createSqlDumpFile($compress);
             $updater->createSqlDump($file, $compress);

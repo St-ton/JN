@@ -96,7 +96,7 @@ class GenerateDemoDataCommand extends Command
     private function generate(): void
     {
         $generator = new DemoDataInstaller(
-            Shop::Container()->getDB(),
+            $this->getDB(),
             [
                 'manufacturers'        => $this->manufacturers,
                 'categories'           => $this->categories,

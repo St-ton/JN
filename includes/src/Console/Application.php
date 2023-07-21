@@ -2,6 +2,7 @@
 
 namespace JTL\Console;
 
+use JTL\Cache\JTLCacheInterface;
 use JTL\Console\Command\Backup\DatabaseCommand;
 use JTL\Console\Command\Backup\FilesCommand;
 use JTL\Console\Command\Cache\ClearObjectCacheCommand;
@@ -24,14 +25,11 @@ use JTL\Console\Command\Model\CreateCommand as CreateModelCommand;
 use JTL\Console\Command\Plugin\CreateCommandCommand;
 use JTL\Console\Command\Plugin\CreateMigrationCommand;
 use JTL\Console\Command\Plugin\ValidateCommand;
+use JTL\DB\DbInterface;
 use JTL\Plugin\Admin\Listing;
 use JTL\Plugin\Admin\ListingItem;
 use JTL\Plugin\Admin\Validation\LegacyPluginValidator;
 use JTL\Plugin\Admin\Validation\PluginValidator;
-use JTL\Router\Router;
-use JTL\Router\State;
-use JTL\Shop;
-use JTL\Shopsetting;
 use JTL\XMLParser;
 use JTLShop\SemVer\Version;
 use RuntimeException;
@@ -67,25 +65,13 @@ class Application extends BaseApplication
     protected bool $isInstalled = false;
 
     /**
-     * Application constructor.
+     * @param DbInterface|null       $db
+     * @param JTLCacheInterface|null $cache
      */
-    public function __construct()
+    public function __construct(private readonly ?DbInterface $db, private readonly ?JTLCacheInterface $cache)
     {
         $this->devMode     = \APPLICATION_BUILD_SHA === '#DEV#' ?? false;
         $this->isInstalled = \defined('BLOWFISH_KEY');
-        if ($this->isInstalled) {
-            $db    = Shop::Container()->getDB();
-            $cache = Shop::Container()->getCache();
-            $cache->setJtlCacheConfig($db->selectAll('teinstellungen', 'kEinstellungenSektion', \CONF_CACHING));
-            Shop::setRouter(new Router(
-                $db,
-                $cache,
-                new State(),
-                Shop::Container()->getAlertService(),
-                Shopsetting::getInstance($db, $cache)->getAll()
-            ));
-        }
-
         parent::__construct('JTL-Shop', \APPLICATION_VERSION . ' - ' . ($this->devMode ? 'develop' : 'production'));
     }
 
@@ -97,15 +83,14 @@ class Application extends BaseApplication
         if (!$this->isInstalled || \SAFE_MODE === true) {
             return;
         }
-        $db      = Shop::Container()->getDB();
-        $version = $db->select('tversion', [], []);
+        $version = $this->db->select('tversion', [], []);
         if (Version::parse($version->nVersion ?? '400')->smallerThan(Version::parse('500'))) {
             return;
         }
         $parser          = new XMLParser();
-        $validator       = new LegacyPluginValidator($db, $parser);
-        $modernValidator = new PluginValidator($db, $parser);
-        $listing         = new Listing($db, Shop::Container()->getCache(), $validator, $modernValidator);
+        $validator       = new LegacyPluginValidator($this->db, $parser);
+        $modernValidator = new PluginValidator($this->db, $parser);
+        $listing         = new Listing($this->db, $this->cache, $validator, $modernValidator);
         $compatible      = $listing->getAll()->filter(static function (ListingItem $i): bool {
             return $i->isShop5Compatible();
         });
@@ -129,10 +114,13 @@ class Application extends BaseApplication
                 if (!\class_exists($class)) {
                     throw new RuntimeException('Class "' . $class . '" does not exist');
                 }
-
-                $command = new $class();
                 /** @var Command $command */
+                $command = new $class();
                 $command->setName($plugin->getPluginID() . ':' . $command->getName());
+                if (\is_a($command, Command::class)) {
+                    $command->setDB($this->db);
+                    $command->setCache($this->cache);
+                }
                 $this->add($command);
             }
         }
@@ -180,8 +168,7 @@ class Application extends BaseApplication
             $cmds[] = new SASSCommand();
             $cmds[] = new ResetCommand();
             $cmds[] = new GenerateDemoDataCommand();
-
-            if ($this->devMode) {
+            if ($this->devMode === true) {
                 $cmds[] = new CreateCommand();
             }
             if (\PLUGIN_DEV_MODE === true) {
@@ -192,6 +179,14 @@ class Application extends BaseApplication
         } else {
             $cmds[] = new InstallCommand();
         }
+        \array_map(function ($command): void {
+            if (!\is_a($command, Command::class)) {
+                return;
+            }
+            /** @var Command $command */
+            $command->setDB($this->db);
+            $command->setCache($this->cache);
+        }, $cmds);
 
         return $cmds;
     }

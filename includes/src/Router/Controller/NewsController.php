@@ -167,8 +167,13 @@ class NewsController extends AbstractController
         $this->metaDescription = '';
         $this->metaKeywords    = '';
         try {
-            $link = $this->getLinkService()->getSpecialPage(\LINKTYP_NEWS);
+            $link = $this->getLinkService()->getSpecialPage(\LINKTYP_NEWS, false);
+            if ($link->isVisible() === false) {
+                throw new Exception("Logged in users only");
+            }
         } catch (SpecialPageNotFoundException) {
+            return $this->notFoundResponse($request, $args, $smarty, false);
+        } catch (Exception) {
             return $this->notFoundResponse($request, $args, $smarty, true);
         }
 
@@ -809,7 +814,9 @@ class NewsController extends AbstractController
         }
         $this->state->is404 = true;
         if ($linkNotVisible === true) {
-            $this->state->linkID = Shop::Container()->getLinkService()->getSpecialPageID(\LINKTYP_LOGIN, true, false) ?: 0;
+            $this->state->linkID = Shop::Container()->getLinkService()->getSpecialPageID(\LINKTYP_LOGIN,
+                true,
+                false) ?: 0;
         } else {
             $this->state->linkID = Shop::Container()->getLinkService()->getSpecialPageID(\LINKTYP_404) ?: 0;
         }

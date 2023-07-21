@@ -169,7 +169,7 @@ class NewsController extends AbstractController
         try {
             $link = $this->getLinkService()->getSpecialPage(\LINKTYP_NEWS);
         } catch (SpecialPageNotFoundException) {
-            return $this->notFoundResponse($request, $args, $smarty, false);
+            return $this->notFoundResponse($request, $args, $smarty);
         }
 
         switch ($this->getPageType($this->state->getAsParams())) {

@@ -3563,7 +3563,7 @@ class Artikel implements RoutableInterface
             return null;
         }
         foreach (\get_object_vars($product) as $k => $v) {
-            if ($k !== 'db') {
+            if ($k !== 'db' && $k !== 'customerGroup') {
                 $this->$k = $v;
             }
         }

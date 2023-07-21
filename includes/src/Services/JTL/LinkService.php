@@ -231,9 +231,9 @@ final class LinkService implements LinkServiceInterface
      * @return LinkInterface
      * @throws SpecialPageNotFoundException
      */
-    public function getSpecialPage(int $linkType, bool $filtered = true): LinkInterface
+    public function getSpecialPage(int $linkType): LinkInterface
     {
-        $lg = $this->getLinkGroupByName('specialpages', $filtered);
+        $lg = $this->getLinkGroupByName('specialpages');
 
         if ($lg === null || ($lt = $lg->getLinks()->first(static function (LinkInterface $l) use ($linkType): bool {
             return $l->getLinkType() === $linkType;
@@ -247,10 +247,10 @@ final class LinkService implements LinkServiceInterface
     /**
      * @inheritdoc
      */
-    public function getSpecialPageID(int $linkType, bool $fallback = true, bool $filtered = true)
+    public function getSpecialPageID(int $linkType, bool $fallback = true)
     {
         try {
-            $link = $this->getSpecialPage($linkType, $filtered);
+            $link = $this->getSpecialPage($linkType);
         } catch (SpecialPageNotFoundException $e) {
             Shop::Container()->getLogService()->warning($e->getMessage());
             $link = null;

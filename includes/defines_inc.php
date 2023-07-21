@@ -332,7 +332,6 @@ const R_MAXBESTELLMENGE         = 8;
 const R_LOGIN_BEWERTUNG         = 9;
 const R_LOGIN_TAG               = 10;
 const R_LOGIN_NEWSCOMMENT       = 11;
-const R_LOGIN_NEWS              = 12;
 const R_ARTIKELABNAHMEINTERVALL = 14;
 const R_UNVERKAEUFLICH          = 15;
 const R_AUFANFRAGE              = 16;

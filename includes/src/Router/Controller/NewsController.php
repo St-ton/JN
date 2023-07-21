@@ -167,14 +167,9 @@ class NewsController extends AbstractController
         $this->metaDescription = '';
         $this->metaKeywords    = '';
         try {
-            $link = $this->getLinkService()->getSpecialPage(\LINKTYP_NEWS, false);
-            if ($link->isVisible() === false) {
-                throw new Exception("Logged in users only");
-            }
+            $link = $this->getLinkService()->getSpecialPage(\LINKTYP_NEWS);
         } catch (SpecialPageNotFoundException) {
             return $this->notFoundResponse($request, $args, $smarty, false);
-        } catch (Exception) {
-            return $this->notFoundResponse($request, $args, $smarty, true);
         }
 
         switch ($this->getPageType($this->state->getAsParams())) {
@@ -793,43 +788,5 @@ class NewsController extends AbstractController
     public function setNoticeMsg(string $noticeMsg): void
     {
         $this->noticeMsg = $noticeMsg;
-    }
-
-
-    /**
-     * @param ServerRequestInterface $request
-     * @param array                  $args
-     * @param JTLSmarty              $smarty
-     * @param bool                   $linkNotVisible
-     * @return ResponseInterface
-     */
-    public function notFoundResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        bool $linkNotVisible = false
-    ): ResponseInterface {
-        if ($this->state->languageID === 0) {
-            $this->state->languageID = Shop::getLanguageID();
-        }
-        $this->state->is404 = true;
-        if ($linkNotVisible === true) {
-            $this->state->linkID = Shop::Container()->getLinkService()->getSpecialPageID(\LINKTYP_LOGIN,
-                true,
-                false) ?: 0;
-        } else {
-            $this->state->linkID = Shop::Container()->getLinkService()->getSpecialPageID(\LINKTYP_404) ?: 0;
-        }
-
-        $pc = new PageController(
-            $this->db,
-            $this->cache,
-            $this->state,
-            $this->config,
-            $this->alertService
-        );
-        $pc->init();
-
-        return $pc->getResponse($request, $args, $smarty)->withStatus(404);
     }
 }

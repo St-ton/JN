@@ -1119,11 +1119,6 @@ class Artikel implements RoutableInterface
         if (Shop::getLanguageID() === 0 && isset($_SESSION['kSprache'], $_SESSION['cISOSprache'])) {
             Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
         }
-        $this->conf    = $this->getConfig();
-        $this->taxData = $this->getShippingAndTaxData();
-        if ($this->favourableShippingID > 0) {
-            $this->oFavourableShipping = new Versandart($this->favourableShippingID);
-        }
     }
 
     /**
@@ -1132,7 +1127,18 @@ class Artikel implements RoutableInterface
     public function __sleep()
     {
         return select(\array_keys(\get_object_vars($this)), static function ($e): bool {
-            return $e !== 'conf' && $e !== 'db' && $e !== 'oFavourableShipping';
+            return !\in_array(
+                $e,
+                [
+                    'conf',
+                    'db',
+                    'oVariationKombiKinderAssoc_arr',
+                    'oFavourableShipping',
+                    'customerGroup',
+                    'currentImagePath'
+                ],
+                true
+            );
         });
     }
 
@@ -3492,11 +3498,8 @@ class Artikel implements RoutableInterface
         ]);
 
         if ($noCache === false) {
-            // oVariationKombiKinderAssoc_arr can contain a lot of product objects, prices may depend on customers
-            // so do not save to cache
-            $toSave                                 = clone $this;
-            $toSave->oVariationKombiKinderAssoc_arr = null;
-            $toSave->Preise                         = $basePrice;
+            $toSave         = clone $this;
+            $toSave->Preise = $basePrice;
             Shop::Container()->getCache()->set($this->cacheID, $toSave, $cacheTags);
             self::$products[$this->cacheID] = $toSave;
         }
@@ -3566,6 +3569,11 @@ class Artikel implements RoutableInterface
             if ($k !== 'db' && $k !== 'customerGroup') {
                 $this->$k = $v;
             }
+        }
+        $this->conf    = $this->getConfig();
+        $this->taxData = $this->getShippingAndTaxData();
+        if ($this->favourableShippingID > 0) {
+            $this->oFavourableShipping = new Versandart($this->favourableShippingID);
         }
         $maxDiscount = $this->getDiscount($customerGroupID, $this->kArtikel);
         if ((int)$this->conf['global']['global_sichtbarkeit'] === 2

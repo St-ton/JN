@@ -39,6 +39,7 @@ use JTL\Router\RoutableTrait;
 use JTL\Router\Router;
 use JTL\Session\Frontend;
 use JTL\Shop;
+use JTL\Shopsetting;
 use stdClass;
 use function Functional\map;
 use function Functional\reduce_left;
@@ -1111,20 +1112,18 @@ class Artikel implements RoutableInterface
         if (Shop::getLanguageID() === 0 && isset($_SESSION['kSprache'], $_SESSION['cISOSprache'])) {
             Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
         }
-        // for some reason, db and cache will not be NULL after cache load
-        // and a fatal error will be thrown when checking against NULL:
+        // _sleep unsets some properties - these will have to be explicitly set to NULL
+        // otherwise null checks would raise
         // "must not be accessed before initialization"
-        $this->db      = null;
-        $this->cache   = null;
-        $this->conf    = $this->getConfig();
-        $this->taxData = $this->getShippingAndTaxData();
+        $this->db                             = null;
+        $this->cache                          = null;
+        $this->conf                           = $this->getConfig();
+        $this->oFavourableShipping            = null;
+        $this->oVariationKombiKinderAssoc_arr = null;
         if ($this->compressed === true) {
             $this->cBeschreibung    = \gzuncompress($this->cBeschreibung);
             $this->cKurzbezeichnung = \gzuncompress($this->cKurzbezeichnung);
             $this->compressed       = false;
-        }
-        if ($this->favourableShippingID > 0) {
-            $this->oFavourableShipping = new Versandart($this->favourableShippingID);
         }
     }
 
@@ -1134,7 +1133,19 @@ class Artikel implements RoutableInterface
     public function __sleep()
     {
         return select(\array_keys(\get_object_vars($this)), static function ($e): bool {
-            return $e !== 'conf' && $e !== 'db' && $e !== 'cache' && $e !== 'oFavourableShipping';
+            return !\in_array(
+                $e,
+                [
+                    'conf',
+                    'db',
+                    'cache',
+                    'oVariationKombiKinderAssoc_arr',
+                    'oFavourableShipping',
+                    'customerGroup',
+                    'currentImagePath'
+                ],
+                true
+            );
         });
     }
 
@@ -1205,7 +1216,7 @@ class Artikel implements RoutableInterface
      */
     protected function getConfig(): array
     {
-        return Shop::getSettings([
+        return Shopsetting::getInstance()->getSettings([
             \CONF_GLOBAL,
             \CONF_ARTIKELDETAILS,
             \CONF_ARTIKELUEBERSICHT,
@@ -3524,11 +3535,8 @@ class Artikel implements RoutableInterface
         ]);
 
         if ($noCache === false) {
-            // oVariationKombiKinderAssoc_arr can contain a lot of product objects, prices may depend on customers
-            // so do not save to cache
-            $toSave                                 = clone $this;
-            $toSave->oVariationKombiKinderAssoc_arr = null;
-            $toSave->Preise                         = $basePrice;
+            $toSave         = clone $this;
+            $toSave->Preise = $basePrice;
             if (\COMPRESS_DESCRIPTIONS === true) {
                 $toSave->cBeschreibung    = \gzcompress($toSave->cBeschreibung, \COMPRESSION_LEVEL);
                 $toSave->cKurzbezeichnung = \gzcompress($toSave->cKurzbezeichnung, \COMPRESSION_LEVEL);
@@ -3600,9 +3608,13 @@ class Artikel implements RoutableInterface
             return null;
         }
         foreach (\get_object_vars($product) as $k => $v) {
-            if ($k !== 'db') {
+            if ($k !== 'db' && $k !== 'cache' && $k !== 'customerGroup') {
                 $this->$k = $v;
             }
+        }
+        $this->taxData = $this->getShippingAndTaxData();
+        if ($this->favourableShippingID > 0) {
+            $this->oFavourableShipping = new Versandart($this->favourableShippingID);
         }
         $maxDiscount = $this->getDiscount($customerGroupID, $this->kArtikel);
         if ((int)$this->conf['global']['global_sichtbarkeit'] === 2

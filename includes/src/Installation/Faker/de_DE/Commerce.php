@@ -9,7 +9,7 @@ namespace JTL\Installation\Faker\de_DE;
 class Commerce extends \JTL\Installation\Faker\Commerce
 {
     /**
-     * @var array
+     * @var string[]
      */
     protected static array $department = [
         'Antiquitäten & Kunst', 'Auto & Motorrad: Fahrzeuge', 'Auto & Motorrad: Teile', 'Baby',
@@ -18,45 +18,58 @@ class Commerce extends \JTL\Installation\Faker\Commerce
         'Garten & Terrasse', 'Handys & Kommunikation', 'Haushaltsgeräte', 'Haustierbedarf', 'Heimwerker',
         'Immobilien', 'Kleidung & Accessoires', 'Modellbau', 'Musik', 'Musikinstrumente', 'Möbel & Wohnen',
         'Münzen', 'PC- & Videospiele', 'Reisen', 'Sammeln & Seltenes', 'Spielzeug', 'Sport', 'Tickets',
-        'TV, Video & Audio', 'Uhren & Schmuck', 'Verschiedenes',
+        'TV, Video & Audio', 'Uhren & Schmuck', 'Romane', 'Software', 'Hardware', 'Damenschmuck',
+        'Spirituosen', 'Heimkino', 'Kamera & Foto', 'Kopfhörer', 'Drogerieartikel', 'Navigation',
+        'Ladegeräte', 'Festnetztelefone', 'Wearables', 'MP3-Player', 'CD-Player', 'Verschiedenes',
     ];
 
     /**
-     * @var array
+     * @var string[]
      */
     protected static array $adjective = [
         'Klein', 'Ergonomisch', 'Rustikal', 'Intelligent', 'Herrlich', 'Unglaublich', 'Fantastisch',
         'Praktisch', 'Geschmeidig', 'Enorm', 'Mittelmäßig', 'Leicht', 'Aerodynamisch', 'Langlebig',
+        'Schick', 'Wertig', 'Toll', 'Günstig', 'Exorbitant', 'Hervorragend', 'Gut', 'Beliebt', 'Weich', 'Hart',
+        'Imposant', 'Gigantisch', 'Schmierig', 'Klebrig', 'Unterhaltsam', 'Besorgniserregend'
     ];
 
     /**
-     * @var array
+     * @var string[]
      */
     protected static array $material = [
         'Stahl', 'Beton', 'Kunststoff', 'Baumwolle', 'Granit', 'Gummi', 'Leder', 'Seide',
         'Wolle', 'Leinen', 'Marmor', 'Eisen', 'Bronze', 'Kupfer', 'Aluminium', 'Papier',
+        'Plutonium', 'Plastik', 'Wasser', 'Polyamid', 'Viscose', 'Elastan', 'Glas', 'Samt'
     ];
 
     /**
-     * @var array
+     * @var string[]
      */
     protected static array $product = [
-        'Stuhl', 'Auto', 'Computer', 'Handschuhe', 'Hose', 'Hemd', 'Tabelle', 'Schuhe', 'Hut',
-        'Platte', 'Messer', 'Flasche', 'Mantel',
-        'Lampe', 'Tastatur', 'Tasche', 'Bank', 'Uhr', 'Portemonnaie',
+        'Stuhl', 'Auto', 'Computer', 'Handschuhe', 'Hose', 'Hemd', 'Bikini', 'Schuhe', 'Hut',
+        'Platte', 'Messer', 'Flasche', 'Mantel', 'Briefbeschwerer', 'Unterhose', 'Stuhl', 'Bett', 'Handy',
+        'Lampe', 'Tastatur', 'Tasche', 'Bank', 'Uhr', 'Portemonnaie', 'Zange', 'Kanne', 'Rutsche',
+        'Socke', 'Brille', 'Schirm', 'Laptop', 'Telefon', 'Brett', 'Glas', 'Teller', 'Gabel',
+        'BH', 'Ring', 'Kissen', 'Decke', 'Schal', 'Mütze', 'Handy', 'Badehose', 'Tanktop',
     ];
 
     /**
      * maskulin = 0, feminin = 1, neutral = 2
      *
-     * @var array
+     * @var int[]
      */
-    protected static $article = [0, 2, 0, 0, 1, 2, 1, 1, 0, 1, 2, 1, 0, 1, 1, 1, 1, 1, 2];
+    protected static array $article = [
+        0, 2, 0, 0, 1, 2, 0, 1, 0,
+        1, 2, 1, 0, 0, 1, 1, 2, 2,
+        1, 1, 1, 1, 1, 2, 1, 1, 1,
+        1, 1, 0, 0, 2, 2, 2, 0, 1,
+        0, 0, 2, 1, 0, 1, 2, 1, 2,
+    ];
 
     /**
      * @var array
      */
-    protected static $suffix = [0 => 'er', 1 => 'e', 2 => 'es'];
+    protected static array $suffix = [0 => 'er', 1 => 'e', 2 => 'es'];
 
     /**
      * @return string
@@ -67,14 +80,14 @@ class Commerce extends \JTL\Installation\Faker\Commerce
         $suffix  = $this->adjectiveSuffix($product) ?: '';
 
         return static::randomElement(static::$adjective)
-            . $suffix . ' ' . static::randomElement(static::$material) . '-' . $product;
+. $suffix . ' ' . static::randomElement(static::$material) . '-' . $product;
     }
 
     /**
      * @param string $name
      * @return mixed|null
      */
-    public function adjectiveSuffix($name)
+    public function adjectiveSuffix(string $name)
     {
         $key = \array_search($name, static::$product, true);
         if (!\array_key_exists($key, static::$article)) {

@@ -427,7 +427,7 @@ class DemoDataInstaller
         $index = 0;
         for ($i = 1; $i <= $limit; ++$i) {
             try {
-                $name = $this->faker->unique()->company;
+                $name = $this->faker->unique()->company();
                 $res  = $this->db->getObjects(
                     'SELECT kHersteller 
                         FROM thersteller 
@@ -438,14 +438,14 @@ class DemoDataInstaller
                     throw new OverflowException();
                 }
             } catch (OverflowException) {
-                $name = $this->faker->unique(true)->company . '_' . ++$index;
+                $name = $this->faker->unique(true)->company() . '_' . ++$index;
             }
 
             $manufacturer              = new stdClass();
             $manufacturer->kHersteller = $maxPk + $i;
             $manufacturer->cName       = $name;
             $manufacturer->cSeo        = $this->slug($name);
-            $manufacturer->cHomepage   = $this->faker->unique()->url;
+            $manufacturer->cHomepage   = $this->faker->unique()->url();
             $manufacturer->nSortNr     = 0;
             $manufacturer->cBildpfad   = $this->createManufacturerImage($manufacturer->kHersteller, $name);
             $res                       = $this->db->insert('thersteller', $manufacturer);
@@ -485,7 +485,7 @@ class DemoDataInstaller
         $nameIDX = 0;
         for ($i = 1; $i <= $limit; ++$i) {
             try {
-                $name = $this->faker->unique()->department;
+                $name = $this->faker->unique()->department();
                 $res  = $this->db->getObjects(
                     'SELECT kKategorie 
                         FROM tkategorie 
@@ -496,7 +496,7 @@ class DemoDataInstaller
                     throw new OverflowException();
                 }
             } catch (OverflowException) {
-                $name = $this->faker->unique(true)->department . '_' . ++$nameIDX;
+                $name = $this->faker->unique(true)->department() . '_' . ++$nameIDX;
             }
             $category                        = new stdClass();
             $category->kKategorie            = $maxPk + $i;
@@ -553,7 +553,7 @@ class DemoDataInstaller
         $taxRate   = 19.00;
         for ($i = 1; $i <= $limit; ++$i) {
             try {
-                $name = $this->faker->unique()->productName;
+                $name = $this->faker->unique()->productName();
                 $res  = $this->db->getObjects(
                     'SELECT kArtikel 
                         FROM tartikel WHERE cName = :nm',
@@ -563,7 +563,7 @@ class DemoDataInstaller
                     throw new OverflowException();
                 }
             } catch (OverflowException) {
-                $name = $this->faker->unique(true)->productName . '_' . ++$index;
+                $name = $this->faker->unique(true)->productName() . '_' . ++$index;
             }
 
             $price                             = \random_int(1, 2999);
@@ -594,7 +594,7 @@ class DemoDataInstaller
             $product->fMindestbestellmenge     = (5 < \random_int(0, 10)) ? \random_int(0, 5) : 0;
             $product->fLieferantenlagerbestand = 0;
             $product->fLieferzeit              = 0;
-            $product->cBarcode                 = $this->faker->ean13;
+            $product->cBarcode                 = $this->faker->ean13();
             $product->cTopArtikel              = (\random_int(0, 10) === 10) ? 'Y' : 'N';
             $product->fGewicht                 = (float)\random_int(0, 10);
             $product->fArtikelgewicht          = $product->fGewicht;
@@ -685,28 +685,27 @@ class DemoDataInstaller
     public function createCustomers(?callable $callback = null): self
     {
         $limit = $this->config['customers'];
-        $fake  = $this->faker;
         $pdo   = $this->db;
         $xtea  = new XTEA(\BLOWFISH_KEY);
         for ($i = 1; $i <= $limit; ++$i) {
             if (\random_int(0, 1) === 0) {
-                $firstName = $fake->firstNameMale;
+                $firstName = $this->faker->firstNameMale();
                 $gender    = 'm';
             } else {
-                $firstName = $fake->firstNameFemale;
+                $firstName = $this->faker->firstNameFemale();
                 $gender    = 'w';
             }
-            $lastName      = $fake->lastName;
-            $streetName    = $fake->streetName;
+            $lastName      = $this->faker->lastName();
+            $streetName    = $this->faker->streetName();
             $houseNr       = \random_int(1, 200);
-            $cityName      = $fake->city;
-            $postcode      = $fake->postcode;
-            $email         = $fake->email;
-            $dateofbirth   = $fake->date('Y-m-d', '1998-12-31');
+            $cityName      = $this->faker->city();
+            $postcode      = $this->faker->postcode();
+            $email         = $this->faker->email();
+            $dateofbirth   = $this->faker->date('Y-m-d', '1998-12-31');
             $password      = \password_hash('pass', \PASSWORD_DEFAULT);
             $streetNameEnc = $xtea->encrypt($streetName);
             $lastNameEnc   = $xtea->encrypt($lastName);
-            $lastName      = $fake->lastName;
+            $lastName      = $this->faker->lastName();
 
             $customer = (object)[
                 'kKundengruppe'  => 1,
@@ -782,13 +781,13 @@ class DemoDataInstaller
             'cKundengruppen'     => '_DBNULL_',
             'kLinkgruppe'        => $lgID
         ];
-        $content   = $fake->text();
+        $content   = $this->faker->text();
         $codes     = [];
         foreach ($this->languages as $language) {
             $codes[] = $language->getIso();
         }
         for ($i = 1; $i <= $limit; ++$i) {
-            $data['cName'] = $fake->slug;
+            $data['cName'] = $this->faker->slug();
             foreach ($codes as $code) {
                 $data['cName_' . $code]    = $data['cName'] . '_' . $code;
                 $data['cSeo_' . $code]     = $data['cName'] . '_' . $code;
@@ -814,7 +813,7 @@ class DemoDataInstaller
             return $this;
         }
         for ($i = 0; $i < $limit; $i++) {
-            $name                     = $this->faker->word;
+            $name                     = $this->faker->word();
             $characteristic           = (object)[
                 'kMerkmal'         => 0,
                 'nSort'            => 0,
@@ -874,7 +873,7 @@ class DemoDataInstaller
             foreach ($this->languages as $language) {
                 $code = $language->getCode();
                 while (true) {
-                    $name   = $this->faker->word;
+                    $name   = $this->faker->word();
                     $exists = $this->db->select('tseo', 'cSeo', $name . $code);
                     if ($exists === null) {
                         break;
@@ -1001,7 +1000,7 @@ class DemoDataInstaller
         $rating->kArtikel        = $productID;
         $rating->kKunde          = 0;
         $rating->kSprache        = 1;
-        $rating->cName           = $this->faker->name;
+        $rating->cName           = $this->faker->name();
         $rating->cTitel          = \addcslashes($this->faker->realText(75), '\'"');
         $rating->cText           = $this->faker->text(100);
         $rating->nHilfreich      = \random_int(0, 10);

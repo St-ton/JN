@@ -1208,7 +1208,7 @@ final class Link extends AbstractLink implements RoutableInterface
     public function buildChildLinks(): array
     {
         $links = [];
-        foreach ($this->db->selectAll('tlink', 'kVaterLink', $this->getID(), 'kLink') as $id) {
+        foreach ($this->db->selectAll('tlink', 'kVaterLink', $this->getRealID($this->getID()), 'kLink') as $id) {
             $links[] = (new self($this->db))->load((int)$id->kLink);
         }
 

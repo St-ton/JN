@@ -24,7 +24,7 @@
             <File Path="css/custom.css"/>
         </CSS>
         <JS Name="admin_js">
-            <File Path="js/jquery-3.5.1.min.js"/>
+            <File Path="node_modules/jquery/dist/jquery.min.js"/>
             <File Path="js/jquery-ui.min.js"/>
             <File Path="js/popper.min.js"/>
             <File Path="js/bootstrap.js"/>

@@ -37,9 +37,13 @@
                                     {/if}
                                 </small>
                             </a>
-                            <div class="reason-comment d-none">
-                                {$pos->getReason()->title}
-                                {$pos->comment}
+                            <div>
+                                {if $pos->getReason()->title !== ''}
+                                    <span class="font-weight-bold">{$pos->getReason()->title}</span>
+                                {/if}
+                                {if $pos->comment !== ''}
+                                    <span class="line-clamp font-italic">{$pos->comment}</span>
+                                {/if}
                             </div>
                         </div>
                         <div class="col col-2 col-sm-2 col-md-2 text-right d-none d-sm-block">

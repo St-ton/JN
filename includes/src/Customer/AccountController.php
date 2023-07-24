@@ -990,7 +990,7 @@ class AccountController
             ->assign('rmas', $rmaService->loadRMAs())
             ->assign('returnableProducts', $returnableProducts)
             ->assign('reasons', $rmaService->loadReasons()->reasons)
-            ->assign('returnableOrders', $rmaService->getOrderIDs($returnableProducts))
+                ->assign('returnableOrders', $rmaService->getOrderArray($returnableProducts))
             ->assign('rmaService', $rmaService);
 
         return 'rma';

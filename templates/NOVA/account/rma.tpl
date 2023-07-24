@@ -43,22 +43,24 @@
                                     <span class="h3">
                                         {lang key='addPositions' section='rma'}
                                     </span>
+                                    <a href="#" class="float-right select_all"
+                                       data-lang-select="{lang key='addVisibleItems' section='rma'}"
+                                       data-lang-unselect="{lang key='removeVisibleItems' section='rma'}">
+                                        {lang key='addVisibleItems' section='rma'}
+                                    </a>
                                 {/col}
                             {/row}
                         {/block}
                     {/cardheader}
                     {cardbody}
                         {block name='rma-positions-body'}
-                            <a href="#" class="w-100 select_all">
-                                SELECT ALL
-                            </a>
                             <div class="col-sm-12 col-md-4 dataTable-custom-filter">
                                 <label>
                                     {select name="orders" aria=["label"=>"Bestellnummer"]
                                     class="custom-select custom-select-sm form-control form-control-sm"}
                                         <option value="" selected>{lang key='allOrders' section='rma'}</option>
-                                        {foreach $returnableOrders as $order}
-                                            <option value="{$order}">{$order}</option>
+                                        {foreach $returnableOrders as $orderNo}
+                                            <option value="{$orderNo}">{$orderNo}</option>
                                         {/foreach}
                                     {/select}
                                 </label>
@@ -267,6 +269,10 @@
                     $(this).closest('tr').find('.rmaFormPositions').removeClass("d-flex").addClass('d-none');
                 }
                 $('#rma').submit();
+                let selectAll = $('.select_all');
+                selectAll.text(
+                    $('.ra-switch').prop('checked') ? selectAll.data('lang-unselect') : selectAll.data('lang-select')
+                );
             });
         }
 
@@ -280,7 +286,6 @@
                 if ($(this).hasClass('btn-increment')) {
                     val += step;
                     if (val > max) {
-                        val = max;
                         eModal.alert({
                             message: '{lang key='maxAnzahlText' section='rma'}',
                             title: '{lang key='maxAnzahlTitle' section='rma'}',
@@ -465,7 +470,13 @@
             });
             $('.select_all').on('click', function (e) {
                 e.preventDefault();
-                $('.ra-switch').prop('checked', true);
+                let switches = $('.ra-switch');
+                switches.prop('checked', !switches.prop('checked'));
+                switches.trigger('change');
+                $(this).text(
+                    switches.prop('checked') ? $(this).data('lang-unselect') : $(this).data('lang-select')
+                );
+                //$('#rma').submit();
             });
         });
     </script>{/inline_script}

@@ -182,6 +182,22 @@ class RMAService extends AbstractServiceTim
     }
 
     /**
+     * @param RMAPositionDomainObject[] $positions
+     * @return array
+     */
+    public function getOrderArray(array $positions): array
+    {
+        $result = [];
+        foreach ($positions as $pos) {
+            if (isset($result[$pos->orderID])) {
+                continue;
+            }
+            $result[$pos->orderID] = $pos->getOrderNo();
+        }
+        return $result;
+    }
+
+    /**
      * @param array $orderIDs
      * @return array
      * @since 5.3.0
@@ -220,9 +236,7 @@ class RMAService extends AbstractServiceTim
         $groupByKey  = $allowedKeys[$by] ?? 'orderID';
 
         if ($by === 'order') {
-            $arrayKeys = $this->orderIDsToNOs(
-                $this->getOrderIDs($positions)
-            );
+            $arrayKeys = $this->getOrderArray($positions);
         }
         foreach ($positions as $pos) {
             $groupBy            = $arrayKeys[$pos->{$groupByKey}] ?? $pos->{$groupByKey};

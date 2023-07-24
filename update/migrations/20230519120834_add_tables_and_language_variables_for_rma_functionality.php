@@ -111,6 +111,16 @@ class Migration_20230519120834 extends Migration implements IMigration
                     'ger' => 'Retoure speichern',
                     'eng' => 'Save return'
                 ]
+            , 'addVisibleItems' =>
+                [
+                    'ger' => 'Sichtbare hinzufügen',
+                    'eng' => 'Add visible items'
+                ]
+            , 'removeVisibleItems' =>
+                [
+                    'ger' => 'Sichtbare entfernen',
+                    'eng' => 'Remove visible items'
+                ]
         ];
         $newVars->datatables = [
             'search' =>

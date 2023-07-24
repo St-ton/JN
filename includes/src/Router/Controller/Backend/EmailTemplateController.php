@@ -76,12 +76,14 @@ class EmailTemplateController extends AbstractBackendController
      */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
+        $this->smarty = $smarty;
         $this->checkPermissions(Permissions::CONTENT_EMAIL_TEMPLATE_VIEW);
         $this->getText->loadAdminLocale('pages/emailvorlagen');
         $this->cache->flushTags([Status::CACHE_ID_EMAIL_SYNTAX_CHECK]);
 
         $mailTemplate        = null;
         $continue            = true;
+        $massOperation       = false;
         $attachmentErrors    = [];
         $step                = 'uebersicht';
         $settingsTableName   = 'temailvorlageeinstellungen';
@@ -96,23 +98,57 @@ class EmailTemplateController extends AbstractBackendController
         if ($pluginID > 0) {
             $settingsTableName = $pluginSettingsTable;
         }
-        if ($this->request->get('err') !== null) {
+        if (isset($_GET['err'])) {
             $this->alertService->addError(\__('errorTemplate'), 'errorTemplate');
             if (\is_array($_SESSION['last_error'])) {
                 $this->alertService->addError($_SESSION['last_error']['message'], 'last_error');
                 unset($_SESSION['last_error']);
             }
         }
-        if ($this->request->postInt('resetConfirm') > 0) {
+        if ($this->request->postInt('resetConfirm') > 0 && $this->request->postInt('resetSelectedTemplates') === 0) {
             $mailTemplate = $this->getTemplateByID($this->request->postInt('resetConfirm'));
             if ($mailTemplate !== null) {
                 $step = 'zuruecksetzen';
             }
+        } elseif ($this->request->postInt('resetConfirm') === 0
+            && $this->request->postInt('resetSelectedTemplates') === 1
+        ) {
+            $emailTemplateIDsToReset = \array_map(static function ($e) {
+                return (int)$e;
+            }, $this->request->post('kEmailvorlage'));
+            $step                    = 'zuruecksetzen';
+            $emailTemplateID         = 0;
         }
+
+        if ($this->request->postInt('resetSelectedTemplates') > 0) {
+            $massOperation = true;
+        }
+
         if ($this->tokenIsValid
+            && $this->request->postInt('resetSelectedTemplates') === 2
+            && \is_array($this->request->post('kEmailvorlage'))
+            && $this->getTemplateByID($emailTemplateID) !== null
+            && $this->request->post('resetConfirmJaSubmit') === 'Ja'
+            && $this->request->post('resetConfirmNeinSubmit') !== 'Nein'
+        ) {
+            $emailTemplateIDs = \array_map(static function ($e) {
+                return (int)$e;
+            }, $this->request->post('kEmailvorlage'));
+
+            $step = 'uebersicht';
+
+            foreach ($emailTemplateIDs as $templateID) {
+                $revision = new Revision($this->db);
+                $revision->addRevision('mail', $templateID, true);
+                self::resetTemplate($templateID, $this->db);
+            }
+            $this->alertService->addSuccess(\__('successTemplatesReset'), 'successTemplatesReset');
+        }
+        if (!$massOperation
             && $emailTemplateID > 0
-            && $this->request->post('resetConfirmJaSubmit') !== null
+            && $this->tokenIsValid
             && $this->request->postInt('resetEmailvorlage') === 1
+            && $this->request->post('resetConfirmJaSubmit') !== null
             && $this->getTemplateByID($emailTemplateID) !== null
         ) {
             self::resetTemplate($emailTemplateID, $this->db);
@@ -129,7 +165,11 @@ class EmailTemplateController extends AbstractBackendController
                 $this->alertService->addError($msg, 'sentError' . $i);
             }
         }
-        if ($this->tokenIsValid && $emailTemplateID > 0 && $this->request->requestInt('Aendern') === 1) {
+        if ($emailTemplateID > 0
+            && !$massOperation
+            && $this->tokenIsValid
+            && $this->request->requestInt('Aendern') === 1
+        ) {
             $step     = 'uebersicht';
             $revision = new Revision($this->db);
             $revision->addRevision('mail', $emailTemplateID, true);
@@ -160,7 +200,7 @@ class EmailTemplateController extends AbstractBackendController
                 );
             }
 
-            $res = $this->updateTemplate($emailTemplateID, $this->request->getBody(), $_FILES);
+            $res = $this->updateTemplate($emailTemplateID, $_POST, $_FILES);
             if ($res === self::OK) {
                 $this->alertService->addSuccess(\__('successTemplateEdit'), 'successTemplateEdit');
                 $continue = $this->request->post('saveAndContinue', false) !== false;
@@ -172,13 +212,12 @@ class EmailTemplateController extends AbstractBackendController
                 }
             }
         }
-        if ($this->tokenIsValid
-            && (($emailTemplateID > 0 && $continue === true) || $this->request->get('a') === 'pdfloeschen')
+        if ((($emailTemplateID > 0 && $continue === true) || $this->request->get('a') === 'pdfloeschen')
+            && $this->tokenIsValid
         ) {
             $uploadDir = \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . \PFAD_EMAILPDFS;
-            if ($this->request->get('kS') !== null
-                && $this->request->get('token') !== null
-                && $this->request->get('token') === $_SESSION['jtl_token']
+            if (isset($_GET['kS'], $_GET['token'])
+                && $_GET['token'] === $_SESSION['jtl_token']
                 && $this->request->get('a') === 'pdfloeschen'
             ) {
                 $languageID = $this->request->requestInt('kS');
@@ -186,21 +225,21 @@ class EmailTemplateController extends AbstractBackendController
                 $this->alertService->addSuccess(\__('successFileAppendixDelete'), 'successFileAppendixDelete');
             }
 
-            $step        = 'bearbeiten';
+            $step        = $massOperation ? 'uebersicht' : 'bearbeiten';
             $config      = $this->db->selectAll($settingsTableName, 'kEmailvorlage', $emailTemplateID);
             $configAssoc = [];
             foreach ($config as $item) {
                 $configAssoc[$item->cKey] = $item->cValue;
             }
             $mailTemplate = $mailTemplate ?? $this->getTemplateByID($emailTemplateID);
-            $this->smarty->assign('availableLanguages', LanguageHelper::getAllLanguages(0, true, true))
+            $smarty->assign('availableLanguages', LanguageHelper::getAllLanguages(0, true, true))
                 ->assign('mailConfig', $configAssoc)
                 ->assign('cUploadVerzeichnis', $uploadDir);
         }
 
         if ($step === 'uebersicht') {
             $templates = $this->getAllTemplates();
-            $this->smarty->assign('mailTemplates', filter($templates, static function (Model $e): bool {
+            $smarty->assign('mailTemplates', filter($templates, static function (Model $e): bool {
                 return $e->getPluginID() === 0;
             }))
                 ->assign('pluginMailTemplates', filter($templates, static function (Model $e) {
@@ -210,11 +249,16 @@ class EmailTemplateController extends AbstractBackendController
 
         $this->assignScrollPosition();
 
-        return $this->smarty->assign('kPlugin', $pluginID)
+        if (isset($emailTemplateIDsToReset)) {
+            $smarty->assign('emailTemplateIDsToReset', $emailTemplateIDsToReset);
+        }
+
+        return $smarty->assign('kPlugin', $pluginID)
             ->assign('mailTemplate', $mailTemplate)
             ->assign('checkTemplate', $doCheck ?? 0)
             ->assign('cFehlerAnhang_arr', $attachmentErrors)
             ->assign('step', $step)
+            ->assign('route', $this->route)
             ->getResponse('emailvorlagen.tpl');
     }
 

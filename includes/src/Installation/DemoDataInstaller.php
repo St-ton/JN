@@ -533,9 +533,11 @@ class DemoDataInstaller
      */
     public function createProducts(?callable $callback = null): self
     {
-        $maxPk         = $this->db->getSingleInt('SELECT MAX(kArtikel) AS cnt FROM tartikel', 'cnt');
-        $manufacturers = $this->db->getSingleInt('SELECT COUNT(kHersteller) AS cnt FROM thersteller', 'cnt');
-        $categories    = $this->db->getSingleInt('SELECT COUNT(kKategorie) AS cnt FROM tkategorie', 'cnt');
+        $maxPk          = $this->db->getSingleInt('SELECT MAX(kArtikel) AS cnt FROM tartikel', 'cnt');
+        $manufacturers  = $this->db->getSingleInt('SELECT COUNT(kHersteller) AS cnt FROM thersteller', 'cnt');
+        $categories     = $this->db->getSingleInt('SELECT COUNT(kKategorie) AS cnt FROM tkategorie', 'cnt');
+        $maxPropertyID  = $this->db->getSingleInt('SELECT MAX(kEigenschaft) AS cnt FROM teigenschaft', 'cnt');
+        $maxPropValueID = $this->db->getSingleInt('SELECT MAX(kEigenschaftWert) AS cnt FROM teigenschaftwert', 'cnt');
         if ($categories === 0) {
             return $this;
         }
@@ -589,7 +591,7 @@ class DemoDataInstaller
             $product->cBeschreibung            = $this->faker->text(300);
             $product->cAnmerkung               = '';
             $product->fLagerbestand            = (float)\random_int(0, 1000);
-            $product->fStandardpreisNetto      = $price / 19.00;
+            $product->fStandardpreisNetto      = $price / $taxRate;
             $product->fMwSt                    = $taxRate;
             $product->fMindestbestellmenge     = (5 < \random_int(0, 10)) ? \random_int(0, 5) : 0;
             $product->fLieferantenlagerbestand = 0;
@@ -657,7 +659,7 @@ class DemoDataInstaller
                     $price3            = new stdClass();
                     $price3->kPreis    = $idxKg1;
                     $price3->nAnzahlAb = 0;
-                    $price3->fVKNetto  = $price / 19.00;
+                    $price3->fVKNetto  = $price / $taxRate;
                     $this->db->insert('tpreisdetail', $price3);
                 }
 
@@ -667,8 +669,53 @@ class DemoDataInstaller
                     $price3            = new stdClass();
                     $price3->kPreis    = $idxKg2;
                     $price3->nAnzahlAb = 0;
-                    $price3->fVKNetto  = $price / 19.00;
+                    $price3->fVKNetto  = $price / $taxRate;
                     $this->db->insert('tpreisdetail', $price3);
+                }
+                if (\random_int(0, 3) === 3) { // generate simple variations on 1 in 4 products
+                    ++$maxPropertyID;
+                    foreach ($this->languages as $language) {
+                        if ($language->isShopDefault()) {
+                            $property               = new stdClass();
+                            $property->kEigenschaft = $maxPropertyID;
+                            $property->kArtikel     = $product->kArtikel;
+                            $property->cName        = $language->getCode() === 'ger' ? 'Farbe' : 'Color';
+                            $property->cWaehlbar    = 'Y';
+                            $property->cTyp         = 'SELECTBOX';
+                            $property->nSort        = 0;
+                            $this->db->insert('teigenschaft', $property);
+                        } else {
+                            $loc               = new stdClass();
+                            $loc->kEigenschaft = $maxPropertyID;
+                            $loc->kSprache     = $language->getId();
+                            $loc->cName        = $language->getCode() === 'ger' ? 'Farbe' : 'Color';
+                            $this->db->insert('teigenschaftsprache', $loc);
+                        }
+                    }
+                    for ($j = 0; $j < 3; $j++) {
+                        ++$maxPropValueID;
+                        $propertyValue                   = new stdClass();
+                        $propertyValue->kEigenschaftWert = $maxPropValueID;
+                        $propertyValue->kEigenschaft     = $maxPropertyID;
+                        $propertyValue->cName            = $this->faker->unique()->colorName();
+                        $propertyValue->fAufpreisNetto   = 0.0000;
+                        $propertyValue->fGewichtDiff     = 0.0000;
+                        $propertyValue->cArtNr           = $product->cArtNr . '-clr' . $j;
+                        $propertyValue->nSort            = $j;
+                        $propertyValue->fLagerbestand    = 0;
+                        $propertyValue->fPackeinheit     = 0.0000;
+                        $this->db->insert('teigenschaftwert', $propertyValue);
+                        foreach ($this->languages as $language) {
+                            if ($language->isShopDefault()) {
+                                continue;
+                            }
+                            $loc                   = new stdClass();
+                            $loc->kSprache         = $language->getId();
+                            $loc->cName            = $propertyValue->cName;
+                            $loc->kEigenschaftWert = $propertyValue->kEigenschaftWert;
+                            $this->db->insert('teigenschaftwertsprache', $loc);
+                        }
+                    }
                 }
             }
 

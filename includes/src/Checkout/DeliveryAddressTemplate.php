@@ -58,7 +58,6 @@ class DeliveryAddressTemplate extends Adresse
      */
     public function load(int $id): ?self
     {
-        //$data = $this->db->select('tlieferadressevorlage', 'kLieferadresse', $id);
         $data = $this->db->executeQueryPrepared(
             'SELECT tlieferadressevorlage.*
             FROM tlieferadressevorlage
@@ -232,25 +231,25 @@ class DeliveryAddressTemplate extends Adresse
      */
     public function getDeliveryAddress(): Lieferadresse
     {
-        $address                    = new Lieferadresse();
-        $address->cVorname          = $this->cVorname;
-        $address->cNachname         = $this->cNachname;
-        $address->cFirma            = $this->cFirma ?? null;
-        $address->cZusatz           = $this->cZusatz ?? null;
-        $address->kKunde            = $this->kKunde;
-        $address->cAnrede           = $this->cAnrede ?? null;
-        $address->cTitel            = $this->cTitel;
-        $address->cStrasse          = $this->cStrasse;
-        $address->cHausnummer       = $this->cHausnummer;
-        $address->cAdressZusatz     = $this->cAdressZusatz ?? null;
-        $address->cPLZ              = $this->cPLZ;
-        $address->cOrt              = $this->cOrt;
-        $address->cLand             = $this->cLand;
-        $address->cBundesland       = $this->cBundesland ?? null;
-        $address->cTel              = $this->cTel ?? null;
-        $address->cMobil            = $this->cMobil ?? null;
-        $address->cFax              = $this->cFax ?? null;
-        $address->cMail             = $this->cMail ?? null;
+        $address                = new Lieferadresse();
+        $address->cVorname      = $this->cVorname;
+        $address->cNachname     = $this->cNachname;
+        $address->cFirma        = $this->cFirma ?? null;
+        $address->cZusatz       = $this->cZusatz ?? null;
+        $address->kKunde        = $this->kKunde;
+        $address->cAnrede       = $this->cAnrede ?? null;
+        $address->cTitel        = $this->cTitel;
+        $address->cStrasse      = $this->cStrasse;
+        $address->cHausnummer   = $this->cHausnummer;
+        $address->cAdressZusatz = $this->cAdressZusatz ?? null;
+        $address->cPLZ          = $this->cPLZ;
+        $address->cOrt          = $this->cOrt;
+        $address->cLand         = $this->cLand;
+        $address->cBundesland   = $this->cBundesland ?? null;
+        $address->cTel          = $this->cTel ?? null;
+        $address->cMobil        = $this->cMobil ?? null;
+        $address->cFax          = $this->cFax ?? null;
+        $address->cMail         = $this->cMail ?? null;
 
         return $address;
     }

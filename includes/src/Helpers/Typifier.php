@@ -62,6 +62,4 @@ class Typifier
     {
         return (is_object($value)) ? $value : new \stdClass();
     }
-
-
 }

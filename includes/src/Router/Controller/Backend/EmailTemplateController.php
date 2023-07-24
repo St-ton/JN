@@ -85,6 +85,7 @@ class EmailTemplateController extends AbstractBackendController
 
         $mailTemplate        = null;
         $continue            = true;
+        $massOperation       = false;
         $attachmentErrors    = [];
         $step                = 'uebersicht';
         $settingsTableName   = 'temailvorlageeinstellungen';
@@ -106,13 +107,46 @@ class EmailTemplateController extends AbstractBackendController
                 unset($_SESSION['last_error']);
             }
         }
-        if (Request::postInt('resetConfirm') > 0) {
+        if (Request::postInt('resetConfirm') > 0 && Request::postInt('resetSelectedTemplates') === 0) {
             $mailTemplate = $this->getTemplateByID(Request::postInt('resetConfirm'));
             if ($mailTemplate !== null) {
                 $step = 'zuruecksetzen';
             }
+        } elseif (Request::postInt('resetConfirm') === 0
+            && Request::postInt('resetSelectedTemplates') === 1) {
+            $emailTemplateIDsToReset = \array_map(static function ($e) {
+                return (int)$e;
+            }, Request::postVar('kEmailvorlage'));
+            $step                    = 'zuruecksetzen';
+            $emailTemplateID         = 0;
+        }
+
+        if (Request::postInt('resetSelectedTemplates') > 0) {
+            $massOperation = true;
+        }
+
+        if (Request::postInt('resetSelectedTemplates') === 2
+            && \is_array(Request::postVar('kEmailvorlage'))
+            && Form::validateToken()
+            && $this->getTemplateByID($emailTemplateID) !== null
+            && Request::postVar('resetConfirmJaSubmit') === 'Ja'
+            && Request::postVar('resetConfirmNeinSubmit') !== 'Nein'
+        ) {
+            $emailTemplateIDs = \array_map(static function ($e) {
+                return (int)$e;
+            }, Request::postVar('kEmailvorlage'));
+
+            $step = 'uebersicht';
+
+            foreach ($emailTemplateIDs as $templateID) {
+                $revision = new Revision($this->db);
+                $revision->addRevision('mail', $templateID, true);
+                self::resetTemplate($templateID, $this->db);
+            }
+            $this->alertService->addSuccess(\__('successTemplatesReset'), 'successTemplatesReset');
         }
         if (isset($_POST['resetConfirmJaSubmit'])
+            && !$massOperation
             && $emailTemplateID > 0
             && Request::postInt('resetEmailvorlage') === 1
             && Form::validateToken()
@@ -132,7 +166,11 @@ class EmailTemplateController extends AbstractBackendController
                 $this->alertService->addError($msg, 'sentError' . $i);
             }
         }
-        if ($emailTemplateID > 0 && Request::verifyGPCDataInt('Aendern') === 1 && Form::validateToken()) {
+        if ($emailTemplateID > 0
+            && !$massOperation
+            && Request::verifyGPCDataInt('Aendern') === 1
+            && Form::validateToken()
+        ) {
             $step     = 'uebersicht';
             $revision = new Revision($this->db);
             $revision->addRevision('mail', $emailTemplateID, true);
@@ -188,7 +226,7 @@ class EmailTemplateController extends AbstractBackendController
                 $this->alertService->addSuccess(\__('successFileAppendixDelete'), 'successFileAppendixDelete');
             }
 
-            $step        = 'bearbeiten';
+            $step        = $massOperation ? 'uebersicht' : 'bearbeiten';
             $config      = $this->db->selectAll($settingsTableName, 'kEmailvorlage', $emailTemplateID);
             $configAssoc = [];
             foreach ($config as $item) {
@@ -211,6 +249,10 @@ class EmailTemplateController extends AbstractBackendController
         }
 
         $this->assignScrollPosition();
+
+        if (isset($emailTemplateIDsToReset)) {
+            $smarty->assign('emailTemplateIDsToReset', $emailTemplateIDsToReset);
+        }
 
         return $smarty->assign('kPlugin', $pluginID)
             ->assign('mailTemplate', $mailTemplate)

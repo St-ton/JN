@@ -222,12 +222,12 @@ class Campaign
      */
     public static function checkCampaignParameters(): void
     {
-        $campaigns = self::getAvailable();
-        if (\count($campaigns) === 0) {
-            return;
-        }
         $visitorID = Frontend::get('oBesucher')->kBesucher ?? 0;
         if ($visitorID <= 0) {
+            return;
+        }
+        $campaigns = self::getAvailable();
+        if (\count($campaigns) === 0) {
             return;
         }
         $db       = Shop::Container()->getDB();
@@ -249,7 +249,7 @@ class Campaign
                         Text::filterXSS($_SERVER['REQUEST_URI']) . ';' . $referrer
                     ]
                 );
-                if (!isset($event->kKampagneVorgang)) {
+                if ($event === null) {
                     $event               = new stdClass();
                     $event->kKampagne    = $campaign->kKampagne;
                     $event->kKampagneDef = \KAMPAGNE_DEF_HIT;
@@ -274,8 +274,7 @@ class Campaign
                     ['kKampagneDef', 'kKampagne', 'kKey'],
                     [\KAMPAGNE_DEF_HIT, \KAMPAGNE_INTERN_GOOGLE, $visitorID]
                 );
-
-                if (!isset($event->kKampagneVorgang)) {
+                if ($event === null) {
                     $campaign            = new self(\KAMPAGNE_INTERN_GOOGLE);
                     $event               = new stdClass();
                     $event->kKampagne    = \KAMPAGNE_INTERN_GOOGLE;

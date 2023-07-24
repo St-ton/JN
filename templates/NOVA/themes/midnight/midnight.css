@@ -18649,6 +18649,54 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
 .ribbon-9::before {
   border-right-color: #9a005d;
 }
+.ribbon-custom.bg-gray {
+  border-right-color: #616161;
+}
+.ribbon-custom.bg-gray-light {
+  border-right-color: #ebebeb;
+}
+.ribbon-custom.bg-gray-medium {
+  border-right-color: gainsboro;
+}
+.ribbon-custom.bg-gray-dark {
+  border-right-color: #8c8c8c;
+}
+.ribbon-custom.bg-gray-darker {
+  border-right-color: #434343;
+}
+.ribbon-custom.bg-primary {
+  border-right-color: #1664b8;
+}
+.ribbon-custom.bg-secondary {
+  border-right-color: #1664b8;
+}
+.ribbon-custom.bg-success {
+  border-right-color: #b9debd;
+}
+.ribbon-custom.bg-danger {
+  border-right-color: #deb7bf;
+}
+.ribbon-custom.bg-warning {
+  border-right-color: #f5e8c2;
+}
+.ribbon-custom.bg-info {
+  border-right-color: #f0f0f0;
+}
+.ribbon-custom.bg-light {
+  border-right-color: #ebebeb;
+}
+.ribbon-custom.bg-dark {
+  border-right-color: #434343;
+}
+.ribbon-custom.bg-white {
+  border-right-color: #434343;
+}
+.ribbon-custom.bg-transparent {
+  border-right-color: rgba(0, 0, 0, 0);
+}
+.ribbon-custom:before {
+  border-right-color: inherit;
+}
 /* Artikel Bilder Slider vertikal */
 .slick-down, .slick-up {
   outline: none;
@@ -20824,7 +20872,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   margin-bottom: 1rem;
 }
 .gallery, .list {
-  align-items: flex-end;
+  align-items: flex-start;
 }
 .gallery .image-wrapper, .list .image-wrapper {
   display: block;

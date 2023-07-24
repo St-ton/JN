@@ -69,7 +69,8 @@
                                         options=[
                                             'text', 'title', 'titel',
                                             {$inputVal_title|default:null}, {lang key='title' section='account data'},
-                                            {$Einstellungen.kunden.kundenregistrierung_abfragen_titel}, null, 'billing honorific-prefix'
+                                            {$Einstellungen.kunden.kundenregistrierung_abfragen_titel}, null,
+                                            'billing honorific-prefix', null, 64
                                         ]
                                     }
                                 {/block}
@@ -127,7 +128,8 @@
                                         options=[
                                             'text', 'firm', 'firma',
                                             {$inputVal_firm|default:null}, {lang key='firm' section='account data'},
-                                            $Einstellungen.kunden.kundenregistrierung_abfragen_firma, null, 'billing organization'
+                                            $Einstellungen.kunden.kundenregistrierung_abfragen_firma, null,
+                                            'billing organization', null, 128
                                         ]
                                     }
                                 {/block}
@@ -146,7 +148,7 @@
                                         options=[
                                             'text', 'firmext', 'firmazusatz',
                                             {$inputVal_firmext|default:null}, {lang key='firmext' section='account data'},
-                                            $Einstellungen.kunden.kundenregistrierung_abfragen_firmazusatz
+                                            $Einstellungen.kunden.kundenregistrierung_abfragen_firmazusatz, null, 60
                                         ]
                                     }
                                 {/block}
@@ -339,6 +341,8 @@
                                         placeholder=" "
                                         required=true
                                         autocomplete="billing postal-code"
+                                        maxlength="20"
+                                        data=["chars-left-msg"=>"{lang key='charactersLeft'}"]
                                     }
                                 {/formgroup}
                             {/block}
@@ -409,6 +413,8 @@
                                         id="ustid"
                                         placeholder=" "
                                         required=($Einstellungen.kunden.kundenregistrierung_abfragen_ustid === 'Y')
+                                        maxlength="20"
+                                        data=["chars-left-msg"=>"{lang key='charactersLeft'}"]
                                     }
                                 {/formgroup}
                             {/col}
@@ -471,7 +477,8 @@
                                             options=[
                                                 'tel', 'tel', 'tel',
                                                 {$inputVal_tel|default:null}, {lang key='tel' section='account data'},
-                                                $Einstellungen.kunden.kundenregistrierung_abfragen_tel, null, 'billing home tel'
+                                                $Einstellungen.kunden.kundenregistrierung_abfragen_tel, null,
+                                                'billing home tel', null, 45
                                             ]
                                         }
                                     {/block}
@@ -490,7 +497,8 @@
                                             options=[
                                                 'tel', 'fax', 'fax',
                                                 {$inputVal_fax|default:null}, {lang key='fax' section='account data'},
-                                                $Einstellungen.kunden.kundenregistrierung_abfragen_fax, null, 'billing fax tel'
+                                                $Einstellungen.kunden.kundenregistrierung_abfragen_fax, null,
+                                                'billing fax tel', null, 45
                                             ]
                                         }
                                     {/block}
@@ -511,7 +519,8 @@
                                             options=[
                                                 'tel', 'mobile', 'mobil',
                                                 {$inputVal_mobile|default:null}, {lang key='mobile' section='account data'},
-                                                $Einstellungen.kunden.kundenregistrierung_abfragen_mobil, null, 'billing mobile tel'
+                                                $Einstellungen.kunden.kundenregistrierung_abfragen_mobil, null,
+                                                'billing mobile tel', null, 30
                                             ]
                                         }
                                     {/block}

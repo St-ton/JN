@@ -3506,8 +3506,8 @@ class Artikel implements RoutableInterface
         if ($noCache === false) {
             // oVariationKombiKinderAssoc_arr can contain a lot of product objects, prices may depend on customers
             // so do not save to cache
-            $toSave                                 = clone $this;
-            $toSave->Preise                         = $basePrice;
+            $toSave         = clone $this;
+            $toSave->Preise = $basePrice;
             if (\COMPRESS_DESCRIPTIONS === true) {
                 $toSave->cBeschreibung    = \gzcompress($toSave->cBeschreibung, \COMPRESSION_LEVEL);
                 $toSave->cKurzbezeichnung = \gzcompress($toSave->cKurzbezeichnung, \COMPRESSION_LEVEL);

@@ -11,9 +11,6 @@ use JTL\RMA\Repositories\RMAPositionRepository;
 use JTL\RMA\Repositories\RMAReasonLangRepository;
 use JTL\RMA\Repositories\RMAReasonRepository;
 use JTL\RMA\Repositories\RMARepository;
-use JTL\Session\Frontend;
-use JTL\Shop;
-use JTL\Shopsetting;
 
 /**
  * Class RMAService
@@ -104,15 +101,13 @@ class RMAService extends AbstractServiceTim
     }
 
     /**
-     * @param int|null $customerID
-     * @param int|null $langID
+     * @param int $customerID
+     * @param int $langID
      * @return $this
      * @since 5.3.0
      */
-    public function loadRMAs(?int $customerID = null, ?int $langID = null): self
+    public function loadRMAs(int $customerID, int $langID): self
     {
-        $customerID = $customerID ?? Frontend::getCustomer()->getID();
-        $langID     = $langID ?? Shop::getLanguageID();
         foreach ($this->getRMARepository()->getList([
             'customerID' => $customerID,
             'langID' => $langID
@@ -125,16 +120,21 @@ class RMAService extends AbstractServiceTim
 
     /**
      * @param int $id
+     * @param int $customerID
+     * @param int $langID
      * @return RMADomainObject
      * @since 5.3.0
      */
-    public function loadRMA(int $id): RMADomainObject
+    public function loadRMA(int $id, int $customerID, int $langID): RMADomainObject
     {
         if (isset($this->rmas[$id])) {
             return $this->rmas[$id];
         }
 
-        return $this->loadRMAs()->rmas[$id] ?? $this->generateDomainObject(
+        return $this->loadRMAs(
+            $customerID,
+            $langID
+        )->rmas[$id] ?? $this->generateDomainObject(
             RMADomainObject::class,
             $this->getRMARepository()->getDefaultValues()
         );
@@ -202,18 +202,9 @@ class RMAService extends AbstractServiceTim
      * @return array
      * @since 5.3.0
      */
-    public static function orderIDsToNOs(array $orderIDs): array
+    public function orderIDsToNOs(array $orderIDs): array
     {
-        $result = [];
-        Shop::Container()->getDB()->getCollection(
-            'SELECT tbestellung.kBestellung AS orderID, tbestellung.cBestellNr AS orderNo
-            FROM tbestellung
-            WHERE tbestellung.kBestellung IN (' . \implode(',', $orderIDs) . ')',
-            []
-        )->each(function ($obj) use (&$result) {
-            $result[(int)$obj->orderID] = $obj->orderNo;
-        });
-        return $result;
+        return $this->getRMARepository()->orderIDsToNOs($orderIDs);
     }
 
     /**
@@ -264,23 +255,23 @@ class RMAService extends AbstractServiceTim
     }
 
     /**
-     * @param int|null $customerID
-     * @param int|null $languageID
-     * @param int|null $cancellationTime
+     * @param int $customerID
+     * @param int $languageID
+     * @param int $cancellationTime
      * @return RMAPositionDomainObject[]
      * @since 5.3.0
      */
     public function getReturnableProducts(
-        ?int $customerID = null,
-        ?int $languageID = null,
-        ?int $cancellationTime = null
+        int $customerID,
+        int $languageID,
+        int $cancellationTime
     ): array {
         if (!isset($this->returnableProducts)) {
             $returnableProducts = [];
             foreach ($this->getRMARepository()->getReturnableProducts(
-                $customerID ?? Frontend::getCustomer()->getID(),
-                $languageID ?? Shop::getLanguageID(),
-                $cancellationTime ?? Shopsetting::getInstance()->getValue(\CONF_GLOBAL, 'global_cancellation_time')
+                $customerID,
+                $languageID,
+                $cancellationTime
             ) as $returnableProduct) {
                 $returnableProducts[] = $this->generateDomainObject(
                     RMAPositionDomainObject::class,
@@ -296,13 +287,12 @@ class RMAService extends AbstractServiceTim
     }
 
     /**
-     * @param int|null $langID
+     * @param int $langID
      * @return $this
      * @since 5.3.0
      */
-    public function loadReasons(?int $langID = null): self
+    public function loadReasons(int $langID): self
     {
-        $langID = $langID ?? Shop::getLanguageID();
         foreach ($this->getRMAReasonLangRepository()->getList(['langID' => $langID]) as &$reason) {
             $reason->id                       = (int)$reason->id;
             $reason->reasonID                 = (int)$reason->reasonID;
@@ -318,12 +308,13 @@ class RMAService extends AbstractServiceTim
 
     /**
      * @param int $id
+     * @param int $languageID
      * @return RMAReasonLangDomainObject
      */
-    public function getReason(int $id): RMAReasonLangDomainObject
+    public function getReason(int $id, int $languageID): RMAReasonLangDomainObject
     {
         if (!isset($this->reasons)) {
-            $this->loadReasons();
+            $this->loadReasons($languageID);
         }
         return $this->reasons[$id] ?? $this->generateDomainObject(
             RMAReasonLangDomainObject::class,

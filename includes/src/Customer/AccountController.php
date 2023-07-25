@@ -213,7 +213,7 @@ class AccountController
         }
         $rmaID = Request::verifyGPCDataInt('editRMA');
         if ($rmaID > 0 || Request::verifyGPCDataInt('newRMA') > 0) {
-            $step = $this->rmaOrder($rmaID);
+            $step = $this->rmaOrder($rmaID, $customerID);
         }
         if (Request::verifyGPCDataInt('RMAs') > 0) {
             $step = $this->rmaOrders();
@@ -265,7 +265,10 @@ class AccountController
         if ($step === 'mein Konto') {
             $rmaService = new RMAService();
             $this->smarty->assign('RMAService', $rmaService)
-                ->assign('rmas', $rmaService->loadRMAs($customerID)->rmas);
+                ->assign('rmas', $rmaService->loadRMAs(
+                    $customerID,
+                    Shop::getLanguageID()
+                )->rmas);
             $deliveryAddresses = $this->getDeliveryAddresses();
             \executeHook(\HOOK_JTL_PAGE_MEINKKONTO, ['deliveryAddresses' => &$deliveryAddresses]);
             $this->smarty->assign('compareList', new ComparisonList());
@@ -980,16 +983,28 @@ class AccountController
      * @return string
      * @since 5.3.0
      */
-    private function rmaOrder(int $rmaID): string
+    private function rmaOrder(int $rmaID, int $customerID): string
     {
+        $languageID = Shop::getLanguageID();
         $this->getDeliveryAddresses(['shippingAddresses', 'shippingCountries']);
         $rmaService         = new RMAService();
-        $returnableProducts = $rmaService->getReturnableProducts();
+        $returnableProducts = $rmaService->getReturnableProducts(
+            $customerID,
+            $languageID,
+            Shopsetting::getInstance()->getValue(\CONF_GLOBAL, 'global_cancellation_time')
+        );
 
-        $this->smarty->assign('rma', $rmaService->loadRMA($rmaID))
-            ->assign('rmas', $rmaService->loadRMAs())
+        $this->smarty->assign('rma', $rmaService->loadRMA(
+            $rmaID,
+            $customerID,
+            $languageID
+        ))
+            ->assign('rmas', $rmaService->loadRMAs(
+                $customerID,
+                $languageID
+            ))
             ->assign('returnableProducts', $returnableProducts)
-            ->assign('reasons', $rmaService->loadReasons()->reasons)
+            ->assign('reasons', $rmaService->loadReasons($languageID)->reasons)
                 ->assign('returnableOrders', $rmaService->getOrderArray($returnableProducts))
             ->assign('rmaService', $rmaService);
 

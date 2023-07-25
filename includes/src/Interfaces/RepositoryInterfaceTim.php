@@ -28,11 +28,18 @@ interface RepositoryInterfaceTim
     public function getColumnMapping(): array;
 
     /**
-     * @param array $array1
-     * @param array $array2
+     * @param mixed $oldValue
+     * @param mixed $newValue
+     * @return mixed
+     */
+    public function setType(mixed $oldValue, mixed $newValue): mixed;
+
+    /**
+     * @param array $default
+     * @param array $data
      * @return array
      */
-    public function arrayCombine(array $default, array $data): array;
+    public function combineData(array $default, array $data): array;
 
     /**
      * @param array $data

@@ -36,7 +36,7 @@ class RMAReasonLangRepository extends AbstractRepositoryTim
             'langID' => 0,
             'title'  => ''
         ];
-        return $this->arrayCombine($default, $data);
+        return $this->combineData($default, $data);
     }
 
     /**

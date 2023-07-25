@@ -1476,6 +1476,7 @@ class IOMethods
 
         $rmaService = new RMAService();
         $customerID = Frontend::getCustomer()->getID();
+        $languageID = Shop::getLanguageID();
         if ($customerID <= 0) {
             $response->result = false;
             $response->msg    = Shop::Lang()->get('rma_login', 'rma');
@@ -1486,7 +1487,7 @@ class IOMethods
 
         $returnableProducts = $rmaService->getReturnableProducts(
             $customerID,
-            Shop::getLanguageID(),
+            $languageID,
             Shopsetting::getInstance()->getValue(\CONF_GLOBAL, 'global_cancellation_time')
         );
 
@@ -1526,7 +1527,10 @@ class IOMethods
                         $data,
                         [
                             'product' => $returnableProduct->getProduct(),
-                            'reason' => $rmaService->getReason($data['reasonID'])
+                            'reason' => $rmaService->getReason(
+                                $data['reasonID'],
+                                $languageID
+                            )
                         ]
                     )
                 )
@@ -1583,6 +1587,7 @@ class IOMethods
 
         $rmaService = new RMAService();
         $customerID = Frontend::getCustomer()->getID();
+        $languageID = Shop::getLanguageID();
         if ($customerID <= 0) {
             $response->result = false;
             $response->msg    = Shop::Lang()->get('rma_login', 'rma');
@@ -1599,7 +1604,7 @@ class IOMethods
 
         $returnableProducts = $rmaService->getReturnableProducts(
             $customerID,
-            Shop::getLanguageID(),
+            $languageID,
             Shopsetting::getInstance()->getValue(\CONF_GLOBAL, 'global_cancellation_time')
         );
 
@@ -1642,7 +1647,10 @@ class IOMethods
                         $rmaPositionData,
                         [
                             'product' => $returnableProduct->getProduct(),
-                            'reason' => $rmaService->getReason($rmaPositionData['reasonID'])
+                            'reason' => $rmaService->getReason(
+                                $rmaPositionData['reasonID'],
+                                $languageID
+                            )
                         ]
                     )
                 )

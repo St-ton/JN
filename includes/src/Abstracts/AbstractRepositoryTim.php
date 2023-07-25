@@ -22,9 +22,12 @@ abstract class AbstractRepositoryTim implements RepositoryInterfaceTim
      */
     protected DbInterface $db;
 
-    public function __construct()
+    /**
+     * @param DbInterface|null $db
+     */
+    public function __construct(DbInterface $db = null)
     {
-        $this->db = Shop::Container()->getDB();
+        $this->db = $this->getDB();
     }
 
     /**
@@ -32,6 +35,9 @@ abstract class AbstractRepositoryTim implements RepositoryInterfaceTim
      */
     protected function getDB(): DbInterface
     {
+        if ($this->db === null) {
+            $this->db = Shop::Container()->getDB();
+        }
         return $this->db;
     }
 
@@ -58,19 +64,26 @@ abstract class AbstractRepositoryTim implements RepositoryInterfaceTim
     /**
      * @inheritdoc
      */
-    public function arrayCombine(array $default, array $data): array
+    public function setType(mixed $oldValue, mixed $newValue): mixed
+    {
+        return match (\gettype($oldValue)) {
+            'integer' => (int)$$newValue,
+            'double' => (float)$newValue,
+            'array' => (array)$newValue,
+            'object' => (object)$newValue,
+            default => $newValue
+        };
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function combineData(array $default, array $data): array
     {
         $result = [];
         foreach ($default as $key => $value) {
             if (isset($data[$key])) {
-                $type         = \gettype($value);
-                $result[$key] = match ($type) {
-                    'integer' => (int)$data[$key],
-                    'double' => (float)$data[$key],
-                    'array' => (array)$data[$key],
-                    'object' => (object)$data[$key],
-                    default => $data[$key]
-                };
+                $result[$key] = $this->setType($value, $data[$key]);
                 continue;
             }
             $result[$key] = $value;

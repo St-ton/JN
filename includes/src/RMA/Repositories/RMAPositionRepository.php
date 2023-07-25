@@ -75,7 +75,7 @@ class RMAPositionRepository extends AbstractRepositoryTim
             'shippingAddressID'   => 0,
             'shippingNoteID'      => 0
         ];
-        return $this->arrayCombine($default, $data);
+        return $this->combineData($default, $data);
     }
 
     /**

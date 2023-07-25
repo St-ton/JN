@@ -38,7 +38,7 @@ class RMAHistoryRepository extends AbstractRepositoryTim
             'value'        => '',
             'lastModified' => \date('Y-m-d H:i:s'),
         ];
-        return $this->arrayCombine($default, $data);
+        return $this->combineData($default, $data);
     }
 
     /**

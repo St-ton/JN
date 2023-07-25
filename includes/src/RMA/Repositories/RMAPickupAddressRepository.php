@@ -68,7 +68,7 @@ class RMAPickupAddressRepository extends AbstractRepositoryTim
             'mail'              => null,
             'hash'              => ''
         ];
-        return $this->arrayCombine($default, $data);
+        return $this->combineData($default, $data);
     }
 
     /**

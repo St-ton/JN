@@ -30,7 +30,7 @@ abstract readonly class AbstractDomainObject implements DomainObjectInterface
             'n'     => false,
             'no'    => false,
             'nein'  => false,
-            '0'     => false,
+            '0'     => false
         ];
     }
 

@@ -32,7 +32,7 @@ class RMAReasonRepository extends AbstractRepositoryTim
             'id'              => 0,
             'wawiID'          => 0
         ];
-        return $this->arrayCombine($default, $data);
+        return $this->combineData($default, $data);
     }
 
     /**

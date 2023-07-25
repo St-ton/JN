@@ -8,6 +8,7 @@ use JTL\Catalog\Product\Preise;
 use JTL\DB\ReturnType;
 use JTL\RMA\DomainObjects\RMAPositionDomainObject;
 use JTL\RMA\DomainObjects\RMAProductDomainObject;
+use JTL\Shop;
 
 /**
  * Class RMARepository
@@ -49,7 +50,7 @@ class RMARepository extends AbstractRepositoryTim
             'lastModified'    => null,
             'positions'       => null
         ];
-        return $this->arrayCombine($default, $data);
+        return $this->combineData($default, $data);
     }
 
     /**
@@ -309,5 +310,24 @@ class RMARepository extends AbstractRepositoryTim
 
             return $product;
         })->keyBy('shippingNotePosID')->all();
+    }
+
+    /**
+     * @param array $orderIDs
+     * @return array
+     * @since 5.3.0
+     */
+    public function orderIDsToNOs(array $orderIDs): array
+    {
+        $result = [];
+        $this->getDB()->getCollection(
+            'SELECT tbestellung.kBestellung AS orderID, tbestellung.cBestellNr AS orderNo
+            FROM tbestellung
+            WHERE tbestellung.kBestellung IN (' . \implode(',', $orderIDs) . ')',
+            []
+        )->each(function ($obj) use (&$result) {
+            $result[(int)$obj->orderID] = $obj->orderNo;
+        });
+        return $result;
     }
 }

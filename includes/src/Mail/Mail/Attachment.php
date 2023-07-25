@@ -3,6 +3,7 @@
 namespace JTL\Mail\Mail;
 
 use PHPMailer\PHPMailer\PHPMailer;
+use ReflectionClass;
 
 /**
  * Class Attachment
@@ -23,12 +24,12 @@ final class Attachment
     /**
      * @var string
      */
-    private $fileName;
+    private string $fileName = '';
 
     /**
      * @var string
      */
-    private $name;
+    private string $name = '';
 
     /**
      * @var string
@@ -136,5 +137,46 @@ final class Attachment
     public function getFullPath(): string
     {
         return $this->dir . $this->fileName;
+    }
+
+    /**
+     * @return object
+     */
+    public function toObject(): object
+    {
+        $reflect    = new ReflectionClass($this);
+        $properties = $reflect->getProperties();
+        $toArray    = [];
+        foreach ($properties as $property) {
+            $propertyName           = $property->getName();
+            $toArray[$propertyName] = $property->getValue($this);
+        }
+
+        return (object)$toArray;
+    }
+
+    /**
+     * @param object $object
+     * @return $this
+     */
+    public function hydrateWithObject(object $object): self
+    {
+        $attributes = \get_object_vars($this);
+        foreach ($attributes as $attribute => $value) {
+            $setMethod = 'set' . \ucfirst($attribute);
+            $getMethod = 'get' . \ucfirst($attribute);
+            if (\method_exists($this, $setMethod)
+                && \method_exists($object, $getMethod)
+                && $object->{$getMethod}() !== null) {
+                $this->$setMethod($object->{$getMethod}());
+                continue;
+            }
+            if (\property_exists($object, $attribute)
+            && \method_exists($this, $setMethod)) {
+                $this->$setMethod($object->$attribute);
+            }
+        }
+
+        return $this;
     }
 }

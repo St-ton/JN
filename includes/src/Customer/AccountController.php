@@ -600,7 +600,8 @@ class AccountController
             if ($item->nPosTyp !== \C_WARENKORBPOS_TYP_ARTIKEL || !empty($item->cUnique)) {
                 continue;
             }
-            $visibility = Product::checkProductVisibility($item->kArtikel, $customerGroupID, $this->db);
+            $visibility = $item->kArtikel !== null
+                && Product::checkProductVisibility($item->kArtikel, $customerGroupID, $this->db);
             if ($visibility === false && (int)$item->kKonfigitem === 0) {
                 unset($cart->PositionenArr[$i]);
             }

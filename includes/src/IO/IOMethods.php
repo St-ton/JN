@@ -1546,7 +1546,7 @@ class IOMethods
 
         $response->result = true;
         $response->html   = Shop::Smarty()->assign('rmaPositions', $rmaService->getItems($rma))
-            ->assign('rmaTotal', $rmaService->getTotalPriceLocalized($rma))
+            ->assign('rmaTotal', Preise::getLocalizedPriceString($rmaService->getTotalPrice($rma)))
             ->assign('rmaService', $rmaService)
             ->fetch('account/rma_positions.tpl');
 

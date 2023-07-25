@@ -3,7 +3,6 @@
 namespace JTL\RMA;
 
 use JTL\Abstracts\AbstractServiceTim;
-use JTL\Catalog\Product\Preise;
 use JTL\RMA\DomainObjects\RMADomainObject;
 use JTL\RMA\DomainObjects\RMAPositionDomainObject;
 use JTL\RMA\DomainObjects\RMAReasonLangDomainObject;
@@ -330,26 +329,16 @@ class RMAService extends AbstractServiceTim
     }
 
     /**
-     * @param float $price
-     * @return string
-     * @since 5.3.0
-     */
-    public function getPriceLocalized(float $price): string
-    {
-        return Preise::getLocalizedPriceString($price);
-    }
-
-    /**
      * @param RMADomainObject $rma
-     * @return string
+     * @return float
      * @since 5.3.0
      */
-    public function getTotalPriceLocalized(RMADomainObject $rma): string
+    public function getTotalPrice(RMADomainObject $rma): float
     {
         $total = 0;
         foreach ($rma->getPositions() as $pos) {
             $total += $pos->quantity * $pos->unitPriceNet;
         }
-        return Preise::getLocalizedPriceString($total);
+        return $total;
     }
 }

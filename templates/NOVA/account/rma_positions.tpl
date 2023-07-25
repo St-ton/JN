@@ -17,11 +17,11 @@
                     <div class="pr-2">
                         <h6 class="my-0 line-clamp rmaPosOverviewTitle">{$pos->name}</h6>
                         <small class="text-muted rmaPosOverviewContent">
-                            {$pos->quantity}{$pos->unit} x {$rmaService->getPriceLocalized($pos->unitPriceNet)}
+                            {$pos->quantity}{$pos->unit} x {Preise::getLocalizedPriceString($pos->unitPriceNet)}
                         </small>
                     </div>
                     <span class="text-muted text-nowrap rmaPosOverviewTotal">
-                        {$rmaService->getPriceLocalized($pos->unitPriceNet * $pos->quantity)}
+                        {Preise::getLocalizedPriceString($pos->unitPriceNet * $pos->quantity)}
                     </span>
                 </li>
             {/foreach}

@@ -80,7 +80,7 @@
                                                                     && $product->getProperty()->value !== ''}
                                                                     {$product->getProperty()->name}: {$product->getProperty()->value}<br>
                                                                 {/if}
-                                                                {$product->quantity} {$product->unit|default:''} x {$rmaService->getPriceLocalized($product->unitPriceNet)}
+                                                                {$product->quantity} {$product->unit|default:''} x {Preise::getLocalizedPriceString($product->unitPriceNet)}
                                                             </small>
                                                         </div>
                                                     </div>
@@ -161,7 +161,8 @@
                 <div id="rmaStickyPositions">
                     <div class="rmaPosContainer">
                         {include file='account/rma_positions.tpl' rmaPositions=$rmaService->getItems($rma)
-                        rmaTotal=$rmaService->getTotalPriceLocalized($rma) rmaService=$rmaService}
+                        rmaTotal=Preise::getLocalizedPriceString($rmaService->getTotalPrice($rma))
+                        rmaService=$rmaService}
                     </div>
                 </div>
 

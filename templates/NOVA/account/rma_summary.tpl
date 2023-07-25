@@ -50,10 +50,10 @@
                             <span class="text-nowrap">{$pos->quantity}{$pos->unit}</span>
                         </div>
                         <div class="col col-3 col-sm-2 col-md-2 text-right d-none d-sm-block">
-                            <span class="text-nowrap">{$rmaService->getPriceLocalized($pos->unitPriceNet)}</span>
+                            <span class="text-nowrap">{Preise::getLocalizedPriceString($pos->unitPriceNet)}</span>
                         </div>
                         <div class="col col-4 col-sm-3 col-md-2 text-right">
-                            <span class="text-nowrap">{$rmaService->getPriceLocalized($pos->unitPriceNet * $pos->quantity)}</span>
+                            <span class="text-nowrap">{Preise::getLocalizedPriceString($pos->unitPriceNet * $pos->quantity)}</span>
                         </div>
                     </div>
                 {/foreach}
@@ -70,7 +70,7 @@
         </div>
         <div class="col col-6">
             <div class="text-right font-weight-bold">
-                {lang key='total'}: {$rmaService->getTotalPriceLocalized($rma)}
+                {lang key='total'}: {Preise::getLocalizedPriceString($rmaService->getTotalPrice($rma))}
             </div>
         </div>
     </div>

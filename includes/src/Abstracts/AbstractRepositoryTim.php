@@ -9,6 +9,7 @@ use stdClass;
 
 /**
  * Class AbstractRepository
+ *
  * @package JTL\Abstracts
  */
 abstract class AbstractRepositoryTim implements RepositoryInterfaceTim
@@ -58,32 +59,53 @@ abstract class AbstractRepositoryTim implements RepositoryInterfaceTim
     abstract public function getKeyName(): string;
 
     /**
+     * @param mixed $value
+     * @return bool|null
+     */
+    private function boolify(mixed $value): ?bool
+    {
+        $possibleBoolValues = [
+            'true'  => true,
+            'y'     => true,
+            'yes'   => true,
+            'ja'    => true,
+            '1'     => true,
+            'false' => false,
+            'n'     => false,
+            'no'    => false,
+            'nein'  => false,
+            '0'     => false,
+        ];
+
+        return $possibleBoolValues[\strtolower((string)$value ?? '')] ?? $value;
+    }
+
+    /**
      * @inheritdoc
      */
-    public function setType(mixed $oldValue, mixed $newValue): mixed
+    public function typeify(mixed $oldValue, mixed $newValue): mixed
     {
         return match (\gettype($oldValue)) {
-            'integer' => (int)$$newValue,
-            'double' => (float)$newValue,
-            'array' => (array)$newValue,
-            'object' => (object)$newValue,
-            default => $newValue
+            'integer' => (int)$newValue ?? $oldValue,
+            'double'  => (float)$newValue ?? $oldValue,
+            'array'   => (array)$newValue ?? $oldValue,
+            'object'  => (object)$newValue ?? $oldValue,
+            'boolean' => $this->boolify($newValue) ?? $oldValue,
+            'NULL'    => $newValue,
+            default   => $newValue ?? $oldValue
         };
     }
 
     /**
      * @inheritdoc
      */
-    public function combineData(array $default, array $data): array
+    public function combineData(array $default, array $newValues): array
     {
         $result = [];
-        foreach ($default as $key => $value) {
-            if (isset($data[$key])) {
-                $result[$key] = $this->setType($value, $data[$key]);
-                continue;
-            }
-            $result[$key] = $value;
+        foreach ($default as $key => $defaultValue) {
+            $result[$key] = $this->typeify($defaultValue, $newValues[$key] ?? null);
         }
+
         return $result;
     }
 
@@ -130,39 +152,37 @@ abstract class AbstractRepositoryTim implements RepositoryInterfaceTim
     }
 
     /**
-     * @param array $values
+     * @param DomainObjectInterface $domainObject
      * @return bool
      */
-    public function delete(array $values): bool
+    public function delete(DomainObjectInterface $domainObject): bool
     {
         return ($this->getDB()->deleteRow(
             $this->getTableName(),
             $this->getKeyName(),
-            $values
-        ) !== self::DELETE_FAILED
-        );
+            $this->getKeyValue($domainObject)
+        ) !== self::DELETE_FAILED);
     }
 
     /**
      * @inheritdoc
      */
-    public function insert(DomainObjectInterface $insertDTO): int
+    public function insert(DomainObjectInterface $domainObject): int
     {
-        return $this->getDB()->insertRow($this->getTableName(), $insertDTO->toObject());
+        return $this->getDB()->insertRow($this->getTableName(), $domainObject->toObject());
     }
 
     /**
      * @inheritdoc
      */
-    public function update(DomainObjectInterface $updateDTO): bool
+    public function update(DomainObjectInterface $domainObject): bool
     {
         return ($this->getDB()->updateRow(
             $this->getTableName(),
             $this->getKeyName(),
-            $this->getKeyValue($updateDTO),
-            $updateDTO->toObject()
-        ) !== self::UPDATE_OR_UPSERT_FAILED
-        );
+            $this->getKeyValue($domainObject),
+            $domainObject->toObject()
+        ) !== self::UPDATE_OR_UPSERT_FAILED);
     }
 
     /**

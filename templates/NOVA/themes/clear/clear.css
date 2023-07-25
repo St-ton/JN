@@ -22501,6 +22501,10 @@ div.dataTables_wrapper div.dataTables_filter input[type=search] {
 .list-compressed .listExpander[data-showall][data-shownone]:before {
   content: attr(data-showall);
 }
+.list-compressed.open {
+  max-height: 50vh;
+  overflow: scroll;
+}
 .list-compressed.open .listExpander[data-showall][data-shownone]:before {
   content: attr(data-shownone);
 }

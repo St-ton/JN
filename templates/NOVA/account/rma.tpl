@@ -1,39 +1,6 @@
 {block name='account-rma-form'}
     {row class="rma-step-1"}
-        {col cols=12 md=5 lg=4 class='rma-positions-wrapper order-md-2'}
-            {card no-body=true class="rma-step-1 sticky-card"}
-                <div id="rmaStickyPositions">
-                    <div class="rmaPosContainer">
-                        {include file='account/rma_positions.tpl' rmaPositions=$rmaService->getItems($rma)
-                        rmaTotal=$rmaService->getTotalPriceLocalized($rma) rmaService=$rmaService}
-                    </div>
-                </div>
-
-                {form method="post" id='rma' action="#" class="jtl-validate card p-2" slide=true}
-                    {block name='account-rma-form-include-customer-rmas'}
-                        {block name='checkout-customer-shipping-address'}
-                            {formgroup label="{lang key='pickupAddress' section='rma'}"
-                            label-for="pickupAddress"}
-                                <div class="input-group">
-                                    {select name="pickupAddress" id="pickupAddress" class="custom-select"
-                                    autocomplete="shipping Adress"}
-                                        {include file='account/pickupaddress/form_option.tpl' pkAddresses=$shippingAddresses}
-                                    {/select}
-                                    <div class="input-group-append">
-                                        {block name='account-rma-form-form-submit'}
-                                            {button type="submit" value="1" block=true variant="primary"}
-                                                {lang key='continueOrder' section='account data'}
-                                            {/button}
-                                        {/block}
-                                    </div>
-                                </div>
-                            {/formgroup}
-                        {/block}
-                    {/block}
-                {/form}
-            {/card}
-        {/col}
-        {col cols=12 md=7 lg=8 class='rma-form-wrapper order-md-1'}
+        {col cols=12 md=7 lg=8 class='rma-form-wrapper'}
             {block name='account-my-account-rma'}
                 {card no-body=true id="rma-positions"}
                     {cardheader}
@@ -108,10 +75,7 @@
                                                             </div>
                                                             <small class="text-muted-util d-block">
                                                                 {lang key='orderNo' section='login'}: {$product->getOrderNo()}<br>
-                                                                {lang key='productNo'}: {link
-                                                                    href=$product->getProduct()->cURLFull target="_blank"}
-                                                                    {$product->getProductNR()}
-                                                                {/link}<br>
+                                                                {lang key='productNo'}: {$product->getProductNR()}<br>
                                                                 {if $product->getProperty()->name !== ''
                                                                     && $product->getProperty()->value !== ''}
                                                                     {$product->getProperty()->name}: {$product->getProperty()->value}<br>
@@ -191,6 +155,41 @@
             {/block}
 
         {/col}
+
+        {col cols=12 md=5 lg=4 class='rma-positions-wrapper'}
+            {card no-body=true class="rma-step-1 sticky-card"}
+                <div id="rmaStickyPositions">
+                    <div class="rmaPosContainer">
+                        {include file='account/rma_positions.tpl' rmaPositions=$rmaService->getItems($rma)
+                        rmaTotal=$rmaService->getTotalPriceLocalized($rma) rmaService=$rmaService}
+                    </div>
+                </div>
+
+                {form method="post" id='rma' action="#" class="jtl-validate card p-2" slide=true}
+                    {block name='account-rma-form-include-customer-rmas'}
+                        {block name='checkout-customer-shipping-address'}
+                            {formgroup label="{lang key='pickupAddress' section='rma'}"
+                            label-for="pickupAddress"}
+                                <div class="input-group">
+                                    {select name="pickupAddress" id="pickupAddress" class="custom-select"
+                                    autocomplete="shipping Adress"}
+                                        {include file='account/pickupaddress/form_option.tpl' pkAddresses=$shippingAddresses}
+                                    {/select}
+                                    <div class="input-group-append">
+                                        {block name='account-rma-form-form-submit'}
+                                            {button type="submit" value="1" block=true variant="primary"}
+                                                {lang key='continueOrder' section='account data'}
+                                            {/button}
+                                        {/block}
+                                    </div>
+                                </div>
+                            {/formgroup}
+                        {/block}
+                    {/block}
+                {/form}
+            {/card}
+        {/col}
+
     {/row}
 
     {row class="rma-step-2 d-none"}
@@ -476,7 +475,6 @@
                 $(this).text(
                     switches.prop('checked') ? $(this).data('lang-unselect') : $(this).data('lang-select')
                 );
-                //$('#rma').submit();
             });
         });
     </script>{/inline_script}

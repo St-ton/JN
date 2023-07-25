@@ -32,14 +32,14 @@ interface RepositoryInterfaceTim
      * @param mixed $newValue
      * @return mixed
      */
-    public function setType(mixed $oldValue, mixed $newValue): mixed;
+    public function typeify(mixed $oldValue, mixed $newValue): mixed;
 
     /**
      * @param array $default
-     * @param array $data
+     * @param array $newValues
      * @return array
      */
-    public function combineData(array $default, array $data): array;
+    public function combineData(array $default, array $newValues): array;
 
     /**
      * @param array $data
@@ -60,20 +60,20 @@ interface RepositoryInterfaceTim
     public function getList(array $filters): array;
 
     /**
-     * @param DomainObjectInterface $insertDTO $object
+     * @param DomainObjectInterface $domainObject
      * @return int
      */
-    public function insert(DomainObjectInterface $insertDTO): int;
+    public function insert(DomainObjectInterface $domainObject): int;
 
     /**
-     * @param DomainObjectInterface $updateDTO
+     * @param DomainObjectInterface $domainObject
      * @return bool
      */
-    public function update(DomainObjectInterface $updateDTO): bool;
+    public function update(DomainObjectInterface $domainObject): bool;
 
     /**
-     * @param array $values
+     * @param DomainObjectInterface $domainObject
      * @return int|bool
      */
-    public function delete(array $values): int|bool;
+    public function delete(DomainObjectInterface $domainObject): int|bool;
 }

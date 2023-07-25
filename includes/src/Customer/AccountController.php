@@ -263,7 +263,7 @@ class AccountController
             $this->smarty->assign('oWunschliste_arr', Wishlist::getWishlists());
         }
         if ($step === 'mein Konto') {
-            $rmaService = new RMAService();
+            $rmaService = new RMAService($this->db);
             $this->smarty->assign('RMAService', $rmaService)
                 ->assign('rmas', $rmaService->loadRMAs(
                     $customerID,
@@ -987,7 +987,7 @@ class AccountController
     {
         $languageID = Shop::getLanguageID();
         $this->getDeliveryAddresses(['shippingAddresses', 'shippingCountries']);
-        $rmaService         = new RMAService();
+        $rmaService         = new RMAService($this->db);
         $returnableProducts = $rmaService->getReturnableProducts(
             $customerID,
             $languageID,
@@ -1017,7 +1017,7 @@ class AccountController
      */
     private function rmaOrders(): string
     {
-        $this->smarty->assign('RMAService', new RMAService());
+        $this->smarty->assign('RMAService', new RMAService($this->db));
         return 'rmas';
     }
 

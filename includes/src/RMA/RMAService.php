@@ -18,7 +18,6 @@ use JTL\RMA\Repositories\RMARepository;
  */
 class RMAService extends AbstractServiceTim
 {
-
     private ?RMARepository $RMARepository;
 
     private ?RMAPositionRepository $RMAPositionRepository;
@@ -43,19 +42,13 @@ class RMAService extends AbstractServiceTim
     private readonly ?array $returnableProducts;
 
     /**
-     */
-    public function __construct()
-    {
-    }
-
-    /**
      * @return RMARepository
      * @since 5.3.0
      */
     public function getRMARepository(): RMARepository
     {
         if (!isset($this->RMARepository)) {
-            $this->RMARepository = new RMARepository();
+            $this->RMARepository = new RMARepository($this->db);
         }
 
         return $this->RMARepository;
@@ -68,7 +61,7 @@ class RMAService extends AbstractServiceTim
     public function getRMAPositionRepository(): RMAPositionRepository
     {
         if (!isset($this->RMAPositionRepository)) {
-            $this->RMAPositionRepository = new RMAPositionRepository();
+            $this->RMAPositionRepository = new RMAPositionRepository($this->db);
         }
 
         return $this->RMAPositionRepository;
@@ -81,7 +74,7 @@ class RMAService extends AbstractServiceTim
     public function getRMAReasonRepository(): RMAReasonRepository
     {
         if (!isset($this->RMAReasonsRepository)) {
-            $this->RMAReasonsRepository = new RMAReasonRepository();
+            $this->RMAReasonsRepository = new RMAReasonRepository($this->db);
         }
 
         return $this->RMAReasonsRepository;
@@ -94,7 +87,7 @@ class RMAService extends AbstractServiceTim
     public function getRMAReasonLangRepository(): RMAReasonLangRepository
     {
         if (!isset($this->RMAReasonLangRepository)) {
-            $this->RMAReasonLangRepository = new RMAReasonLangRepository();
+            $this->RMAReasonLangRepository = new RMAReasonLangRepository($this->db);
         }
 
         return $this->RMAReasonLangRepository;

@@ -3,6 +3,7 @@
 namespace JTL\Abstracts;
 
 use JTL\DataObjects\DomainObjectInterface;
+use JTL\DB\DbInterface;
 
 /**
  * Class AbstractService
@@ -10,6 +11,17 @@ use JTL\DataObjects\DomainObjectInterface;
  */
 abstract class AbstractServiceTim
 {
+
+    protected DbInterface $db;
+
+    /**
+     * @param DbInterface $db
+     */
+    public function __construct(DbInterface $db)
+    {
+        $this->db = $db;
+    }
+
     /**
      * @param string $className
      * @param array $defaultValues

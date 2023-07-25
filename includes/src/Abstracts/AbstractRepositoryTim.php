@@ -5,7 +5,6 @@ namespace JTL\Abstracts;
 use JTL\DataObjects\DomainObjectInterface;
 use JTL\DB\DbInterface;
 use JTL\Interfaces\RepositoryInterfaceTim;
-use JTL\Shop;
 use stdClass;
 
 /**
@@ -23,11 +22,11 @@ abstract class AbstractRepositoryTim implements RepositoryInterfaceTim
     protected DbInterface $db;
 
     /**
-     * @param DbInterface|null $db
+     * @param DbInterface $db
      */
-    public function __construct(DbInterface $db = null)
+    public function __construct(DbInterface $db)
     {
-        $this->db = $this->getDB();
+        $this->db = $db;
     }
 
     /**
@@ -35,9 +34,6 @@ abstract class AbstractRepositoryTim implements RepositoryInterfaceTim
      */
     protected function getDB(): DbInterface
     {
-        if ($this->db === null) {
-            $this->db = Shop::Container()->getDB();
-        }
         return $this->db;
     }
 

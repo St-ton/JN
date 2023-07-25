@@ -1474,7 +1474,7 @@ class IOMethods
             $param['quantity'] = [];
         }
 
-        $rmaService = new RMAService();
+        $rmaService = new RMAService($this->db);
         $customerID = Frontend::getCustomer()->getID();
         $languageID = Shop::getLanguageID();
         if ($customerID <= 0) {
@@ -1585,7 +1585,7 @@ class IOMethods
             $param['quantity'] = [];
         }
 
-        $rmaService = new RMAService();
+        $rmaService = new RMAService($this->db);
         $customerID = Frontend::getCustomer()->getID();
         $languageID = Shop::getLanguageID();
         if ($customerID <= 0) {
@@ -1686,7 +1686,7 @@ class IOMethods
         $ioResponse = new IOResponse();
         $response   = new stdClass();
 
-        $rmaService = new RMAService();
+        $rmaService = new RMAService($this->db);
         if ($rmaService->delete([$rmaID]) === true) {
             $response->result = true;
             $ioResponse->assignVar('response', $response);

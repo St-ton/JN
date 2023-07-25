@@ -4,11 +4,7 @@ namespace JTL\RMA\Repositories;
 
 use JTL\Abstracts\AbstractRepositoryTim;
 use JTL\Catalog\Product\Artikel;
-use JTL\Catalog\Product\Preise;
 use JTL\DB\ReturnType;
-use JTL\RMA\DomainObjects\RMAPositionDomainObject;
-use JTL\RMA\DomainObjects\RMAProductDomainObject;
-use JTL\Shop;
 
 /**
  * Class RMARepository

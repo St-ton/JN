@@ -2,10 +2,11 @@
 
 namespace JTL\Cron\Job;
 
+use InvalidArgumentException;
 use JTL\Cron\Job;
 use JTL\Cron\JobInterface;
 use JTL\Cron\QueueEntry;
-use JTL\Exportformat;
+use JTL\Export\ExporterFactory;
 use stdClass;
 
 /**
@@ -36,24 +37,23 @@ final class Export extends Job
      */
     public function updateExportformatQueueBearbeitet(QueueEntry $queueEntry): bool
     {
-        if ($queueEntry->jobQueueID > 0) {
-            $this->db->delete('texportformatqueuebearbeitet', 'kJobQueue', (int)$queueEntry->jobQueueID);
-
-            $ins                   = new stdClass();
-            $ins->kJobQueue        = $queueEntry->jobQueueID;
-            $ins->kExportformat    = $queueEntry->foreignKeyID;
-            $ins->nLimitN          = $queueEntry->tasksExecuted;
-            $ins->nLimitM          = $queueEntry->taskLimit;
-            $ins->nInArbeit        = $queueEntry->isRunning;
-            $ins->dStartZeit       = $queueEntry->startTime->format('Y-m-d H:i');
-            $ins->dZuletztGelaufen = $queueEntry->lastStart->format('Y-m-d H:i');
-
-            $this->db->insert('texportformatqueuebearbeitet', $ins);
-
-            return true;
+        if ($queueEntry->jobQueueID <= 0) {
+            return false;
         }
+        $this->db->delete('texportformatqueuebearbeitet', 'kJobQueue', (int)$queueEntry->jobQueueID);
 
-        return false;
+        $ins                   = new stdClass();
+        $ins->kJobQueue        = $queueEntry->jobQueueID;
+        $ins->kExportformat    = $queueEntry->foreignKeyID;
+        $ins->nLimitN          = $queueEntry->tasksExecuted;
+        $ins->nLimitM          = $queueEntry->taskLimit;
+        $ins->nInArbeit        = $queueEntry->isRunning;
+        $ins->dStartZeit       = $queueEntry->startTime->format('Y-m-d H:i');
+        $ins->dZuletztGelaufen = $queueEntry->lastStart->format('Y-m-d H:i');
+
+        $this->db->insert('texportformatqueuebearbeitet', $ins);
+
+        return true;
     }
 
     /**
@@ -62,9 +62,19 @@ final class Export extends Job
     public function start(QueueEntry $queueEntry): JobInterface
     {
         parent::start($queueEntry);
-        $ef = new Exportformat($this->getForeignKeyID(), $this->db);
-        $ef->setLogger($this->logger);
-        $finished = $ef->startExport($queueEntry, false, false, true);
+        $factory  = new ExporterFactory($this->db, $this->logger, $this->cache);
+        $ef       = $factory->getExporter($this->getForeignKeyID());
+        $finished = false;
+        try {
+            $finished = $ef->startExport(
+                $this->getForeignKeyID(),
+                $queueEntry,
+                false,
+                false,
+                true
+            );
+        } catch (InvalidArgumentException) {
+        }
         $this->updateExportformatQueueBearbeitet($queueEntry);
         $this->setFinished($finished);
 

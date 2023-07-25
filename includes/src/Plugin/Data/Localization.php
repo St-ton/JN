@@ -18,21 +18,15 @@ class Localization
     /**
      * @var Collection
      */
-    private $langVars;
-
-    /**
-     * @var string
-     */
-    private $currentLanguageCode;
+    private Collection $langVars;
 
     /**
      * Localization constructor.
      * @param string $currentLanguageCode
      */
-    public function __construct(string $currentLanguageCode)
+    public function __construct(private string $currentLanguageCode)
     {
-        $this->langVars            = new Collection();
-        $this->currentLanguageCode = $currentLanguageCode;
+        $this->langVars = new Collection();
     }
 
     /**
@@ -95,7 +89,7 @@ class Localization
     {
         $iso = \mb_convert_case($this->currentLanguageCode, \MB_CASE_UPPER);
 
-        return $this->langVars->mapWithKeys(static function ($item) use ($iso) {
+        return $this->langVars->mapWithKeys(static function ($item) use ($iso): array {
             return [$item->name => $item->values[$iso] ?? null];
         })->toArray();
     }

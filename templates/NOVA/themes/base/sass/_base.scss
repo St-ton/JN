@@ -40,11 +40,11 @@ a { transition: color $transition-base-duration $transition-base-timing; }
 .text-truncate-fade     { @include text-truncate-fade; }
 
 :focus, .focus {
-  box-shadow: 0;
+  box-shadow: none;
   outline: none;
 }
 button:focus {
-  box-shadow: 0;
+  box-shadow: none;
   outline: none;
 }
 
@@ -71,7 +71,7 @@ ul.partlist-items {
 }
 
 .img-xs {
-  width: 24px;
+  width: auto;
   height: 24px;
   object-fit: contain;
 }
@@ -347,7 +347,7 @@ a.nice-deco {
   z-index: 999;
 }
 
-.sticky-sidebar { position: sticky; top: rem(160px); z-index: $zindex-sticky -1; }
+.sticky-sidebar { position: sticky; top: rem(160px); z-index: $zindex-sticky - 1; }
 
 .subheadline {
   font-weight: $font-weight-bold;
@@ -510,4 +510,12 @@ input.typeahead {
   @include media-breakpoint-up(xl) {
     min-height: 168px;
   }
+}
+.no-scrollbar {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  scrollbar-width: none;
+  scrollbar-height: none;
+  -ms-overflow-style: none;
 }

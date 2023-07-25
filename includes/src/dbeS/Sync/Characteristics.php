@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\dbeS\Sync;
 
@@ -14,16 +14,15 @@ use stdClass;
 final class Characteristics extends AbstractSync
 {
     /**
-     * @param Starter $starter
-     * @return mixed|null
+     * @inheritdoc
      */
     public function handle(Starter $starter)
     {
-        foreach ($starter->getXML() as $i => $item) {
+        foreach ($starter->getXML() as $item) {
             [$file, $xml] = [\key($item), \reset($item)];
-            if (\strpos($file, 'del_merkmal.xml') !== false) {
+            if (\str_contains($file, 'del_merkmal.xml')) {
                 $this->handleDeletes($xml);
-            } elseif (\strpos($file, 'merkmal.xml') !== false) {
+            } elseif (\str_contains($file, 'merkmal.xml')) {
                 $this->handleInserts($xml);
             }
         }
@@ -60,7 +59,7 @@ final class Characteristics extends AbstractSync
      */
     private function handleInserts(array $xml): void
     {
-        $defaultLangID = LanguageHelper::getDefaultLanguage()->kSprache ?? -1;
+        $defaultLangID = LanguageHelper::getDefaultLanguage()->getId();
         $charValues    = $this->insertCharacteristics($xml, $defaultLangID);
         $this->insertCharacteristicValues($xml, $charValues, $defaultLangID);
     }
@@ -140,7 +139,7 @@ final class Characteristics extends AbstractSync
                             ]
                         );
                         $loc->cSeo = \trim($loc->cSeo)
-                            ? Seo::checkSeo(Seo::getSeo(Seo::getFlatSeoPath($loc->cSeo), true))
+                            ? Seo::checkSeo(Seo::getSeo($loc->cSeo, true))
                             : Seo::checkSeo(Seo::getSeo(Seo::getFlatSeoPath($loc->cWert)));
                         $this->upsert(
                             'tmerkmalwertsprache',
@@ -201,24 +200,26 @@ final class Characteristics extends AbstractSync
         }
         $charValues[$i]->oMMW_arr = [];
         $valueCount               = \count($mapped);
+        $allowedLanguageIDs       = \array_keys(LanguageHelper::getAllLanguages(1));
         for ($o = 0; $o < $valueCount; $o++) {
             $this->deleteCharacteristicValue((int)$mapped[$o]->kMerkmalWert, true);
             $item               = new stdClass();
             $item->kMerkmalWert = $mapped[$o]->kMerkmalWert;
             $item->kSprache_arr = [];
 
-            if (\count($mapped) < 2) {
-                $source = $xml['merkmale']['tmerkmalwert'];
-            } else {
-                $source = $xml['merkmale']['tmerkmalwert'][$o];
-            }
-            $localized = $this->mapper->mapArray(
-                $source,
-                'tmerkmalwertsprache',
-                'mMerkmalWertSprache'
-            );
+            $source    = (\count($mapped) < 2)
+                ? $xml['merkmale']['tmerkmalwert']
+                : $xml['merkmale']['tmerkmalwert'][$o];
+            $localized = $this->mapper->mapArray($source, 'tmerkmalwertsprache', 'mMerkmalWertSprache');
             foreach ($localized as $loc) {
-                $loc->kSprache     = (int)$loc->kSprache;
+                $loc->kSprache = (int)$loc->kSprache;
+                if (!\in_array($loc->kSprache, $allowedLanguageIDs, true)) {
+                    $this->logger->warning(
+                        'Language id {id} is not available for characteristic value {cv}',
+                        ['id' => $loc->kSprache, 'cv' => $loc->kMerkmalWert]
+                    );
+                    continue;
+                }
                 $loc->kMerkmalWert = (int)$loc->kMerkmalWert;
                 $this->db->delete(
                     'tseo',
@@ -230,9 +231,16 @@ final class Characteristics extends AbstractSync
                     ]
                 );
                 $loc->cSeo = \trim($loc->cSeo)
-                    ? Seo::checkSeo(Seo::getSeo(Seo::getFlatSeoPath($loc->cSeo), true))
+                    ? Seo::checkSeo(Seo::getSeo($loc->cSeo, true))
                     : Seo::checkSeo(Seo::getSeo(Seo::getFlatSeoPath($loc->cWert)));
 
+                if ($loc->cSeo === '') {
+                    $this->logger->warning(
+                        'Empty SEO string for characteristic value {cv} in language {id}',
+                        ['cv' => $loc->kMerkmalWert, 'id' => $loc->kSprache]
+                    );
+                    continue;
+                }
                 $this->upsert('tmerkmalwertsprache', [$loc], 'kMerkmalWert', 'kSprache');
                 $ins           = new stdClass();
                 $ins->cSeo     = $loc->cSeo;
@@ -273,16 +281,14 @@ final class Characteristics extends AbstractSync
      */
     private function addMissingCharacteristicValueSeo(array $characteristics): void
     {
-        $languages = $this->db->getObjects('SELECT kSprache FROM tsprache ORDER BY kSprache');
+        $languages = $this->db->getInts('SELECT kSprache FROM tsprache ORDER BY kSprache', 'kSprache');
         foreach ($characteristics as $characteristic) {
             foreach ($characteristic->oMMW_arr as $characteristicValue) {
                 $characteristicValue->kMerkmalWert = (int)$characteristicValue->kMerkmalWert;
-                foreach ($languages as $language) {
-                    $language->kSprache = (int)$language->kSprache;
-                    foreach ($characteristicValue->kSprache_arr as $languageID) {
-                        $languageID = (int)$languageID;
+                foreach ($languages as $languageID) {
+                    foreach ($characteristicValue->kSprache_arr as $charLanguageID) {
                         // Laufe alle gefüllten Sprachen durch
-                        if ($languageID === $language->kSprache) {
+                        if ($charLanguageID === $languageID) {
                             continue 2;
                         }
                     }
@@ -296,19 +302,18 @@ final class Characteristics extends AbstractSync
                                 AND tseo.kSprache = :lid
                             WHERE tmerkmalwertsprache.kMerkmalWert = :av
                                 AND tmerkmalwertsprache.kSprache = :lid",
-                        ['lid' => (int)$language->kSprache, 'av' => $characteristicValue->kMerkmalWert]
+                        ['lid' => $languageID, 'av' => $characteristicValue->kMerkmalWert]
                     );
-                    //@todo: 1062: Duplicate entry '' for key 'PRIMARY'
-                    if ($slug !== '' && $slug !== null) {
+                    if ($slug !== '') {
                         $seo           = new stdClass();
                         $seo->cSeo     = $slug;
                         $seo->cKey     = 'kMerkmalWert';
-                        $seo->kKey     = (int)$characteristicValue->kMerkmalWert;
-                        $seo->kSprache = $language->kSprache;
+                        $seo->kKey     = $characteristicValue->kMerkmalWert;
+                        $seo->kSprache = $languageID;
                         $this->db->insert('tseo', $seo);
                         $localized                   = new stdClass();
                         $localized->kMerkmalWert     = $characteristicValue->kMerkmalWert;
-                        $localized->kSprache         = $language->kSprache;
+                        $localized->kSprache         = $languageID;
                         $localized->cWert            = $characteristicValue->cNameSTD ?? '';
                         $localized->cSeo             = $seo->cSeo ?? '';
                         $localized->cMetaTitle       = $characteristicValue->cMetaTitleSTD ?? '';
@@ -342,7 +347,6 @@ final class Characteristics extends AbstractSync
                     AND tmerkmal.kMerkmal = :aid",
             ['aid' => $id]
         );
-
         if ($update === true) {
             $this->db->delete('tartikelmerkmal', 'kMerkmal', $id);
         }
@@ -424,7 +428,7 @@ final class Characteristics extends AbstractSync
         $characteristic->oMerkmalWert_arr = [];
         if ($characteristicValueID > 0) {
             $tmp = $this->db->select('tmerkmal', 'kMerkmal', $characteristicValueID);
-            if (isset($tmp->kMerkmal) && $tmp->kMerkmal > 0) {
+            if ($tmp !== null && $tmp->kMerkmal > 0) {
                 $characteristic->kMerkmal  = $tmp->kMerkmal;
                 $characteristic->cBildpfad = $tmp->cBildpfad;
             }

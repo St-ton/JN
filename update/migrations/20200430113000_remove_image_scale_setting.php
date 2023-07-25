@@ -18,7 +18,7 @@ class Migration_20200430113000 extends Migration implements IMigration
     protected $description = 'Remove image scale setting';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -26,7 +26,7 @@ class Migration_20200430113000 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

@@ -1,18 +1,18 @@
 {block name='productlist-item-list'}
     {block name='productlist-item-list-variables'}
-        {if $Einstellungen.template.productlist.variation_select_productlist === 'N'}
+        {if $Einstellungen.template.productlist.variation_select_productlist_list === 'N'}
             {assign var=hasOnlyListableVariations value=0}
         {else}
             {hasOnlyListableVariations artikel=$Artikel
-                maxVariationCount=$Einstellungen.template.productlist.variation_select_productlist
-                maxWerteCount=$Einstellungen.template.productlist.variation_max_werte_productlist
+                maxVariationCount=$Einstellungen.template.productlist.variation_select_productlist_list
+                maxWerteCount=$Einstellungen.template.productlist.variation_max_werte_productlist_list
                 assign='hasOnlyListableVariations'}
         {/if}
         {$isOPC=$isOPC|default:false}
     {/block}
     {block name='productlist-item-list-productbox-outer'}
     <div id="{$idPrefix|default:''}result-wrapper_buy_form_{$Artikel->kArtikel}" data-wrapper="true"
-         class="productbox productbox-row productbox-show-variations {if $Einstellungen.template.productlist.hover_productlist === 'Y'} productbox-hover{/if}{if isset($listStyle) && $listStyle === 'list'} active{/if}">
+         class="productbox productbox-row productbox-show-variations productbox-hover{if isset($listStyle) && $listStyle === 'list'} active{/if}">
         <div class="productbox-inner">
             {block name='productlist-item-list-productbox-inner'}
             {row}
@@ -20,15 +20,13 @@
                     {block name='productlist-item-list-image'}
                         <div class="productbox-image">
                             {if isset($Artikel->Bilder[0]->cAltAttribut)}
-                                {assign var=alt value=$Artikel->Bilder[0]->cAltAttribut|strip_tags|truncate:60|escape:'html'}
+                                {assign var=alt value=$Artikel->Bilder[0]->cAltAttribut}
                             {else}
                                 {assign var=alt value=$Artikel->cName}
                             {/if}
-                            {if isset($Artikel->oSuchspecialBild)}
-                                {block name='productlist-item-list-include-searchspecials'}
-                                    {include file='snippets/ribbon.tpl'}
-                                {/block}
-                            {/if}
+                            {block name='productlist-item-list-include-searchspecials'}
+                                {include file='snippets/ribbon.tpl'}
+                            {/block}
                             {block name='productlist-item-box-include-productlist-actions'}
                                 <div class="productbox-quick-actions productbox-onhover d-none d-md-flex">
                                     {include file='productlist/productlist_actions.tpl'}
@@ -43,11 +41,12 @@
                                                     {$image = $Artikel->Bilder[0]}
                                                     <div class="productbox-image square square-image first-wrapper">
                                                         <div class="inner">
-                                                            {image alt=$image->cAltAttribut|escape:'html' fluid=true webp=true lazy=true
+                                                            {image alt=$alt|truncate:60 fluid=true webp=true lazy=true
                                                                 src="{$image->cURLKlein}"
-                                                                srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                                    {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                                    {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                                                srcset="
+                                                                {$image->cURLMini} {$image->imageSizes->xs->size->width}w,
+                                                                {$image->cURLKlein} {$image->imageSizes->sm->size->width}w,
+                                                                {$image->cURLNormal} {$image->imageSizes->md->size->width}w"
                                                                 sizes="auto"
                                                                 class="{if !$isMobile && !empty($Artikel->Bilder[1])}first{/if}"
                                                             }
@@ -55,13 +54,19 @@
                                                     </div>
                                                     {if !$isMobile && !empty($Artikel->Bilder[1])}
                                                         {$image = $Artikel->Bilder[1]}
+                                                        {if isset($image->cAltAttribut)}
+                                                            {assign var=alt value=$image->cAltAttribut}
+                                                        {else}
+                                                            {assign var=alt value=$Artikel->cName}
+                                                        {/if}
                                                         <div class="productbox-image square square-image second-wrapper">
                                                             <div class="inner">
-                                                                {image alt=$image->cAltAttribut|escape:'html' fluid=true webp=true lazy=true
+                                                                {image alt=$alt|truncate:60 fluid=true webp=true lazy=true
                                                                     src="{$image->cURLKlein}"
-                                                                    srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                                        {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                                        {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                                                    srcset="
+                                                                {$image->cURLMini} {$image->imageSizes->xs->size->width}w,
+                                                                {$image->cURLKlein} {$image->imageSizes->sm->size->width}w,
+                                                                {$image->cURLNormal} {$image->imageSizes->md->size->width}w"
                                                                     sizes="auto"
                                                                     class="second"
                                                                 }
@@ -137,7 +142,7 @@
                                         <div class="form-row productbox-onhover productbox-actions item-list-basket-details">
                                             {if ($Artikel->inWarenkorbLegbar === 1
                                                     || ($Artikel->nErscheinendesProdukt === 1 && $Einstellungen.global.global_erscheinende_kaeuflich === 'Y'))
-                                                && (($Artikel->nIstVater === 0 && $Artikel->Variationen|@count === 0)
+                                                && (($Artikel->nIstVater === 0 && $Artikel->Variationen|count === 0)
                                                     || $hasOnlyListableVariations === 1)
                                                 && !$Artikel->bHasKonfig
                                                 && $Einstellungen.template.productlist.buy_productlist === 'Y'}
@@ -169,8 +174,11 @@
                                                                     name="anzahl"
                                                                     autocomplete="off"
                                                                     aria=["label"=>{lang key='quantity'}]
-                                                                    data=["decimals"=>{getDecimalLength quantity=$Artikel->fAbnahmeintervall}]
-                                                                    value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}"}
+                                                                    data=[
+                                                                        "decimals"=>{getDecimalLength quantity=$Artikel->fAbnahmeintervall},
+                                                                        "product-id"=>"{if isset($Artikel->kVariKindArtikel)}{$Artikel->kVariKindArtikel}{else}{$Artikel->kArtikel}{/if}"
+                                                                    ]
+                                                                    value="{if $Artikel->fAbnahmeintervall > 0 || $Artikel->fMindestbestellmenge > 1}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}"}
                                                                 {inputgroupappend}
                                                                     {button variant=""
                                                                         data=["count-up"=>""]

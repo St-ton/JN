@@ -16,7 +16,7 @@ use Throwable;
 class DeleteFileCacheCommand extends Command
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function configure(): void
     {
@@ -25,9 +25,9 @@ class DeleteFileCacheCommand extends Command
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = $this->getIO();
         $fs = Shop::Container()->get(LocalFilesystem::class);
@@ -35,11 +35,11 @@ class DeleteFileCacheCommand extends Command
             $fs->deleteDirectory('/templates_c/filecache/');
             $io->success('File cache deleted.');
 
-            return 0;
+            return Command::SUCCESS;
         } catch (Throwable $e) {
             $io->warning('Could not delete: ' . $e->getMessage());
 
-            return 1;
+            return Command::FAILURE;
         }
     }
 }

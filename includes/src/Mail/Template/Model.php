@@ -58,42 +58,42 @@ final class Model
     /**
      * @var bool
      */
-    private $showAKZ = true;
+    private bool $showAKZ = true;
 
     /**
      * @var bool
      */
-    private $showAGB = true;
+    private bool $showAGB = true;
 
     /**
      * @var bool
      */
-    private $showWRB = true;
+    private bool $showWRB = true;
 
     /**
      * @var bool
      */
-    private $showWRBForm = true;
+    private bool $showWRBForm = true;
 
     /**
      * @var bool
      */
-    private $showDSE = true;
+    private bool $showDSE = true;
 
     /**
      * @var int - one of the SYNTAX_-constants
      */
-    private $hasError = self::SYNTAX_OK;
+    private int $hasError = self::SYNTAX_OK;
 
     /**
      * @var int
      */
-    private $languageID = 0;
+    private int $languageID = 0;
 
     /**
      * @var int
      */
-    private $pluginID = 0;
+    private int $pluginID = 0;
 
     /**
      * @var array
@@ -103,22 +103,22 @@ final class Model
     /**
      * @var array
      */
-    private $html = [];
+    private array $html = [];
 
     /**
      * @var array
      */
-    private $text = [];
+    private array $text = [];
 
     /**
      * @var array
      */
-    private $attachments = [];
+    private array $attachments = [];
 
     /**
      * @var array
      */
-    private $attachmentNames = [];
+    private array $attachmentNames = [];
 
     /**
      * @var mixed
@@ -126,14 +126,9 @@ final class Model
     private $data;
 
     /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
      * @var array
      */
-    private static $mapping = [
+    private static array $mapping = [
         'kEmailvorlage' => 'ID',
         'cName'         => 'Name',
         'cBeschreibung' => 'Description',
@@ -153,7 +148,7 @@ final class Model
     /**
      * @var array
      */
-    private static $localizedMapping = [
+    private static array $localizedMapping = [
         'kEmailvorlage' => 'ID',
         'kSprache'      => 'LanguageID',
         'cBetreff'      => 'Subject',
@@ -167,9 +162,8 @@ final class Model
      * Model constructor.
      * @param DbInterface $db
      */
-    public function __construct(DbInterface $db)
+    public function __construct(private readonly DbInterface $db)
     {
-        $this->db = $db;
     }
 
     /**
@@ -747,7 +741,7 @@ final class Model
     {
         $pluginID = 0;
         $moduleID = $templateID;
-        if (\strpos($templateID, 'kPlugin') === 0) {
+        if (\str_starts_with($templateID, 'kPlugin')) {
             [, $pluginID, $moduleID] = \explode('_', $templateID);
         }
         $data = $this->db->getObjects(

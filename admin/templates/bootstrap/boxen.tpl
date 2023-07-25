@@ -24,25 +24,25 @@
 
 <script>
     $(function () {
-        articlePicker = new SearchPicker({
+        window.articlePicker = new SearchPicker({
             searchPickerName:  'articlePicker',
             getDataIoFuncName: 'getProducts',
             keyName:           'kArtikel',
             renderItemCb:      renderItemName
         });
-        categoryPicker = new SearchPicker({
+        window.categoryPicker = new SearchPicker({
             searchPickerName:  'categoryPicker',
             getDataIoFuncName: 'getCategories',
             keyName:           'kKategorie',
             renderItemCb:      renderItemName
         });
-        manufacturerPicker = new SearchPicker({
+        window.manufacturerPicker = new SearchPicker({
             searchPickerName:  'manufacturerPicker',
             getDataIoFuncName: 'getManufacturers',
             keyName:           'kHersteller',
             renderItemCb:      renderItemName
         });
-        pagePicker = new SearchPicker({
+        window.pagePicker = new SearchPicker({
             searchPickerName:  'pagePicker',
             getDataIoFuncName: 'getPages',
             keyName:           'kLink',
@@ -50,12 +50,12 @@
         });
     });
 
-    function renderItemName (item)
+    function renderItemName(item)
     {
         return '<p class="list-group-item-text">' + item.cName + '</p>';
     }
 
-    function openFilterPicker (picker, kBox)
+    function openFilterPicker(picker, kBox)
     {
         picker
             .setOnApplyBefore(
@@ -68,7 +68,7 @@
             .show();
     }
 
-    function onApplyBeforeFilterPicker (kBox)
+    function onApplyBeforeFilterPicker(kBox)
     {
         $('#box-active-filters-' + kBox)
             .empty()
@@ -77,7 +77,7 @@
             );
     }
 
-    function onApplyFilterPicker (kBox, selectedKeys, selectedItems)
+    function onApplyFilterPicker(kBox, selectedKeys, selectedItems)
     {
         var $activeFilterList = $('#box-active-filters-' + kBox);
 
@@ -110,63 +110,65 @@
         </nav>
         <div class="tab-content">
             <div id="overview" class="tab-pane fade{if $cTab === '' || $cTab === 'uebersicht'} active show{/if}">
-                {if $invisibleBoxes|count > 0}
+                {if count($invisibleBoxes) > 0}
                     <div class="alert alert-danger">{__('warningInvisibleBoxes')}</div>
-                    <form action="boxen.php" method="post" class="block">
+                    <form action="{$adminURL}{$route}" method="post" class="block">
                         {$jtl_token}
                         <div class="card editorInner">
                             <div class="card-header">
                                 <div class="subheading1">{__('invisibleBoxes')}</div>
                             </div>
-                            <div class="table-responsive card-body">
-                                <table class="table table-align-top">
-                                    <tr class="boxRow">
-                                        <th class="check">&nbsp;</th>
-                                        <th>
-                                            <strong>{__('boxTitle')}</strong>
-                                        </th>
-                                        <th>
-                                            <strong>{__('boxLabel')}</strong>
-                                        </th>
-                                        <th>
-                                            <strong>{__('boxTemplate')}</strong>
-                                        </th>
-                                        <th>
-                                            <strong>{__('position')}</strong>
-                                        </th>
-                                    </tr>
-                                    {foreach $invisibleBoxes as $invisibleBox}
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-align-top">
+                                        <tr class="boxRow">
+                                            <th class="check">&nbsp;</th>
+                                            <th>
+                                                <strong>{__('boxTitle')}</strong>
+                                            </th>
+                                            <th>
+                                                <strong>{__('boxLabel')}</strong>
+                                            </th>
+                                            <th>
+                                                <strong>{__('boxTemplate')}</strong>
+                                            </th>
+                                            <th>
+                                                <strong>{__('position')}</strong>
+                                            </th>
+                                        </tr>
+                                        {foreach $invisibleBoxes as $invisibleBox}
+                                            <tr>
+                                                <td class="check">
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input class="custom-control-input" name="kInvisibleBox[]" type="checkbox" value="{$invisibleBox->kBox}" id="kInvisibleBox-{$invisibleBox@index}">
+                                                        <label class="custom-control-label" for="kInvisibleBox-{$invisibleBox@index}"></label>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <label for="kInvisibleBox-{$invisibleBox@index}">{$invisibleBox->cTitel}</label>
+                                                </td>
+                                                <td>
+                                                    {$invisibleBox->cName}
+                                                </td>
+                                                <td>
+                                                    {$invisibleBox->cTemplate}
+                                                </td>
+                                                <td>
+                                                    {$invisibleBox->ePosition}
+                                                </td>
+                                            </tr>
+                                        {/foreach}
                                         <tr>
                                             <td class="check">
                                                 <div class="custom-control custom-checkbox">
-                                                    <input class="custom-control-input" name="kInvisibleBox[]" type="checkbox" value="{$invisibleBox->kBox}" id="kInvisibleBox-{$invisibleBox@index}">
-                                                    <label class="custom-control-label" for="kInvisibleBox-{$invisibleBox@index}"></label>
+                                                    <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
+                                                    <label class="custom-control-label" for="ALLMSGS"></label>
                                                 </div>
                                             </td>
-                                            <td>
-                                                <label for="kInvisibleBox-{$invisibleBox@index}">{$invisibleBox->cTitel}</label>
-                                            </td>
-                                            <td>
-                                                {$invisibleBox->cName}
-                                            </td>
-                                            <td>
-                                                {$invisibleBox->cTemplate}
-                                            </td>
-                                            <td>
-                                                {$invisibleBox->ePosition}
-                                            </td>
+                                            <td colspan="4" class="text-left"><label for="ALLMSGS">{__('globalSelectAll')}</label></td>
                                         </tr>
-                                    {/foreach}
-                                    <tr>
-                                        <td class="check">
-                                            <div class="custom-control custom-checkbox">
-                                                <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
-                                                <label class="custom-control-label" for="ALLMSGS"></label>
-                                            </div>
-                                        </td>
-                                        <td colspan="4" class="text-left"><label for="ALLMSGS">{__('globalSelectAll')}</label></td>
-                                    </tr>
-                                </table>
+                                    </table>
+                                </div>
                             </div>
                             <div class="card-footer">
                                 <button name="action" type="submit" class="btn btn-danger" value="delete-invisible"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
@@ -174,14 +176,14 @@
                         </div>
                     </form>
                 {/if}
-                {if !is_array($oBoxenContainer) || $oBoxenContainer|@count == 0}
+                {if !is_array($oBoxenContainer) || count($oBoxenContainer) == 0}
                     <div class="alert alert-danger">{__('noTemplateConfig')}</div>
                 {elseif !$oBoxenContainer.left && !$oBoxenContainer.right && !$oBoxenContainer.top && !$oBoxenContainer.bottom}
                     <div class="alert alert-danger">{__('noBoxActivated')}</div>
                 {else}
                     {if isset($oEditBox) && $oEditBox}
                         <div id="editor" class="editor">
-                            <form action="boxen.php" method="post">
+                            <form action="{$adminURL}{$route}" method="post">
                                 {$jtl_token}
                                 <div class="card editorInner">
                                     <div class="card-header">
@@ -190,17 +192,17 @@
                                     </div>
                                     <div class="card-body">
                                         <div class="form-group form-row align-items-center">
-                                            <label class="col col-sm-4 col-form-label text-sm-right"for="boxtitle">{__('boxTitle')}:</label>
+                                            <label class="col col-sm-4 col-form-label text-sm-right" for="boxtitle">{__('boxTitle')}:</label>
                                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                                <input class="form-control" id="boxtitle" type="text" name="boxtitle" value="{$oEditBox->cTitel}" />
+                                                <input class="form-control" id="boxtitle" type="text" name="boxtitle" value="{$oEditBox->cTitel|escape}" />
                                             </div>
                                         </div>
                                         {if $oEditBox->eTyp === 'text'}
                                             {foreach $availableLanguages as $language}
                                                 <div class="form-group form-row align-items-center">
-                                                    <label class="col col-sm-4 col-form-label text-sm-right"for="title-{$language->getIso()}">{__('boxTitle')} {$language->getLocalizedName()}</label>
+                                                    <label class="col col-sm-4 col-form-label text-sm-right" for="title-{$language->getIso()}">{__('boxTitle')} {$language->getLocalizedName()}</label>
                                                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                                        <input class="form-control" id="title-{$language->getIso()}" type="text" name="title[{$language->getIso()}]" value="{foreach $oEditBox->oSprache_arr  as $oBoxSprache}{if $language->getIso() === $oBoxSprache->cISO}{$oBoxSprache->cTitel}{/if}{/foreach}" />
+                                                        <input class="form-control" id="title-{$language->getIso()}" type="text" name="title[{$language->getIso()}]" value="{foreach $oEditBox->oSprache_arr  as $oBoxSprache}{if $language->getIso() === $oBoxSprache->cISO}{$oBoxSprache->cTitel|escape}{/if}{/foreach}" />
                                                     </div>
                                                 </div>
                                                 <textarea id="text-{$language->getIso()}" name="text[{$language->getIso()}]" class="form-control ckeditor" rows="15" cols="60">{foreach $oEditBox->oSprache_arr as $oBoxSprache}{if $language->getIso() === $oBoxSprache->cISO}{$oBoxSprache->cInhalt}{/if}{/foreach}</textarea>
@@ -208,7 +210,7 @@
                                             {/foreach}
                                         {elseif $oEditBox->eTyp === 'catbox'}
                                             <div class="form-group form-row align-items-center">
-                                                <label class="col col-sm-4 col-form-label text-sm-right"for="linkID">{__('catBoxNum')}:</label>
+                                                <label class="col col-sm-4 col-form-label text-sm-right" for="linkID">{__('catBoxNum')}:</label>
                                                 <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                                     <input class="form-control" id="linkID" type="text" name="linkID" value="{$oEditBox->kCustomID}">
                                                 </div>
@@ -218,7 +220,7 @@
                                             </div>
                                             {foreach $availableLanguages as $language}
                                                 <div class="form-group form-row align-items-center">
-                                                    <label class="col col-sm-4 col-form-label text-sm-right"for="title-{$language->getIso()}">{__('boxTitle')} {$language->getLocalizedName()}:</label>
+                                                    <label class="col col-sm-4 col-form-label text-sm-right" for="title-{$language->getIso()}">{__('boxTitle')} {$language->getLocalizedName()}:</label>
                                                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                                         <input class="form-control" id="title-{$language->getIso()}" type="text"
                                                                name="title[{$language->getIso()}]"
@@ -228,7 +230,7 @@
                                             {/foreach}
                                         {elseif $oEditBox->eTyp === 'link'}
                                             <div class="form-group form-row align-items-center">
-                                                <label class="col col-sm-4 col-form-label text-sm-right"for="linkID">{__('linkgroup')}:</label>
+                                                <label class="col col-sm-4 col-form-label text-sm-right" for="linkID">{__('linkgroup')}:</label>
                                                 <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                                     <select class="custom-select" id="linkID" name="linkID" required>
                                                         <option value="" {if $oEditBox->kCustomID == 0}selected="selected"{/if}>{__('FillOut')}</option>
@@ -242,7 +244,7 @@
                                             </div>
                                             {foreach $availableLanguages as $language}
                                                 <div class="form-group form-row align-items-center">
-                                                    <label class="col col-sm-4 col-form-label text-sm-right"for="title-{$language->getIso()}">{__('boxTitle')} ({$language->getLocalizedName()}):</label>
+                                                    <label class="col col-sm-4 col-form-label text-sm-right" for="title-{$language->getIso()}">{__('boxTitle')} ({$language->getLocalizedName()}):</label>
                                                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                                         <input class="form-control" id="title-{$language->getIso()}" type="text" name="title[{$language->getIso()}]" value="{foreach $oEditBox->oSprache_arr as $oBoxSprache}{if $language->getIso() === $oBoxSprache->cISO}{$oBoxSprache->cTitel}{/if}{/foreach}" />
                                                     </div>
@@ -260,9 +262,12 @@
                                     <div class="card-footer save-wrapper">
                                         <div class="row">
                                             <div class="ml-auto col-sm-6 col-xl-auto">
-                                                <button type="button" onclick="window.location.href='boxen.php'" class="btn btn-outline-primary btn-block">
+                                                <button type="button" onclick="window.location.href='{$adminURL}{$route}'" class="btn btn-outline-primary btn-block">
                                                     {__('cancelWithIcon')}
                                                 </button>
+                                            </div>
+                                            <div class="col-sm-6 col-xl-auto">
+                                                {include file='snippets/buttons/saveAndContinueButton.tpl'}
                                             </div>
                                             <div class="col-sm-6 col-xl-auto">
                                                 <button type="submit" value="{__('save')}" class="btn btn-primary btn-block">
@@ -280,7 +285,7 @@
                         {/if}
                         <div class="card">
                             <div class="card-body">
-                                <form name="boxen" method="post" action="boxen.php">
+                                <form name="boxen" method="post" action="{$adminURL}{$route}">
                                     {$jtl_token}
                                     <div class="input-group left">
                                         <span class="input-group-addon">
@@ -306,14 +311,14 @@
             </div>
             <div id="config" class="tab-pane fade{if $cTab === 'einstellungen'} active show{/if}">
                 {include file='tpl_inc/config_section.tpl'
-                    config=$oConfig_arr
                     name='einstellen'
                     a='saveSettings'
-                    action='boxen.php'
+                    action=$adminURL|cat:$route
                     buttonCaption=__('save')
                     title=__('settings')
                     tab='einstellungen'
-                    showNonConf=true}
+                    showNonConf=true
+                }
             </div>
         </div>
     </div>

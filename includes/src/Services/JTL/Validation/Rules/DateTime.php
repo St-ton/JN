@@ -15,15 +15,12 @@ use JTL\Services\JTL\Validation\RuleResult;
  */
 class DateTime implements RuleInterface
 {
-    protected $format;
-
     /**
      * Date constructor.
      * @param string $format
      */
-    public function __construct(string $format)
+    public function __construct(protected string $format)
     {
-        $this->format = $format;
     }
 
     /**

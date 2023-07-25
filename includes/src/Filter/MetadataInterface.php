@@ -138,9 +138,9 @@ interface MetadataInterface
      * @return string
      */
     public function generateMetaDescription(
-        array $products,
+        array                  $products,
         SearchResultsInterface $searchResults,
-        array $globalMeta,
+        array                  $globalMeta,
         $category = null
     ): string;
 
@@ -154,7 +154,7 @@ interface MetadataInterface
     /**
      * @param SearchResultsInterface $searchResults
      * @param array                  $globalMeta
-     * @param Kategorie|null    $category
+     * @param Kategorie|null         $category
      * @return string
      */
     public function generateMetaTitle($searchResults, $globalMeta, Kategorie $category = null): string;
@@ -168,10 +168,10 @@ interface MetadataInterface
     public function getMetaStart($searchResults): string;
 
     /**
-     * @param string $cTitle
+     * @param string $title
      * @return string
      */
-    public function truncateMetaTitle($cTitle): string;
+    public function truncateMetaTitle(string $title): string;
 
     /**
      * @return string

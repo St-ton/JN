@@ -8,7 +8,7 @@ use JTL\Shop;
 use stdClass;
 
 /**
- * Class Surcharge
+ * Class ShippingSurcharge
  * @package JTL\Checkout
  */
 class ShippingSurcharge
@@ -18,7 +18,7 @@ class ShippingSurcharge
     /**
      * @var array
      */
-    protected static $mapping = [
+    protected static array $mapping = [
         'kVersandzuschlag' => 'ID',
         'cISO'             => 'ISO',
         'cName'            => 'Title',
@@ -168,14 +168,12 @@ class ShippingSurcharge
      */
     public function hasZIPCode(?string $zip): bool
     {
-        $zip = \str_replace(' ', '', $zip);
         if ($zip === null) {
             return false;
         }
-        foreach ($this->getZIPCodes() ?? [] as $zipTMP) {
-            if ($zip === $zipTMP) {
-                return true;
-            }
+        $zip = \str_replace(' ', '', $zip);
+        if (\in_array($zip, $this->getZIPCodes() ?? [], true)) {
+            return true;
         }
 
         foreach ($this->getZIPAreas() ?? [] as $zipArea) {
@@ -362,7 +360,6 @@ class ShippingSurcharge
 
         return $this;
     }
-
 
     /**
      * @param int|null $idx

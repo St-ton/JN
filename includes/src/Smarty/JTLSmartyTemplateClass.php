@@ -14,7 +14,12 @@ class JTLSmartyTemplateClass extends \Smarty_Internal_Template
     public $smarty;
 
     /**
-     * @inheritDoc
+     * @var bool
+     */
+    public bool $noOutputFilter = true;
+
+    /**
+     * @inheritdoc
      */
     public function _subTemplateRender(
         $template,
@@ -43,12 +48,12 @@ class JTLSmartyTemplateClass extends \Smarty_Internal_Template
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function render($no_output_filter = true, $display = null)
     {
         if ($no_output_filter === false && $display !== 1) {
-            $no_output_filter = true;
+            $no_output_filter = $this->noOutputFilter;
         }
 
         return parent::render($no_output_filter, $display);

@@ -3,6 +3,7 @@
 namespace JTL\Export;
 
 use DateTime;
+use JTL\Router\Route;
 use JTL\Shop;
 use stdClass;
 
@@ -15,66 +16,70 @@ class AsyncCallback
     /**
      * @var int
      */
-    private $exportID = 0;
+    private int $exportID = 0;
 
     /**
      * @var int
      */
-    private $queueID = 0;
+    private int $queueID = 0;
 
     /**
      * @var int
      */
-    private $productCount = 0;
+    private int $productCount = 0;
 
     /**
      * @var int
      */
-    private $tasksExecuted = 0;
+    private int $tasksExecuted = 0;
 
     /**
      * @var int
      */
-    private $lastProductID = 0;
+    private int $lastProductID = 0;
 
     /**
      * @var bool
      */
-    private $isFinished = false;
+    private bool $isFinished = false;
 
     /**
      * @var bool
      */
-    private $isFirst = false;
+    private bool $isFirst = false;
 
     /**
      * @var int
      */
-    private $cacheHits = 0;
+    private int $cacheHits = 0;
 
     /**
      * @var int
      */
-    private $cacheMisses = 0;
+    private int $cacheMisses = 0;
 
     /**
      * @var string
      */
-    private $url;
+    private string $url;
 
     /**
      * @var string|null
      */
-    private $error;
+    private ?string $error = null;
 
     /**
      * AsyncCallback constructor.
      */
     public function __construct()
     {
-        $this->url = Shop::getAdminURL() . '/do_export.php';
+        $this->url = Shop::getAdminURL() . '/' . Route::EXPORT_START;
     }
 
+    /**
+     * @return void
+     * @throws \JsonException
+     */
     public function output(): void
     {
         $callback                 = new stdClass();
@@ -91,7 +96,7 @@ class AsyncCallback
         $callback->lastCreated    = (new DateTime())->format('Y-m-d H:i:s');
         $callback->errorMessage   = $this->getError() ?? '';
 
-        echo \json_encode($callback);
+        echo \json_encode($callback, \JSON_THROW_ON_ERROR);
     }
 
     /**
@@ -297,6 +302,7 @@ class AsyncCallback
     public function setError(?string $error): AsyncCallback
     {
         $this->error = $error;
+
         return $this;
     }
 }

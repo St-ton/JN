@@ -16,7 +16,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class DatabaseCommand extends Command
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function configure(): void
     {
@@ -27,9 +27,9 @@ class DatabaseCommand extends Command
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io       = $this->getIO();
         $compress = $this->getOption('compress');
@@ -39,11 +39,11 @@ class DatabaseCommand extends Command
             $updater->createSqlDump($file, $compress);
             $io->success('SQL-Dump "' . $file . '" created.');
 
-            return 0;
+            return Command::SUCCESS;
         } catch (\Exception $e) {
             $io->error($e->getMessage());
 
-            return 1;
+            return Command::FAILURE;
         }
     }
 }

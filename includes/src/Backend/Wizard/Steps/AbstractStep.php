@@ -16,53 +16,41 @@ abstract class AbstractStep implements StepInterface
     /**
      * @var Collection
      */
-    protected $questions;
+    protected Collection $questions;
 
     /**
      * @var string
      */
-    protected $title = '';
+    protected string $title = '';
 
     /**
      * @var string
      */
-    protected $description = '';
+    protected string $description = '';
 
     /**
      * @var int
      */
-    protected $id = 0;
-
-    /**
-     * @var DbInterface
-     */
-    protected $db;
-
-    /**
-     * @var AlertServiceInterface
-     */
-    protected $alertService;
+    protected int $id = 0;
 
     /**
      * @var Collection
      */
-    protected $errors;
+    protected Collection $errors;
 
     /**
      * AbstractStep constructor.
      * @param DbInterface           $db
      * @param AlertServiceInterface $alertService
      */
-    public function __construct(DbInterface $db, AlertServiceInterface $alertService)
+    public function __construct(protected DbInterface $db, protected AlertServiceInterface $alertService)
     {
-        $this->db           = $db;
-        $this->alertService = $alertService;
-        $this->questions    = new Collection();
-        $this->errors       = new Collection();
+        $this->questions = new Collection();
+        $this->errors    = new Collection();
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getTitle(): string
     {
@@ -70,7 +58,7 @@ abstract class AbstractStep implements StepInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setTitle(string $title): void
     {
@@ -78,7 +66,7 @@ abstract class AbstractStep implements StepInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getDescription(): string
     {
@@ -86,7 +74,7 @@ abstract class AbstractStep implements StepInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setDescription(string $description): void
     {
@@ -94,7 +82,7 @@ abstract class AbstractStep implements StepInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getID(): int
     {
@@ -102,7 +90,7 @@ abstract class AbstractStep implements StepInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setID(int $id): void
     {
@@ -110,7 +98,7 @@ abstract class AbstractStep implements StepInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setQuestions(Collection $questions): void
     {
@@ -118,7 +106,7 @@ abstract class AbstractStep implements StepInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function addQuestion(QuestionInterface $question): void
     {
@@ -126,7 +114,7 @@ abstract class AbstractStep implements StepInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getQuestions(): Collection
     {
@@ -134,11 +122,11 @@ abstract class AbstractStep implements StepInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function answerQuestionByID(int $questionID, $value): QuestionInterface
     {
-        $question = $this->questions->first(function (QuestionInterface $question) use ($questionID) {
+        $question = $this->questions->first(function (QuestionInterface $question) use ($questionID): bool {
             return $question->getID() === $questionID;
         });
         $question->setValue($value);
@@ -147,7 +135,7 @@ abstract class AbstractStep implements StepInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getFilteredQuestions(): array
     {

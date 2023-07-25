@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Link;
 
@@ -16,7 +16,7 @@ abstract class AbstractLink implements LinkInterface
     /**
      * @var array
      */
-    protected static $mapping = [
+    protected static array $mapping = [
         'cNoFollow'          => 'NoFollowCompat',
         'cURL'               => 'URL',
         'cURLFull'           => 'URL',
@@ -148,7 +148,7 @@ abstract class AbstractLink implements LinkInterface
         $byCode    = [];
         $languages = LanguageHelper::getAllLanguages(1);
         foreach ($this->getNames() as $langID => $name) {
-            $byCode[$languages[$langID]->cISO] = $name;
+            $byCode[$languages[$langID]->getCode()] = $name;
         }
 
         return $byCode;

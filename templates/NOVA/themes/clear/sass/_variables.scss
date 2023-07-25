@@ -21,6 +21,7 @@ $danger:                            #b90000 !default;
 $bg-danger:                         #E8CCD2 !default;
 $bg-main:                           $gray-lighter !default;
 $bg-main-ligther:                   $bg-main !default;
+$bg-config-recommendation:          lighten($primary, 40%) !default;
 
 $white:                             #ffffff !default;
 $black:                             #000000 !default;
@@ -44,6 +45,20 @@ $theme-colors: map-merge((
         'gray-dark'		: $gray-light,
         'gray-darker'	: $gray-darker
 ), $theme-colors);
+
+$ribbon-custom-bg-colors				: () !default;
+$ribbon-custom-bg-colors: map-merge($theme-colors, (
+        'primary'    : $primary,
+        'secondary'  : $secondary,
+        'success'    : $bg-success,
+        'danger'     : $bg-danger,
+        'warning'    : $bg-warning,
+        'info'       : $white,
+        'light'      : $gray-lighter,
+        'dark'       : $gray-darker,
+        'white'      : $gray-darker,
+        'transparent': transparent
+));
 
 // spacer
 
@@ -136,6 +151,10 @@ $transition-fade:                   opacity .35s linear !default;
 
 // styles
 
+$text-muted:                        $gray !default;
+$text-muted-header:                 $text-muted !default;
+$input-color-placeholder:           $gray !default;
+
 $highlight-border-size:             .375rem !default;
 
 $body-bg:                           $gray-100 !default;
@@ -147,13 +166,11 @@ $footer-bg-color:                  $bg-main !default;
 $footer-color:                     $body-color !default;
 $header-bg-color:                  $white !default;
 $header-color:                     $body-color !default;
+$header-bg-color-secondary:        $gray-lighter !default;
+$header-color-secondary:           $text-muted-header !default;
 
 $headings-color:                    $gray-700 !default;
 $navbar-light-hover-color:          $primary !default;
-
-$text-muted:                        $gray !default;
-$text-muted-header:                 $text-muted !default;
-$input-color-placeholder:           $gray !default;
 
 /* links */
 
@@ -180,7 +197,7 @@ $navbar-light-color:                $gray-dark !default;
 
 $input-bg:                          $white !default;
 $input-focus-border-color:          $primary !default;
-$input-focus-box-shadow:            none !default;
+$input-focus-box-shadow:            0 0 0 0 rgba(0,0,0,0) !default;
 $list-group-bg:                     $white !default;
 $list-group-disabled-bg:            $white !default;
 
@@ -332,6 +349,7 @@ $ribbon-bg-colors: map-merge((
         '8' : $ribbon-bg-8,
         '9' : $ribbon-bg-9
 ), $ribbon-bg-colors);
+$ribbon-font-size: rem(9px) !default;
 
 /* navs */
 
@@ -345,6 +363,7 @@ $nav-tabs-link-active-border-color		: $primary !default;
 $navbar-nav-link-padding-x: map-get($spacers, 4) !default;
 $navbar-nav-link-padding-y: map-get($spacers, 4) !default;
 $nav-link-padding-x       : 1rem !default;
+$nav-link-padding-sm-x    : .7rem !default;
 $navbar-padding-y         : .4rem !default;
 $navbar-padding-y-lg      : .6rem !default;
 $navbar-image-height      : 2rem !default;
@@ -352,7 +371,7 @@ $navbar-image-height-lg   : rem(49px) !default;
 
 /* modals */
 
-$modal-inner-padding			: $spacer 0 !default;
+$modal-inner-padding			: $spacer !default;
 
 $modal-content-padding			: $spacer map-get($spacers, 5) !default;
 $modal-content-padding-sm   	: $spacer !default;

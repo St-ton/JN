@@ -8,6 +8,7 @@ use JTL\Shop;
 use JTLShop\SemVer\Version;
 use stdClass;
 use Symfony\Component\Finder\Finder;
+use ZipArchive;
 use function Functional\map;
 
 /**
@@ -33,9 +34,6 @@ class FileCheck
      */
     public function validateCsvFile(string $hashFile, array &$result, int &$errors, string $prefix = \PFAD_ROOT): int
     {
-        if (!\is_array($result)) {
-            return self::ERROR_RESULT_NO_ARRAY;
-        }
         if (!\file_exists($hashFile)) {
             return self::ERROR_INPUT_FILE_MISSING;
         }
@@ -58,7 +56,7 @@ class FileCheck
                     $mtime    = \filemtime($prefix . $shopFile);
                     $result[] = (object)[
                         'name'         => $shopFile,
-                        'lastModified' => \date('d.m.Y H:i:s', $mtime)
+                        'lastModified' => \date('d.m.Y H:i:s', $mtime ?: null)
                     ];
                     $errors++;
                 }
@@ -73,7 +71,7 @@ class FileCheck
                     $mtime    = \file_exists($path) ? \filemtime($path) : 0;
                     $result[] = (object)[
                         'name'         => $file,
-                        'lastModified' => \date('d.m.Y H:i:s', $mtime)
+                        'lastModified' => \date('d.m.Y H:i:s', $mtime ?: null)
                     ];
                     $errors++;
                 }
@@ -108,28 +106,71 @@ class FileCheck
      */
     public function deleteOrphanedFiles(array &$orphanedFiles, string $backupFile): int
     {
-        $count  = 0;
+        /** @var Filesystem $fs */
         $fs     = Shop::Container()->get(Filesystem::class);
+        $count  = 0;
+        $files  = [];
+        $dirs   = [];
         $finder = new Finder();
         $finder->append(map($orphanedFiles, static function (stdClass $e) {
             return \PFAD_ROOT . $e->name;
         }));
+        foreach ($finder as $file) {
+            if ($file->getType() === 'dir') {
+                $dirs[] = $file->getPathname();
+            } else {
+                $files[] = $file->getPathname();
+            }
+        }
+        $zipFinder = new Finder();
+        $zipFinder->in($dirs);
+        $zipFinder->append($files);
         try {
-            $fs->zip($finder, $backupFile);
-        } catch (Exception $e) {
+            $fs->zip($zipFinder, $backupFile);
+        } catch (Exception) {
             return -1;
         }
-        /** @var Filesystem $fs */
-        foreach ($orphanedFiles as $i => $file) {
+        foreach ($finder as $file) {
             try {
-                $fs->delete($file->name);
-                unset($orphanedFiles[$i]);
+                $fsPath = \mb_substr($file->getPathname(), \mb_strlen(\PFAD_ROOT));
+                if ($file->getType() === 'dir') {
+                    $fs->deleteDirectory($fsPath);
+                } else {
+                    $fs->delete($fsPath);
+                }
+                unset($orphanedFiles[$count]);
                 ++$count;
-            } catch (Exception $e) {
+            } catch (Exception) {
             }
         }
 
         return $count;
+    }
+
+    /**
+     * @param string     $folder
+     * @param ZipArchive $zipFile
+     * @param int        $exclusiveLength
+     */
+    private function folderToZip(string $folder, ZipArchive $zipFile, int $exclusiveLength): void
+    {
+        $handle = \opendir($folder);
+        while (($f = \readdir($handle)) !== false) {
+            if ($f === '.' || $f === '..') {
+                continue;
+            }
+            $filePath = $folder . '/' . $f;
+            // Remove prefix from file path before adding to zip.
+            $localPath = \substr($filePath, $exclusiveLength);
+            if (\is_file($filePath)) {
+                $zipFile->addFile($filePath, $localPath);
+            } elseif (\is_dir($filePath)) {
+                // Add sub-directory.
+                $zipFile->addEmptyDir($localPath);
+                $this->folderToZip($filePath, $zipFile, $exclusiveLength);
+            }
+        }
+        \closedir($handle);
     }
 
     /**

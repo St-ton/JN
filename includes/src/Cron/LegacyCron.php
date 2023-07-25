@@ -8,94 +8,35 @@ use stdClass;
 /**
  * Class LegacyCron
  * @package JTL\Cron
- * @todo: finalize refactoring and remove this class
+ * @deprecated since 5.2.0
  */
 class LegacyCron
 {
     /**
-     * @var int
-     */
-    public $kCron;
-
-    /**
-     * @var int
-     */
-    public $kKey;
-
-    /**
-     * @var int
-     */
-    public $nAlleXStd;
-
-    /**
-     * @var string
-     */
-    public $cName;
-
-    /**
-     * @var string
-     */
-    public $cTabelle;
-
-    /**
-     * @var string
-     */
-    public $cKey;
-
-    /**
-     * @var string
-     */
-    public $cJobArt;
-
-    /**
-     * @var string
-     */
-    public $dStart;
-
-    /**
-     * @var string
-     */
-    public $dStartZeit;
-
-    /**
-     * @var string
-     */
-    public $dLetzterStart;
-
-    /**
-     * @param int         $cronID
-     * @param int         $key
-     * @param int         $frequency
-     * @param string      $name
-     * @param string      $jobType
-     * @param string      $table
-     * @param string      $keyName
-     * @param string|null $start
-     * @param string|null $startTime
-     * @param string|null $lastStart
+     * @param int         $kCron
+     * @param int         $kKey
+     * @param int         $nAlleXStd
+     * @param string      $cName
+     * @param string      $cJobArt
+     * @param string      $cTabelle
+     * @param string      $cKey
+     * @param string|null $dStart
+     * @param string|null $dStartZeit
+     * @param string|null $dLetzterStart
      */
     public function __construct(
-        int $cronID = 0,
-        int $key = 0,
-        int $frequency = 0,
-        string $name = '',
-        string $jobType = '',
-        string $table = '',
-        string $keyName = '',
-        string $start = null,
-        string $startTime = null,
-        string $lastStart = null
+        public int     $kCron = 0,
+        public int     $kKey = 0,
+        public int     $nAlleXStd = 0,
+        public string  $cName = '',
+        public string  $cJobArt = '',
+        public string  $cTabelle = '',
+        public string  $cKey = '',
+        public ?string $dStart = null,
+        public ?string $dStartZeit = null,
+        public ?string $dLetzterStart = null
     ) {
-        $this->kCron         = $cronID;
-        $this->kKey          = $key;
-        $this->cKey          = $keyName;
-        $this->cTabelle      = $table;
-        $this->cName         = $name;
-        $this->cJobArt       = $jobType;
-        $this->nAlleXStd     = $frequency;
-        $this->dStart        = $start;
-        $this->dStartZeit    = $startTime;
-        $this->dLetzterStart = $lastStart;
+        \trigger_error(__CLASS__ . ' is deprecated and should not be used anymore.', \E_USER_DEPRECATED);
     }
 
     /**
@@ -124,6 +65,7 @@ class LegacyCron
             $ins->startDate    = $this->dStart;
             $ins->startTime    = $this->dStartZeit;
             $ins->lastStart    = $this->dLetzterStart ?? '_DBNULL_';
+            $ins->nextStart    = $this->dStart;
 
             return Shop::Container()->getDB()->insert('tcron', $ins);
         }
@@ -132,23 +74,23 @@ class LegacyCron
     }
 
     /**
-     * @param string $cJobArt
-     * @param string $dStart
-     * @param int    $nLimitM
+     * @param string $jobType
+     * @param string $startTime
+     * @param int    $lastLimit - "nLimitM"
      * @return int|bool
      */
-    public function speicherInJobQueue($cJobArt, $dStart, $nLimitM)
+    public function speicherInJobQueue(string $jobType, string $startTime, $lastLimit)
     {
-        if ($dStart && $nLimitM > 0 && \mb_strlen($cJobArt) > 0) {
+        if ($startTime && $lastLimit > 0 && \mb_strlen($jobType) > 0) {
             $ins                = new stdClass();
             $ins->cronID        = $this->kCron;
             $ins->foreignKeyID  = $this->kKey;
             $ins->foreignKey    = $this->cKey;
             $ins->tableName     = $this->cTabelle;
-            $ins->jobType       = $cJobArt;
-            $ins->startTime     = $dStart;
+            $ins->jobType       = $jobType;
+            $ins->startTime     = $startTime;
             $ins->tasksExecuted = 0;
-            $ins->taskLimit     = $nLimitM;
+            $ins->taskLimit     = $lastLimit;
             $ins->isRunning     = 0;
 
             return Shop::Container()->getDB()->insert('tjobqueue', $ins);

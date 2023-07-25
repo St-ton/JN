@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Services\JTL;
 
@@ -26,30 +26,24 @@ use function Functional\first_index_of;
 final class LinkService implements LinkServiceInterface
 {
     /**
-     * @var LinkService
+     * @var LinkService|null
      */
-    private static $instance;
+    private static ?LinkService $instance = null;
 
     /**
      * @var LinkGroupListInterface
      */
-    private $linkGroupList;
-
-    /**
-     * @var DbInterface
-     */
-    private $db;
+    private LinkGroupListInterface $linkGroupList;
 
     /**
      * LinkService constructor.
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */
-    public function __construct(DbInterface $db, JTLCacheInterface $cache)
+    public function __construct(private readonly DbInterface $db, private readonly JTLCacheInterface $cache)
     {
-        $this->db            = $db;
         self::$instance      = $this;
-        $this->linkGroupList = new LinkGroupList($this->db, $cache);
+        $this->linkGroupList = new LinkGroupList($db, $cache);
         $this->initLinkGroups();
     }
 
@@ -63,8 +57,22 @@ final class LinkService implements LinkServiceInterface
 
     public function reset(): void
     {
-        $this->linkGroupList = new LinkGroupList($this->db, Shop::Container()->getCache());
+        $this->linkGroupList = new LinkGroupList($this->db, $this->cache);
         $this->initLinkGroups();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function updateDefaultLanguageData(int $languageID, string $locale): void
+    {
+        /** @var LinkGroupInterface $linkGroup */
+        foreach ($this->linkGroupList->getLinkGroups() as $linkGroup) {
+            /** @var LinkInterface $link */
+            foreach ($linkGroup->getLinks() as $link) {
+                $link->initLanguageID($languageID, $locale);
+            }
+        }
     }
 
     /**
@@ -80,7 +88,7 @@ final class LinkService implements LinkServiceInterface
      */
     public function getVisibleLinkGroups(): LinkGroupCollection
     {
-        return $this->linkGroupList->getVisibleLinkgroups();
+        return $this->linkGroupList->getVisibleLinkGroups();
     }
 
     /**
@@ -109,7 +117,7 @@ final class LinkService implements LinkServiceInterface
         }
         foreach ($this->linkGroupList->getLinkGroups() as $linkGroup) {
             /** @var LinkGroupInterface $linkGroup */
-            $first = first($linkGroup->getLinks(), static function (LinkInterface $link) use ($id) {
+            $first = first($linkGroup->getLinks(), static function (LinkInterface $link) use ($id): bool {
                 return $link->getID() === $id;
             });
             if ($first !== null) {
@@ -130,7 +138,7 @@ final class LinkService implements LinkServiceInterface
         }
         foreach ($this->linkGroupList->getLinkGroups() as $linkGroup) {
             /** @var LinkGroupInterface $linkGroup */
-            $first = first($linkGroup->getLinks(), static function (LinkInterface $link) use ($id) {
+            $first = first($linkGroup->getLinks(), static function (LinkInterface $link) use ($id): bool {
                 return $link->getID() === $id;
             });
             if ($first !== null) {
@@ -185,7 +193,7 @@ final class LinkService implements LinkServiceInterface
             $res = $this->getLinkByID($id);
         }
 
-        return $res !== null ? $res->getID() : null;
+        return $res?->getID();
     }
 
     /**
@@ -220,13 +228,14 @@ final class LinkService implements LinkServiceInterface
     /**
      * @former gibLinkKeySpecialSeite()
      * @param int $linkType
-     * @return LinkInterface|null
+     * @return LinkInterface
+     * @throws SpecialPageNotFoundException
      */
-    public function getSpecialPage(int $linkType): ?LinkInterface
+    public function getSpecialPage(int $linkType): LinkInterface
     {
         $lg = $this->getLinkGroupByName('specialpages');
 
-        if ($lg === null || ($lt = $lg->getLinks()->first(static function (LinkInterface $l) use ($linkType) {
+        if ($lg === null || ($lt = $lg->getLinks()->first(static function (LinkInterface $l) use ($linkType): bool {
             return $l->getLinkType() === $linkType;
         })) === null) {
             throw new SpecialPageNotFoundException($linkType);
@@ -281,12 +290,16 @@ final class LinkService implements LinkServiceInterface
     /**
      * @inheritdoc
      */
-    public function getStaticRoute($id = 'kontakt.php', $full = true, $secure = true, $langISO = null): string
-    {
+    public function getStaticRoute(
+        string $id = 'kontakt.php',
+        bool   $full = true,
+        bool   $secure = false,
+        string $langISO = null
+    ): string {
         $idx = null;
         $lg  = $this->getLinkGroupByName('staticroutes');
         if ($lg !== null) {
-            $filterd = $lg->getLinks()->first(static function (LinkInterface $link) use ($id) {
+            $filterd = $lg->getLinks()->first(static function (LinkInterface $link) use ($id): bool {
                 return $link->getFileName() === $id;
             });
             if ($filterd !== null) {
@@ -296,12 +309,12 @@ final class LinkService implements LinkServiceInterface
                 }
 
                 if ($idx !== false) {
-                    return $filterd->getURL($idx);
+                    return $full ? $filterd->getURL($idx) : $filterd->getSlug($idx);
                 }
             }
         }
 
-        return $full && \mb_strpos($id, 'http') !== 0
+        return $full && !\str_starts_with($id, 'http')
             ? Shop::getURL($secure) . '/' . $id
             : $id;
     }
@@ -316,7 +329,7 @@ final class LinkService implements LinkServiceInterface
             return new Collection();
         }
 
-        return $lg->getLinks()->groupBy(static function (LinkInterface $link) {
+        return $lg->getLinks()->groupBy(static function (LinkInterface $link): int {
             return $link->getLinkType();
         })->map(static function (Collection $group) {
             return $group->first();
@@ -402,7 +415,7 @@ final class LinkService implements LinkServiceInterface
         $meta->cKeywords = '';
         foreach ($this->linkGroupList->getLinkGroups() as $linkGroup) {
             /** @var LinkGroupInterface $linkGroup */
-            $first = $linkGroup->getLinks()->first(static function (LinkInterface $link) use ($type) {
+            $first = $linkGroup->getLinks()->first(static function (LinkInterface $link) use ($type): bool {
                 return $link->getLinkType() === $type;
             });
             if ($first !== null) {
@@ -452,9 +465,9 @@ final class LinkService implements LinkServiceInterface
                         if ($linkID === Shop::$kLink) {
                             $link->setIsActive(true);
                             $parent = $this->getRootLink($linkID);
-                            $linkGroup->getLinks()->filter(static function (LinkInterface $l) use ($parent) {
+                            $linkGroup->getLinks()->filter(static function (LinkInterface $l) use ($parent): bool {
                                 return $l->getID() === $parent;
-                            })->map(static function (LinkInterface $l) {
+                            })->map(static function (LinkInterface $l): LinkInterface {
                                 $l->setIsActive(true);
 
                                 return $l;
@@ -514,10 +527,13 @@ final class LinkService implements LinkServiceInterface
      */
     public function getAGBWRB(int $langID, int $customerGroupID)
     {
+        $cacheID = 'agbwrb_' . $langID . '_' . $customerGroupID;
+        if (($data = $this->cache->get($cacheID)) !== false) {
+            return $data;
+        }
         $linkAGB     = null;
         $linkWRB     = null;
         $linkWRBForm = null;
-        $conf        = Shop::getSettings([\CONF_KAUFABWICKLUNG])['kaufabwicklung'];
         // kLink für AGB und WRB suchen
         foreach ($this->getSpecialPages() as $sp) {
             /** @var LinkInterface $sp */
@@ -536,7 +552,7 @@ final class LinkService implements LinkServiceInterface
             'kSprache',
             $langID
         );
-        if (empty($data->kText)) {
+        if ($data === null || empty($data->kText)) {
             $data = $this->db->select(
                 'ttext',
                 'kKundengruppe',
@@ -551,7 +567,7 @@ final class LinkService implements LinkServiceInterface
                 'kKundengruppe',
                 $customerGroupID,
                 'kSprache',
-                LanguageHelper::getDefaultLanguage()->kSprache
+                LanguageHelper::getDefaultLanguage()->getId()
             );
         }
         if (empty($data->kText)) {
@@ -560,7 +576,7 @@ final class LinkService implements LinkServiceInterface
                 'kKundengruppe',
                 (new CustomerGroup())->loadDefaultGroup()->getID(),
                 'kSprache',
-                LanguageHelper::getDefaultLanguage()->kSprache
+                LanguageHelper::getDefaultLanguage()->getId()
             );
         }
         if (empty($data->kText)) {
@@ -573,7 +589,7 @@ final class LinkService implements LinkServiceInterface
         $data->kLinkWRB     = $linkWRB !== null ? $linkWRB->getID() : 0;
         $data->kLinkWRBForm = $linkWRBForm !== null ? $linkWRBForm->getID() : 0;
 
-        $data->agbWrbNotice = $conf['bestellvorgang_wrb_anzeigen'] === '1'
+        $data->agbWrbNotice = ((int)Shop::getSettingValue(\CONF_KAUFABWICKLUNG, 'bestellvorgang_wrb_anzeigen')) === 1
         ? \sprintf(
             Shop::Lang()->get('termsCancelationNotice', 'checkout'),
             $data->cURLAGB,
@@ -586,6 +602,7 @@ final class LinkService implements LinkServiceInterface
             $data->cURLAGB,
             $data->kLinkAGB > 0 ? 'class="popup"' : 'data-toggle="modal" data-target="#agb-modal" class="modal-popup"'
         );
+        $this->cache->set($cacheID, $data, [\CACHING_GROUP_CORE]);
 
         return $data;
     }

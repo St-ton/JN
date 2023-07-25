@@ -1,10 +1,10 @@
 {block name='snippets-comparelist-dropdown'}
     {block name='snippets-comparelist-dropdown-products'}
         <div class="comparelist-dropdown-table table-responsive max-h-sm lg-max-h">
-            {if !empty($smarty.session.Vergleichsliste->oArtikel_arr)}
+            {if JTL\Session\Frontend::getCompareList()->oArtikel_arr|count > 0}
                 <table class="table table-vertical-middle table-img">
                     <tbody>
-                    {foreach $smarty.session.Vergleichsliste->oArtikel_arr as $product}
+                    {foreach JTL\Session\Frontend::getCompareList()->oArtikel_arr as $product}
                         {block name='snippets-comparelist-dropdown-products-body'}
                             <tr>
                                 <td class="w-100-util">
@@ -14,9 +14,13 @@
                                                 {link href=$product->cURLFull}
                                                     {image lazy=true webp=true
                                                     src=$product->image->cURLMini
-                                                    srcset="{$product->image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                            {$product->image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                            {$product->image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                                    srcset="
+                                                        {$product->image->cURLMini}
+                                                        {$product->image->imageSizes->xs->size->width}w,
+                                                        {$product->image->cURLKlein}
+                                                        {$product->image->imageSizes->sm->size->width}w,
+                                                        {$product->image->cURLNormal}
+                                                        {$product->image->imageSizes->md->size->width}w"
                                                     sizes="45px"
                                                     alt=$product->cName
                                                     class="img-sm"}
@@ -53,7 +57,7 @@
     {/block}
     {block name='snippets-comparelist-dropdown-hint'}
         <div class="comparelist-dropdown-table-body dropdown-body">
-            {if !empty($smarty.session.Vergleichsliste->oArtikel_arr) && $smarty.session.Vergleichsliste->oArtikel_arr|@count <= 1}
+            {if JTL\Session\Frontend::getCompareList()->oArtikel_arr|count <= 1}
                 {block name='snippets-comparelist-dropdown-more-than-one'}
                     {lang key='productNumberHint' section='comparelist'}
                 {/block}

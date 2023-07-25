@@ -16,10 +16,10 @@ use JTL\Update\Migration;
 class Migration_20200124113400 extends Migration implements IMigration
 {
     protected $author      = 'ms';
-    protected $description = 'adds child item bulk price setting';
+    protected $description = 'Add child item bulk price setting';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -41,7 +41,7 @@ class Migration_20200124113400 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

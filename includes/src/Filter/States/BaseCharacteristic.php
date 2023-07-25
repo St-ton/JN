@@ -2,13 +2,12 @@
 
 namespace JTL\Filter\States;
 
+use JTL\Catalog\Product\MerkmalWert;
 use JTL\Filter\AbstractFilter;
 use JTL\Filter\FilterInterface;
 use JTL\Filter\Join;
 use JTL\Filter\ProductFilter;
-use JTL\Language\LanguageHelper;
 use JTL\MagicCompatibilityTrait;
-use JTL\Shop;
 
 /**
  * Class BaseCharacteristic
@@ -21,7 +20,7 @@ class BaseCharacteristic extends AbstractFilter
     /**
      * @var array
      */
-    public static $mapping = [
+    public static array $mapping = [
         'kMerkmal'     => 'CharacteristicIDCompat',
         'kMerkmalWert' => 'ValueCompat',
         'cName'        => 'Name'
@@ -35,7 +34,7 @@ class BaseCharacteristic extends AbstractFilter
     {
         parent::__construct($productFilter);
         $this->setIsCustom(false)
-             ->setUrlParam('m');
+            ->setUrlParam('m');
     }
 
     /**
@@ -56,63 +55,32 @@ class BaseCharacteristic extends AbstractFilter
      */
     public function setSeo(array $languages): FilterInterface
     {
-        $seoData = $this->productFilter->getDB()->selectAll(
-            'tseo',
-            ['cKey', 'kKey'],
-            ['kMerkmalWert', $this->getValue()],
-            'cSeo, kSprache',
-            'kSprache'
-        );
+        $currentLanguageID   = $this->getLanguageID();
+        $characteristicValue = new MerkmalWert($this->getValue(), $currentLanguageID);
+        if ($characteristicValue->getID() === 0) {
+            $this->fail();
+        }
         foreach ($languages as $language) {
-            $this->cSeo[$language->kSprache] = '';
-            foreach ($seoData as $seo) {
-                if ($language->kSprache === (int)$seo->kSprache) {
-                    $this->cSeo[$language->kSprache] = $seo->cSeo;
-                }
-            }
+            $id              = $language->getId();
+            $this->cSeo[$id] = \ltrim($characteristicValue->getURLPath($id), '/');
         }
-        $select = 'tmerkmal.cName';
-        $join   = '';
-        if (Shop::getLanguageID() > 0 && !LanguageHelper::isDefaultLanguageActive()) {
-            $select = 'tmerkmalsprache.cName, tmerkmal.cName AS cMMName';
-            $join   = ' JOIN tmerkmalsprache 
-                             ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
-                             AND tmerkmalsprache.kSprache = ' . Shop::getLanguageID();
-        }
-        $characteristicValues = $this->productFilter->getDB()->getObjects(
-            'SELECT tmerkmalwertsprache.cWert, ' . $select . '
-                FROM tmerkmalwert
-                JOIN tmerkmalwertsprache 
-                    ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
-                    AND kSprache = ' . Shop::getLanguageID() . '
-                JOIN tmerkmal ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
-                ' . $join . '
-                WHERE tmerkmalwert.kMerkmalWert = ' . $this->getValue()
-        );
-        if (\count($characteristicValues) > 0) {
-            $characteristicValue = $characteristicValues[0];
-            unset($characteristicValues[0]);
-            if (\mb_strlen($characteristicValue->cWert) > 0) {
-                if (!empty($this->getName())) {
-                    $this->setName($characteristicValue->cName . ': ' . $characteristicValue->cWert);
-                } elseif (!empty($characteristicValue->cMMName)) {
-                    $this->setName($characteristicValue->cMMName . ': ' . $characteristicValue->cWert);
-                } elseif (!empty($characteristicValue->cName)) {
-                    $this->setName($characteristicValue->cName . ': ' . $characteristicValue->cWert);
-                }
-                if (\count($characteristicValues) > 0) {
-                    foreach ($characteristicValues as $attr) {
-                        if (isset($attr->cName) && \mb_strlen($attr->cName) > 0) {
-                            $this->setName($this->getName() . ', ' . $attr->cName . ': ' . $attr->cWert);
-                        } elseif (isset($attr->cMMName) && \mb_strlen($attr->cMMName) > 0) {
-                            $this->setName($this->getName() . ', ' . $attr->cMMName . ': ' . $attr->cWert);
-                        }
-                    }
-                }
-            }
+        if (($value = $characteristicValue->getValue()) !== null && \mb_strlen($value) > 0) {
+            $this->setName($characteristicValue->getCharacteristicName() . ': ' . $value);
         }
 
         return $this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getRoute(array $additional): ?string
+    {
+        $currentLanguageID   = $this->getLanguageID();
+        $characteristicValue = new MerkmalWert($this->getValue(), $currentLanguageID);
+        $characteristicValue->createBySlug($this->getValue(), $additional);
+
+        return \ltrim($characteristicValue->getURLPath($currentLanguageID), '/');
     }
 
     /**
@@ -139,10 +107,9 @@ class BaseCharacteristic extends AbstractFilter
         return (new Join())
             ->setType('JOIN')
             ->setComment('JOIN from ' . __METHOD__)
-            ->setTable('(SELECT kArtikel
+            ->setTable('(SELECT DISTINCT kArtikel
                               FROM tartikelmerkmal
                               WHERE kMerkmalWert = ' . $this->getValue() . '
-                              GROUP BY tartikelmerkmal.kArtikel
                               ) AS tmerkmaljoin')
             ->setOrigin(__CLASS__)
             ->setOn('tmerkmaljoin.kArtikel = tartikel.kArtikel');

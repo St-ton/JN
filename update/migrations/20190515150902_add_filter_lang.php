@@ -15,10 +15,10 @@ use JTL\Update\Migration;
 class Migration_20190515150902 extends Migration implements IMigration
 {
     protected $author      = 'mh';
-    protected $description = 'add filter lang';
+    protected $description = 'Add filter lang';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -27,7 +27,7 @@ class Migration_20190515150902 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

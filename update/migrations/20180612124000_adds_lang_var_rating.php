@@ -15,10 +15,10 @@ use JTL\Update\Migration;
 class Migration_20180612124000 extends Migration implements IMigration
 {
     protected $author      = 'ms';
-    protected $description = 'adds lang var for rating';
+    protected $description = 'Add lang var for rating';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -30,7 +30,7 @@ class Migration_20180612124000 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

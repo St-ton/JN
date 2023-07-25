@@ -110,16 +110,17 @@ class ZahlungsInfo
         } elseif ($orderID > 0) {
             $obj = Shop::Container()->getDB()->select('tzahlungsinfo', 'kBestellung', $orderID);
         }
-
-        if (\is_object($obj)) {
-            $members = \array_keys(\get_object_vars($obj));
-            foreach ($members as $member) {
-                $this->$member = $obj->$member;
-            }
-
-            if ($this->kZahlungsInfo > 0) {
-                $this->entschluesselZahlungsinfo();
-            }
+        if ($obj === null) {
+            return $this;
+        }
+        foreach (\array_keys(\get_object_vars($obj)) as $member) {
+            $this->$member = $obj->$member;
+        }
+        $this->kZahlungsInfo = (int)$this->kZahlungsInfo;
+        $this->kBestellung   = (int)$this->kBestellung;
+        $this->kKunde        = (int)$this->kKunde;
+        if ($this->kZahlungsInfo > 0) {
+            $this->entschluesselZahlungsinfo();
         }
 
         return $this;
@@ -132,15 +133,15 @@ class ZahlungsInfo
     {
         $cryptoService = Shop::Container()->getCryptoService();
 
-        $this->cBankName         = $cryptoService->encryptXTEA(\trim($this->cBankName));
-        $this->cKartenNr         = $cryptoService->encryptXTEA(\trim($this->cKartenNr));
-        $this->cCVV              = $cryptoService->encryptXTEA(\trim($this->cCVV));
-        $this->cKontoNr          = $cryptoService->encryptXTEA(\trim($this->cKontoNr));
-        $this->cBLZ              = $cryptoService->encryptXTEA(\trim($this->cBLZ));
-        $this->cIBAN             = $cryptoService->encryptXTEA(\trim($this->cIBAN));
-        $this->cBIC              = $cryptoService->encryptXTEA(\trim($this->cBIC));
-        $this->cInhaber          = $cryptoService->encryptXTEA(\trim($this->cInhaber));
-        $this->cVerwendungszweck = $cryptoService->encryptXTEA(\trim($this->cVerwendungszweck));
+        $this->cBankName         = $cryptoService->encryptXTEA(\trim($this->cBankName ?? ''));
+        $this->cKartenNr         = $cryptoService->encryptXTEA(\trim($this->cKartenNr ?? ''));
+        $this->cCVV              = $cryptoService->encryptXTEA(\trim($this->cCVV ?? ''));
+        $this->cKontoNr          = $cryptoService->encryptXTEA(\trim($this->cKontoNr ?? ''));
+        $this->cBLZ              = $cryptoService->encryptXTEA(\trim($this->cBLZ ?? ''));
+        $this->cIBAN             = $cryptoService->encryptXTEA(\trim($this->cIBAN ?? ''));
+        $this->cBIC              = $cryptoService->encryptXTEA(\trim($this->cBIC ?? ''));
+        $this->cInhaber          = $cryptoService->encryptXTEA(\trim($this->cInhaber ?? ''));
+        $this->cVerwendungszweck = $cryptoService->encryptXTEA(\trim($this->cVerwendungszweck ?? ''));
 
         return $this;
     }
@@ -152,15 +153,15 @@ class ZahlungsInfo
     {
         $cryptoService = Shop::Container()->getCryptoService();
 
-        $this->cBankName         = \trim($cryptoService->decryptXTEA($this->cBankName));
-        $this->cKartenNr         = \trim($cryptoService->decryptXTEA($this->cKartenNr));
-        $this->cCVV              = \trim($cryptoService->decryptXTEA($this->cCVV));
-        $this->cKontoNr          = \trim($cryptoService->decryptXTEA($this->cKontoNr));
-        $this->cBLZ              = \trim($cryptoService->decryptXTEA($this->cBLZ));
-        $this->cIBAN             = \trim($cryptoService->decryptXTEA($this->cIBAN));
-        $this->cBIC              = \trim($cryptoService->decryptXTEA($this->cBIC));
-        $this->cInhaber          = \trim($cryptoService->decryptXTEA($this->cInhaber));
-        $this->cVerwendungszweck = \trim($cryptoService->decryptXTEA($this->cVerwendungszweck));
+        $this->cBankName         = \trim($cryptoService->decryptXTEA($this->cBankName ?? ''));
+        $this->cKartenNr         = \trim($cryptoService->decryptXTEA($this->cKartenNr ?? ''));
+        $this->cCVV              = \trim($cryptoService->decryptXTEA($this->cCVV ?? ''));
+        $this->cKontoNr          = \trim($cryptoService->decryptXTEA($this->cKontoNr ?? ''));
+        $this->cBLZ              = \trim($cryptoService->decryptXTEA($this->cBLZ ?? ''));
+        $this->cIBAN             = \trim($cryptoService->decryptXTEA($this->cIBAN ?? ''));
+        $this->cBIC              = \trim($cryptoService->decryptXTEA($this->cBIC ?? ''));
+        $this->cInhaber          = \trim($cryptoService->decryptXTEA($this->cInhaber ?? ''));
+        $this->cVerwendungszweck = \trim($cryptoService->decryptXTEA($this->cVerwendungszweck ?? ''));
 
         return $this;
     }

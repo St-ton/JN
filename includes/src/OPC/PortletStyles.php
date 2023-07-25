@@ -12,40 +12,30 @@ trait PortletStyles
      * @param bool $preview
      * @return string|null
      */
-    final public function getCssFile($preview = false)
+    final public function getCssFile(bool $preview = false): ?string
     {
         $cssPath = $this->getBasePath() . ($preview ? 'preview' : $this->getClass()) . '.css';
         $cssUrl  = $this->getBaseUrl() . ($preview ? 'preview' : $this->getClass()) . '.css';
 
-        if (\file_exists($cssPath)) {
-            return $cssUrl;
-        }
-
-        return null;
+        return \file_exists($cssPath) ? $cssUrl : null;
     }
 
     /**
      * @param bool $preview
      * @return array
      */
-    final public function getCssFiles($preview = false): array
+    final public function getCssFiles(bool $preview = false): array
     {
         $list = [];
         $file = $this->getCssFile($preview);
-
         if (!empty($file)) {
             $list[$file] = true;
         }
-
-        $extras = $this->getExtraCssFiles();
-
-        foreach ($extras as $extra) {
+        foreach ($this->getExtraCssFiles() as $extra) {
             $list[$extra] = true;
         }
-
-        if (\in_array('styles', $this->getPropertyTabs(), true) && !$preview) {
-            $url        = $this->getCommonResource('hidden-size.css');
-            $list[$url] = true;
+        if (!$preview && \in_array('styles', $this->getPropertyTabs(), true)) {
+            $list[$this->getCommonResource('hidden-size.css')] = true;
         }
 
         return $list;
@@ -54,7 +44,7 @@ trait PortletStyles
     /**
      * @return string[]
      */
-    public function getExtraCssFiles()
+    public function getExtraCssFiles(): array
     {
         return [];
     }

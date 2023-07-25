@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Extensions\Download;
 
@@ -12,24 +12,24 @@ use JTL\Shop;
 class Localization
 {
     /**
-     * @var int
+     * @var int|null
      */
-    protected $kDownload;
+    protected ?int $kDownload = null;
 
     /**
-     * @var int
+     * @var int|null
      */
-    protected $kSprache;
+    protected ?int $kSprache = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    protected $cName;
+    protected ?string $cName = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    protected $cBeschreibung;
+    protected ?string $cBeschreibung = null;
 
     /**
      * Localization constructor.
@@ -64,33 +64,12 @@ class Localization
             'kSprache',
             $languageID
         );
-        if ($localized !== null && (int)$localized->kDownload > 0) {
-            foreach (\array_keys(\get_object_vars($localized)) as $member) {
-                $this->$member = $localized->$member;
-            }
-            $this->kSprache  = (int)$this->kSprache;
-            $this->kDownload = (int)$this->kDownload;
+        if ($localized !== null && $localized->kDownload > 0) {
+            $this->kSprache      = (int)$localized->kSprache;
+            $this->kDownload     = (int)$localized->kDownload;
+            $this->cName         = $localized->cName;
+            $this->cBeschreibung = $localized->cBeschreibung;
         }
-    }
-
-    /**
-     * @return bool
-     * @deprecated since 5.0.0
-     */
-    public function save(): bool
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return false;
-    }
-
-    /**
-     * @return int
-     * @deprecated since 5.0.0
-     */
-    public function update(): int
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return 0;
     }
 
     /**
@@ -119,7 +98,7 @@ class Localization
      * @param string $name
      * @return $this
      */
-    public function setName($name): self
+    public function setName(string $name): self
     {
         $this->cName = $name;
 
@@ -127,12 +106,12 @@ class Localization
     }
 
     /**
-     * @param string $cBeschreibung
+     * @param string $decription
      * @return $this
      */
-    public function setBeschreibung($cBeschreibung): self
+    public function setBeschreibung(string $decription): self
     {
-        $this->cBeschreibung = $cBeschreibung;
+        $this->cBeschreibung = $decription;
 
         return $this;
     }
@@ -142,7 +121,7 @@ class Localization
      */
     public function getDownload(): int
     {
-        return (int)$this->kDownload;
+        return $this->kDownload ?? 0;
     }
 
     /**
@@ -150,7 +129,7 @@ class Localization
      */
     public function getSprache(): int
     {
-        return (int)$this->kSprache;
+        return $this->kSprache ?? 0;
     }
 
     /**

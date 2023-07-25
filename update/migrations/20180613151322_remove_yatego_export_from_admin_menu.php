@@ -15,10 +15,10 @@ use JTL\Update\Migration;
 class Migration_20180613151322 extends Migration implements IMigration
 {
     protected $author      = 'mh';
-    protected $description = 'Removes Yatego Export from admin menu';
+    protected $description = 'Remove Yatego Export from admin menu';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -28,7 +28,7 @@ class Migration_20180613151322 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

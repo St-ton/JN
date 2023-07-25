@@ -1,8 +1,12 @@
 {$postfix = $postfix|default:''}
 {$prefix = $prefix|default:''}
 {$isChild = $isChild|default:false}
+{$addChild = $addChild|default:false}
 
 {foreach $item->getAttributes() as $attr}
+    {if $attr->isDynamic() === true}
+        {continue}
+    {/if}
     {$name = $attr->getName()}
     {$inputName = $name}
     {if $isChild}
@@ -16,12 +20,34 @@
         {continue}
     {/if}
     {if strpos($type, "\\") !== false && class_exists($type)}
+        {$cnt = 0}
+        {if $item->$name !== null}
+            {$cnt = $item->$name->count()}
+        {/if}
+        {if $cnt === 0 && $addChild === false}
+            {continue}
+        {/if}
         <div class="subheading1">{__('childHeading')}</div>
-            <hr>
+        <hr>
         {foreach $item->$name as $childItem}
             {include file='tpl_inc/model_item.tpl' isChild=true postfix=$childItem->getId() item=$childItem prefix=$name}
             <hr>
         {/foreach}
+        {if $addChild !== false && $childModel !== null}
+            {include file='tpl_inc/model_item.tpl' isChild=true item=$childModel addChild=false postfix=$postfix prefix=$name assign=cmdata}
+            <div id="childmodelappend"></div>
+            <script>
+                $(document).ready(function () {
+                    $('#add-child-model-item').on('click', function () {
+                        $('#childmodelappend').append(`{trim($cmdata)}`);
+                    });
+                });
+            </script>
+
+            <button type="button" value="1" class="btn btn-default" id="add-child-model-item">
+                <i class="fas fa-share"></i> {__('add')}
+            </button>
+        {/if}
         {continue}
     {/if}
 

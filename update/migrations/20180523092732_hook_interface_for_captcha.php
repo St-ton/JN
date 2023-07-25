@@ -10,8 +10,6 @@ use JTL\Shop;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
 
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'pluginverwaltung_inc.php';
-
 /**
  * Class Migration_20180523092732
  */
@@ -21,7 +19,7 @@ class Migration_20180523092732 extends Migration implements IMigration
     protected $description = 'Hook interface for captcha';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -36,7 +34,7 @@ class Migration_20180523092732 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

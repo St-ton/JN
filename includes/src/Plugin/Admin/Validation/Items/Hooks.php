@@ -24,8 +24,8 @@ final class Hooks extends AbstractItem
         if (\count($node['Hooks'][0]) === 1) {
             foreach ($node['Hooks'][0]['Hook'] as $i => $hook) {
                 $i = (string)$i;
-                \preg_match('/[0-9]+\sattr/', $i, $hits1);
-                \preg_match('/[0-9]+/', $i, $hits2);
+                \preg_match('/\d+\sattr/', $i, $hits1);
+                \preg_match('/\d+/', $i, $hits2);
                 if (isset($hits1[0]) && \mb_strlen($hits1[0]) === \mb_strlen($i)) {
                     if (\mb_strlen($hook['id']) === 0) {
                         return InstallCode::INVALID_HOOK;

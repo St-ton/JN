@@ -15,10 +15,10 @@ use JTL\Update\Migration;
 class Migration_20190220115010 extends Migration implements IMigration
 {
     protected $author      = 'mh';
-    protected $description = 'add global lang var or';
+    protected $description = 'Add global lang var or';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -27,7 +27,7 @@ class Migration_20190220115010 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

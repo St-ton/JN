@@ -5,11 +5,13 @@ namespace JTL\Mail\Mail;
 use InvalidArgumentException;
 use JTL\Language\LanguageHelper;
 use JTL\Language\LanguageModel;
+use JTL\Mail\SendMailObjects\MailDataTableObject;
 use JTL\Mail\Template\TemplateFactory;
 use JTL\Mail\Template\TemplateInterface;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use PHPMailer\PHPMailer\PHPMailer;
+use ReflectionClass;
 
 /**
  * Class Mail
@@ -17,92 +19,102 @@ use PHPMailer\PHPMailer\PHPMailer;
  */
 class Mail implements MailInterface
 {
+    /**
+     * @deprecated since 5.3.0 - this was a typo
+     */
     public const LENTH_LIMIT = 987;
+
+    public const LENGTH_LIMIT = 987;
 
     /**
      * @var int
      */
-    private $customerGroupID = 0;
+    private int $customerGroupID = 0;
 
     /**
-     * @var LanguageModel
+     * @var LanguageModel|null
      */
-    private $language;
-
-    /**
-     * @var string
-     */
-    private $fromMail;
+    private ?LanguageModel $language = null;
 
     /**
      * @var string
      */
-    private $fromName;
+    private string $fromMail;
 
     /**
      * @var string
      */
-    private $toMail;
+    private string $fromName;
+
+    /**
+     * @var ?string
+     */
+    private ?string $toMail = null;
 
     /**
      * @var string
      */
-    private $toName = '';
+    private string $toName = '';
+
+    /**
+     * @var string|null
+     */
+    private ?string $replyToMail = null;
+
+    /**
+     * @var string|null
+     */
+    private ?string $replyToName = null;
+
+    /**
+     * @var string|null
+     */
+    private ?string $subject = null;
 
     /**
      * @var string
      */
-    private $replyToMail;
+    private string $bodyHTML = '';
 
     /**
      * @var string
      */
-    private $replyToName;
-
-    /**
-     * @var string
-     */
-    private $subject;
-
-    /**
-     * @var string
-     */
-    private $bodyHTML = '';
-
-    /**
-     * @var string
-     */
-    private $bodyText = '';
+    private string $bodyText = '';
 
     /**
      * @var Attachment[]
      */
-    private $attachments = [];
+    private array $attachments = [];
 
     /**
      * @var Attachment[]
      */
-    private $pdfAttachments = [];
+    private array $pdfAttachments = [];
 
     /**
      * @var string
      */
-    private $error = '';
+    private string $error = '';
 
     /**
      * @var array
      */
-    private $copyRecipients = [];
+    private array $copyRecipients = [];
 
     /**
      * @var TemplateInterface|null
      */
-    private $template;
+    private ?TemplateInterface $template = null;
 
     /**
      * @var mixed
      */
-    private $data;
+    private mixed $data = null;
+
+    /**
+     * @var array{mail: string, name: string}
+     */
+    private array $recipients = [];
 
     /**
      * Mail constructor.
@@ -117,11 +129,7 @@ class Mail implements MailInterface
      */
     public function createFromTemplateID(string $id, $data = null, TemplateFactory $factory = null): MailInterface
     {
-        $factory  = $factory ?? new TemplateFactory(Shop::Container()->getDB());
-        $template = $factory->getTemplate($id);
-        if ($template === null) {
-            throw new InvalidArgumentException('Cannot find template ' . $id);
-        }
+        $template = $this->getTemplateFromID($factory, $id);
 
         return $this->createFromTemplate($template, $data);
     }
@@ -133,8 +141,10 @@ class Mail implements MailInterface
     {
         $this->setData($data);
         $this->setTemplate($template);
-        $this->language        = $language ?? $this->detectLanguage();
-        $this->customerGroupID = Frontend::getCustomer()->kKundengruppe ?? Frontend::getCustomerGroup()->getID();
+        $this->setLanguage($language ?? $this->detectLanguage());
+        if ($this->customerGroupID === 0) {
+            $this->setCustomerGroupID(Frontend::getCustomer()->getGroupID());
+        }
         $template->load($this->language->getId(), $this->customerGroupID);
         $model = $template->getModel();
         if ($model === null) {
@@ -146,13 +156,13 @@ class Mail implements MailInterface
             $this->addPdfFile($name, $attachment);
         }
         $this->setSubject($model->getSubject($this->language->getId()));
-        $this->fromName       = $template->getFromName() ?? $this->fromName;
-        $this->fromMail       = $template->getFromMail() ?? $this->fromMail;
-        $this->copyRecipients = $template->getCopyTo() ?? $this->copyRecipients;
-        $this->subject        = $template->getSubject() ?? $this->subject;
+        $this->setFromName($template->getFromName() ?? $this->fromName ?? '');
+        $this->setFromMail($template->getFromMail() ?? $this->fromMail ?? '');
+        $this->setCopyRecipients($template->getCopyTo() ?? $this->copyRecipients);
+        $this->setSubject($template->getSubject() ?? $this->subject ?? '');
         $this->parseData();
-        $this->replyToMail = $this->replyToMail ?? $this->fromMail;
-        $this->replyToName = $this->replyToName ?? $this->replyToMail;
+        $this->setReplyToMail($this->replyToMail ?? $this->fromMail);
+        $this->setReplyToName($this->replyToName ?? $this->replyToMail);
 
         return $this;
     }
@@ -167,7 +177,7 @@ class Mail implements MailInterface
     {
         $hasLongLines = false;
         foreach (\preg_split('/((\r?\n)|(\r\n?))/', $text) as $line) {
-            if (\mb_strlen($line) > self::LENTH_LIMIT) {
+            if (\mb_strlen($line) > self::LENGTH_LIMIT) {
                 $hasLongLines = true;
                 break;
             }
@@ -218,6 +228,9 @@ class Mail implements MailInterface
      */
     private function detectLanguage(): LanguageModel
     {
+        if ($this->language !== null) {
+            return $this->language;
+        }
         $allLanguages = LanguageHelper::getAllLanguages(1);
         if (isset($this->data->tkunde->kSprache) && $this->data->tkunde->kSprache > 0) {
             return $allLanguages[(int)$this->data->tkunde->kSprache];
@@ -243,7 +256,7 @@ class Mail implements MailInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setLanguage(LanguageModel $language): MailInterface
     {
@@ -275,9 +288,9 @@ class Mail implements MailInterface
      */
     public function initDefaults(): void
     {
-        $config         = Shop::getSettings([\CONF_EMAILS]);
-        $this->fromName = $config['emails']['email_master_absender_name'] ?? '';
-        $this->fromMail = $config['emails']['email_master_absender'] ?? '';
+        $config         = Shop::getSettingSection(\CONF_EMAILS);
+        $this->fromName = $config['email_master_absender_name'] ?? '';
+        $this->fromMail = $config['email_master_absender'] ?? '';
     }
 
     /**
@@ -350,6 +363,31 @@ class Mail implements MailInterface
         $this->toMail = $toMail;
 
         return $this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function addRecipient(string $mail, string $name = ''): void
+    {
+        $this->recipients[] = ['mail' => $mail, 'name' => $name];
+    }
+
+    /**
+     * @param array{mail: string, name: string} $recipients
+     * @return void
+     */
+    public function setRecipients(array $recipients): void
+    {
+        $this->recipients = $recipients;
+    }
+
+    /**
+     * @return array{mail: string, name: string}
+     */
+    public function getRecipients(): array
+    {
+        return \array_merge([['mail' => $this->getToMail(), 'name' => $this->getToName()]], $this->recipients);
     }
 
     /**
@@ -585,5 +623,61 @@ class Mail implements MailInterface
         $this->template = $template;
 
         return $this;
+    }
+
+    /**
+     * @return object
+     */
+    public function toObject(): object
+    {
+        $reflect    = new ReflectionClass($this);
+        $properties = $reflect->getProperties();
+        $toArray    = [];
+        foreach ($properties as $property) {
+            $propertyName           = $property->getName();
+            $toArray[$propertyName] = $property->getValue($this);
+        }
+
+        return (object)$toArray;
+    }
+
+    /**
+     * Will accept data from an object.
+     * @param MailDataTableObject $object
+     * @return $this
+     * @throws \Exception
+     */
+    public function hydrateWithObject(MailDataTableObject $object): self
+    {
+        $attributes = \get_object_vars($this);
+        foreach ($attributes as $attribute => $value) {
+            $setMethod = 'set' . \ucfirst($attribute);
+            $getMethod = 'get' . \ucfirst($attribute);
+            if (\method_exists($this, $setMethod)
+                && \method_exists($object, $getMethod)
+                && $object->{$getMethod}() !== null) {
+                $this->$setMethod($object->{$getMethod}());
+            }
+        }
+        $this->setLanguage(Shop::Lang()->getLanguageByID($object->getLanguageId()));
+        $this->template = $this->getTemplateFromID(null, $object->getTemplateId());
+
+        return $this;
+    }
+
+    /**
+     * @param TemplateFactory|null $factory
+     * @param string               $id
+     * @return TemplateInterface
+     */
+    protected function getTemplateFromID(?TemplateFactory $factory, string $id): TemplateInterface
+    {
+        $factory  = $factory ?? new TemplateFactory(Shop::Container()->getDB());
+        $template = $factory->getTemplate($id);
+        if ($template === null) {
+            throw new InvalidArgumentException('Cannot find template ' . $id);
+        }
+
+        return $template;
     }
 }

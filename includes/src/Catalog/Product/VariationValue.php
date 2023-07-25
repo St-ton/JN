@@ -7,7 +7,6 @@ use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Media\Image;
 use JTL\Media\MultiSizeImage;
-use JTL\Session\Frontend;
 use stdClass;
 
 /**
@@ -84,6 +83,11 @@ class VariationValue
     public $cAufpreisLocalized;
 
     /**
+     * @var int
+     */
+    public $nNichtLieferbar;
+
+    /**
      * @var array
      */
     public $cPreisVPEWertAufpreis = [];
@@ -110,76 +114,91 @@ class VariationValue
 
     /**
      * @var string
+     * @deprecated since 5.2.0
      */
     public $cPfad;
 
     /**
      * @var string
+     * @deprecated since 5.2.0
      */
-    public $cBildPfad;
+    public $cBildPfad = \BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
 
     /**
      * @var string
+     * @deprecated since 5.2.0
      */
     public $cBildPfadFull;
 
     /**
      * @var string
+     * @deprecated since 5.2.0
      */
-    public $cBildPfadMini;
+    public $cBildPfadMini = \BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
 
     /**
      * @var string
+     * @deprecated since 5.2.0
      */
     public $cBildPfadMiniFull;
 
     /**
      * @var string
+     * @deprecated since 5.2.0
      */
-    public $cBildPfadGross;
+    public $cBildPfadGross = \BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
 
     /**
      * @var string
+     * @deprecated since 5.2.0
      */
     public $cBildPfadGrossFull;
 
     /**
      * @var string
+     * @deprecated since 5.2.0
      */
     public $cPfadMini;
 
     /**
      * @var string
+     * @deprecated since 5.2.0
      */
     public $cPfadMiniFull;
 
     /**
      * @var string
+     * @deprecated since 5.2.0
      */
     public $cPfadKlein;
 
     /**
      * @var string
+     * @deprecated since 5.2.0
      */
     public $cPfadKleinFull;
 
     /**
      * @var string
+     * @deprecated since 5.2.0
      */
     public $cPfadNormal;
 
     /**
      * @var string
+     * @deprecated since 5.2.0
      */
     public $cPfadNormalFull;
 
     /**
      * @var string
+     * @deprecated since 5.2.0
      */
     public $cPfadGross;
 
     /**
      * @var string
+     * @deprecated since 5.2.0
      */
     public $cPfadGrossFull;
 
@@ -211,13 +230,11 @@ class VariationValue
         $this->fAufpreisNetto = $data->fAufpreisNetto;
         $this->fGewichtDiff   = $data->fGewichtDiff;
         $this->cArtNr         = $data->cArtNr;
-        $this->nSort          = $data->teigenschaftwert_nSort;
+        $this->nSort          = (int)$data->teigenschaftwert_nSort;
         $this->fLagerbestand  = $data->fLagerbestand;
         $this->fPackeinheit   = $data->fPackeinheit;
         $this->inStock        = true;
-        $this->notExists      = isset($data->nMatched)
-            && (int)$data->nMatched < $cntVariationen - 1;
-
+        $this->notExists      = isset($data->nMatched) && (int)$data->nMatched < $cntVariationen - 1;
         if (isset($data->fVPEWert) && $data->fVPEWert > 0) {
             $this->fVPEWert = $data->fVPEWert;
         }
@@ -269,19 +286,11 @@ class VariationValue
      */
     public function addImages(string $path, string $imageBaseURL): bool
     {
-        if (!$path || !\file_exists(\PFAD_ROOT . \PFAD_VARIATIONSBILDER_NORMAL . $path)) {
+        if (!$path || !\file_exists(\STORAGE_VARIATIONS . $path)) {
             return false;
         }
-        $this->cPfad = $path;
         $this->generateAllImageSizes(true, 1, $path);
-
-        $this->cBildPfadMini  = \PFAD_VARIATIONSBILDER_MINI . $path;
-        $this->cBildPfad      = \PFAD_VARIATIONSBILDER_NORMAL . $path;
-        $this->cBildPfadGross = \PFAD_VARIATIONSBILDER_GROSS . $path;
-
-        $this->cBildPfadMiniFull  = $imageBaseURL . \PFAD_VARIATIONSBILDER_MINI . $path;
-        $this->cBildPfadFull      = $imageBaseURL . \PFAD_VARIATIONSBILDER_NORMAL . $path;
-        $this->cBildPfadGrossFull = $imageBaseURL . \PFAD_VARIATIONSBILDER_GROSS . $path;
+        $this->generateAllImageDimensions(1, $path);
 
         // compatibility
         $this->cPfadMini   = \PFAD_VARIATIONSBILDER_MINI . $path;
@@ -302,103 +311,94 @@ class VariationValue
      * @param int|float $taxRate
      * @param Currency  $currency
      * @param bool|int  $mayViewPrices
-     * @param int $precision
-     * @param string $per
+     * @param int       $precision
+     * @param string    $per
      */
     public function addPrices(
-        Artikel $product,
+        Artikel  $product,
         $taxRate,
         Currency $currency,
         $mayViewPrices,
-        int $precision,
-        string $per
+        int      $precision,
+        string   $per
     ): void {
+        if (!isset($this->fAufpreisNetto) || $this->fAufpreisNetto === 0.0) {
+            return;
+        }
+        $surcharge                   = $this->fAufpreisNetto;
+        $customerGroupID             = $product->getCustomerGroupID();
+        $this->cAufpreisLocalized[0] = Preise::getLocalizedPriceString(
+            Tax::getGross($surcharge, $taxRate, 4),
+            $currency
+        );
+        $this->cAufpreisLocalized[1] = Preise::getLocalizedPriceString($surcharge, $currency);
+        // Wenn der Artikel ein VarkombiKind ist
+        if ($product->kVaterArtikel > 0) {
+            $vkNetto = $product->gibPreis(1, [], $customerGroupID, '', false);
+        } else {
+            $vkNetto = $product->gibPreis(1, [
+                $this->kEigenschaft => $this->kEigenschaftWert
+            ], $customerGroupID, '', false);
+        }
+        $this->cPreisInklAufpreis[0] = Preise::getLocalizedPriceString(
+            Tax::getGross($vkNetto, $taxRate),
+            $currency
+        );
+        $this->cPreisInklAufpreis[1] = Preise::getLocalizedPriceString($vkNetto, $currency);
+
+        if ($this->fAufpreisNetto > 0) {
+            $this->cAufpreisLocalized[0] = '+ ' . $this->cAufpreisLocalized[0];
+            $this->cAufpreisLocalized[1] = '+ ' . $this->cAufpreisLocalized[1];
+        } else {
+            $this->cAufpreisLocalized[0] = \str_replace('-', '- ', $this->cAufpreisLocalized[0]);
+            $this->cAufpreisLocalized[1] = \str_replace('-', '- ', $this->cAufpreisLocalized[1]);
+        }
+
+        $this->fAufpreis[0] = Tax::getGross($surcharge * $currency->getConversionFactor(), $taxRate);
+        $this->fAufpreis[1] = $surcharge * $currency->getConversionFactor();
+
+        if ($surcharge > 0) {
+            $product->nVariationsAufpreisVorhanden = 1;
+        }
+
         if ($mayViewPrices && isset($this->fVPEWert) && $this->fVPEWert > 0) {
-            $base                           = $this->fAufpreisNetto / $this->fVPEWert;
+            $base = [
+                0 => $this->fAufpreis[0] / $this->fVPEWert,
+                1 => $this->fAufpreis[1] / $this->fVPEWert,
+            ];
+
             $this->cPreisVPEWertAufpreis[0] = Preise::getLocalizedPriceString(
-                Tax::getGross($base, $taxRate),
+                $base[0],
                 $currency,
                 true,
                 $precision
             ) . $per;
-
             $this->cPreisVPEWertAufpreis[1] = Preise::getLocalizedPriceString(
-                $base,
+                $base[1],
                 $currency,
                 true,
                 $precision
             ) . $per;
-
-            $base = ($this->fAufpreisNetto + $product->Preise->fVKNetto) / $this->fVPEWert;
 
             $this->cPreisVPEWertInklAufpreis[0] = Preise::getLocalizedPriceString(
-                Tax::getGross($base, $taxRate),
+                Tax::getGross($vkNetto, $taxRate),
                 $currency,
                 true,
                 $precision
             ) . $per;
             $this->cPreisVPEWertInklAufpreis[1] = Preise::getLocalizedPriceString(
-                $base,
+                $vkNetto,
                 $currency,
                 true,
                 $precision
             ) . $per;
-        }
-        if (isset($this->fAufpreisNetto) && $this->fAufpreisNetto != 0) {
-            $surcharge                   = $this->fAufpreisNetto;
-            $this->cAufpreisLocalized[0] = Preise::getLocalizedPriceString(
-                Tax::getGross($surcharge, $taxRate, 4),
-                $currency
-            );
-            $this->cAufpreisLocalized[1] = Preise::getLocalizedPriceString($surcharge, $currency);
-            // Wenn der Artikel ein VarkombiKind ist
-            if ($product->kVaterArtikel > 0) {
-                $customer           = Frontend::getCustomer();
-                $variationBasePrice = new Preise(
-                    $customer->getGroupID() ?? Frontend::getCustomerGroup()->getID(),
-                    (int)$this->oVariationsKombi->kArtikel,
-                    $customer->getID() ?? 0
-                );
-
-                $VariationVKNetto            = $variationBasePrice->oPriceRange->getProductData()->fNettoPreis;
-                $this->cPreisInklAufpreis[0] = Preise::getLocalizedPriceString(
-                    Tax::getGross($VariationVKNetto, $taxRate),
-                    $currency
-                );
-                $this->cPreisInklAufpreis[1] = Preise::getLocalizedPriceString($VariationVKNetto, $currency);
-            } else {
-                $this->cPreisInklAufpreis[0] = Preise::getLocalizedPriceString(
-                    Tax::getGross($surcharge + $product->Preise->fVKNetto, $taxRate),
-                    $currency
-                );
-                $this->cPreisInklAufpreis[1] = Preise::getLocalizedPriceString(
-                    $surcharge + $product->Preise->fVKNetto,
-                    $currency
-                );
-            }
-
-            if ($this->fAufpreisNetto > 0) {
-                $this->cAufpreisLocalized[0] = '+ ' . $this->cAufpreisLocalized[0];
-                $this->cAufpreisLocalized[1] = '+ ' . $this->cAufpreisLocalized[1];
-            } else {
-                $this->cAufpreisLocalized[0] = \str_replace('-', '- ', $this->cAufpreisLocalized[0]);
-                $this->cAufpreisLocalized[1] = \str_replace('-', '- ', $this->cAufpreisLocalized[1]);
-            }
-            $surcharge = $this->fAufpreisNetto;
-
-            $this->fAufpreis[0] = Tax::getGross($surcharge * $currency->getConversionFactor(), $taxRate);
-            $this->fAufpreis[1] = $surcharge * $currency->getConversionFactor();
-
-            if ($surcharge > 0) {
-                $product->nVariationsAufpreisVorhanden = 1;
-            }
         }
     }
 
     /**
      * @return int
      */
-    public function getID()
+    public function getID(): int
     {
         return $this->kEigenschaftWert;
     }

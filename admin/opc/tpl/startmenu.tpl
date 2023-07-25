@@ -1,6 +1,6 @@
 {if $opc->isEditMode() === false && $opc->isPreviewMode() === false && \JTL\Shop::isAdmin(true)}
     {$shopHasUpdates    = $opc->shopHasUpdates()}
-    {$opcStartUrl       = "{$ShopURL}/admin/opc.php"}
+    {$opcStartUrl       = "{$ShopURL}/{$smarty.const.PFAD_ADMIN}{JTL\Router\Route::OPC}"}
     {$curPageUrl        = $opcPageService->getCurPageUri()}
 
     {if $opcPageService->isCurPageModifiable()}
@@ -276,7 +276,7 @@
             <nav id="opc-startmenu">
                 <form method="post" action="{$opcStartUrl}">
                     <input type="hidden" name="jtl_token" value="{$adminSessionToken}">
-                    <input type="hidden" name="pageId" value="{$curPageId|htmlentities}">
+                    <input type="hidden" name="pageId" value="{htmlentities($curPageId)}">
                     <input type="hidden" name="pageUrl" value="{$curPageUrl}">
                     <button type="submit" name="action" value="extend" class="opc-btn-primary">
                         <img src="{$ShopURL}/admin/opc/gfx/icon-opc.svg" alt="OPC Start Icon" id="opc-start-icon">
@@ -302,7 +302,7 @@
                 </header>
                 {if $shopHasUpdates}
                     <div class="alert alert-danger" id="errorAlert">
-                        {__('dbUpdateNeeded')|sprintf:$ShopURL}
+                        {sprintf(__('dbUpdateNeeded'), $ShopURL)}
                     </div>
                 {else}
                     <div id="opc-sidebar-tools">
@@ -349,7 +349,7 @@
                     <div id="opc-sidebar-footer">
                         <form method="post" action="{$opcStartUrl}">
                             <input type="hidden" name="jtl_token" value="{$adminSessionToken}">
-                            <input type="hidden" name="pageId" value="{$curPageId|htmlentities}">
+                            <input type="hidden" name="pageId" value="{htmlentities($curPageId)}">
                             <input type="hidden" name="pageUrl" value="{$curPageUrl}">
                             <button type="submit" name="action" value="extend" class="opc-btn-primary opc-full-width">
                                 {__('newDraft')}

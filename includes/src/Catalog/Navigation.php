@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Catalog;
 
@@ -20,54 +20,44 @@ use JTL\Shop;
 class Navigation
 {
     /**
-     * @var LanguageHelper
-     */
-    private $language;
-
-    /**
      * @var int
      */
-    private $pageType = \PAGE_UNBEKANNT;
-
-    /**
-     * @var LinkServiceInterface
-     */
-    private $linkService;
+    private int $pageType = \PAGE_UNBEKANNT;
 
     /**
      * @var KategorieListe|null
      */
-    private $categoryList;
+    private ?KategorieListe $categoryList = null;
 
     /**
      * @var string
      */
-    private $baseURL;
+    private string $baseURL;
 
     /**
      * @var Artikel|null
      */
-    private $product;
+    private ?Artikel $product = null;
 
     /**
      * @var LinkInterface|null
      */
-    private $link;
+    private ?LinkInterface $link = null;
 
     /**
      * @var string|null
      */
-    private $linkURL;
+    private ?string $linkURL = null;
 
     /**
      * @var ProductFilter|null
      */
-    private $productFilter;
+    private ?ProductFilter $productFilter = null;
 
     /**
      * @var NavigationEntry|null
      */
-    private $customNavigationEntry;
+    private ?NavigationEntry $customNavigationEntry = null;
 
     /**
      * Navigation constructor.
@@ -75,11 +65,11 @@ class Navigation
      * @param LanguageHelper       $language
      * @param LinkServiceInterface $linkService
      */
-    public function __construct(LanguageHelper $language, LinkServiceInterface $linkService)
-    {
-        $this->language    = $language;
-        $this->linkService = $linkService;
-        $this->baseURL     = Shop::getURL() . '/';
+    public function __construct(
+        private readonly LanguageHelper       $language,
+        private readonly LinkServiceInterface $linkService
+    ) {
+        $this->baseURL = Shop::getURL() . '/';
     }
 
     /**
@@ -215,6 +205,9 @@ class Navigation
      */
     private function getProductFilterName(): string
     {
+        if ($this->productFilter->getBaseState()->isNotFound()) {
+            return Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_404)->getName();
+        }
         if ($this->productFilter->hasCategory()) {
             return $this->productFilter->getCategory()->getName() ?? '';
         }
@@ -227,16 +220,11 @@ class Navigation
         if ($this->productFilter->hasSearchSpecial()) {
             return $this->productFilter->getSearchSpecial()->getName() ?? '';
         }
-        $name = '';
         if ($this->productFilter->hasSearch()) {
-            $name = $this->productFilter->getSearch()->getName();
-        } elseif ($this->productFilter->getSearchQuery()->isInitialized()) {
-            $name = $this->productFilter->getSearchQuery()->getName();
+            return Shop::Lang()->get('for') . ' ' . $this->productFilter->getSearch()->getName();
         }
-        if (!empty($this->productFilter->getSearch()->getName())
-            || !empty($this->productFilter->getSearchQuery()->getName())
-        ) {
-            return Shop::Lang()->get('for') . ' ' . $name;
+        if ($this->productFilter->getSearchQuery()->isInitialized()) {
+            return Shop::Lang()->get('for') . ' ' . $this->productFilter->getSearchQuery()->getName();
         }
 
         return '';
@@ -254,6 +242,7 @@ class Navigation
         $ele0->setURLFull($this->baseURL);
 
         $breadCrumb[] = $ele0;
+        $langID       = $this->language->kSprache;
         $ele          = new NavigationEntry();
         $ele->setHasChild(false);
         switch ($this->pageType) {
@@ -267,18 +256,15 @@ class Navigation
                 ) {
                     break;
                 }
-                $elemCount = \count($this->categoryList->elemente) - 1;
-                for ($i = $elemCount; $i >= 0; $i--) {
-                    if (isset(
-                        $this->categoryList->elemente[$i]->cKurzbezeichnung,
-                        $this->categoryList->elemente[$i]->cURL
-                    )) {
-                        $ele = new NavigationEntry();
-                        $ele->setName($this->categoryList->elemente[$i]->cKurzbezeichnung);
-                        $ele->setURL($this->categoryList->elemente[$i]->cURL);
-                        $ele->setURLFull($this->categoryList->elemente[$i]->cURLFull);
-                        $breadCrumb[] = $ele;
+                foreach (\array_reverse($this->categoryList->elemente) as $item) {
+                    if ($item->getID() < 1) {
+                        continue;
                     }
+                    $ele = new NavigationEntry();
+                    $ele->setName($item->getShortName($langID));
+                    $ele->setURL($item->getURL($langID));
+                    $ele->setURLFull($item->getURL($langID));
+                    $breadCrumb[] = $ele;
                 }
                 $ele = new NavigationEntry();
                 $ele->setName($this->product->cKurzbezeichnung);
@@ -297,17 +283,15 @@ class Navigation
 
             case \PAGE_ARTIKELLISTE:
                 $elemCount = \count($this->categoryList->elemente ?? []);
-                for ($i = $elemCount - 1; $i >= 0; $i--) {
-                    if (isset(
-                        $this->categoryList->elemente[$i]->cKurzbezeichnung,
-                        $this->categoryList->elemente[$i]->cURL
-                    )) {
-                        $ele = new NavigationEntry();
-                        $ele->setName($this->categoryList->elemente[$i]->cKurzbezeichnung);
-                        $ele->setURL($this->categoryList->elemente[$i]->cURL);
-                        $ele->setURLFull($this->categoryList->elemente[$i]->cURLFull);
-                        $breadCrumb[] = $ele;
+                foreach (\array_reverse($this->categoryList->elemente) as $item) {
+                    if ($item->getID() < 1) {
+                        continue;
                     }
+                    $ele = new NavigationEntry();
+                    $ele->setName($item->getShortName($langID));
+                    $ele->setURL($item->getURL($langID));
+                    $ele->setURLFull($item->getURL($langID));
+                    $breadCrumb[] = $ele;
                 }
                 if ($elemCount === 0 && $this->getProductFilter() !== null) {
                     $ele = new NavigationEntry();
@@ -320,49 +304,45 @@ class Navigation
                 break;
 
             case \PAGE_WARENKORB:
-                $url     = $this->linkService->getStaticRoute('warenkorb.php', false);
-                $urlFull = $this->linkService->getStaticRoute('warenkorb.php');
                 $ele->setName($this->language->get('basket', 'breadcrumb'));
-                $ele->setURL($url);
-                $ele->setURLFull($urlFull);
+                $ele->setURL($this->linkService->getStaticRoute('warenkorb.php', false));
+                $ele->setURLFull($this->linkService->getStaticRoute('warenkorb.php'));
                 $breadCrumb[] = $ele;
                 break;
 
             case \PAGE_PASSWORTVERGESSEN:
-                $url     = $this->linkService->getStaticRoute('pass.php', false);
-                $urlFull = $this->linkService->getStaticRoute('pass.php');
                 $ele->setName($this->language->get('forgotpassword', 'breadcrumb'));
-                $ele->setURL($url);
-                $ele->setURLFull($urlFull);
+                $ele->setURL($this->linkService->getStaticRoute('pass.php', false));
+                $ele->setURLFull($this->linkService->getStaticRoute('pass.php'));
                 $breadCrumb[] = $ele;
                 break;
 
             case \PAGE_LOGIN:
             case \PAGE_MEINKONTO:
-                $name    = Frontend::getCustomer()->getID() > 0
+                $name = Frontend::getCustomer()->getID() > 0
                     ? $this->language->get('account', 'breadcrumb')
                     : $this->language->get('login', 'breadcrumb');
-                $url     = $this->linkService->getStaticRoute('jtl.php', false);
-                $urlFull = $this->linkService->getStaticRoute('jtl.php');
                 $ele->setName($name);
-                $ele->setURL($url);
-                $ele->setURLFull($urlFull);
+                $ele->setURL($this->linkService->getStaticRoute('jtl.php', false));
+                $ele->setURLFull($this->linkService->getStaticRoute('jtl.php'));
                 $breadCrumb[] = $ele;
 
                 if (Request::verifyGPCDataInt('accountPage') !== 1) {
                     $childPages = [
                         'bestellungen'         => ['name' => $this->language->get('myOrders')],
                         'editRechnungsadresse' => ['name' => $this->language->get('myPersonalData')],
+                        'editLieferadresse'    => [
+                            'name' => $this->language->get('myShippingAddresses', 'account data')
+                        ],
                         'wllist'               => ['name' => $this->language->get('myWishlists')],
                         'del'                  => ['name' => $this->language->get('deleteAccount', 'login')],
                         'bestellung'           => [
-                            'name' => $this->language->get('bcOrder', 'breadcrumb'),
+                            'name'   => $this->language->get('bcOrder', 'breadcrumb'),
                             'parent' => 'bestellungen'
                         ],
                         'wl'                   => ['name' => $this->language->get('bcWishlist', 'breadcrumb')],
                         'pass'                 => ['name' => $this->language->get('changePassword', 'login')]
                     ];
-
                     foreach ($childPages as $childPageKey => $childPageData) {
                         $currentId = Request::verifyGPCDataInt($childPageKey);
                         if ($currentId === 0) {
@@ -394,38 +374,30 @@ class Navigation
                 break;
 
             case \PAGE_BESTELLVORGANG:
-                $url     = $this->linkService->getStaticRoute('jtl.php', false);
-                $urlFull = $this->linkService->getStaticRoute('jtl.php');
                 $ele->setName($this->language->get('checkout', 'breadcrumb'));
-                $ele->setURL($url);
-                $ele->setURLFull($urlFull);
+                $ele->setURL($this->linkService->getStaticRoute('jtl.php', false));
+                $ele->setURLFull($this->linkService->getStaticRoute('jtl.php'));
                 $breadCrumb[] = $ele;
                 break;
 
             case \PAGE_REGISTRIERUNG:
-                $url     = $this->linkService->getStaticRoute('registrieren.php', false);
-                $urlFull = $this->linkService->getStaticRoute('registrieren.php');
                 $ele->setName($this->language->get('register', 'breadcrumb'));
-                $ele->setURL($url);
-                $ele->setURLFull($urlFull);
+                $ele->setURL($this->linkService->getStaticRoute('registrieren.php', false));
+                $ele->setURLFull($this->linkService->getStaticRoute('registrieren.php'));
                 $breadCrumb[] = $ele;
                 break;
 
             case \PAGE_KONTAKT:
-                $url     = $this->linkService->getStaticRoute('kontakt.php', false);
-                $urlFull = $this->linkService->getStaticRoute('kontakt.php');
                 $ele->setName($this->language->get('contact', 'breadcrumb'));
-                $ele->setURL($url);
-                $ele->setURLFull($urlFull);
+                $ele->setURL($this->linkService->getStaticRoute('kontakt.php', false));
+                $ele->setURLFull($this->linkService->getStaticRoute('kontakt.php'));
                 $breadCrumb[] = $ele;
                 break;
 
             case \PAGE_WARTUNG:
-                $url     = $this->linkService->getStaticRoute('wartung.php', false);
-                $urlFull = $this->linkService->getStaticRoute('wartung.php');
                 $ele->setName($this->language->get('maintainance', 'breadcrumb'));
-                $ele->setURL($url);
-                $ele->setURLFull($urlFull);
+                $ele->setURL($this->linkService->getStaticRoute('wartung.php', false));
+                $ele->setURLFull($this->linkService->getStaticRoute('wartung.php'));
                 $breadCrumb[] = $ele;
                 break;
 
@@ -440,54 +412,43 @@ class Navigation
 
             case \PAGE_NEWSDETAIL:
             case \PAGE_NEWS:
-                $url     = $this->linkService->getStaticRoute('news.php', false);
-                $urlFull = $this->linkService->getStaticRoute('news.php');
                 $ele->setName($this->language->get('news', 'breadcrumb'));
-                $ele->setURL($url);
-                $ele->setURLFull($urlFull);
+                $ele->setURL($this->linkService->getStaticRoute('news.php', false));
+                $ele->setURLFull($this->linkService->getStaticRoute('news.php'));
                 $breadCrumb[] = $ele;
                 break;
 
             case \PAGE_NEWSKATEGORIE:
-                $url     = $this->linkService->getStaticRoute('news.php', false);
-                $urlFull = $this->linkService->getStaticRoute('news.php');
                 $ele->setName($this->language->get('newskat', 'breadcrumb'));
-                $ele->setURL($url);
-                $ele->setURLFull($urlFull);
+                $ele->setURL($this->linkService->getStaticRoute('news.php', false));
+                $ele->setURLFull($this->linkService->getStaticRoute('news.php'));
                 $breadCrumb[] = $ele;
                 break;
 
             case \PAGE_NEWSMONAT:
-                $url     = $this->linkService->getStaticRoute('news.php', false);
-                $urlFull = $this->linkService->getStaticRoute('news.php');
                 $ele->setName($this->language->get('newsmonat', 'breadcrumb'));
-                $ele->setURL($url);
-                $ele->setURLFull($urlFull);
+                $ele->setURL($this->linkService->getStaticRoute('news.php', false));
+                $ele->setURLFull($this->linkService->getStaticRoute('news.php'));
                 $breadCrumb[] = $ele;
-
                 break;
 
             case \PAGE_VERGLEICHSLISTE:
-                $url     = $this->linkService->getStaticRoute('vergleichsliste.php', false);
-                $urlFull = $this->linkService->getStaticRoute('vergleichsliste.php');
                 $ele->setName($this->language->get('compare'));
-                $ele->setURL($url);
-                $ele->setURLFull($urlFull);
+                $ele->setURL($this->linkService->getStaticRoute('vergleichsliste.php', false));
+                $ele->setURLFull($this->linkService->getStaticRoute('vergleichsliste.php'));
                 $breadCrumb[] = $ele;
                 break;
 
             case \PAGE_WUNSCHLISTE:
-                $url     = $this->linkService->getStaticRoute('wunschliste.php', false);
-                $urlFull = $this->linkService->getStaticRoute('wunschliste.php');
                 $ele->setName($this->language->get('wishlist'));
-                $ele->setURL($url);
-                $ele->setURLFull($urlFull);
+                $ele->setURL($this->linkService->getStaticRoute('wunschliste.php', false));
+                $ele->setURLFull($this->linkService->getStaticRoute('wunschliste.php'));
                 $breadCrumb[] = $ele;
                 break;
 
             case \PAGE_BEWERTUNG:
+                $ele = new NavigationEntry();
                 if ($this->product !== null) {
-                    $ele = new NavigationEntry();
                     $ele->setName($this->product->cKurzbezeichnung);
                     $ele->setURL($this->product->cURL);
                     $ele->setURLFull($this->product->cURLFull);
@@ -502,22 +463,26 @@ class Navigation
                     $breadCrumb[] = $ele;
                     $ele          = new NavigationEntry();
                     $ele->setName($this->language->get('bewertung', 'breadcrumb'));
-                    $ele->setURL('bewertung.php?a=' . $this->product->kArtikel . '&bfa=1');
-                    $ele->setURLFull($this->baseURL . 'bewertung.php?a=' . $this->product->kArtikel . '&bfa=1');
-                    $breadCrumb[] = $ele;
+                    $ele->setURL(
+                        $this->linkService->getStaticRoute('bewertung.php')
+                        . '?a=' . $this->product->kArtikel . '&bfa=1'
+                    );
+                    $ele->setURLFull(
+                        $this->linkService->getStaticRoute('bewertung.php')
+                        . '?a=' . $this->product->kArtikel . '&bfa=1'
+                    );
                 } else {
-                    $ele = new NavigationEntry();
                     $ele->setName($this->language->get('bewertung', 'breadcrumb'));
                     $ele->setURL('');
                     $ele->setURLFull('');
-                    $breadCrumb[] = $ele;
                 }
+                $breadCrumb[] = $ele;
                 break;
 
             default:
-                if ($this->link !== null && $this->link instanceof Link) {
+                if ($this->link instanceof Link) {
                     $elems = $this->linkService->getParentLinks($this->link->getID())
-                        ->map(static function (LinkInterface $l) {
+                        ->map(static function (LinkInterface $l): NavigationEntry {
                             $res = new NavigationEntry();
                             $res->setName($l->getName());
                             $res->setURL($l->getURL());

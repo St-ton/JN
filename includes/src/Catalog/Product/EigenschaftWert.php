@@ -14,47 +14,52 @@ class EigenschaftWert
     /**
      * @var int
      */
-    public $kEigenschaftWert;
+    public int $kEigenschaftWert = 0;
 
     /**
      * @var int
      */
-    public $kEigenschaft;
+    public int $kEigenschaft = 0;
 
     /**
-     * @var float
+     * @var float|string|null
      */
     public $fAufpreisNetto;
 
     /**
-     * @var float
+     * @var float|string|null
      */
     public $fGewichtDiff;
 
     /**
-     * @var float
+     * @var float|string|null
      */
     public $fLagerbestand;
 
     /**
-     * @var float
+     * @var float|string|null
      */
     public $fPackeinheit;
 
     /**
      * @var string
      */
-    public $cName;
+    public string $cName = '';
 
     /**
-     * @var float
+     * @var float|string|null
      */
     public $fAufpreis;
 
     /**
      * @var int
      */
-    public $nSort;
+    public int $nSort = 0;
+
+    /**
+     * @var string
+     */
+    public string $cArtNr = '';
 
     /**
      * EigenschaftWert constructor.
@@ -73,21 +78,25 @@ class EigenschaftWert
      */
     public function loadFromDB(int $id): self
     {
-        if ($id > 0) {
-            $obj = Shop::Container()->getDB()->select('teigenschaftwert', 'kEigenschaftWert', $id);
-            if (isset($obj->kEigenschaftWert) && $obj->kEigenschaftWert > 0) {
-                foreach (\get_object_vars($obj) as $k => $v) {
-                    $this->$k = $v;
-                }
-                $this->kEigenschaft     = (int)$this->kEigenschaft;
-                $this->kEigenschaftWert = (int)$this->kEigenschaftWert;
-                $this->nSort            = (int)$this->nSort;
-                if ($this->fPackeinheit == 0) {
-                    $this->fPackeinheit = 1;
-                }
-            }
-            \executeHook(\HOOK_EIGENSCHAFTWERT_CLASS_LOADFROMDB);
+        if ($id <= 0) {
+            return $this;
         }
+        $data = Shop::Container()->getDB()->select('teigenschaftwert', 'kEigenschaftWert', $id);
+        if ($data !== null && $data->kEigenschaftWert > 0) {
+            $this->kEigenschaft     = (int)$data->kEigenschaft;
+            $this->kEigenschaftWert = (int)$data->kEigenschaftWert;
+            $this->nSort            = (int)$data->nSort;
+            $this->cName            = $data->cName;
+            $this->fAufpreisNetto   = $data->fAufpreisNetto;
+            $this->fGewichtDiff     = $data->fGewichtDiff;
+            $this->cArtNr           = $data->cArtNr;
+            $this->fLagerbestand    = $data->fLagerbestand;
+            $this->fPackeinheit     = $data->fPackeinheit;
+            if ($this->fPackeinheit == 0) {
+                $this->fPackeinheit = 1;
+            }
+        }
+        \executeHook(\HOOK_EIGENSCHAFTWERT_CLASS_LOADFROMDB);
 
         return $this;
     }
@@ -112,16 +121,5 @@ class EigenschaftWert
         unset($obj->fAufpreis);
 
         return Shop::Container()->getDB()->update('teigenschaftwert', 'kEigenschaftWert', $obj->kEigenschaftWert, $obj);
-    }
-
-    /**
-     * setzt Daten aus Sync POST request.
-     *
-     * @return bool
-     * @deprecated since 5.0.0
-     */
-    public function setzePostDaten(): bool
-    {
-        return false;
     }
 }

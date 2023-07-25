@@ -1,5 +1,7 @@
 {block name='productdetails-basket'}
     {if ($Artikel->inWarenkorbLegbar == 1 || $Artikel->nErscheinendesProdukt == 1) || $Artikel->Variationen}
+        {$interval = $Artikel->fAbnahmeintervall|default:0}
+        {$mbm = $Artikel->fMindestbestellmenge|default:0}
         <div id="add-to-cart" class="product-buy{if $Artikel->nErscheinendesProdukt} coming_soon{/if}">
             {if $Artikel->nErscheinendesProdukt}
                 {block name='productdetails-basket-coming-soon'}
@@ -21,9 +23,13 @@
                 {if !$showMatrix}
                     {block name='productdetails-basket-form-inline'}
                         {row class="basket-form-inline"}
+                            {$basketColWidth = 6}
+                            {if $Artikel->bHasKonfig}
+                                {$basketColWidth = 12}
+                            {/if}
                             {if $Artikel->Preise->fVKNetto == 0 && isset($Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_VOUCHER_FLEX])}
                                 {block name='productdetails-basket-voucher-flex'}
-                                    {col cols=12 sm=6}
+                                    {col cols=12 sm=$basketColWidth}
                                         {inputgroup class="form-counter"}
                                             {input type="number"
                                                 step=".01"
@@ -33,19 +39,16 @@
                                                 placeholder="{lang key='voucherFlexPlaceholder' section='productDetails' printf=$smarty.session.Waehrung->getName()}"}
                                             {inputgroupappend}
                                                 {inputgrouptext class="form-control"}
-                                                    {$smarty.session.Waehrung->getName()}
+                                                    {JTL\Session\Frontend::getCurrency()->getName()}
                                                 {/inputgrouptext}
                                             {/inputgroupappend}
                                         {/inputgroup}
                                     {/col}
-                                    {if isset($kEditKonfig)}
-                                        <input type="hidden" name="kEditKonfig" value="{$kEditKonfig}"/>
-                                    {/if}
                                     {input type="hidden" id="quantity" class="quantity" name="anzahl" value="1"}
                                 {/block}
                             {else}
                             {block name='productdetails-basket-quantity'}
-                                {col cols=12 sm=6}
+                                {col cols=12 sm=$basketColWidth}
                                     {inputgroup id="quantity-grp" class="form-counter choose_quantity"}
                                         {inputgroupprepend}
                                             {button variant=""
@@ -54,15 +57,31 @@
                                                 <span class="fas fa-minus"></span>
                                             {/button}
                                         {/inputgroupprepend}
+                                        {$step = 1}
+                                        {if $Artikel->cTeilbar === 'Y' && $interval == 0}
+                                            {$step = 'any'}
+                                        {elseif $interval > 0}
+                                            {$step = $interval}
+                                        {/if}
+                                        {$inputValue = 1}
+                                        {if $interval > 0 || $mbm > 1}
+                                            {$inputValue = max($mbm,$interval)}
+                                        {elseif isset($fAnzahl)}
+                                            {$inputValue = $fAnzahl}
+                                        {/if}
+                                        {$pid = $Artikel->kVariKindArtikel|default:$Artikel->kArtikel}
                                         {input type="number"
-                                            min="{if $Artikel->fMindestbestellmenge}{$Artikel->fMindestbestellmenge}{else}0{/if}"
+                                            min=$mbm
                                             max=$Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE]|default:''
-                                            required=($Artikel->fAbnahmeintervall > 0)
-                                            step="{if $Artikel->cTeilbar === 'Y' && $Artikel->fAbnahmeintervall == 0}any{elseif $Artikel->fAbnahmeintervall > 0}{$Artikel->fAbnahmeintervall}{else}1{/if}"
+                                            required=($interval > 0)
+                                            step=$step
                                             id="quantity" class="quantity" name="anzahl"
                                             aria=["label"=>"{lang key='quantity'}"]
-                                            value="{if $Artikel->fAbnahmeintervall > 0 || $Artikel->fMindestbestellmenge > 1}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}"
-                                            data=["decimals"=>{getDecimalLength quantity=$Artikel->fAbnahmeintervall}]
+                                            value=$inputValue
+                                            data=[
+                                                "decimals"=>{getDecimalLength quantity=$interval},
+                                                "product-id"=>"{$pid}"
+                                            ]
                                         }
                                         {inputgroupappend}
                                             {if $Artikel->cEinheit}
@@ -81,7 +100,7 @@
                             {/block}
                             {/if}
                             {block name='productdetails-basket-add-to-cart'}
-                                {col cols=12 sm=6}
+                                {col cols=12 sm=$basketColWidth}
                                     {button aria=["label"=>"{lang key='addToCart'}"]
                                         block=true name="inWarenkorb"
                                         type="submit"
@@ -102,6 +121,9 @@
                                             <path stroke-dasharray="19.79 19.79" stroke-dashoffset="19.79" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" d="M9,17l3.9,3.9c0.1,0.1,0.2,0.1,0.3,0L23,11"/>
                                         </svg>
                                     {/button}
+                                    {if isset($kEditKonfig)}
+                                        <input type="hidden" name="kEditKonfig" value="{$kEditKonfig}"/>
+                                    {/if}
                                 {/col}
                             {/block}
                         {/row}
@@ -109,26 +131,25 @@
                 {/if}
             {/if}
             {if $Artikel->inWarenkorbLegbar == 1
-            && ($Artikel->fMindestbestellmenge > 1
-                || ($Artikel->fMindestbestellmenge > 0 && $Artikel->cTeilbar === 'Y')
-                || ($Artikel->fAbnahmeintervall > 0 && $Einstellungen.artikeldetails.artikeldetails_artikelintervall_anzeigen === 'Y')
+            && ($mbm > 1
+                || ($interval > 0 && $Einstellungen.artikeldetails.artikeldetails_artikelintervall_anzeigen === 'Y')
                 || $Artikel->cTeilbar === 'Y'
                 || $Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE]|default:0 > 0)}
                 {block name='productdetails-basket-alert-purchase-info'}
                     {alert variant="info" class="purchase-info"}
                         {assign var=units value=$Artikel->cEinheit}
-                        {if empty($Artikel->cEinheit) || $Artikel->cEinheit|@count_characters == 0}
+                        {if empty($Artikel->cEinheit) || $Artikel->cEinheit|strlen == 0}
                             <p>{lang key='units' section='productDetails' assign='units'}</p>
                         {/if}
 
-                        {if $Artikel->fMindestbestellmenge > 1 || ($Artikel->fMindestbestellmenge > 0 && $Artikel->cTeilbar === 'Y')}
+                        {if $mbm > 1 || ($mbm > 0 && $Artikel->cTeilbar === 'Y')}
                             {lang key='minimumPurchase' section='productDetails' assign='minimumPurchase'}
-                            <p>{$minimumPurchase|replace:"%d":$Artikel->fMindestbestellmenge|replace:"%s":$units}</p>
+                            <p>{$minimumPurchase|replace:"%d":$mbm|replace:"%s":$units}</p>
                         {/if}
 
-                        {if $Artikel->fAbnahmeintervall > 0}
+                        {if $interval > 0}
                             {lang key='takeHeedOfInterval' section='productDetails' assign='takeHeedOfInterval'}
-                            <p id="intervall-notice" {if $Einstellungen.artikeldetails.artikeldetails_artikelintervall_anzeigen !== 'Y'}class="d-none"{/if}>{$takeHeedOfInterval|replace:"%d":$Artikel->fAbnahmeintervall|replace:"%s":$units}</p>
+                            <p id="intervall-notice" {if $Einstellungen.artikeldetails.artikeldetails_artikelintervall_anzeigen !== 'Y'}class="d-none"{/if}>{$takeHeedOfInterval|replace:"%d":$interval|replace:"%s":$units}</p>
                         {/if}
 
                         {if $Artikel->cTeilbar === 'Y'}

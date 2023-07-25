@@ -11,22 +11,16 @@ use JTL\Shop;
 class StarterFactory
 {
     /**
-     * @var array
+     * @var StarterInterface|null
      */
-    private $config;
-
-    /**
-     * @var StarterInterface
-     */
-    private $starter;
+    private ?StarterInterface $starter = null;
 
     /**
      * StarterFactory constructor.
      * @param array $config
      */
-    public function __construct(array $config)
+    public function __construct(private readonly array $config)
     {
-        $this->config = $config;
     }
 
     /**

@@ -15,10 +15,10 @@ use JTL\Update\Migration;
 class Migration_20190130130822 extends Migration implements IMigration
 {
     protected $author      = 'cr';
-    protected $description = 'add setting "review reminder bound to newsletter"';
+    protected $description = 'Add setting "review reminder bound to newsletter"';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -52,7 +52,7 @@ class Migration_20190130130822 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

@@ -84,7 +84,7 @@
         var $refTr  = $('#referer-tr-' + kRedirect);
         var $refDiv = $('#referer-div-' + kRedirect);
 
-        if(!$refTr.is(':visible')) {
+        if (!$refTr.is(':visible')) {
             $refTr.show();
             $refDiv.slideDown();
         } else {
@@ -99,7 +99,7 @@
             <div class="col-sm-6 col-xl-auto">
                 {include file='tpl_inc/csv_export_btn.tpl' exporterId='redirects'}
             </div>
-            <div class="{if !$oRedirect_arr|@count > 0}ml-auto{/if} col-sm-6 col-xl-auto">
+            <div class="col-sm-6 col-xl-auto">
                 {include file='tpl_inc/csv_import_btn.tpl' importerId='redirects'}
             </div>
         </div>
@@ -116,7 +116,7 @@
             </li>
             <li class="nav-item" role="presentation">
                 <a class="nav-link {if $cTab === 'new_redirect'} active{/if}" data-toggle="tab" role="tab" href="#new_redirect">
-                    {__('create')}
+                    {__('create/edit')}
                 </a>
             </li>
         </ul>
@@ -128,7 +128,7 @@
             <div>
                 <form method="post">
                     {$jtl_token}
-                    {if $oRedirect_arr|@count > 0}
+                    {if count($oRedirect_arr) > 0}
                         <div class="table-responsive">
                             <table class="table">
                                 <thead>
@@ -157,6 +157,10 @@
                                                        data-placement="bottom" title="{$oRedirect->cFromUrl}"{/if}>
                                                         {$oRedirect->cFromUrl|truncate:50}
                                                     </a>
+                                                    <button type="button" class="btn btn-link px-2"
+                                                            title="{if $oRedirect->paramHandling === 0}{__('exact match')}{elseif $oRedirect->paramHandling === 1}{__('ignore GET parameters')}{else}{__('append GET parameters')}{/if}" data-toggle="tooltip">
+                                                        <span class="fas fa-info-circle font-size-lg"></span>
+                                                    </button>
                                                 </label>
                                             </td>
                                             <td>
@@ -191,15 +195,25 @@
                                                 {/if}
                                             </td>
                                             <td class="text-center">
-                                                {if $oRedirect->nCount > 0}
-                                                    <div class="btn-group">
+                                                <div class="btn-group">
+                                                    {if $oRedirect->nCount > 0}
                                                         <button type="button" class="btn btn-link px-2" title="{__('details')}"
                                                                 onclick="toggleReferer({$oRedirect->kRedirect});"
                                                                 data-toggle="tooltip">
                                                             <span class="fal fa-chevron-circle-down rotate-180 font-size-lg"></span>
                                                         </button>
-                                                    </div>
-                                                {/if}
+                                                    {/if}
+                                                    <a href="{$adminURL}{$route}?action=edit&id={$oRedirect->kRedirect}&token={$smarty.session.jtl_token}"
+                                                       class="btn-prg btn btn-link px-2"
+                                                       title="{__('modify')}"
+                                                       data-toggle="tooltip">
+                                                        <span class="icon-hover">
+                                                            <span class="fal fa-edit"></span>
+                                                            <span class="fas fa-edit"></span>
+                                                        </span>
+                                                    </a>
+
+                                                </div>
                                             </td>
                                         </tr>
                                         {if $oRedirect->nCount > 0}
@@ -234,7 +248,7 @@
                                                                             {/if}
                                                                         </td>
                                                                         <td>
-                                                                            {$oRedirectReferer->dDate|date_format:'%d.%m.%Y - %H:%M:%S'}
+                                                                            {$oRedirectReferer->dDate|date_format:'d.m.Y - H:m:i'}
                                                                         </td>
                                                                     </tr>
                                                                 {/foreach}
@@ -261,7 +275,7 @@
                                     <label class="custom-control-label" for="ALLMSGS">{__('globalSelectAll')}</label>
                                 </div>
                             </div>
-                            {if $oRedirect_arr|@count > 0}
+                            {if count($oRedirect_arr) > 0}
                                 <div class="ml-auto col-sm-6 col-xl-auto">
                                     <button name="action" value="delete" class="btn btn-danger btn-block">
                                         <i class="fas fa-trash-alt"></i> {__('deleteSelected')}
@@ -320,14 +334,41 @@
                                 )
                             </script>
                         </div>
+                        <div class="form-group form-row align-items-center">
+                            {assign var=paramHandling value=$paramHandling|default:0}
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="paramHandline">{__('Parameter handling')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <select class="custom-select" id="paramHandling" name="paramHandling">
+                                    <option value="0"{if $paramHandling === 0} selected{/if}>{__('exact match')}</option>
+                                    <option value="1"{if $paramHandling === 1} selected{/if}>{__('ignore GET parameters')}</option>
+                                    <option value="2"{if $paramHandling === 2} selected{/if}>{__('append GET parameters')}</option>
+                                </select>
+                            </div>
+                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('parameterHandlingDesc')}</div>
+                        </div>
+
                     </div>
                     <div class="save-wrapper">
-                        <div class="row">
-                            <div class="ml-auto col-sm-6 col-xl-auto">
-                                <button name="action" value="new" class="btn btn-primary btn-block">
-                                    <i class="fa fa-save"></i> {__('create')}
-                                </button>
-                            </div>
+                        <div class="row first-ml-auto">
+                            {if !empty($redirectID)}
+                                <div class="col-sm-6 col-xl-auto">
+                                    <a class="btn btn-outline-primary btn-block" id="go-back" href="{$adminURL}{$route}">
+                                        {__('cancelWithIcon')}
+                                    </a>
+                                </div>
+                                <div class="col-sm-6 col-xl-auto">
+                                    <button name="action" value="new" class="btn btn-primary btn-block">
+                                        <i class="fa fa-save"></i> {__('save')}
+                                    </button>
+                                </div>
+                                <input type="hidden" name="redirect-id" value="{$redirectID}">
+                            {else}
+                                <div class="col-sm-6 col-xl-auto">
+                                    <button name="action" value="new" class="btn btn-primary btn-block">
+                                        <i class="fa fa-save"></i> {__('create')}
+                                    </button>
+                                </div>
+                            {/if}
                         </div>
                     </div>
                 </div>

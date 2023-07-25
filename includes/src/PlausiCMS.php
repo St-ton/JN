@@ -2,6 +2,7 @@
 
 namespace JTL;
 
+use JTL\Language\LanguageHelper;
 use JTL\Link\Link;
 
 /**
@@ -52,6 +53,18 @@ class PlausiCMS extends Plausi
                     && (!isset($this->xPostVar_arr['nSpezialseite']) || (int)$this->xPostVar_arr['nSpezialseite'] <= 0)
                 ) {
                     $this->xPlausiVar_arr['nLinkart'] = 3;
+                }
+                if (isset($this->xPostVar_arr['nLinkart']) && (int)$this->xPostVar_arr['nLinkart'] === 2) {
+                    // external link
+                    foreach (LanguageHelper::getAllLanguages(0, true) as $language) {
+                        $code = $language->getIso();
+                        if (!empty($this->xPostVar_arr['cSeo_' . $code])) {
+                            $url = $this->xPostVar_arr['cSeo_' . $code];
+                            if (\parse_url($url, \PHP_URL_SCHEME) === null) {
+                                $this->xPlausiVar_arr['scheme'] = 1;
+                            }
+                        }
+                    }
                 }
 
                 return true;

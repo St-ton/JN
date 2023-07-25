@@ -23,28 +23,16 @@ use JTL\XMLParser;
 class PluginInstaller implements InstallerInterface
 {
     /**
-     * @var DbInterface
-     */
-    protected $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    protected $cache;
-
-    /**
      * PluginInstaller constructor.
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */
-    public function __construct(DbInterface $db, JTLCacheInterface $cache)
+    public function __construct(protected DbInterface $db, protected JTLCacheInterface $cache)
     {
-        $this->db    = $db;
-        $this->cache = $cache;
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function update(string $exsID, string $zip, AjaxResponse $response): int
     {
@@ -68,7 +56,7 @@ class PluginInstaller implements InstallerInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function install(string $itemID, string $zip, AjaxResponse $response): int
     {
@@ -92,7 +80,7 @@ class PluginInstaller implements InstallerInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function forceUpdate(string $zip, AjaxResponse $response): int
     {

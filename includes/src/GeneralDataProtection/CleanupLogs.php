@@ -2,6 +2,8 @@
 
 namespace JTL\GeneralDataProtection;
 
+use JTL\DB\ReturnType;
+
 /**
  * Class CleanupLogs
  * @package JTL\GeneralDataProtection
@@ -23,165 +25,221 @@ namespace JTL\GeneralDataProtection;
  */
 class CleanupLogs extends Method implements MethodInterface
 {
+    private array $methodName = [
+        'cleanupEmailHistory',
+        'cleanupContactHistory',
+        'cleanupFloodProtect',
+        'cleanupPaymentLogEntries',
+        'cleanupProductInquiries',
+        'cleanupAvailabilityInquiries',
+        'cleanupLogs',
+        'cleanupPaymentConfirmations',
+        'cleanupCustomerDataHistory',
+    ];
+
     /**
-     * runs all anonymize routines
+     * max repetitions of this task
+     *
+     * @var int
+     */
+    public $taskRepetitions = 0;
+
+    /**
+     * last ID in table
+     *
+     * @var int
+     */
+    public $lastProductID;
+
+    /**
+     * runs all anonymize methods
+     *
+     * @return void
      */
     public function execute(): void
     {
-        $this->cleanupEmailHistory();
-        $this->cleanupContactHistory();
-        $this->cleanupFloodProtect();
-        $this->cleanupPaymentLogEntries();
-        $this->cleanupProductInquiries();
-        $this->cleanupAvailabilityInquiries();
-        $this->cleanupLogs();
-        $this->cleanupPaymentConfirmations();
-        $this->cleanupCustomerDataHistory();
+        $workLimitStart = $this->workLimit;
+        foreach ($this->methodName as $method) {
+            if ($this->workLimit === 0) {
+                $this->isFinished = false;
+                return;
+            }
+            $affected         = $this->$method();
+            $this->workLimit -= $affected; // reduce $workLimit locallly for the next method
+            $this->workSum   += $affected; // summarize complete work
+        }
+        $this->isFinished = ($this->workSum < $workLimitStart);
     }
 
     /**
      * delete email history
      * older than given interval
+     *
+     * @return int
      */
-    private function cleanupEmailHistory(): void
+    private function cleanupEmailHistory(): int
     {
-        $this->db->queryPrepared(
+        return $this->db->queryPrepared(
             'DELETE FROM temailhistory
-                WHERE dSent <= :pDateLimit
+                WHERE dSent <= :dateLimit
                 ORDER BY dSent ASC
-                LIMIT :pLimit',
+                LIMIT :workLimit',
             [
-                'pDateLimit' => $this->dateLimit,
-                'pLimit'     => $this->workLimit
-            ]
+                'dateLimit' => $this->dateLimit,
+                'workLimit' => $this->workLimit
+            ],
+            ReturnType::AFFECTED_ROWS
         );
     }
 
     /**
      * delete customer history
      * older than given interval
+     *
+     * @return int
      */
-    private function cleanupContactHistory(): void
+    private function cleanupContactHistory(): int
     {
-        $this->db->queryPrepared(
+        return $this->db->queryPrepared(
             'DELETE FROM tkontakthistory
-                WHERE dErstellt <= :pDateLimit
+                WHERE dErstellt <= :dateLimit
                 ORDER BY dErstellt ASC
-                LIMIT :pLimit',
+                LIMIT :workLimit',
             [
-                'pDateLimit' => $this->dateLimit,
-                'pLimit'     => $this->workLimit
-            ]
+                'dateLimit' => $this->dateLimit,
+                'workLimit' => $this->workLimit
+            ],
+            ReturnType::AFFECTED_ROWS
         );
     }
 
     /**
      * delete upload request history
      * older than given interval
+     *
+     * @return int
      */
-    private function cleanupFloodProtect(): void
+    private function cleanupFloodProtect(): int
     {
-        $this->db->queryPrepared(
+        return $this->db->queryPrepared(
             'DELETE FROM tfloodprotect
-                WHERE dErstellt <= :pDateLimit
+                WHERE dErstellt <= :dateLimit
                 ORDER BY dErstellt ASC
-                LIMIT :pLimit',
+                LIMIT :workLimit',
             [
-                'pDateLimit' => $this->dateLimit,
-                'pLimit'     => $this->workLimit
-            ]
+                'dateLimit' => $this->dateLimit,
+                'workLimit' => $this->workLimit
+            ],
+            ReturnType::AFFECTED_ROWS
         );
     }
 
     /**
      * delete log entries of payments
      * older than the given interval
+     *
+     * @return int
      */
-    private function cleanupPaymentLogEntries(): void
+    private function cleanupPaymentLogEntries(): int
     {
-        $this->db->queryPrepared(
+        return $this->db->queryPrepared(
             'DELETE FROM tzahlungslog
-            WHERE dDatum <= :pDateLimit
-            ORDER BY dDatum ASC
-            LIMIT :pLimit',
+                WHERE dDatum <= :dateLimit
+                ORDER BY dDatum ASC
+                LIMIT :workLimit',
             [
-                'pDateLimit' => $this->dateLimit,
-                'pLimit'     => $this->workLimit
-            ]
+                'dateLimit' => $this->dateLimit,
+                'workLimit' => $this->workLimit
+            ],
+            ReturnType::AFFECTED_ROWS
         );
     }
 
     /**
      * delete product inquiries of customers
      * older than the given interval
+     *
+     * @return int
      */
-    private function cleanupProductInquiries(): void
+    private function cleanupProductInquiries(): int
     {
-        $this->db->queryPrepared(
+        return $this->db->queryPrepared(
             'DELETE FROM tproduktanfragehistory
-            WHERE dErstellt <= :pDateLimit
-            ORDER BY dErstellt ASC
-            LIMIT :pLimit',
+                WHERE dErstellt <= :dateLimit
+                ORDER BY dErstellt ASC
+                LIMIT :workLimit',
             [
-                'pDateLimit' => $this->dateLimit,
-                'pLimit'     => $this->workLimit
-            ]
+                'dateLimit' => $this->dateLimit,
+                'workLimit' => $this->workLimit
+            ],
+            ReturnType::AFFECTED_ROWS
         );
     }
 
     /**
      * delete availability demands of customers
      * older than the given interval
+     *
+     * @return int
      */
-    private function cleanupAvailabilityInquiries(): void
+    private function cleanupAvailabilityInquiries(): int
     {
-        $this->db->queryPrepared(
+        return $this->db->queryPrepared(
             'DELETE FROM tverfuegbarkeitsbenachrichtigung
-            WHERE dErstellt <= :pDateLimit
-            ORDER BY dErstellt ASC
-            LIMIT :pLimit',
+                WHERE dBenachrichtigtAm <= :dateLimit
+                ORDER BY dBenachrichtigtAm ASC
+                LIMIT :workLimit',
             [
-                'pDateLimit' => $this->dateLimit,
-                'pLimit'     => $this->workLimit
-            ]
+                'dateLimit' => $this->dateLimit,
+                'workLimit' => $this->workLimit
+            ],
+            ReturnType::AFFECTED_ROWS
         );
     }
 
     /**
      * delete jtl log entries
      * older than the given interval
+     *
+     * @return int
      */
-    private function cleanupLogs(): void
+    private function cleanupLogs(): int
     {
-        $this->db->queryPrepared(
+        return $this->db->queryPrepared(
             "DELETE FROM tjtllog
-                WHERE (cLog LIKE '%@%' OR cLog LIKE '%kKunde%')
-                    AND dErstellt <= :pDateLimit
+                WHERE
+                    (cLog LIKE '%@%' OR cLog LIKE '%kKunde%')
+                    AND dErstellt <= :dateLimit
                 ORDER BY dErstellt ASC
-                LIMIT :pLimit",
+                LIMIT :workLimit",
             [
-                'pDateLimit' => $this->dateLimit,
-                'pLimit'     => $this->workLimit
-            ]
+                'dateLimit' => $this->dateLimit,
+                'workLimit' => $this->workLimit
+            ],
+            ReturnType::AFFECTED_ROWS
         );
     }
 
     /**
      * delete payment confirmations of customers
      * not collected by 'wawi' and older than the given interval
+     *
+     * @return int
      */
-    private function cleanupPaymentConfirmations(): void
+    private function cleanupPaymentConfirmations(): int
     {
-        $this->db->queryPrepared(
+        return $this->db->queryPrepared(
             "DELETE FROM tzahlungseingang
-                WHERE cAbgeholt != 'Y'
-                    AND dZeit <= :pDateLimit
+                WHERE
+                    cAbgeholt != 'Y'
+                    AND dZeit <= :dateLimit
                 ORDER BY dZeit ASC
-                LIMIT :pLimit",
+                LIMIT :workLimit",
             [
-                'pDateLimit' => $this->dateLimit,
-                'pLimit'     => $this->workLimit
-            ]
+                'dateLimit' => $this->dateLimit,
+                'workLimit' => $this->workLimit
+            ],
+            ReturnType::AFFECTED_ROWS
         );
     }
 
@@ -190,18 +248,21 @@ class CleanupLogs extends Method implements MethodInterface
      * CONSIDER: using no time base or limit here!
      *
      * (§76 BDSG Abs(4) : "Die Protokolldaten sind am Ende des auf deren Generierung folgenden Jahres zu löschen.")
+     *
+     * @return int
      */
-    private function cleanupCustomerDataHistory(): void
+    private function cleanupCustomerDataHistory(): int
     {
-        $this->db->queryPrepared(
+        return $this->db->queryPrepared(
             'DELETE FROM tkundendatenhistory
-                WHERE dErstellt < MAKEDATE(YEAR(:pNow) - 1, 1)
+                WHERE dErstellt < MAKEDATE(YEAR(:nowTime) - 1, 1)
                 ORDER BY dErstellt ASC
-                LIMIT :pLimit',
+                LIMIT :workLimit',
             [
-                'pNow'   => $this->now->format('Y-m-d H:i:s'),
-                'pLimit' => $this->workLimit
-            ]
+                'nowTime'   => $this->now->format('Y-m-d H:i:s'),
+                'workLimit' => $this->workLimit
+            ],
+            ReturnType::AFFECTED_ROWS
         );
     }
 }

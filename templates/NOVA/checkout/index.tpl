@@ -27,6 +27,13 @@
                     {include file='checkout/step5_confirmation.tpl'}{*bestellvorgang_bestaetigung*}
                 {/if}
             {/container}
+            {block name='checkout-index-script-location'}
+                <script>
+                    if (top.location !== self.location) {
+                        top.location = self.location.href;
+                    }
+                </script>
+            {/block}
         </div>
 
         {if (isset($nWarenkorb2PersMerge) && $nWarenkorb2PersMerge === 1)}
@@ -43,6 +50,9 @@
                             eModal.confirm(options).then(
                                 function() {
                                     window.location = "{get_static_route id='bestellvorgang.php'}?basket2Pers=1&token={$smarty.session.jtl_token}"
+                                },
+                                function() {
+                                    window.location = "{get_static_route id='bestellvorgang.php'}?updatePersCart=1&token={$smarty.session.jtl_token}"
                                 }
                             );
                         });
@@ -50,13 +60,6 @@
                 </script>{/inline_script}
             {/block}
         {/if}
-        {block name='checkout-index-script-location'}
-            <script>
-                if (top.location !== self.location) {
-                    top.location = self.location.href;
-                }
-            </script>
-        {/block}
     {/block}
 
     {block name='checkout-index-include-footer'}

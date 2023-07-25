@@ -1,17 +1,19 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL;
 
 use DateTime;
 use InvalidArgumentException;
-use JTL\Alert\Alert;
-use JTL\Cron\LegacyCron;
+use JTL\Cron\Job\Statusmail as StatusCron;
+use JTL\Cron\JobHydrator;
+use JTL\Cron\Type;
 use JTL\DB\DbInterface;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Mail\Mail\Attachment;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
+use JTL\Services\Container;
 use SmartyException;
 use stdClass;
 use function Functional\first;
@@ -23,11 +25,6 @@ use function Functional\map;
  */
 class Statusmail
 {
-    /**
-     * @var DbInterface
-     */
-    private $db;
-
     /**
      * @var string
      */
@@ -43,9 +40,9 @@ class Statusmail
      *
      * @param DbInterface $db
      */
-    public function __construct(DbInterface $db)
+    public function __construct(private readonly DbInterface $db)
     {
-        $this->db = $db;
+        Shop::Container()->getGetText()->loadAdminLocale('pages/statusemail');
     }
 
     /**
@@ -105,24 +102,27 @@ class Statusmail
         $startDate = \date('Y-m-d', \strtotime($types[$frequency]['date']));
         $d         = new DateTime($startDate);
         $d->setTime(0, 0);
-        Shop::Container()->getAlertService()->addAlert(
-            Alert::TYPE_INFO,
+        Shop::Container()->getAlertService()->addInfo(
             \sprintf(\__('nextStatusMail'), $types[$frequency]['name'], $d->format('d.m.Y')),
             'nextStatusMail' . $frequency
         );
-        $cron = new LegacyCron(
-            0,
-            $id,
-            $frequency,
-            'statusemail',
-            'statusemail',
-            'tstatusemail',
-            'id',
-            $d->format('Y-m-d H:i:s'),
-            $d->format('H:i:s')
+        $job = new StatusCron(
+            $this->db,
+            Shop::Container()->getLogService(),
+            new JobHydrator(),
+            Shop::Container()->getCache()
         );
+        $job->setType(Type::STATUSMAIL);
+        $job->setFrequency($frequency);
+        $job->setStartDate($d->format('Y-m-d H:i:s'));
+        $job->setStartTime($d->format('H:i:s'));
+        $job->setNextStartDate($d->format('Y-m-d H:i:s'));
+        $job->setTableName('tstatusemail');
+        $job->setName('statusemail');
+        $job->setForeignKeyID($id);
+        $job->setForeignKey('id');
 
-        return $cron->speicherInDB() !== false;
+        return $job->insert() > 0;
     }
 
     /**
@@ -431,7 +431,7 @@ class Statusmail
     /**
      * @return int
      */
-    private function getNewsletterOptOutCount():int
+    private function getNewsletterOptOutCount(): int
     {
         $res = $this->db->getSingleObject(
             'SELECT COUNT(*) AS total
@@ -453,7 +453,7 @@ class Statusmail
     /**
      * @return int
      */
-    private function getNewsletterOptInCount():int
+    private function getNewsletterOptInCount(): int
     {
         $res = $this->db->getSingleObject(
             'SELECT COUNT(*) AS total
@@ -824,17 +824,17 @@ class Statusmail
             case 1:
                 $startDate   = \date('Y-m-d', \strtotime('yesterday'));
                 $endDate     = \date('Y-m-d', \strtotime('today'));
-                $intervalLoc = 'Tägliche';
+                $intervalLoc = \__('intervalDay');
                 break;
             case 7:
                 $startDate   = \date('Y-m-d', \strtotime('last week monday'));
                 $endDate     = \date('Y-m-d', \strtotime('last week sunday'));
-                $intervalLoc = 'Wöchentliche';
+                $intervalLoc = \__('intervalWeek');
                 break;
             case 30:
                 $startDate   = \date('Y-m-d', \strtotime('first day of previous month'));
                 $endDate     = \date('Y-m-d', \strtotime('last day of previous month'));
-                $intervalLoc = 'Monatliche';
+                $intervalLoc = \__('intervalMonth');
                 break;
             default:
                 throw new InvalidArgumentException('Invalid interval type: ' . $interval);
@@ -842,7 +842,7 @@ class Statusmail
         $data = $this->generate($statusMail, $startDate, $endDate);
         if ($data) {
             $data->interval   = $interval;
-            $data->cIntervall = $intervalLoc . ' Status-Email';
+            $data->cIntervall = $intervalLoc;
 
             $mailer = Shop::Container()->get(Mailer::class);
             $mail   = new Mail();
@@ -852,9 +852,6 @@ class Statusmail
                 $mail->setAttachments([$data->mail->attachment]);
             }
             $sent = $mailer->send($mail);
-            foreach ($mail->getAttachments() as $attachment) {
-                \unlink($attachment->getFullPath());
-            }
         }
 
         return $sent;

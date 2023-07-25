@@ -16,7 +16,7 @@ use stdClass;
 class ReferencedTemplate extends ReferencedItem
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      * @throws \Exception
      */
     public function initByExsID(DbInterface $db, stdClass $license, Releases $releases): void
@@ -36,6 +36,9 @@ class ReferencedTemplate extends ReferencedItem
                 $this->setMaxInstallableVersion($availableVersion);
                 $this->setHasUpdate(true);
                 $this->setCanBeUpdated(true);
+                if ($available->getPhpVersionOK() !== $available::PHP_VERSION_OK) {
+                    $this->setCanBeUpdated(false);
+                }
             } elseif ($latestVersion->greaterThan($availableVersion)
                 && $latestVersion->greaterThan($installedVersion)
             ) {

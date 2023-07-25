@@ -15,10 +15,10 @@ use JTL\Update\Migration;
 class Migration_20170831164030 extends Migration implements IMigration
 {
     protected $author      = 'msc';
-    protected $description = 'create_order_info_about_downloadeable_products';
+    protected $description = 'Create order info about downloadeable products';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -27,7 +27,7 @@ class Migration_20170831164030 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

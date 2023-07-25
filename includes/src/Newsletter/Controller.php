@@ -3,7 +3,6 @@
 namespace JTL\Newsletter;
 
 use DateTime;
-use JTL\Alert\Alert;
 use JTL\CheckBox;
 use JTL\Customer\Customer;
 use JTL\DB\DbInterface;
@@ -23,24 +22,12 @@ use stdClass;
 final class Controller
 {
     /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
-     * @var array
-     */
-    private $config;
-
-    /**
-     * Manager constructor.
+     * Controller constructor.
      * @param DbInterface $db
      * @param array       $config
      */
-    public function __construct(DbInterface $db, array $config)
+    public function __construct(private readonly DbInterface $db, private readonly array $config)
     {
-        $this->db     = $db;
-        $this->config = $config;
     }
 
     /**
@@ -57,17 +44,17 @@ final class Controller
     }
 
     /**
-     * @param int $kKunde
+     * @param int $customerID
      * @return bool
      */
-    public function checkAlreadySubscribed(int $kKunde): bool
+    public function checkAlreadySubscribed(int $customerID): bool
     {
-        if ($kKunde <= 0) {
+        if ($customerID <= 0) {
             return false;
         }
-        $recipient = $this->db->select('tnewsletterempfaenger', 'kKunde', $kKunde);
+        $recipient = $this->db->select('tnewsletterempfaenger', 'kKunde', $customerID);
 
-        return isset($recipient->kKunde) && $recipient->kKunde > 0;
+        return $recipient !== null && $recipient->kKunde > 0;
     }
 
     /**
@@ -75,7 +62,7 @@ final class Controller
      * @param bool              $validate
      * @return stdClass
      */
-    public function addSubscriber($customer, $validate = false): stdClass
+    public function addSubscriber($customer, bool $validate = false): stdClass
     {
         $alertHelper         = Shop::Container()->getAlertService();
         $plausi              = new stdClass();
@@ -83,11 +70,11 @@ final class Controller
         $nlCustomer          = null;
         if (!$validate || Text::filterEmailAddress($customer->cEmail) !== false) {
             $plausi->nPlausi_arr = $this->subscriptionCheck();
-            $kKundengruppe       = Frontend::getCustomerGroup()->getID();
-            $checkBox            = new CheckBox();
+            $customerGroupID     = Frontend::getCustomerGroup()->getID();
+            $checkBox            = new CheckBox(0, $this->db);
             $plausi->nPlausi_arr = \array_merge(
                 $plausi->nPlausi_arr,
-                $checkBox->validateCheckBox(\CHECKBOX_ORT_NEWSLETTERANMELDUNG, $kKundengruppe, $_POST, true)
+                $checkBox->validateCheckBox(\CHECKBOX_ORT_NEWSLETTERANMELDUNG, $customerGroupID, $_POST, true)
             );
 
             $plausi->cPost_arr['cAnrede']   = $customer->cAnrede;
@@ -103,7 +90,7 @@ final class Controller
                     'cEmail',
                     $customer->cEmail
                 );
-                if (!empty($recipient->dEingetragen)) {
+                if ($recipient !== null && !empty($recipient->dEingetragen)) {
                     $recipient->Datum = (new DateTime($recipient->dEingetragen))->format('d.m.Y H:i');
                 }
                 // Pruefen ob Kunde bereits eingetragen
@@ -117,31 +104,24 @@ final class Controller
                 if ((isset($recipient->cEmail) && \mb_strlen($recipient->cEmail) > 0)
                     || (isset($nlCustomer->kKunde) && $nlCustomer->kKunde > 0)
                 ) {
-                    $alertHelper->addAlert(
-                        Alert::TYPE_ERROR,
-                        Shop::Lang()->get('newsletterExists', 'errorMessages'),
-                        'newsletterExists'
-                    );
+                    $alertHelper->addError(Shop::Lang()->get('newsletterExists', 'errorMessages'), 'newsletterExists');
                 } else {
                     $checkBox->triggerSpecialFunction(
                         \CHECKBOX_ORT_NEWSLETTERANMELDUNG,
-                        $kKundengruppe,
+                        $customerGroupID,
                         true,
                         $_POST,
                         ['oKunde' => $customer]
                     );
-                    $checkBox->checkLogging(\CHECKBOX_ORT_NEWSLETTERANMELDUNG, $kKundengruppe, $_POST, true);
+                    $checkBox->checkLogging(\CHECKBOX_ORT_NEWSLETTERANMELDUNG, $customerGroupID, $_POST, true);
 
                     unset($recipient);
 
                     $instance                      = new Newsletter($this->db, []);
                     $recipient                     = new stdClass();
                     $recipient->kSprache           = Shop::getLanguageID();
-                    $recipient->kKunde             = isset($_SESSION['Kunde']->kKunde)
-                        ? (int)$_SESSION['Kunde']->kKunde
-                        : 0;
-                    $recipient->nAktiv             = isset($_SESSION['Kunde']->kKunde)
-                        && $_SESSION['Kunde']->kKunde > 0
+                    $recipient->kKunde             = (int)($_SESSION['Kunde']->kKunde ?? 0);
+                    $recipient->nAktiv             = $recipient->kKunde > 0
                         && $this->config['newsletter']['newsletter_doubleopt'] === 'U' ? 1 : 0;
                     $recipient->cAnrede            = $customer->cAnrede;
                     $recipient->cVorname           = $customer->cVorname;
@@ -184,10 +164,11 @@ final class Controller
                             && empty($_SESSION['Kunde']->kKunde))
                         || $this->config['newsletter']['newsletter_doubleopt'] === 'A'
                     ) {
-                        $recipient->cLoeschURL     = Shop::getURL() . '/newsletter.php?lang=' .
-                            $_SESSION['cISOSprache'] . '&lc=' . $recipient->cLoeschCode;
-                        $recipient->cFreischaltURL = Shop::getURL() . '/newsletter.php?lang=' .
-                            $_SESSION['cISOSprache'] . '&fc=' . $recipient->cOptCode;
+                        $nlBase = Shop::Container()->getLinkService()->getStaticRoute('newsletter.php')
+                            . '?lang=' . $_SESSION['cISOSprache'];
+
+                        $recipient->cLoeschURL     = $nlBase . '&lc=' . $recipient->cLoeschCode;
+                        $recipient->cFreischaltURL = $nlBase . '&fc=' . $recipient->cOptCode;
                         $obj                       = new stdClass();
                         $obj->tkunde               = $_SESSION['Kunde'] ?? null;
                         $obj->NewsletterEmpfaenger = $recipient;
@@ -201,15 +182,10 @@ final class Controller
                             $historyID,
                             (object)['cEmailBodyHtml' => $mail->getBodyHTML()]
                         );
-                        $alertHelper->addAlert(
-                            Alert::TYPE_NOTE,
-                            Shop::Lang()->get('newsletterAdd', 'messages'),
-                            'newsletterAdd'
-                        );
+                        $alertHelper->addNotice(Shop::Lang()->get('newsletterAdd', 'messages'), 'newsletterAdd');
                         $plausi = new stdClass();
                     } else {
-                        $alertHelper->addAlert(
-                            Alert::TYPE_NOTE,
+                        $alertHelper->addNotice(
                             Shop::Lang()->get('newsletterNomailAdd', 'messages'),
                             'newsletterNomailAdd'
                         );
@@ -217,11 +193,7 @@ final class Controller
                 }
             }
         } else {
-            $alertHelper->addAlert(
-                Alert::TYPE_ERROR,
-                Shop::Lang()->get('newsletterWrongemail', 'errorMessages'),
-                'newsletterWrongemail'
-            );
+            $alertHelper->addError(Shop::Lang()->get('newsletterWrongemail', 'errorMessages'), 'newsletterWrongemail');
         }
 
         return $plausi;
@@ -363,21 +335,22 @@ final class Controller
      * @param string $groupKeys
      * @return bool
      */
-    private function checkHistory(int $groupID, $groupKeys): bool
+    private function checkHistory(int $groupID, string $groupKeys): bool
     {
-        if (\mb_strlen($groupKeys) > 0) {
-            $groupIDs = [];
-            foreach (\explode(';', $groupKeys) as $id) {
-                if ((int)$id > 0 || (\mb_strlen($id) > 0 && (int)$id === 0)) {
-                    $groupIDs[] = (int)$id;
-                }
+        if (\mb_strlen($groupKeys) === 0) {
+            return false;
+        }
+        $groupIDs = [];
+        foreach (\explode(';', $groupKeys) as $id) {
+            if ((int)$id > 0 || (\mb_strlen($id) > 0 && (int)$id === 0)) {
+                $groupIDs[] = (int)$id;
             }
-            if (\in_array(0, $groupIDs, true)) {
-                return true;
-            }
-            if ($groupID > 0 && \in_array($groupID, $groupIDs, true)) {
-                return true;
-            }
+        }
+        if (\in_array(0, $groupIDs, true)) {
+            return true;
+        }
+        if ($groupID > 0 && \in_array($groupID, $groupIDs, true)) {
+            return true;
         }
 
         return false;

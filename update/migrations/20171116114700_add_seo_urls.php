@@ -29,15 +29,15 @@ class Migration_20171116114700 extends Migration implements IMigration
     /**
      * @var int
      */
-    private $hiddenLinkGroupID = 0;
+    private int $hiddenLinkGroupID = 0;
 
     /**
      * @var array
      */
-    private $languages = [];
+    private array $languages = [];
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -115,7 +115,6 @@ class Migration_20171116114700 extends Migration implements IMigration
                         $seo->cSeo = Seo::checkSeo(Seo::getSeo($seoGER));
                         $this->getDB()->insert('tseo', $seo);
                         if (empty($linkLanguage)) {
-                            $langObj->kSprache    = $language->kSprache;
                             $langObj->cISOSprache = $language->cISO;
                             $langObj->cSeo        = $seo->cSeo;
                             $this->getDB()->insert('tlinksprache', $langObj);
@@ -124,7 +123,6 @@ class Migration_20171116114700 extends Migration implements IMigration
                         $seo->cSeo = Seo::checkSeo(Seo::getSeo($seoENG));
                         $this->getDB()->insert('tseo', $seo);
                         if (empty($linkLanguage)) {
-                            $langObj->kSprache    = $language->kSprache;
                             $langObj->cISOSprache = $language->cISO;
                             $langObj->cSeo        = $seo->cSeo;
                             $this->getDB()->insert('tlinksprache', $langObj);
@@ -136,7 +134,7 @@ class Migration_20171116114700 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Remove tpreise
  *
@@ -18,7 +18,7 @@ class Migration_20190415164325 extends Migration implements IMigration
     protected $description = 'Remove tpreise';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -26,7 +26,7 @@ class Migration_20190415164325 extends Migration implements IMigration
         $this->execute('ANALYZE TABLE tpreis');
         $this->execute('ANALYZE TABLE tpreisverlauf');
         $this->execute('UPDATE tpreis SET kKunde = 0 WHERE kKunde IS NULL');
-
+        $this->execute('ANALYZE TABLE tpreis');
         $this->execute(
             'DELETE FROM tpreis
                  WHERE kPreis IN (SELECT * FROM (
@@ -42,7 +42,6 @@ class Migration_20190415164325 extends Migration implements IMigration
             $this->execute('DROP INDEX kArtikel ON tpreis');
         }
         $this->execute('CREATE UNIQUE INDEX kArtikel on tpreis(kArtikel, kKundengruppe, kKunde)');
-
         $this->execute(
             'DELETE FROM tpreisverlauf
                  WHERE kPreisverlauf IN (SELECT * FROM (
@@ -58,7 +57,6 @@ class Migration_20190415164325 extends Migration implements IMigration
             $this->execute('DROP INDEX kArtikel ON tpreisverlauf');
         }
         $this->execute('CREATE UNIQUE INDEX kArtikel on tpreisverlauf(kArtikel, kKundengruppe, dDate)');
-
         $this->execute(
             'DELETE FROM tpreisdetail
                  WHERE kPreisDetail IN (SELECT * FROM (
@@ -76,7 +74,7 @@ class Migration_20190415164325 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

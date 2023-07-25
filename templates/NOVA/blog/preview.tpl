@@ -1,6 +1,6 @@
 {block name='blog-preview'}
     {$title = $newsItem->getTitle()|escape:'quotes'}
-    <div itemprop="blogPost" itemscope=true itemtype="https://schema.org/BlogPosting" class="newsbox blog-preview">
+    <div itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting" class="newsbox blog-preview">
         <meta itemprop="mainEntityOfPage" content="{$newsItem->getURL()}">
         {block name='blog-preview-news-header'}
             <div class="newsbox-header">
@@ -9,8 +9,9 @@
                         {link href=$newsItem->getURL() title=$title}
                             <div class="newsbox-image">
                                 {include file='snippets/image.tpl'
-                                    item=$newsItem
-                                    square=false
+                                    item =$newsItem
+                                    square = false
+                                    sizes = '(min-width: 1300px) 25vw, (min-width: 992px) 38vw, (min-width: 768px) 55vw, 100vw'
                                     alt="{$title} - {$newsItem->getMetaTitle()|escape:'quotes'}"}
                             </div>
                             <meta itemprop="image" content="{$imageBaseURL}{$newsItem->getPreviewImage()}">
@@ -55,7 +56,12 @@
                                                 {lang key='newsComments' section='news'}
                                             {/if}
                                         </span>
-                                    <span itemprop="commentCount">{$newsItem->getCommentCount()}</span>
+                                    <span itemprop="commentCount">
+                                        {$newsItem->getCommentCount()}
+                                        {if $newsItem->getChildCommentsCount() && $Einstellungen.news.news_kommentare_anzahl_antwort_kommentare_anzeigen === 'Y'}
+                                            ({$newsItem->getChildCommentsCount()})
+                                        {/if}
+                                    </span>
                                 {/link}
                             {/block}
                         {/if}

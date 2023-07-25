@@ -14,7 +14,7 @@ class AbstractItem implements ValidationItemInterface
     /**
      * @var array
      */
-    protected $baseNode;
+    protected array $baseNode;
 
     /**
      * @var array
@@ -24,27 +24,27 @@ class AbstractItem implements ValidationItemInterface
     /**
      * @var string
      */
-    protected $baseDir = '';
+    protected string $baseDir = '';
 
     /**
      * @var string
      */
-    protected $dir = '';
+    protected string $dir = '';
 
     /**
      * @var string
      */
-    protected $version = '100';
+    protected string $version = '100';
 
     /**
      * @var string
      */
-    protected $pluginID = '';
+    protected string $pluginID = '';
 
     /**
      * @var string
      */
-    protected $context = '';
+    protected string $context = self::CONTEXT_LEGACY_PLUGIN;
 
     /**
      * AbstractItem constructor.
@@ -61,7 +61,6 @@ class AbstractItem implements ValidationItemInterface
         $this->dir         = $baseDir . '/' . \PFAD_PLUGIN_VERSION . $version . '/';
         $this->version     = $version;
         $this->pluginID    = $pluginID;
-        $this->context     = self::CONTEXT_LEGACY_PLUGIN;
     }
 
     /**

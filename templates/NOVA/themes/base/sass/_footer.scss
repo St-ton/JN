@@ -65,6 +65,39 @@
 			margin-bottom: 0;
 		}
 	}
+
+	/* Colors to be changed more easily by template settings */
+	a:not(.btn),
+	.productlist-filter-headline,
+	.newsletter-footer-heading,
+	.btn-outline-primary {
+		color: $footer-color;
+	}
+	.btn-outline-primary {
+		&:hover {
+			color: color-yiq($primary);
+		}
+	}
+	a:not(.btn) {
+		&:hover {
+			color: $primary;
+		}
+	}
+	.label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) {
+		label {
+			color: $body-color;
+		}
+	}
+	.box-categories, .box-linkgroup {
+		.dropdown .collapse {
+			background: $footer-bg-color;
+		}
+	}
+	.table-striped {
+		tr {
+			background-color: $footer-bg-color;
+		}
+	}
 }
 
 .sidepanel-left {

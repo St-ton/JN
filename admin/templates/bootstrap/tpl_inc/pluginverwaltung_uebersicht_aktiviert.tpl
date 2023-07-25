@@ -1,6 +1,6 @@
 <div id="aktiviert" class="tab-pane fade {if $cTab === '' || $cTab === 'aktiviert'} active show{/if}">
     {if $pluginsInstalled->count() > 0}
-        <form name="pluginverwaltung" method="post" action="pluginverwaltung.php" id="enabled-plugins">
+        <form name="pluginverwaltung" method="post" action="{$adminURL}{$route}" id="enabled-plugins">
             {$jtl_token}
             <input type="hidden" name="pluginverwaltung_uebersicht" value="1" />
             <div>
@@ -62,7 +62,7 @@
                                 <td class="plugin-folder">{$plugin->getDir()}</td>
                                 <td class="text-center plugin-lang-vars">
                                     {if $plugin->getLangVarCount() > 0}
-                                        <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$plugin->getID()}&token={$smarty.session.jtl_token}"
+                                        <a href="{$adminURL}{$route}?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$plugin->getID()}&token={$smarty.session.jtl_token}"
                                            class="btn btn-link"
                                            title="{__('modify')}"
                                            data-toggle="tooltip">
@@ -75,7 +75,7 @@
                                 </td>
                                 <td class="text-center plugin-frontend-links">
                                     {if $plugin->getLinkCount() > 0}
-                                        <a href="links.php?kPlugin={$plugin->getID()}"
+                                        <a href="{$adminURL}/links?kPlugin={$plugin->getID()}"
                                            class="btn btn-link"
                                            title="{__('modify')}"
                                            data-toggle="tooltip">
@@ -104,20 +104,20 @@
                                     {/if}
                                     <div class="btn-group">
                                         {if $plugin->getOptionsCount() > 0}
-                                            <a class="btn btn-link px-1" href="plugin.php?kPlugin={$plugin->getID()}" title="{__('settings')}" data-toggle="tooltip">
+                                            <a class="btn btn-link px-1" href="{$adminURL}/{JTL\Router\Route::PLUGIN}/{$plugin->getID()}" title="{__('settings')}" data-toggle="tooltip">
                                                 <span class="icon-hover">
                                                     <span class="fal fa-cogs"></span>
                                                     <span class="fas fa-cogs"></span>
                                                 </span>
                                             </a>
                                         {elseif $plugin->getLicenseMD() || $plugin->getReadmeMD()}
-                                            <a class="btn btn-link px-1" href="plugin.php?kPlugin={$plugin->getID()}" title="{__('docu')}" data-toggle="tooltip">
+                                            <a class="btn btn-link px-1" href="{$adminURL}/{JTL\Router\Route::PLUGIN}/{$plugin->getID()}" title="{__('docu')}" data-toggle="tooltip">
                                                 <span class="icon-hover">
                                                     <span class="fal fa-copy"></span>
                                                     <span class="fas fa-copy"></span>
                                                 </span>
                                             </a>
-                                            {*<a class="btn btn-default btn-sm" href="plugin.php?kPlugin={$plugin->getID()}" title="Dokumentation"><i class="fa fa-file-text-o"></i></a>*}
+                                            {*<a class="btn btn-default btn-sm" href="{$adminURL}/plugin/{$plugin->getID()}" title="Dokumentation"><i class="fa fa-file-text-o"></i></a>*}
                                         {/if}
                                         {if $plugin->isUpdateAvailable()}
                                             <a onclick="ackCheck({$plugin->getID()});return false;" class="btn btn-link px-1" title="{__('pluginBtnUpdate')}" data-toggle="tooltip">
@@ -174,7 +174,7 @@
         $('[for="plugin-check-' + pluginID + '"]:first').append($(notify));
     }
     function checkPlugin(pluginID) {
-        simpleAjaxCall('io.php', {
+        simpleAjaxCall(BACKEND_URL + 'io', {
             jtl_token: JTL_TOKEN,
             io : JSON.stringify({
                 name: 'pluginTestLoading',

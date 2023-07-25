@@ -11,27 +11,27 @@ final class SelectOption
     /**
      * @var string
      */
-    private $value;
+    private string $value = '';
 
     /**
      * @var string
      */
-    private $name;
+    private string $name = '';
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $logoPath;
+    private ?string $logoPath = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $link;
+    private ?string $link = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $description;
+    private ?string $description = null;
 
     /**
      * @return string

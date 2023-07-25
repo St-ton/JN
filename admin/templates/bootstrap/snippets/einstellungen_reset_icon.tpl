@@ -1,17 +1,17 @@
 {if $account->oGroup->kAdminlogingruppe === 1}
-    {if $cnf->cInputTyp === 'selectbox'}
-        {$defaultValue = __("{$cnf->cWertName}_value({$cnf->defaultValue})")}
+    {if $cnf->getInputType() === 'selectbox'}
+        {$defaultValue = __("{$cnf->getValueName()}_value({$cnf->getDefaultValue()})")}
     {else}
-        {$defaultValue = $cnf->defaultValue}
+        {$defaultValue = $cnf->getDefaultValue()}
     {/if}
     <button type="button"
             name="resetSetting"
-            value="{$cnf->cWertName}"
-            class="btn btn-link p-0 {if $cnf->gesetzterWert === $cnf->defaultValue}hidden{/if} delete-confirm btn-submit"
-            title="{__('settingReset')|sprintf:$defaultValue}"
+            value="{$cnf->getValueName()}"
+            class="btn btn-link p-0 {if $cnf->getSetValue() === $cnf->getDefaultValue()}hidden{/if} delete-confirm btn-submit"
+            title="{sprintf(__('settingReset', $defaultValue))}"
             data-toggle="tooltip"
             data-placement="top"
-            data-modal-body="{__('confirmResetLog')|sprintf:__("{$cnf->cWertName}_name"):$defaultValue}"
+            data-modal-body="{sprintf(__('confirmResetLog'), __("{$cnf->getValueName()}_name"), $defaultValue)}"
             data-modal-title="{__('confirmResetLogTitle')}"
             data-modal-submit="{__('reset')}"
     >

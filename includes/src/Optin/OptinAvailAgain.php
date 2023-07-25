@@ -2,7 +2,6 @@
 
 namespace JTL\Optin;
 
-use JTL\Alert\Alert;
 use JTL\Campaign;
 use JTL\Catalog\Product\Artikel;
 use JTL\DB\ReturnType;
@@ -42,17 +41,16 @@ class OptinAvailAgain extends OptinBase implements OptinInterface
 
     /**
      * @param OptinRefData $refData
-     * @param int $location
+     * @param int          $location
      * @return OptinInterface
-     * @throws \JTL\Exceptions\CircularReferenceException
-     * @throws \JTL\Exceptions\ServiceNotFoundException
      */
     public function createOptin(OptinRefData $refData, int $location = 0): OptinInterface
     {
         $this->refData                       = $refData;
         $options                             = Artikel::getDefaultOptions();
         $options->nKeineSichtbarkeitBeachten = 1;
-        $this->product                       = (new Artikel())->fuelleArtikel($this->refData->getProductId(), $options);
+        $this->product                       = new Artikel($this->dbHandler);
+        $this->product->fuelleArtikel($this->refData->getProductId(), $options);
         $this->saveOptin($this->generateUniqOptinCode());
 
         return $this;
@@ -92,8 +90,7 @@ class OptinAvailAgain extends OptinBase implements OptinInterface
         $mail   = new Mail();
         $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR_OPTIN, $templateData));
 
-        Shop::Container()->getAlertService()->addAlert(
-            Alert::TYPE_INFO,
+        Shop::Container()->getAlertService()->addInfo(
             Shop::Lang()->get('availAgainOptinCreated', 'messages'),
             'availAgainOptinCreated'
         );
@@ -104,26 +101,27 @@ class OptinAvailAgain extends OptinBase implements OptinInterface
      */
     public function activateOptin(): void
     {
-        $data            = new stdClass();
-        $data->kSprache  = Shop::getLanguageID();
-        $data->cIP       = Request::getRealIP();
-        $data->dErstellt = 'NOW()';
-        $data->nStatus   = 0;
-        $data->kArtikel  = $this->refData->getProductId();
-        $data->cMail     = $this->refData->getEmail();
-        $data->cVorname  = $this->refData->getFirstName();
-        $data->cNachname = $this->refData->getLastName();
+        $data                  = new stdClass();
+        $data->kSprache        = $this->refData->getLanguageID();
+        $data->cIP             = Request::getRealIP();
+        $data->dErstellt       = 'NOW()';
+        $data->nStatus         = 0;
+        $data->kArtikel        = $this->refData->getProductId();
+        $data->cMail           = $this->refData->getEmail();
+        $data->cVorname        = $this->refData->getFirstName();
+        $data->cNachname       = $this->refData->getLastName();
+        $data->customerGroupID = $this->refData->getCustomerGroupID();
 
         \executeHook(\HOOK_ARTIKEL_INC_BENACHRICHTIGUNG, ['Benachrichtigung' => $data]);
 
-        $inquiryID = $this->dbHandler->queryPrepared(
+        $inquiryID = (int)$this->dbHandler->queryPrepared(
             'INSERT INTO tverfuegbarkeitsbenachrichtigung
-                (cVorname, cNachname, cMail, kSprache, kArtikel, cIP, dErstellt, nStatus)
+                (cVorname, cNachname, cMail, kSprache, kArtikel, cIP, dErstellt, nStatus, customerGroupID)
                 VALUES
-                (:cVorname, :cNachname, :cMail, :kSprache, :kArtikel, :cIP, NOW(), :nStatus)
+                (:cVorname, :cNachname, :cMail, :kSprache, :kArtikel, :cIP, NOW(), :nStatus, :customerGroupID)
                 ON DUPLICATE KEY UPDATE
                     cVorname = :cVorname, cNachname = :cNachname, ksprache = :kSprache,
-                    cIP = :cIP, dErstellt = NOW(), nStatus = :nStatus',
+                    cIP = :cIP, dErstellt = NOW(), nStatus = :nStatus, customerGroupID = :customerGroupID',
             \get_object_vars($data),
             ReturnType::LAST_INSERTED_ID
         );

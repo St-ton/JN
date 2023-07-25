@@ -9,7 +9,7 @@ use stdClass;
 
 /**
  * Class TwoFAEmergency
- * @package Backend
+ * @package JTL\Backend
  */
 class TwoFAEmergency
 {
@@ -18,27 +18,21 @@ class TwoFAEmergency
      *
      * @var array
      */
-    private $codes = [];
+    private array $codes = [];
 
     /**
      * generate 10 codes (maybe should placed into a config)
      *
      * @var int
      */
-    private $codeCount = 10;
-
-    /**
-     * @var DbInterface
-     */
-    private $db;
+    private int $codeCount = 10;
 
     /**
      * TwoFAEmergency constructor.
      * @param DbInterface $db
      */
-    public function __construct(DbInterface $db)
+    public function __construct(private readonly DbInterface $db)
     {
-        $this->db = $db;
     }
 
     /**

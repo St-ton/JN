@@ -21,9 +21,9 @@ interface JobInterface
      * @param JTLCacheInterface $cache
      */
     public function __construct(
-        DbInterface $db,
-        LoggerInterface $logger,
-        JobHydrator $hydrator,
+        DbInterface       $db,
+        LoggerInterface   $logger,
+        JobHydrator       $hydrator,
         JTLCacheInterface $cache
     );
 
@@ -115,7 +115,7 @@ interface JobInterface
     public function setStartTime($startTime): void;
 
     /**
-     * @return DateTime
+     * @return DateTime|null
      */
     public function getStartDate(): ?DateTime;
 
@@ -123,6 +123,16 @@ interface JobInterface
      * @param DateTime|string $date
      */
     public function setStartDate($date): void;
+
+    /**
+     * @return DateTime|null
+     */
+    public function getNextStartDate(): ?DateTime;
+
+    /**
+     * @param DateTime|string $date
+     */
+    public function setNextStartDate($date): void;
 
     /**
      * @return int|null
@@ -196,9 +206,9 @@ interface JobInterface
     public function isRunning(): bool;
 
     /**
-     * @param bool $running
+     * @param bool|int $running
      */
-    public function setRunning(bool $running): void;
+    public function setRunning($running): void;
 
     /**
      * @return int

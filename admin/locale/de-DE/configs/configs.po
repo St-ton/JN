@@ -24,13 +24,13 @@ msgid "artikel_lagerampel_gruen_name"
 msgstr "Lagerbestand grün"
 
 msgid "artikel_lagerampel_gruen_desc"
-msgstr "Geben Sie hier ein, ab welchem Lagerbestand der Inhalt der Sprachvariable „ampel gruen“ angezeigt wird. Zwischen diesem Lagerbestand und dem Lagerbestand unter „Lagerbestand rot“ wird der Inhalt der Sprachvariable „ampel gelb“ angezeigt."
+msgstr "Wenn die Einstellung „Lagerbestand anzeigen > Lagerbestandanzeige in grün, gelb und rot“ aktiviert ist, können Sie hier einstellen, ab welchem Lagerbestand der Text der Sprachvariable „ampelGruen“ angezeigt wird. Zwischen diesem Lagerbestand und dem Lagerbestand unter „Lagerbestand rot“ wird der Text der Sprachvariable „ampelGelb“ angezeigt. Bei allen weiteren Optionen der Einstellung „Lagerbestand anzeigen“ ändert sich mit dieser Einstellung nur die Farbe der Lagerbestandsanzeige. Der Text ändert sich nicht."
 
 msgid "artikel_lagerampel_rot_name"
 msgstr "Lagerbestand rot"
 
 msgid "artikel_lagerampel_rot_desc"
-msgstr "Geben Sie hier ein, bis zu welchem Lagerbestand der Inhalt der Sprachvariable „ampel rot“ angezeigt wird. Zwischen diesem Lagerbestand und dem Lagerbestand unter „Lagerbestand grün“ wird der Inhalt der Sprachvariable „ampel gelb“ angezeigt."
+msgstr "Wenn die Einstellung „Lagerbestand anzeigen > Lagerbestandanzeige in grün, gelb und rot“ aktiviert ist, können Sie hier einstellen, ab welchem Lagerbestand der Text der Sprachvariable „ampelRot“ angezeigt wird. Zwischen diesem Lagerbestand und dem Lagerbestand unter „Lagerbestand grün“ wird der Inhalt der Sprachvariable „ampelGelb“ angezeigt. Für alle weiteren Optionen der Einstellung „Lagerbestand anzeigen“ ändert sich mit dieser Einstellung nur die Farbe der Lagerbestandsanzeige. Der Text ändert sich nicht."
 
 msgid "artikel_ampel_lagernull_gruen_name"
 msgstr "Lagerbestand grün bei „Überverkäufe möglich“"
@@ -86,6 +86,12 @@ msgstr "Mindestanzahl Verkäufe für Bestseller"
 msgid "global_bestseller_minanzahl_desc"
 msgstr "Hier legen Sie fest, wie oft ein Artikel mindestens verkauft werden muss, um als Bestseller markiert zu werden."
 
+msgid "global_bestseller_tage_name"
+msgstr "Bestseller anhand letzter X Tage ermitteln"
+
+msgid "global_bestseller_tage_desc"
+msgstr "Hier legen Sie fest, wie viele vergangene Tage für die Berechnung von Bestsellern berücksichtigt werden. So können Sie beispielsweise eingrenzen, ob nur Bestellungen der letzten 3 Monate oder des gesamten Jahres in die Bestsellerermittlung einfließen sollen."
+
 msgid "kategorien_anzeigefilter_name"
 msgstr "Kategorieanzeige"
 
@@ -96,7 +102,7 @@ msgid "artikel_lagerampel_keinlager_name"
 msgstr "Lagerbestandsanzeige (ohne Bestandsführung)"
 
 msgid "artikel_lagerampel_keinlager_desc"
-msgstr "Hier legen Sie fest, welcher Text bei Artikeln angezeigt wird, die ohne Bestandsführung arbeiten."
+msgstr "Wenn die Einstellung „Lagerbestand anzeigen > Lagerbestandanzeige in grün, gelb und rot“ aktiviert ist, können Sie hier festlegen, welcher Text und welche Farbe für die Lagerbestandanzeige bei Artikeln verwendet werden, die ohne Bestandsführung arbeiten. Für alle weiteren Optionen der Einstellung „Lagerbestand anzeigen“ ändert sich mit dieser Einstellung nur die Farbe der Lagerbestandsanzeige. Der Text verändert sich nicht."
 
 msgid "global_shopname_name"
 msgstr "Name des Onlineshops"
@@ -462,67 +468,67 @@ msgid "suche_sortierprio_name_name"
 msgstr "Priorität der Sortiermöglichkeiten: Name von A bis Z"
 
 msgid "suche_sortierprio_name_desc"
-msgstr "Je kleiner die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen."
+msgstr "Je größer die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen."
 
 msgid "suche_sortierprio_name_ab_name"
 msgstr "Priorität der Sortiermöglichkeiten: Name von Z bis A"
 
 msgid "suche_sortierprio_name_ab_desc"
-msgstr "Je kleiner die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen."
+msgstr "Je größer die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen."
 
 msgid "suche_sortierprio_preis_name"
 msgstr "Priorität der Sortiermöglichkeiten: Preis aufsteigend"
 
 msgid "suche_sortierprio_preis_desc"
-msgstr "Je kleiner die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen."
+msgstr "Je größer die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen."
 
 msgid "suche_sortierprio_preis_ab_name"
 msgstr "Priorität der Sortiermöglichkeiten: Preis absteigend"
 
 msgid "suche_sortierprio_preis_ab_desc"
-msgstr "Je kleiner die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen."
+msgstr "Je größer die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen."
 
 msgid "suche_sortierprio_ean_name"
 msgstr "Priorität der Sortiermöglichkeiten: GTIN"
 
 msgid "suche_sortierprio_ean_desc"
-msgstr "Je kleiner die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen."
+msgstr "Je größer die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen."
 
 msgid "suche_sortierprio_erstelldatum_name"
 msgstr "Priorität der Sortiermöglichkeiten: Neueste Artikel"
 
 msgid "suche_sortierprio_erstelldatum_desc"
-msgstr "Je kleiner die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen. Mit dieser Option werden die zuletzt hinzugefügten Artikel zuerst angezeigt."
+msgstr "Je größer die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen. Mit dieser Option werden die zuletzt hinzugefügten Artikel zuerst angezeigt."
 
 msgid "suche_sortierprio_artikelnummer_name"
 msgstr "Priorität der Sortiermöglichkeiten: Artikelnummer"
 
 msgid "suche_sortierprio_artikelnummer_desc"
-msgstr "Je kleiner die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen."
+msgstr "Je größer die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen."
 
 msgid "suche_sortierprio_gewicht_name"
 msgstr "Priorität der Sortiermöglichkeiten: Gewicht"
 
 msgid "suche_sortierprio_gewicht_desc"
-msgstr "Je kleiner die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen."
+msgstr "Je größer die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen."
 
 msgid "suche_sortierprio_erscheinungsdatum_name"
 msgstr "Priorität der Sortiermöglichkeiten: Erscheinungsdatum"
 
 msgid "suche_sortierprio_erscheinungsdatum_desc"
-msgstr "Je kleiner die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen."
+msgstr "Je größer die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen."
 
 msgid "suche_sortierprio_bestseller_name"
 msgstr "Priorität der Sortiermöglichkeiten: Bestseller"
 
 msgid "suche_sortierprio_bestseller_desc"
-msgstr "Je kleiner die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen."
+msgstr "Je größer die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen."
 
 msgid "suche_sortierprio_bewertung_name"
 msgstr "Priorität der Sortiermöglichkeiten: Bewertungen"
 
 msgid "suche_sortierprio_bewertung_desc"
-msgstr "Je kleiner die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen."
+msgstr "Je größer die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen."
 
 msgid "suche_max_treffer_name"
 msgstr "Maximale Treffer pro Suche"
@@ -537,7 +543,7 @@ msgid "suche_ajax_anzahl_desc"
 msgstr "Hier legen Sie fest, wie viele Suchvorschläge Ihren Kunden maximal bereits während der Eingabe gemacht werden. Dazu muss jeweils ein Mapping existieren."
 
 msgid "artikeluebersicht_lagerbestandsanzeige_name"
-msgstr "Lagerbestandsanzeige"
+msgstr "Lagerbestand anzeigen"
 
 msgid "artikeluebersicht_lagerbestandsanzeige_desc"
 msgstr "Hier legen Sie fest, ob und wie der Lagerbestand eines Artikels angezeigt wird."
@@ -1010,6 +1016,12 @@ msgstr "Abmessungen anzeigen"
 msgid "artikeldetails_abmessungen_anzeigen_desc"
 msgstr "Hier legen Sie fest, ob die in JTL-Wawi hinterlegten Maße (Länge x Breite x Höhe) auf der Artikeldetailseite angezeigt werden."
 
+msgid "artikeldetails_inhalt_anzeigen_name"
+msgstr "Inhalt anzeigen"
+
+msgid "artikeldetails_inhalt_anzeigen_desc"
+msgstr "Hier legen Sie fest, ob der in JTL-Wawi hinterlegten Inhalt/Menge auf der Artikeldetailseite angezeigt werden."
+
 msgid "artikeldetails_attribute_anhaengen_name"
 msgstr "Artikelattribute an Beschreibung anhängen"
 
@@ -1134,7 +1146,7 @@ msgid "kundenregistrierung_nur_lieferlaender_name"
 msgstr "Nur belieferbare Länder in Auswahl"
 
 msgid "kundenregistrierung_nur_lieferlaender_desc"
-msgstr "Hier legen Sie fest, ob bei Rechnungs- und Lieferadresse nur Länder ausgewählt werden können, für die es auch mindestens eine Versandart gibt. Wir empfehlen, diese Einstellung auf „Ja“ zu setzen."
+msgstr "(Diese Funktion hat keine Auswirkung mehr und wird in der nächsten Version entfernt) Hier legen Sie fest, ob bei Rechnungs- und Lieferadresse nur Länder ausgewählt werden können, für die es auch mindestens eine Versandart gibt. Wir empfehlen, diese Einstellung auf „Ja“ zu setzen."
 
 msgid "kundenregistrierung_abgleichen_plz_name"
 msgstr "Postleitzahlen prüfen"
@@ -1248,7 +1260,7 @@ msgid "warenkorb_versandermittlung_anzeigen_name"
 msgstr "Versandkostenermittlung anzeigen"
 
 msgid "warenkorb_versandermittlung_anzeigen_desc"
-msgstr "Hier legen Sie fest, ob die Versandkostenermittlung auf der Spezialseite „Versand“ angezeigt wird."
+msgstr "Hier legen Sie fest, ob die Versandkostenermittlung auf der Spezialseite „Warenkorb“ angezeigt wird."
 
 msgid "warenkorb_kupon_anzeigen_name"
 msgstr "Coupons bereits im Warenkorb abfragen"
@@ -1339,6 +1351,12 @@ msgstr "Artikelattribute anzeigen"
 
 msgid "bestellvorgang_artikelattribute_desc"
 msgstr ""
+
+msgid "bestellvorgang_partlist_name"
+msgstr "Stücklistenkomponenten anzeigen"
+
+msgid "bestellvorgang_partlist_desc"
+msgstr "Sollen die Stücklistenkomponenten in Warenkorb und Checkout angezeigt werden?"
 
 msgid "bestellvorgang_artikelkurzbeschreibung_name"
 msgstr "Eindeutige Artikelkurzbeschreibung anzeigen"
@@ -1820,24 +1838,6 @@ msgstr "Maximaler Bestellwert"
 msgid "zahlungsart_nachnahme_max_desc"
 msgstr "Hier legen Sie fest, bis zu welchem Warenkorbwert eine Zahlungsart angeboten wird."
 
-msgid "zahlungsart_kreditkarte_min_bestellungen_name"
-msgstr "Anzahl nötiger Bestellungen"
-
-msgid "zahlungsart_kreditkarte_min_bestellungen_desc"
-msgstr "Hier legen Sie fest, wie oft ein Kunde mindestens bei Ihnen bestellt haben muss, damit ihm diese Zahlungsart angeboten wird."
-
-msgid "zahlungsart_kreditkarte_min_name"
-msgstr "Mindestbestellwert"
-
-msgid "zahlungsart_kreditkarte_min_desc"
-msgstr "Hier legen Sie fest, wie hoch der Warenkorbwert mindestens sein muss, damit eine Zahlungsart angeboten wird."
-
-msgid "zahlungsart_kreditkarte_max_name"
-msgstr "Maximaler Bestellwert"
-
-msgid "zahlungsart_kreditkarte_max_desc"
-msgstr "Hier legen Sie fest, bis zu welchem Warenkorbwert eine Zahlungsart angeboten wird."
-
 msgid "zahlungsart_rechnung_min_bestellungen_name"
 msgstr "Anzahl nötiger Bestellungen"
 
@@ -2208,7 +2208,7 @@ msgid "bewertungserinnerung_nutzen_name"
 msgstr "Bewertungserinnerung nutzen"
 
 msgid "bewertungserinnerung_nutzen_desc"
-msgstr "Hier legen Sie fest, ob Ihre Kunden nach dem Kauf eines Artikels per E-Mail erinnert werden sollen, den Artikel zu bewerten. Bewertungserinnerungen werden nur an Kunden geschickt, die dem Erhalt des Newsletters per Double-Opt-In zugestimmt haben. Welche Kundengruppen dem Newsletter über Double-Opt-In zustimmen müssen, können Sie unter Marketing > Aktionen > Newsletter > Einstellungen „Double-Opt-In für folgende Kunden“ einstellen."
+msgstr "Hier legen Sie fest, ob Ihre Kunden nach dem Kauf eines Artikels per E-Mail erinnert werden sollen, den Artikel zu bewerten. Standardmäßig werden Bewertungserinnerungen nur an Kunden geschickt, die dem Erhalt des Newsletters per Double-Opt-In zugestimmt haben. Welche Kundengruppen dem Newsletter über Double-Opt-In zustimmen müssen, können Sie unter Marketing > Aktionen > Newsletter > Einstellungen „Double-Opt-In für folgende Kunden“ einstellen. Bei „Ja“ erhalten alle Kunden eine Erinnerung."
 
 msgid "bewertungserinnerung_kundengruppen_name"
 msgstr "Bewertungserinnerung nur zulassen für"
@@ -2220,7 +2220,7 @@ msgid "bewertung_guthaben_nutzen_name"
 msgstr "Guthabenbonus gewähren"
 
 msgid "bewertung_guthaben_nutzen_desc"
-msgstr "Hier legen Sie fest, ob Ihre Kunden für das Erstellen einer Artikelbewertung Guthaben gutgeschrieben bekommen sollen."
+msgstr "Hier legen Sie fest, ob Ihre Kunden für das Erstellen einer Artikelbewertung Guthaben gutgeschrieben bekommen sollen. Die Einstellung „Bewertung freischalten“ muss dafür ebenfalls aktiviert sein."
 
 msgid "bewertungserinnerung_versandtage_name"
 msgstr "Tage nach Versand bis zur Erinnerung"
@@ -2636,6 +2636,12 @@ msgstr "Blogkategorien unter dem Blog anzeigen"
 msgid "news_kategorie_unternewsanzeigen_desc"
 msgstr "Hier legen Sie fest, ob unter einem ausgewählten Blogbeitrag auch die Blogkategorien angezeigt werden."
 
+msgid "news_kommentare_anzahl_antwort_kommentare_anzeigen_name"
+msgstr "Zeige Anzahl der Antworten an"
+
+msgid "news_kommentare_anzahl_antwort_kommentare_anzeigen_desc"
+msgstr "Zeige die Anzahl der Antworten, in Klammern, neben der Kommentar-Anzahl an. Standard = Y"
+
 msgid "sitemap_seiten_anzeigen_name"
 msgstr "Alle eigenen Seiten anzeigen"
 
@@ -2840,6 +2846,9 @@ msgstr "Hier legen Sie fest, welche Methode für den Cache verwendet werden soll
 msgid "caching_redis_host_name"
 msgstr "Redis-Host"
 
+msgid "caching_redis_user_name"
+msgstr "Redis-User"
+
 msgid "caching_redis_host_desc"
 msgstr "Falls Sie die Methode Redis eingestellt haben, legen Sie hier den Host / Socket fest."
 
@@ -2851,6 +2860,9 @@ msgstr "Falls Sie die Methode Redis eingestellt haben, legen Sie hier den Port f
 
 msgid "caching_redis_db_name"
 msgstr "Redis-DB"
+
+msgid "caching_redis_user_desc"
+msgstr "Falls Sie die Methode Redis eingestellt haben, legen Sie hier den Usernamen fest. Lassen Sie das Feld leer wenn Sie keinen benötigen."
 
 msgid "caching_redis_db_desc"
 msgstr "Falls Sie die Methode Redis eingestellt haben, legen Sie hier die Datenbank-Nummer fest. Lassen Sie das Feld leer für Standard."
@@ -3034,3 +3046,59 @@ msgstr "Cookie-Banner anzeigen"
 
 msgid "consent_manager_show_banner_desc"
 msgstr "Legen Sie fest, wann das Banner zum Erteilen oder Ablehnen einer globalen Einwilligung dem Besucher im Onlineshop angezeigt werden soll."
+
+msgid "forgot_password_captcha_name"
+msgstr "Spamschutz aktivieren"
+
+msgid "forgot_password_captcha_desc"
+msgstr "Hier legen Sie fest, ob für das Passwort-Vergessen-Formular der Spamschutz aktiviert werden soll. Dazu müssen Sie ggf. zuerst den Spamschutz von JTL-Shop in den globalen Einstellungen konfigurieren."
+
+msgid "configgroup_1_routing"
+msgstr "Routing <br><span class=\"text-danger\">"
+"Dieses Feature befindet sich aktuell noch in der Entwicklung und ist noch nicht vollumfänglich ausgereift. "
+"Es ist darum derzeit nur via define 'ENABLE_EXPERIMENTAL_ROUTING_SCHEMES' aktivierbar und sollte nur mit entsprechenden Fachkenntnissen genutzt werden. "
+"Wenn Sie dieses Feature nutzen wollen, beachten Sie bitte die offenen Tickets im <a href=\"https://issues.jtl-software.de/issues?project=shop&component=15512\" target=\"_blank\">JTL-Issue Tracker</a>. "
+"Das Feature wird in einer zukünftigen Version als normale Einstellung implementiert."
+"</span>"
+
+msgid "routing_scheme_name"
+msgstr "Routing-Schema"
+
+msgid "routing_default_language_name"
+msgstr "Routing-Schema für Standardsprache"
+
+msgid "routing_duplicates_name"
+msgstr "Behandlung von Nicht-Standardrouten"
+
+msgid "routing_duplicates_value(R)"
+msgstr "301-Redirect auf Standardroute"
+
+msgid "routing_duplicates_value(I)"
+msgstr "Belassen"
+
+msgid "routing_duplicates_value(F)"
+msgstr "404-Fehler"
+
+msgid "routing_default_language_value(F)"
+msgstr "Flach (Standard)"
+
+msgid "routing_default_language_value(L)"
+msgstr "Mit Locale"
+
+msgid "routing_default_language_value(P)"
+msgstr "Mit Präfix"
+
+msgid "routing_default_language_value(LP)"
+msgstr "Mit Locale und Präfix"
+
+msgid "routing_scheme_value(F)"
+msgstr "Flach (Standard)"
+
+msgid "routing_scheme_value(L)"
+msgstr "Mit Locale"
+
+msgid "routing_scheme_value(P)"
+msgstr "Mit Präfix"
+
+msgid "routing_scheme_value(LP)"
+msgstr "Mit Locale und Präfix"

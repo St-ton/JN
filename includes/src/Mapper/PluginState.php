@@ -16,25 +16,16 @@ class PluginState
      */
     public function map(int $state): string
     {
-        switch ($state) {
-            case State::DISABLED:
-                return 'Deaktiviert';
-            case State::ACTIVATED:
-                return 'Aktiviert';
-            case State::ERRONEOUS:
-                return 'Fehlerhaft';
-            case State::UPDATE_FAILED:
-                return 'Update fehlgeschlagen';
-            case State::LICENSE_KEY_MISSING:
-                return 'Lizenzschlüssel fehlt';
-            case State::LICENSE_KEY_INVALID:
-                return 'Lizenzschlüssel ungültig';
-            case State::EXS_LICENSE_EXPIRED:
-                return 'Lizenz abgelaufen';
-            case State::EXS_SUBSCRIPTION_EXPIRED:
-                return 'Subscription abgelaufen';
-            default:
-                return 'Unbekannt';
-        }
+        return match ($state) {
+            State::DISABLED                 => 'Deaktiviert',
+            State::ACTIVATED                => 'Aktiviert',
+            State::ERRONEOUS                => 'Fehlerhaft',
+            State::UPDATE_FAILED            => 'Update fehlgeschlagen',
+            State::LICENSE_KEY_MISSING      => 'Lizenzschlüssel fehlt',
+            State::LICENSE_KEY_INVALID      => 'Lizenzschlüssel ungültig',
+            State::EXS_LICENSE_EXPIRED      => 'Lizenz abgelaufen',
+            State::EXS_SUBSCRIPTION_EXPIRED => 'Subscription abgelaufen',
+            default                         => 'Unbekannt',
+        };
     }
 }

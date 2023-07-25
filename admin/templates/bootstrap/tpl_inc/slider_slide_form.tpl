@@ -8,7 +8,7 @@
             <i class="btn btn-primary fa fa-bars"></i>
         </td>
         <td class="text-center">
-            <img src="{if isset($oSlide)}{$oSlide->getAbsoluteImage()}{else}templates/bootstrap/gfx/layout/upload.png{/if}"
+            <img src="{if isset($oSlide)}{$oSlide->getAbsoluteImage()}{else}{$adminURL}/templates/bootstrap/gfx/layout/upload.png{/if}"
                  id="img{$kSlide}" onclick="select_image('{$kSlide}');"
                  alt="Slidergrafik" class="slide-image" role="button">
         </td>
@@ -46,30 +46,32 @@
                 <div class="subheading1">{__('slider')}</div>
                 <hr class="mb-n3">
             </div>
-            <div class="table-responsive card-body">
-                <table id="tableSlide" class="table">
-                    <thead>
-                    <tr>
-                        <th class="text-left"></th>
-                        <th width="10%">{__('Image')}</th>
-                        <th width="40%">{__('title')} / {__('link')}</th>
-                        <th width="40%">{__('text')}</th>
-                        <th width="5%"></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {foreach $oSlider->getSlides() as $oSlide}
-                        {slide kSlide=$oSlide->getID() oSlide=$oSlide}
-                    {/foreach}
-                    </tbody>
-                </table>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="tableSlide" class="table">
+                        <thead>
+                        <tr>
+                            <th class="text-left"></th>
+                            <th width="10%">{__('Image')}</th>
+                            <th width="40%">{__('title')} / {__('link')}</th>
+                            <th width="40%">{__('text')}</th>
+                            <th width="5%"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {foreach $oSlider->getSlides() as $oSlide}
+                            {slide kSlide=$oSlide->getID() oSlide=$oSlide}
+                        {/foreach}
+                        </tbody>
+                    </table>
+                </div>
             </div>
             <table class="hidden"><tbody id="newSlide">{slide oSlide=null kSlide='NEU'}</tbody></table>
             <div class="card-footer">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
                         <button type="button" class="btn btn-outline-primary btn-block mb-2"
-                                onclick="window.location.href = 'slider.php';">
+                                onclick="window.location.href = '{$adminURL}{$route}';">
                             <i class="fa fa-angle-double-left"></i> {__('goBack')}
                         </button>
                     </div>

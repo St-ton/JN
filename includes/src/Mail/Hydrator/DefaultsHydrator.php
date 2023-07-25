@@ -9,6 +9,7 @@ use JTL\Firma;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
+use JTL\Language\LanguageModel;
 use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
@@ -21,31 +22,13 @@ use stdClass;
 class DefaultsHydrator implements HydratorInterface
 {
     /**
-     * @var JTLSmarty
-     */
-    protected $smarty;
-
-    /**
-     * @var DbInterface
-     */
-    protected $db;
-
-    /**
-     * @var Shopsetting
-     */
-    protected $settings;
-
-    /**
      * DefaultsHydrator constructor.
      * @param JTLSmarty   $smarty
      * @param DbInterface $db
      * @param Shopsetting $settings
      */
-    public function __construct(JTLSmarty $smarty, DbInterface $db, Shopsetting $settings)
+    public function __construct(protected JTLSmarty $smarty, protected DbInterface $db, protected Shopsetting $settings)
     {
-        $this->smarty   = $smarty;
-        $this->db       = $db;
-        $this->settings = $settings;
     }
 
     /**
@@ -59,7 +42,7 @@ class DefaultsHydrator implements HydratorInterface
     /**
      * @inheritdoc
      */
-    public function hydrate(?object $data, object $language): void
+    public function hydrate(?object $data, LanguageModel $language): void
     {
         $data         = $data ?? new stdClass();
         $data->tkunde = $data->tkunde ?? new Customer();
@@ -67,7 +50,7 @@ class DefaultsHydrator implements HydratorInterface
         if (!isset($data->tkunde->kKundengruppe) || !$data->tkunde->kKundengruppe) {
             $data->tkunde->kKundengruppe = CustomerGroup::getDefaultGroupID();
         }
-        $data->tfirma        = new Firma();
+        $data->tfirma        = new Firma(true, $this->db);
         $data->tkundengruppe = new CustomerGroup($data->tkunde->kKundengruppe);
         $customer            = $data->tkunde instanceof Customer
             ? $data->tkunde->localize($language)
@@ -133,24 +116,24 @@ class DefaultsHydrator implements HydratorInterface
     }
 
     /**
-     * @param object            $lang
+     * @param LanguageModel     $lang
      * @param stdClass|Customer $customer
      * @return mixed
      */
-    private function localizeCustomer($lang, $customer)
+    private function localizeCustomer(LanguageModel $lang, $customer)
     {
         $language = Shop::Lang();
-        if ($language->gibISO() !== $lang->cISO) {
-            $language->setzeSprache($lang->cISO);
+        if ($language->gibISO() !== $lang->getCode()) {
+            $language->setzeSprache($lang->getCode());
             $language->autoload();
         }
         if (isset($customer->cAnrede)) {
             if ($customer->cAnrede === 'w') {
-                $customer->cAnredeLocalized = Shop::Lang()->get('salutationW');
+                $customer->cAnredeLocalized = $language->get('salutationW');
             } elseif ($customer->cAnrede === 'm') {
-                $customer->cAnredeLocalized = Shop::Lang()->get('salutationM');
+                $customer->cAnredeLocalized = $language->get('salutationM');
             } else {
-                $customer->cAnredeLocalized = Shop::Lang()->get('salutationGeneral');
+                $customer->cAnredeLocalized = $language->get('salutationGeneral');
             }
         }
         $customer = GeneralObject::deepCopy($customer);
@@ -159,7 +142,7 @@ class DefaultsHydrator implements HydratorInterface
                 $_SESSION['Kunde']->cLand = $customer->cLand;
             }
             if (($country = Shop::Container()->getCountryService()->getCountry($customer->cLand)) !== null) {
-                $customer->angezeigtesLand = $country->getName($lang->id);
+                $customer->angezeigtesLand = $country->getName($lang->getId());
             }
         }
 

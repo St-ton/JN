@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Catalog;
 
@@ -45,7 +45,7 @@ class Separator
     /**
      * @var array
      */
-    private static $unitObject = [];
+    private static array $unitObject = [];
 
     /**
      * Separator constructor.
@@ -71,18 +71,13 @@ class Separator
             $data = Shop::Container()->getDB()->select('ttrennzeichen', 'kTrennzeichen', $id);
             Shop::Container()->getCache()->set($cacheID, $data, [\CACHING_GROUP_CORE]);
         }
-        if (isset($data->kTrennzeichen) && $data->kTrennzeichen > 0) {
-            foreach (\array_keys(\get_object_vars($data)) as $member) {
-                $this->$member         = $data->$member;
-                $this->nEinheit        = (int)$this->nEinheit;
-                $this->nDezimalstellen = (int)$this->nDezimalstellen;
-                $this->kSprache        = (int)$this->nEinheit;
-                $this->kTrennzeichen   = (int)$this->kTrennzeichen;
-            }
-            $this->nEinheit        = (int)$this->nEinheit;
-            $this->nDezimalstellen = (int)$this->nDezimalstellen;
-            $this->kSprache        = (int)$this->nEinheit;
-            $this->kTrennzeichen   = (int)$this->kTrennzeichen;
+        if ($data !== null && $data->kTrennzeichen > 0) {
+            $this->kTrennzeichen     = (int)$data->kTrennzeichen;
+            $this->kSprache          = (int)$data->kSprache;
+            $this->nEinheit          = (int)$data->nEinheit;
+            $this->nDezimalstellen   = (int)$data->nDezimalstellen;
+            $this->cDezimalZeichen   = $data->cDezimalZeichen;
+            $this->cTausenderZeichen = $data->cTausenderZeichen;
         }
 
         return $this;
@@ -139,8 +134,7 @@ class Separator
     public static function getUnit(int $unitID, int $languageID, $qty = -1)
     {
         if (!$languageID) {
-            $language   = LanguageHelper::getDefaultLanguage();
-            $languageID = (int)$language->kSprache;
+            $languageID = LanguageHelper::getDefaultLanguage()->getId();
         }
         if ($unitID > 0 && $languageID > 0) {
             $data = self::getUnitObject($unitID, $languageID);
@@ -167,51 +161,50 @@ class Separator
      *
      * @param int $unitID
      * @param int $languageID
-     * @return mixed|bool
+     * @return int|bool
      */
     public static function insertMissingRow(int $unitID, int $languageID)
     {
         // Standardwert [kSprache][nEinheit]
         $rows = [];
         foreach (LanguageHelper::getAllLanguages() as $language) {
-            $rows[$language->kSprache][\JTL_SEPARATOR_WEIGHT] = [
+            $rows[$language->getId()][\JTL_SEPARATOR_WEIGHT] = [
                 'nDezimalstellen'   => 2,
                 'cDezimalZeichen'   => ',',
                 'cTausenderZeichen' => '.'
             ];
-            $rows[$language->kSprache][\JTL_SEPARATOR_LENGTH] = [
+            $rows[$language->getId()][\JTL_SEPARATOR_LENGTH] = [
                 'nDezimalstellen'   => 2,
                 'cDezimalZeichen'   => ',',
                 'cTausenderZeichen' => '.'
             ];
-            $rows[$language->kSprache][\JTL_SEPARATOR_AMOUNT] = [
+            $rows[$language->getId()][\JTL_SEPARATOR_AMOUNT] = [
                 'nDezimalstellen'   => 2,
                 'cDezimalZeichen'   => ',',
                 'cTausenderZeichen' => '.'
             ];
         }
-        if ($unitID > 0 && $languageID > 0) {
-            if (!isset($rows[$languageID][$unitID])) {
-                $rows[$languageID]          = [];
-                $rows[$languageID][$unitID] = [
-                    'nDezimalstellen'   => 2,
-                    'cDezimalZeichen'   => ',',
-                    'cTausenderZeichen' => '.'
-                ];
-            }
-            Shop::Container()->getCache()->flushTags([\CACHING_GROUP_CORE]);
-
-            return Shop::Container()->getDB()->getAffectedRows(
-                "INSERT INTO `ttrennzeichen` 
-                    (`kTrennzeichen`, `kSprache`, `nEinheit`, `nDezimalstellen`, `cDezimalZeichen`, `cTausenderZeichen`)
-                    VALUES (
-                      NULL, {$languageID}, {$unitID}, {$rows[$languageID][$unitID]['nDezimalstellen']}, 
-                      '{$rows[$languageID][$unitID]['cDezimalZeichen']}',
-                    '{$rows[$languageID][$unitID]['cTausenderZeichen']}')"
-            );
+        if ($unitID <= 0 || $languageID <= 0) {
+            return false;
         }
+        if (!isset($rows[$languageID][$unitID])) {
+            $rows[$languageID]          = [];
+            $rows[$languageID][$unitID] = [
+                'nDezimalstellen'   => 2,
+                'cDezimalZeichen'   => ',',
+                'cTausenderZeichen' => '.'
+            ];
+        }
+        $ins                    = new stdClass();
+        $ins->kSprache          = $languageID;
+        $ins->nEinheit          = $unitID;
+        $ins->nDezimalstellen   = $rows[$languageID][$unitID]['nDezimalstellen'];
+        $ins->cDezimalZeichen   = $rows[$languageID][$unitID]['cDezimalZeichen'];
+        $ins->cTausenderZeichen = $rows[$languageID][$unitID]['cTausenderZeichen'];
 
-        return false;
+        Shop::Container()->getCache()->flushTags([\CACHING_GROUP_CORE]);
+
+        return Shop::Container()->getDB()->insert('ttrennzeichen', $ins);
     }
 
     /**
@@ -405,7 +398,7 @@ class Separator
      */
     public static function migrateUpdate()
     {
-        $conf      = Shop::getSettings([\CONF_ARTIKELDETAILS, \CONF_ARTIKELUEBERSICHT]);
+        $conf      = Shop::getSettingSection(\CONF_ARTIKELDETAILS);
         $languages = LanguageHelper::getAllLanguages();
         if (\is_array($languages) && \count($languages) > 0) {
             Shop::Container()->getDB()->query('TRUNCATE ttrennzeichen');
@@ -413,24 +406,20 @@ class Separator
             foreach ($languages as $language) {
                 foreach ($units as $unit) {
                     $sep = new self();
+                    $dec = 2;
                     if ($unit === \JTL_SEPARATOR_WEIGHT) {
-                        $dec = isset($conf['artikeldetails']['artikeldetails_gewicht_stellenanzahl'])
-                        && \mb_strlen($conf['artikeldetails']['artikeldetails_gewicht_stellenanzahl']) > 0
-                            ? $conf['artikeldetails']['artikeldetails_gewicht_stellenanzahl']
+                        $dec = ($conf['artikeldetails_gewicht_stellenanzahl'] ?? '') !== ''
+                            ? (int)$conf['artikeldetails_gewicht_stellenanzahl']
                             : 2;
-                        $sep->setDezimalstellen($dec);
-                    } else {
-                        $sep->setDezimalstellen(2);
                     }
-                    $sep10   = isset($conf['artikeldetails']['artikeldetails_zeichen_nachkommatrenner'])
-                    && \mb_strlen($conf['artikeldetails']['artikeldetails_zeichen_nachkommatrenner']) > 0
-                        ? $conf['artikeldetails']['artikeldetails_zeichen_nachkommatrenner']
+                    $sep10   = ($conf['artikeldetails_zeichen_nachkommatrenner'] ?? '') !== ''
+                        ? $conf['artikeldetails_zeichen_nachkommatrenner']
                         : ',';
-                    $sep1000 = isset($conf['artikeldetails']['artikeldetails_zeichen_tausendertrenner'])
-                    && \mb_strlen($conf['artikeldetails']['artikeldetails_zeichen_tausendertrenner']) > 0
-                        ? $conf['artikeldetails']['artikeldetails_zeichen_tausendertrenner']
+                    $sep1000 = ($conf['artikeldetails_zeichen_tausendertrenner'] ?? '') !== ''
+                        ? $conf['artikeldetails_zeichen_tausendertrenner']
                         : '.';
-                    $sep->setDezimalZeichen($sep10)
+                    $sep->setDezimalstellen($dec)
+                        ->setDezimalZeichen($sep10)
                         ->setTausenderZeichen($sep1000)
                         ->setSprache($language->kSprache)
                         ->setEinheit($unit)

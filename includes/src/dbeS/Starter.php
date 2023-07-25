@@ -55,7 +55,7 @@ class Starter
     /**
      * @var array
      */
-    private static $pullMapping = [
+    private static array $pullMapping = [
         'Artikel_xml'      => Products::class,
         'Bestellungen_xml' => Orders::class,
         'Bilder_xml'       => Images::class,
@@ -79,7 +79,7 @@ class Starter
     /**
      * @var array
      */
-    private static $pushMapping = [
+    private static array $pushMapping = [
         'GetBestellungen_xml'  => PushOrders::class,
         'GetData_xml'          => PushData::class,
         'GetKunden_xml'        => Customers::class,
@@ -92,82 +92,52 @@ class Starter
     /**
      * @var array
      */
-    private static $netSyncMapping = [
+    private static array $netSyncMapping = [
         'Cronjob_xml'           => SyncCronjob::class,
         'GetDownloadStruct_xml' => ProductDownloads::class,
         'Upload_xml'            => Uploader::class
     ];
 
     /**
-     * @var Synclogin
-     */
-    private $auth;
-
-    /**
-     * @var array|null
+     * @var mixed|null
      */
     private $data;
 
     /**
-     * @var array
+     * @var array|null
      */
-    private $postData;
+    private ?array $postData = null;
 
     /**
-     * @var array
+     * @var array|null
      */
-    private $files;
-
-    /**
-     * @var string
-     */
-    private $unzipPath;
-
-    /**
-     * @var FileHandler
-     */
-    private $fileHandler;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private $cache;
+    private ?array $files = null;
 
     /**
      * @var string
      */
-    private $wawiVersion = 'unknown';
+    private string $unzipPath;
+
+    /**
+     * @var string
+     */
+    private string $wawiVersion = 'unknown';
 
     /**
      * Starter constructor.
-     * @param Synclogin         $syncLogin
+     * @param Synclogin         $auth
      * @param FileHandler       $fileHandler
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
-     * @param LoggerInterface   $log
+     * @param LoggerInterface   $logger
      */
     public function __construct(
-        Synclogin $syncLogin,
-        FileHandler $fileHandler,
-        DbInterface $db,
-        JTLCacheInterface $cache,
-        LoggerInterface $log
+        private readonly Synclogin         $auth,
+        private readonly FileHandler       $fileHandler,
+        private readonly DbInterface       $db,
+        private readonly JTLCacheInterface $cache,
+        private readonly LoggerInterface   $logger
     ) {
-        $this->auth        = $syncLogin;
-        $this->fileHandler = $fileHandler;
-        $this->logger      = $log;
-        $this->db          = $db;
-        $this->cache       = $cache;
         $this->checkPermissions();
     }
 
@@ -241,8 +211,10 @@ class Starter
         if (!isset($post['userID'], $post['userPWD'])) {
             return false;
         }
+        $userID = Text::convertUTF8($post['userID']);
+        $pass   = Text::convertUTF8($post['userPWD']);
 
-        return $this->auth->checkLogin(\utf8_encode($post['userID']), \utf8_encode($post['userPWD'])) === true;
+        return $this->auth->checkLogin($userID, $pass) === true;
     }
 
     /**
@@ -297,7 +269,7 @@ class Starter
                 }
                 break;
             case 'bild':
-                $conf = Shop::getConfigValue(\CONF_BILDER, 'bilder_externe_bildschnittstelle');
+                $conf = Shop::getSettingValue(\CONF_BILDER, 'bilder_externe_bildschnittstelle');
                 if ($conf === 'N') {
                     exit(); // api disabled
                 }
@@ -389,7 +361,6 @@ class Starter
         if (!$this->checkAuth($post)) {
             return self::ERROR_NOT_AUTHORIZED;
         }
-        require_once \PFAD_ROOT . \PFAD_INCLUDES . 'mailTools.php';
         require_once \PFAD_ROOT . \PFAD_INCLUDES . 'sprachfunktionen.php';
         $this->setPostData($post);
         $this->setData($files['data']['tmp_name'] ?? null);
@@ -412,7 +383,7 @@ class Starter
     public function getXML(bool $string = false): Generator
     {
         foreach ($this->files as $xmlFile) {
-            if (\strpos($xmlFile, '.xml') === false) {
+            if (!\str_contains($xmlFile, '.xml')) {
                 continue;
             }
             $data = \file_get_contents($xmlFile);
@@ -442,7 +413,7 @@ class Starter
     }
 
     /**
-     * @param  string $wawiVersion
+     * @param string $wawiVersion
      */
     public function setWawiVersion(string $wawiVersion): void
     {

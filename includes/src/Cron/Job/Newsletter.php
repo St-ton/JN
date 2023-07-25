@@ -37,7 +37,7 @@ final class Newsletter extends Job
     public function start(QueueEntry $queueEntry): JobInterface
     {
         parent::start($queueEntry);
-        $configuredDelay = (Shop::getConfigValue(\CONF_NEWSLETTER, 'newsletter_send_delay') > 0) ?: 0;
+        $configuredDelay = Shop::getSettingValue(\CONF_NEWSLETTER, 'newsletter_send_delay');
         $lastSending     = $this->db->select(
             'tnewsletter',
             'kNewsletter',
@@ -86,7 +86,7 @@ final class Newsletter extends Job
             $shopURL = Shop::getURL();
             foreach ($recipients as $recipient) {
                 $recipient->cLoeschURL = $shopURL . '/?oc=' . $recipient->cLoeschCode;
-                $cgID                  = (int)$recipient->kKundengruppe > 0 ? (int)$recipient->kKundengruppe : 0;
+                $cgID                  = \max(0, $recipient->kKundengruppe);
                 $instance->send(
                     $jobData,
                     $recipient,
@@ -94,13 +94,13 @@ final class Newsletter extends Job
                     $manufacturers,
                     $categories[$cgID],
                     $campaign,
-                    $recipient->kKunde > 0 ? new Customer((int)$recipient->kKunde) : null
+                    $recipient->kKunde > 0 ? new Customer($recipient->kKunde) : null
                 );
                 $this->db->update(
                     'tnewsletterempfaenger',
                     'kNewsletterEmpfaenger',
-                    (int)$recipient->kNewsletterEmpfaenger,
-                    (object)['dLetzterNewsletter' => \date('Y-m-d H:m:s')]
+                    $recipient->kNewsletterEmpfaenger,
+                    (object)['dLetzterNewsletter' => \date('Y-m-d H:i:s')]
                 );
                 ++$queueEntry->tasksExecuted;
             }
@@ -122,7 +122,7 @@ final class Newsletter extends Job
      * @param array      $customerGroups
      * @return array
      */
-    private function getRecipients($jobData, $queueEntry, array $customerGroups): array
+    private function getRecipients(stdClass $jobData, QueueEntry $queueEntry, array $customerGroups): array
     {
         $cgSQL = 'AND (tkunde.kKundengruppe IN (' . \implode(',', $customerGroups) . ') ';
         if (\in_array(0, $customerGroups, true)) {
@@ -130,7 +130,7 @@ final class Newsletter extends Job
         }
         $cgSQL .= ')';
 
-        return $this->db->getObjects(
+        return $this->db->getCollection(
             'SELECT tkunde.kKundengruppe, tkunde.kKunde, tsprache.cISO, tnewsletterempfaenger.kNewsletterEmpfaenger,
             tnewsletterempfaenger.cAnrede, tnewsletterempfaenger.cVorname, tnewsletterempfaenger.cNachname,
             tnewsletterempfaenger.cEmail, tnewsletterempfaenger.cLoeschCode
@@ -139,10 +139,21 @@ final class Newsletter extends Job
                     ON tsprache.kSprache = tnewsletterempfaenger.kSprache
                 LEFT JOIN tkunde
                     ON tkunde.kKunde = tnewsletterempfaenger.kKunde
-                WHERE tnewsletterempfaenger.kSprache = ' . (int)$jobData->kSprache . '
+                WHERE tnewsletterempfaenger.kSprache = :lid
                     AND tnewsletterempfaenger.nAktiv = 1 ' . $cgSQL . '
                 ORDER BY tnewsletterempfaenger.kKunde
-                LIMIT ' . $queueEntry->tasksExecuted . ', ' . $queueEntry->taskLimit
-        );
+                LIMIT :lmts, :lmte',
+            [
+                'lid'  => $jobData->kSprache,
+                'lmts' => $queueEntry->tasksExecuted,
+                'lmte' => $queueEntry->taskLimit
+            ]
+        )->map(static function (stdClass $recipient): stdClass {
+            $recipient->kKundengruppe         = (int)$recipient->kKundengruppe;
+            $recipient->kKunde                = (int)$recipient->kKunde;
+            $recipient->kNewsletterEmpfaenger = (int)$recipient->kNewsletterEmpfaenger;
+
+            return $recipient;
+        })->toArray();
     }
 }

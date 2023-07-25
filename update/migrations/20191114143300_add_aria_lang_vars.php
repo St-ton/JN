@@ -16,10 +16,10 @@ use JTL\Update\Migration;
 class Migration_20191114143300 extends Migration implements IMigration
 {
     protected $author      = 'ms';
-    protected $description = 'add lang vars for increase decrease buttons';
+    protected $description = 'Add lang vars for increase decrease buttons';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -31,7 +31,7 @@ class Migration_20191114143300 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

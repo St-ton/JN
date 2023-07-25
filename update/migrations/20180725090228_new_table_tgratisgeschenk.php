@@ -18,7 +18,7 @@ class Migration_20180725090228 extends Migration implements IMigration
     protected $description = 'New table tgratisgeschenk';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -35,7 +35,7 @@ class Migration_20180725090228 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

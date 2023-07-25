@@ -28,45 +28,45 @@ class WarmCacheCommand extends Command
     /**
      * @var bool
      */
-    private $details = true;
+    private bool $details = true;
 
     /**
      * @var bool
      */
-    private $list = true;
+    private bool $list = true;
 
     /**
      * @var bool
      */
-    private $categories = false;
+    private bool $categories = false;
 
     /**
      * @var bool
      */
-    private $links = false;
+    private bool $links = false;
 
     /**
      * @var bool
      */
-    private $manufacturers = false;
+    private bool $manufacturers = false;
 
     /**
      * @var bool
      */
-    private $preFlush = false;
+    private bool $preFlush = false;
 
     /**
      * @var bool
      */
-    private $childProducts = false;
+    private bool $childProducts = false;
 
     /**
-     * @var DbInterface
+     * @var DbInterface|null
      */
-    private $db;
+    private ?DbInterface $db = null;
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function configure(): void
     {
@@ -112,8 +112,7 @@ class WarmCacheCommand extends Command
         $bar->setFormat('cache');
         $bar->setMessage('Warming products');
         $bar->start();
-        foreach ($this->db->getObjects('SELECT kArtikel AS id FROM tartikel' . $where) as $item) {
-            $pid = (int)$item->id;
+        foreach ($this->db->getInts('SELECT kArtikel AS id FROM tartikel' . $where, 'id') as $pid) {
             foreach ($customerGroups as $customerGroup) {
                 $_SESSION['Kundengruppe'] = $customerGroup;
                 Tax::setTaxRates();
@@ -123,7 +122,7 @@ class WarmCacheCommand extends Command
                     $_SESSION['cISOSprache'] = $language->getCode();
                     Shop::setLanguage($languageID, $language->getCode());
                     if ($this->details === true) {
-                        $product = (new Artikel())->fuelleArtikel(
+                        $product = (new Artikel($this->db, $customerGroup))->fuelleArtikel(
                             $pid,
                             $detailOpt,
                             $customerGroup->getID(),
@@ -138,7 +137,7 @@ class WarmCacheCommand extends Command
                                 : ' could not be loaded'));
                     }
                     if ($this->list === true) {
-                        $product = (new Artikel())->fuelleArtikel(
+                        $product = (new Artikel($this->db, $customerGroup))->fuelleArtikel(
                             $pid,
                             $listOpt,
                             $customerGroup->getID(),
@@ -181,14 +180,13 @@ class WarmCacheCommand extends Command
         $bar->setFormat('cache');
         $bar->setMessage('Warming categories');
         $bar->start();
-        foreach ($this->db->getObjects('SELECT kKategorie FROM tkategorie') as $item) {
-            $cid = (int)$item->kKategorie;
+        foreach ($this->db->getInts('SELECT kKategorie FROM tkategorie', 'kKategorie') as $cid) {
             foreach ($customerGroups as $customerGroup) {
                 foreach ($languages as $language) {
-                    $category = new Kategorie($cid, $language->getId(), $customerGroup->getID(), false);
+                    $category = new Kategorie($cid, $language->getId(), $customerGroup->getID(), false, $this->db);
                     ++$generated;
                     $this->debug('Category ' . $cid
-                        . ($category->kKategorie > 0 ? ' successfully' : ' could not be')
+                        . ($category->getID() > 0 ? ' successfully' : ' could not be')
                         . ' loaded in language ' . $language->getId()
                         . ' with customer group ' . $customerGroup->getID());
                 }
@@ -219,13 +217,12 @@ class WarmCacheCommand extends Command
         $bar->setFormat('cache');
         $bar->setMessage('Warming manufacturers');
         $bar->start();
-        foreach ($this->db->getObjects('SELECT kHersteller FROM thersteller') as $item) {
-            $mid = (int)$item->kHersteller;
+        foreach ($this->db->getInts('SELECT kHersteller FROM thersteller', 'kHersteller') as $mid) {
             foreach ($languages as $language) {
                 $manufacturer = new Hersteller($mid, $language->getId());
                 ++$generated;
                 $this->debug('Manufacturer ' . $mid
-                    . ($manufacturer->kHersteller > 0 ? ' successfully' : ' could not be')
+                    . ($manufacturer->getID() > 0 ? ' successfully' : ' could not be')
                     . ' loaded in language ' . $language->getId());
             }
             $bar->advance();
@@ -278,7 +275,7 @@ class WarmCacheCommand extends Command
         if ($this->preFlush === true) {
             $cache->flushAll();
         }
-        if (\strpos(\URL_SHOP, 'https://') === 0
+        if (\str_starts_with(\URL_SHOP, 'https://')
             || Shop::getSettingValue(\CONF_GLOBAL, 'kaufabwicklung_ssl_nutzen') === 'P'
         ) {
             $_SERVER['HTTPS'] = 'on';
@@ -290,7 +287,7 @@ class WarmCacheCommand extends Command
 
         $generated      = 0;
         $customerGroups = $this->db->getCollection('SELECT kKundengruppe AS id FROM tkundengruppe')
-            ->map(static function ($e) {
+            ->map(static function ($e): CustomerGroup {
                 return new CustomerGroup((int)$e->id);
             })
             ->toArray();
@@ -310,7 +307,7 @@ class WarmCacheCommand extends Command
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {

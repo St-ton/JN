@@ -2,6 +2,8 @@
 
 namespace JTL\Filter;
 
+use JTL\Shop;
+
 /**
  * Class AbstractFilter
  * @package JTL\Filter
@@ -11,77 +13,77 @@ abstract class AbstractFilter implements FilterInterface
     /**
      * @var string|null
      */
-    protected $icon;
+    protected ?string $icon = null;
 
     /**
      * @var bool
      */
-    protected $isCustom = true;
+    protected bool $isCustom = true;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $name;
-
-    /**
-     * @var array
-     */
-    public $cSeo = [];
-
-    /**
-     * @var int
-     */
-    protected $type;
-
-    /**
-     * @var string
-     */
-    protected $urlParam = '';
-
-    /**
-     * @var string
-     */
-    protected $urlParamSEO = '';
-
-    /**
-     * @var int|string|array
-     */
-    protected $value;
-
-    /**
-     * @var int
-     */
-    protected $customerGroupID = 0;
+    private ?string $name = null;
 
     /**
      * @var array
      */
-    protected $availableLanguages = [];
+    public array $cSeo = [];
+
+    /**
+     * @var int
+     */
+    protected int $type = Type::AND;
+
+    /**
+     * @var string
+     */
+    protected string $urlParam = '';
+
+    /**
+     * @var string|null
+     */
+    protected ?string $urlParamSEO = '';
+
+    /**
+     * @var int|string|array|null
+     */
+    protected mixed $value = null;
+
+    /**
+     * @var int
+     */
+    protected int $customerGroupID = 0;
+
+    /**
+     * @var array
+     */
+    protected array $availableLanguages = [];
 
     /**
      * @var bool
      */
-    protected $isInitialized = false;
+    protected bool $isInitialized = false;
 
     /**
      * @var string
      */
-    protected $className = '';
+    protected string $className = '';
 
     /**
      * @var string
      */
-    protected $niceName = '';
+    protected string $niceName = '';
 
     /**
      * @var int
      */
-    protected $inputType;
+    protected int $inputType = InputType::SELECT;
 
     /**
-     * @var Option[]
+     * @var Option[]|null
      */
-    protected $activeValues;
+    protected ?array $activeValues = null;
 
     /**
      * workaround since built-in filters can be registered multiple times (like Navigationsfilter->KategorieFilter)
@@ -90,76 +92,81 @@ abstract class AbstractFilter implements FilterInterface
      *
      * @var bool
      */
-    private $isChecked = false;
+    private bool $isChecked = false;
 
     /**
      * used to create FilterLoesenURLs
      *
      * @var bool
      */
-    private $doUnset = false;
+    private bool $doUnset = false;
 
     /**
      * @var string|array
      */
-    private $unsetFilterURL = '';
+    private string|array $unsetFilterURL = '';
 
     /**
      * @var int
      */
-    private $visibility;
+    private int $visibility = Visibility::SHOW_ALWAYS;
 
     /**
      * @var int
      */
-    private $count = 0;
+    private int $count = 0;
 
     /**
      * @var int
      */
-    private $sort = 0;
+    private int $sort = 0;
 
     /**
      * @var string
      */
-    protected $frontendName = '';
+    protected string $frontendName = '';
 
     /**
      * list of filter options for CharacteristicFilters etc. that consist of multiple different filter options
      *
      * @var array
      */
-    private $filterCollection = [];
+    private array $filterCollection = [];
 
     /**
-     * @var ProductFilter
+     * @var ProductFilter|null
      */
-    protected $productFilter;
+    protected ?ProductFilter $productFilter = null;
 
     /**
-     * @var mixed
+     * @var mixed|null
      */
-    protected $options;
+    protected mixed $options = null;
 
     /**
      * @var string
      */
-    protected $tableName = '';
+    protected string $tableName = '';
 
     /**
      * @var bool
      */
-    protected $isActive = false;
+    protected bool $isActive = false;
 
     /**
      * @var bool
      */
-    protected $paramExclusive = false;
+    protected bool $paramExclusive = false;
 
     /**
      * @var string|null - localized name of the characteristic itself
      */
-    protected $filterName;
+    protected ?string $filterName = null;
+
+    /**
+     * @var bool
+     */
+    protected bool $notFound = false;
 
     /**
      * AbstractFilter constructor.
@@ -167,9 +174,6 @@ abstract class AbstractFilter implements FilterInterface
      */
     public function __construct(ProductFilter $productFilter = null)
     {
-        $this->type       = Type::AND;
-        $this->visibility = Visibility::SHOW_ALWAYS;
-        $this->inputType  = InputType::SELECT;
         if ($productFilter !== null) {
             $this->setBaseData($productFilter)->setClassName(\get_class($this));
         }
@@ -268,7 +272,7 @@ abstract class AbstractFilter implements FilterInterface
             ? $this->filterCollection
             : \array_filter(
                 $this->filterCollection,
-                static function (FilterInterface $f) {
+                static function (FilterInterface $f): bool {
                     return $f->getVisibility() !== Visibility::SHOW_NEVER;
                 }
             );
@@ -484,7 +488,7 @@ abstract class AbstractFilter implements FilterInterface
     /**
      * @inheritdoc
      */
-    public function getUrlParamSEO(): string
+    public function getUrlParamSEO(): ?string
     {
         return $this->urlParamSEO;
     }
@@ -522,7 +526,7 @@ abstract class AbstractFilter implements FilterInterface
      */
     public function getLanguageID(): int
     {
-        return $this->productFilter->getFilterConfig()->getLanguageID();
+        return $this->productFilter->getFilterConfig()->getLanguageID() ?: Shop::getLanguageID();
     }
 
     /**
@@ -812,7 +816,7 @@ abstract class AbstractFilter implements FilterInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function isParamExclusive(): bool
     {
@@ -820,7 +824,7 @@ abstract class AbstractFilter implements FilterInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setParamExclusive(bool $paramExclusive): FilterInterface
     {
@@ -830,7 +834,7 @@ abstract class AbstractFilter implements FilterInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getFilterName(): ?string
     {
@@ -838,7 +842,7 @@ abstract class AbstractFilter implements FilterInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setFilterName(?string $characteristic): FilterInterface
     {
@@ -860,14 +864,52 @@ abstract class AbstractFilter implements FilterInterface
     }
 
     /**
-     * @param string $query
-     * @return string
+     * @inheritdoc
      */
     public function getCacheID(string $query): string
     {
-        $value     = $this->getValue();
-        $valuePart = $value === null ? '' : \json_encode($value);
+        $value = $this->getValue();
+        try {
+            $valuePart = $value === null ? '' : \json_encode($value, \JSON_THROW_ON_ERROR);
+        } catch (\JsonException) {
+            $valuePart = '';
+        }
 
-        return 'fltr_' . \str_replace('\\', '', static::class) . \md5($query) . $valuePart;
+        return 'fltr_' . \str_replace('\\', '', static::class)
+            . '_' . $this->getLanguageID()
+            . '_' . \md5($query)
+            . $valuePart;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getRoute(array $additional): ?string
+    {
+        return null;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isNotFound(): bool
+    {
+        return $this->notFound;
+    }
+
+    protected function fail(): void
+    {
+        Shop::$is404             = true;
+        Shop::$kKategorie        = 0;
+        Shop::$kSuchspecial      = 0;
+        Shop::$kMerkmalWert      = 0;
+        Shop::$kHersteller       = 0;
+        $this->notFound          = true;
+        $state                   = Shop::getState();
+        $state->is404            = true;
+        $state->categoryID       = 0;
+        $state->searchSpecialID  = 0;
+        $state->characteristicID = 0;
+        $state->manufacturerID   = 0;
     }
 }

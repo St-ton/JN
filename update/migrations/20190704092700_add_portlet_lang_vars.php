@@ -18,7 +18,7 @@ class Migration_20190704092700 extends Migration implements IMigration
     protected $description = 'Add portlet lang vars';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -33,7 +33,7 @@ class Migration_20190704092700 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

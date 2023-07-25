@@ -1,9 +1,11 @@
 <?php
 
+use JTL\CSV\Import;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\URL;
 use JTL\Language\LanguageHelper;
+use JTL\Redirect;
 use JTL\Shop;
 
 /**
@@ -25,6 +27,7 @@ use JTL\Shop;
  * @return int - -1 if importer-id-mismatch / 0 on success / >1 import error count
  * @throws TypeError
  * @throws InvalidArgumentException
+ * @deprecated since 5.2.0
  */
 function handleCsvImportAction(
     string $importerId,
@@ -34,6 +37,7 @@ function handleCsvImportAction(
     int $importType = 2,
     &$errors = []
 ) {
+    trigger_error(__FUNCTION__ . ' is deprecated - use CSV importer class instead', E_USER_DEPRECATED);
     if (Form::validateToken() === false || Request::verifyGPDataString('importcsv') !== $importerId) {
         return -1;
     }
@@ -70,7 +74,7 @@ function handleCsvImportAction(
     $rowIndex          = 2;
 
     if ($delim === null) {
-        $delim = getCsvDelimiter($csvFilename);
+        $delim = Import::getCsvDelimiter($csvFilename);
     }
 
     if (count($fields) === 0) {
@@ -120,7 +124,7 @@ function handleCsvImportAction(
         $obj = new stdClass();
 
         foreach ($fields as $i => $field) {
-            $obj->$field = Shop::Container()->getDB()->escape($row[$i]);
+            $obj->$field = $row[$i];
         }
 
         if ($oldRedirectFormat) {
@@ -159,11 +163,20 @@ function handleCsvImportAction(
                 Shop::Container()->getDB()->delete($target, $fields, $row);
             }
 
-            $res = Shop::Container()->getDB()->insert($table, $obj);
-
-            if ($res === 0) {
-                ++$nErrors;
-                $errors[] = sprintf(__('csvImportSaveError'), $rowIndex);
+            if (isset($obj->cFromUrl, $obj->cToUrl)) {
+                // is redirect import
+                $redirect = new Redirect();
+                if (!$redirect->saveExt($obj->cFromUrl, $obj->cToUrl)) {
+                    ++$nErrors;
+                    $errors[] = sprintf(__('csvImportSaveError'), $rowIndex);
+                }
+            } else {
+                // is other import
+                $res = Shop::Container()->getDB()->insert($table, $obj);
+                if ($res === 0) {
+                    ++$nErrors;
+                    $errors[] = sprintf(__('csvImportSaveError'), $rowIndex);
+                }
             }
         }
 
@@ -177,9 +190,11 @@ function handleCsvImportAction(
  * @param string $artNo
  * @param string $iso
  * @return string|null
+ * @deprecated since 5.2.0
  */
 function getArtNrUrl(string $artNo, string $iso): ?string
 {
+    trigger_error(__FUNCTION__ . ' is deprecated - use CSV importer class instead', E_USER_DEPRECATED);
     if ($artNo === '') {
         return null;
     }

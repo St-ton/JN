@@ -4,7 +4,6 @@ namespace JTL\Mail\Validator;
 
 use Exception;
 use JTL\Backend\AdminIO;
-use JTL\DB\DbInterface;
 use JTL\Language\LanguageHelper;
 use JTL\Language\LanguageModel;
 use JTL\Mail\Hydrator\HydratorInterface;
@@ -26,47 +25,16 @@ use stdClass;
 final class SyntaxChecker
 {
     /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
-     * @var RendererInterface
-     */
-    private $renderer;
-
-    /**
-     * @var HydratorInterface
-     */
-    private $hydrator;
-
-    /**
-     * @var TemplateFactory
-     */
-    private $factory;
-
-    /**
-     * @var Model
-     */
-    private static $model;
-
-    /**
      * SyntaxChecker constructor.
-     * @param DbInterface       $db
      * @param TemplateFactory   $factory
      * @param RendererInterface $renderer
      * @param HydratorInterface $hydrator
      */
     public function __construct(
-        DbInterface $db,
-        TemplateFactory $factory,
-        RendererInterface $renderer,
-        HydratorInterface $hydrator
+        private readonly TemplateFactory   $factory,
+        private readonly RendererInterface $renderer,
+        private readonly HydratorInterface $hydrator
     ) {
-        $this->db       = $db;
-        $this->factory  = $factory;
-        $this->hydrator = $hydrator;
-        $this->renderer = $renderer;
     }
 
     /**
@@ -85,7 +53,7 @@ final class SyntaxChecker
     {
         try {
             return Shop::Smarty()->assign('template', $model)->fetch('snippets/mailtemplate_state.tpl');
-        } catch (SmartyException | Exception $e) {
+        } catch (SmartyException | Exception) {
             return '';
         }
     }
@@ -144,7 +112,7 @@ final class SyntaxChecker
             $html = $this->renderer->renderHTML($id);
             $text = $this->renderer->renderText($id);
             if (!\in_array($moduleID, ['core_jtl_footer', 'core_jtl_header'], true)
-                && (\mb_strlen(\trim($html)) === 0 || \mb_strlen(\trim($text)) === 0)
+                && (\trim($html) === '' || \trim($text) === '')
             ) {
                 $model->setHasError(true);
                 $res->state   = 'fail';
@@ -177,8 +145,8 @@ final class SyntaxChecker
 
         Shop::Container()->getGetText()->loadAdminLocale('pages/emailvorlagen');
         $res = (object)[
-            'result'  => [],
-            'state'   => '<span class="label text-warning">' . \__('untested') . '</span>',
+            'result' => [],
+            'state'  => '<span class="label text-warning">' . \__('untested') . '</span>',
         ];
 
         $db    = Shop::Container()->getDB();
@@ -207,7 +175,7 @@ final class SyntaxChecker
         try {
             $renderer = new SmartyRenderer(new MailSmarty($db));
             $hydrator = new TestHydrator($renderer->getSmarty(), $db, Shopsetting::getInstance());
-            $sc       = new self($db, new TemplateFactory($db), $renderer, $hydrator);
+            $sc       = new self(new TemplateFactory($db), $renderer, $hydrator);
             $template = $sc->factory->getTemplateByID($templateID);
 
             if ($template === null) {
@@ -220,7 +188,7 @@ final class SyntaxChecker
             $model->setSyntaxCheck($model::SYNTAX_NOT_CHECKED);
             $model->save();
 
-            foreach (LanguageHelper::getAllLanguages() as $lang) {
+            foreach (LanguageHelper::getAllLanguages(0, true, true) as $lang) {
                 $template->load($lang->getId(), 1);
                 $res->result[$lang->getCode()] = $sc->doCheck($lang, $model);
             }
@@ -248,8 +216,8 @@ final class SyntaxChecker
 
     /**
      * @param LanguageModel $lang
-     * @param string $templateID
-     * @param string $moduleID
+     * @param string        $templateID
+     * @param string        $moduleID
      * @return string
      * @deprecated since 5.0.1 - do syntax check only with io-method because smarty syntax check can throw fatal error
      * @noinspection PhpUnusedParameterInspection

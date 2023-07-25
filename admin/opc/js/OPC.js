@@ -10,7 +10,7 @@ class OPC extends Emitter
 
         this.messages     = env.messages;
         this.error        = env.error;
-        this.messages = env.messages;
+        this.messages     = env.messages;
         this.io           = new IO();
         this.page         = new Page(this.io, env.shopUrl, env.pageKey);
         this.gui          = new GUI(this.io, this.page, env.messages);

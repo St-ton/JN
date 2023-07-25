@@ -165,7 +165,7 @@ msgid "pictureURL"
 msgstr "Bild-URL"
 
 msgid "pictureDesc"
-msgstr "Hier können Sie einen Pfad oder eine URL zu einem Bild, zum Beispiel dem Logo eines Versanddienstleisters, hinterlegen. Dieses Bild wird während der Kaufabwicklung anstelle des Namens der Versandart angezeigt."
+msgstr "Hier können Sie einen Pfad oder eine URL zu einem Bild, zum Beispiel dem Logo eines Versanddienstleisters, hinterlegen. Dieses Bild wird während der Kaufabwicklung angezeigt. Lassen Sie den „Angezeigter Name“ in der entsprechenden Sprache frei, um nur dieses Bild anzuzeigen."
 
 msgid "shippingclass"
 msgstr "Versandklasse"
@@ -207,7 +207,7 @@ msgid "onlyForOwnShippingPrices"
 msgstr "Artikelabhängige Versandart"
 
 msgid "ownShippingPricesDesc"
-msgstr "Hier legen Sie fest, ob diese Versandart nur bei Bestellungen gelten soll, die ausschließlich Artikel enthalten, bei denen per Funktionsattribut artikelabhängige Versandkosten pro Lieferland gesetzt wurden."
+msgstr "Artikelabhängige Versandkosten werden zu den normalen Versandkosten addiert. Die Versandart „Artikelabhängiger Versand“ gilt für Artikelpositionen im Warenkorb, bei denen die Funktionsattribute „versandkosten“ oder „versandkosten gestaffelt“ in den Artikelstammdaten von JTL-Wawi gesetzt sind. Wenn Sie „Ja“ wählen, gilt die Versandart nur für Bestellungen, die ausschließlich Artikel mit den entsprechenden Funktionsattributen enthalten."
 
 msgid "customerclass"
 msgstr "Kundengruppe"

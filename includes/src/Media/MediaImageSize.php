@@ -9,34 +9,22 @@ namespace JTL\Media;
 class MediaImageSize
 {
     /**
-     * @var int
+     * @var int|null
      */
-    private $width;
+    private ?int $width = null;
 
     /**
-     * @var int
+     * @var int|null
      */
-    private $height;
-
-    /**
-     * @var string
-     */
-    private $size;
-
-    /**
-     * @var string
-     */
-    private $imageType;
+    private ?int $height = null;
 
     /**
      * MediaImageSize constructor.
      * @param string $size
      * @param string $imageType
      */
-    public function __construct(string $size, string $imageType = Image::TYPE_PRODUCT)
+    public function __construct(private readonly string $size, private readonly string $imageType = Image::TYPE_PRODUCT)
     {
-        $this->size      = $size;
-        $this->imageType = $imageType;
     }
 
     /**
@@ -81,9 +69,9 @@ class MediaImageSize
 
     /**
      * @param string $dimension
-     * @return mixed
+     * @return int
      */
-    public function getConfiguredSize(string $dimension)
+    public function getConfiguredSize(string $dimension): int
     {
         $settings = Image::getSettings();
 
@@ -93,7 +81,7 @@ class MediaImageSize
     /**
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return \sprintf('%s', $this->getSize());
     }

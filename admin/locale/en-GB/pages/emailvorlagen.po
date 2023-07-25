@@ -71,6 +71,9 @@ msgstr "Faulty email template."
 msgid "successTemplateReset"
 msgstr "Selected email template reset successfully."
 
+msgid "successTemplatesReset"
+msgstr "Selected email templates reset successfully."
+
 msgid "errorTemplateMissing"
 msgstr "Email template not found: "
 

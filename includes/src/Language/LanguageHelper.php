@@ -46,7 +46,7 @@ use function Functional\reindex;
  * @method static string getIsoCodeByCountryName(string $country)
  * @method static string getCountryCodeByCountryName(string $iso)
  * @method static LanguageModel getDefaultLanguage(bool $shop = true)
- * @method static LanguageModel[] getAllLanguages(int $returnType = 0, bool $forceLoad = false)
+ * @method static LanguageModel[] getAllLanguages(int $returnType = 0, bool $force = false, bool $onlyActive = false)
  * @method static bool isShopLanguage(int $languageID, array $languages = [])
  */
 class LanguageHelper
@@ -56,79 +56,74 @@ class LanguageHelper
      *
      * @var int
      */
-    public $kSprachISO = 0;
+    public int $kSprachISO = 0;
 
     /**
      * compatibility only
      *
      * @var string
      */
-    public $cISOSprache = '';
-
-    /**
-     * @var array
-     */
-    protected static $mappings;
+    public string $cISOSprache = '';
 
     /**
      * @var string
      */
-    private $currentISOCode = '';
+    private string $currentISOCode = '';
 
     /**
      * @var int
      */
-    public $currentLanguageID = 0;
+    public int $currentLanguageID = 0;
 
     /**
      * @var array
      */
-    public $langVars = [];
+    public array $langVars = [];
 
     /**
      * @var string
      */
-    public $cacheID = 'cr_lng_dta';
+    public string $cacheID = 'cr_lng_dta';
+
+    /**
+     * @var stdClass[]
+     */
+    public array $availableLanguages;
 
     /**
      * @var array
      */
-    public $availableLanguages;
+    public array $byISO = [];
 
     /**
      * @var array
      */
-    public $byISO = [];
-
-    /**
-     * @var array
-     */
-    public $byLangID = [];
+    public array $byLangID = [];
 
     /**
      * @var int
      */
-    public $kSprache;
+    public int $kSprache = 0;
 
     /**
-     * @var LanguageHelper
+     * @var LanguageHelper|null
      */
-    private static $instance;
+    private static ?LanguageHelper $instance;
 
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var JTLCacheInterface
      */
-    private $cache;
+    private JTLCacheInterface $cache;
 
     /**
      * @var array
      */
-    private static $mapping = [
+    private static array $mapping = [
         'gibWert'                     => 'getTranslation',
         'get'                         => 'getTranslation',
         'set'                         => 'setzeWert',
@@ -221,7 +216,7 @@ class LanguageHelper
      * @param string $method
      * @return string|null
      */
-    private static function map($method): ?string
+    private static function map(string $method): ?string
     {
         return self::$mapping[$method] ?? null;
     }
@@ -270,17 +265,12 @@ class LanguageHelper
                     ON iso.cISO = tsprache.cISO
                 LEFT JOIN tsprachsektion
                     ON tsprachwerte.kSprachsektion = tsprachsektion.kSprachsektion'
-        )->groupBy(['langID', 'sectionName'])->toArray();
-        foreach ($collection as $langID => $sections) {
-            foreach ($sections as $section => $data) {
-                $variables = [];
-                foreach ($data as $variable) {
-                    $variables[$variable->name] = $variable->val;
-                }
-                $collection[$langID][$section] = $variables;
-            }
+        );
+
+        $this->langVars = [];
+        foreach ($collection as $data) {
+            $this->langVars[$data->langID][$data->sectionName][$data->name] = $data->val;
         }
-        $this->langVars = $collection;
         $this->getPluginLangVars();
         $this->saveLangVars();
 
@@ -321,7 +311,7 @@ class LanguageHelper
 
     private function initLangData(): void
     {
-        $data = $this->cache->get('lng_dta_lst', function ($cache, $cacheID, &$content, &$tags) {
+        $data = $this->cache->get('lng_dta_lst', function ($cache, $cacheID, &$content, &$tags): bool {
             $content = $this->db->getCollection(
                 'SELECT tsprache.*, tsprachiso.kSprachISO FROM tsprache 
                     LEFT JOIN tsprachiso
@@ -333,11 +323,11 @@ class LanguageHelper
             return true;
         });
         /** @var Collection $data */
-        $this->availableLanguages = $data->map(static function ($e) {
+        $this->availableLanguages = $data->map(static function (stdClass $e): stdClass {
             return (object)['kSprache' => (int)$e->kSprache];
         })->toArray();
 
-        $this->byISO = $data->groupBy('cISO')->transform(static function (Collection $e) {
+        $this->byISO = $data->groupBy('cISO')->transform(static function (Collection $e): stdClass {
             $e = $e->first();
 
             return (object)[
@@ -347,7 +337,7 @@ class LanguageHelper
             ];
         })->toArray();
 
-        $this->byLangID = $data->groupBy('kSprache')->transform(static function (Collection $e) {
+        $this->byLangID = $data->groupBy('kSprache')->transform(static function (Collection $e): stdClass {
             $e = $e->first();
 
             return (object)['cISO' => $e->cISO];
@@ -373,20 +363,6 @@ class LanguageHelper
     }
 
     /**
-     * @param int               $sectionID
-     * @param mixed|null|string $default
-     * @return string|null
-     * @deprecated since 5.0.0
-     */
-    public function getSectionName(int $sectionID, $default = null): ?string
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        $section = $this->db->select('tsprachsektion', 'kSprachsektion', $sectionID);
-
-        return $section->cName ?? $default;
-    }
-
-    /**
      * @return $this
      */
     public function autoload(): self
@@ -399,8 +375,8 @@ class LanguageHelper
         } else {
             $language = $this->mappedGetDefaultLanguage();
             if (isset($language->cISO) && \mb_strlen($language->cISO) > 0) {
-                $this->currentISOCode = $language->cISO;
-                $this->kSprache       = $language->id;
+                $this->currentISOCode = $language->getCode();
+                $this->kSprache       = $language->getId();
             }
         }
         $this->currentLanguageID = $this->kSprache;
@@ -426,12 +402,12 @@ class LanguageHelper
 
     /**
      * @param string $isoCode
-     * @return int|bool
+     * @return int
      */
-    public function mappekISO(string $isoCode)
+    public function mappekISO(string $isoCode): int
     {
         if (\mb_strlen($isoCode) === 0) {
-            return false;
+            return 0;
         }
         if (isset($this->byISO[$isoCode]->kSprachISO)) {
             return (int)$this->byISO[$isoCode]->kSprachISO;
@@ -439,7 +415,7 @@ class LanguageHelper
         $langISO               = $this->mappedGetLangIDFromIso($isoCode);
         $this->byISO[$isoCode] = $langISO;
 
-        return isset($langISO->kSprachISO) ? (int)$langISO->kSprachISO : false;
+        return (int)($langISO->kSprachISO ?? 0);
     }
 
     /**
@@ -447,12 +423,12 @@ class LanguageHelper
      * @param string $sectionName
      * @return string
      */
-    public function getTranslation($name, $sectionName = 'global'): string
+    public function getTranslation(string $name, string $sectionName = 'global'): string
     {
         if ($this->currentLanguageID === 0) {
             return '';
         }
-        if ($this->langVars === null) {
+        if ($this->langVars) {
             $this->langVars = $this->loadLangVars();
         }
         $save = false;
@@ -475,14 +451,16 @@ class LanguageHelper
             $this->logWert($sectionName, $name);
             $value = '#' . $sectionName . '.' . $name . '#';
         } elseif ($argsCount > 2) {
-            // String formatieren, vsprintf gibt false zurück,
-            // sollte die Anzahl der Parameter nicht der Anzahl der Format-Liste entsprechen!
             $args = [];
             for ($i = 2; $i < $argsCount; $i++) {
                 $args[] = \func_get_arg($i);
             }
-            if (\vsprintf($value, $args) !== false) {
-                $value = \vsprintf($value, $args);
+            try {
+                $res = \vsprintf($value, $args);
+                if ($res !== false) { // php < 8.0
+                    $value = $res;
+                }
+            } catch (\ValueError) {
             }
         }
 
@@ -520,7 +498,7 @@ class LanguageHelper
 
     /**
      * @param string $pluginID
-     * @return array
+     * @return stdClass[]
      */
     private function getPluginLocalizations(string $pluginID): array
     {
@@ -551,12 +529,12 @@ class LanguageHelper
      * @param string $varName
      * @return $this
      */
-    public function logWert($sectionName, $varName): self
+    public function logWert(string $sectionName, string $varName): self
     {
         $exists = $this->db->select(
             'tsprachlog',
             'kSprachISO',
-            (int)$this->currentLanguageID,
+            $this->currentLanguageID,
             'cSektion',
             $sectionName,
             'cName',
@@ -585,7 +563,7 @@ class LanguageHelper
     }
 
     /**
-     * @return array
+     * @return stdClass[]
      */
     public function gibLogWerte(): array
     {
@@ -599,7 +577,7 @@ class LanguageHelper
     }
 
     /**
-     * @return array
+     * @return stdClass[]
      */
     public function gibAlleWerte(): array
     {
@@ -628,12 +606,9 @@ class LanguageHelper
      */
     public function gibInstallierteSprachen(): array
     {
-        return \array_filter(
-            LanguageModel::loadAll($this->db, [], [])->toArray(),
-            function (LanguageModel $l) {
-                return $this->mappekISO($l->getIso()) > 0 && $l->getActive() === 1;
-            }
-        );
+        return LanguageModel::loadAll($this->db, [], [])->filter(function (LanguageModel $model): bool {
+            return $model->getActive() === 1 && $this->mappekISO($model->getIso()) > 0;
+        })->toArray();
     }
 
     /**
@@ -687,7 +662,7 @@ class LanguageHelper
     public function setzeWert(int $sectionID, $name, $value): bool
     {
         $_keys       = ['kSprachISO', 'kSprachsektion', 'cName'];
-        $_values     = [(int)$this->currentLanguageID, $sectionID, $name];
+        $_values     = [$this->currentLanguageID, $sectionID, $name];
         $_upd        = new stdClass();
         $_upd->cWert = $value;
 
@@ -701,12 +676,12 @@ class LanguageHelper
      * @param string $value
      * @return bool
      */
-    public function fuegeEin($isoCode, int $sectionID, $name, $value): bool
+    public function fuegeEin(string $isoCode, int $sectionID, $name, $value): bool
     {
         $isoID = $this->mappekISO($isoCode);
         if ($isoID > 0) {
             $ins                 = new stdClass();
-            $ins->kSprachISO     = (int)$isoID;
+            $ins->kSprachISO     = $isoID;
             $ins->kSprachsektion = $sectionID;
             $ins->cName          = $name;
             $ins->cWert          = $value;
@@ -724,7 +699,7 @@ class LanguageHelper
      * @param string $name
      * @return int
      */
-    public function loesche(int $sectionID, $name): int
+    public function loesche(int $sectionID, string $name): int
     {
         return $this->db->delete(
             'tsprachwerte',
@@ -774,7 +749,7 @@ class LanguageHelper
                         LEFT JOIN tsprachsektion 
                             ON tsprachwerte.kSprachsektion = tsprachsektion.kSprachsektion
                         WHERE kSprachISO = :iso',
-                    ['iso' => (int)$this->currentLanguageID]
+                    ['iso' => $this->currentLanguageID]
                 );
                 break;
 
@@ -787,7 +762,7 @@ class LanguageHelper
                             ON tsprachwerte.kSprachsektion = tsprachsektion.kSprachsektion
                         WHERE kSprachISO = :iso
                             AND bSystem = 1',
-                    ['iso' => (int)$this->currentLanguageID]
+                    ['iso' => $this->currentLanguageID]
                 );
                 break;
 
@@ -800,7 +775,7 @@ class LanguageHelper
                           ON tsprachwerte.kSprachsektion = tsprachsektion.kSprachsektion
                         WHERE kSprachISO = :iso 
                             AND bSystem = 0',
-                    ['iso' => (int)$this->currentLanguageID]
+                    ['iso' => $this->currentLanguageID]
                 );
                 break;
         }
@@ -817,7 +792,7 @@ class LanguageHelper
             ];
         }
         $fileName = \tempnam('../' . \PFAD_DBES_TMP, 'csv');
-        $handle   = \fopen($fileName, 'w');
+        $handle   = \fopen($fileName, 'wb');
         foreach ($csvData as $csv) {
             \fputcsv($handle, $csv, ';');
         }
@@ -834,7 +809,7 @@ class LanguageHelper
      */
     private function mappedImport(string $fileName, string $iso, int $type)
     {
-        $handle = \fopen($fileName, 'r');
+        $handle = \fopen($fileName, 'rb');
         if (!$handle) {
             return false;
         }
@@ -842,7 +817,7 @@ class LanguageHelper
         $deleteFlag  = false;
         $updateCount = 0;
         $kSprachISO  = $this->mappekISO($iso);
-        if ($kSprachISO === 0 || $kSprachISO === false) {
+        if ($kSprachISO === 0) {
             // Sprache noch nicht installiert
             $langIso       = new stdClass();
             $langIso->cISO = $iso;
@@ -852,15 +827,15 @@ class LanguageHelper
         while (($data = \fgetcsv($handle, 4048, ';')) !== false) {
             if (\count($data) === 4) {
                 // Sektion holen und ggf neu anlegen
-                $cSektion = $data[0];
-                $oSektion = $this->db->select('tsprachsektion', 'cName', $cSektion);
-                if (isset($oSektion->kSprachsektion)) {
-                    $kSprachsektion = $oSektion->kSprachsektion;
+                $sectionName = $data[0];
+                $section     = $this->db->select('tsprachsektion', 'cName', $sectionName);
+                if ($section !== null && isset($section->kSprachsektion)) {
+                    $sectionID = (int)$section->kSprachsektion;
                 } else {
                     // Sektion hinzufügen
-                    $oSektion        = new stdClass();
-                    $oSektion->cName = $cSektion;
-                    $kSprachsektion  = $this->db->insert('tsprachsektion', $oSektion);
+                    $section        = new stdClass();
+                    $section->cName = $sectionName;
+                    $sectionID      = $this->db->insert('tsprachsektion', $section);
                 }
                 $name   = $data[1];
                 $value  = $data[2];
@@ -875,7 +850,7 @@ class LanguageHelper
                         }
                         $val                 = new stdClass();
                         $val->kSprachISO     = $kSprachISO;
-                        $val->kSprachsektion = $kSprachsektion;
+                        $val->kSprachsektion = $sectionID;
                         $val->cName          = $data[1];
                         $val->cWert          = $data[2];
                         $val->cStandard      = $data[2];
@@ -895,7 +870,7 @@ class LanguageHelper
                                     bSystem = :sys',
                             [
                                 'iso'     => $kSprachISO,
-                                'section' => $kSprachsektion,
+                                'section' => $sectionID,
                                 'name'    => $name,
                                 'val'     => $value,
                                 'sys'     => $system
@@ -905,16 +880,16 @@ class LanguageHelper
                         break;
 
                     case 2: // Vorhandene Variablen beibehalten
-                        $oWert = $this->db->select(
+                        $dbval = $this->db->select(
                             'tsprachwerte',
                             'kSprachISO',
                             $kSprachISO,
                             'kSprachsektion',
-                            $kSprachsektion,
+                            $sectionID,
                             'cName',
                             $name
                         );
-                        if (!$oWert) {
+                        if (!$dbval) {
                             $this->db->queryPrepared(
                                 'REPLACE INTO tsprachwerte
                                     SET kSprachISO = :iso, 
@@ -925,7 +900,7 @@ class LanguageHelper
                                         bSystem = :sys',
                                 [
                                     'iso'     => $kSprachISO,
-                                    'section' => $kSprachsektion,
+                                    'section' => $sectionID,
                                     'name'    => $name,
                                     'val'     => $value,
                                     'sys'     => $system
@@ -942,9 +917,9 @@ class LanguageHelper
     }
 
     /**
-     * @return array|mixed|null
+     * @return stdClass[]
      */
-    private function mappedGetLangArray()
+    private function mappedGetLangArray(): array
     {
         return $this->availableLanguages;
     }
@@ -956,15 +931,14 @@ class LanguageHelper
      */
     private function mappedIsShopLanguage(int $languageID, array $languages = []): bool
     {
-        if ($languageID > 0) {
-            if (!\is_array($languages) || \count($languages) === 0) {
-                $languages = $this->mappedGetAllLanguages(1);
-            }
-
-            return isset($languages[$languageID]);
+        if ($languageID <= 0) {
+            return false;
+        }
+        if (\count($languages) === 0) {
+            $languages = $this->mappedGetAllLanguages(1);
         }
 
-        return false;
+        return isset($languages[$languageID]);
     }
 
     /**
@@ -977,16 +951,12 @@ class LanguageHelper
         if (\mb_strlen($iso) > 0) {
             $data = $this->mappedGetLangIDFromIso($iso);
 
-            return $data === null
-                ? false
-                : $data->kSprachISO;
+            return $data->kSprachISO ?? false;
         }
         if ($languageID > 0) {
             $data = $this->mappedGetIsoFromLangID($languageID);
 
-            return $data === null
-                ? false
-                : $data->cISO;
+            return $data->cISO ?? false;
         }
 
         return false;
@@ -999,33 +969,31 @@ class LanguageHelper
      * 0 = Normales Array
      * 1 = Gib ein Assoc mit Key = kSprache
      * 2 = Gib ein Assoc mit Key = cISO
-     * @param bool $forceLoad
+     * @param bool $force
+     * @param bool $onlyActive
      * @return LanguageModel[]
      * @throws \Exception
      * @former gibAlleSprachen()
      * @since  5.0.0
      */
-    private function mappedGetAllLanguages(int $returnType = 0, bool $forceLoad = false)
+    private function mappedGetAllLanguages(int $returnType = 0, bool $force = false, bool $onlyActive = false): array
     {
         $languages = Frontend::getLanguages();
-        if ($forceLoad || \count($languages) === 0) {
-            $languages = LanguageModel::loadAll($this->db, [], [])->toArray();
+        if ($force || \count($languages) === 0 || \get_class(\array_values($languages)[0]) === stdClass::class) {
+            $languages = $onlyActive === true
+                ? LanguageModel::loadAll($this->db, ['active'], [1])->toArray()
+                : LanguageModel::loadAll($this->db, [], [])->toArray();
         }
-        switch ($returnType) {
-            case 2:
-                return reindex($languages, static function ($e) {
-                    return $e->cISO;
-                });
 
-            case 1:
-                return reindex($languages, static function ($e) {
-                    return $e->kSprache;
-                });
-
-            case 0:
-            default:
-                return $languages;
-        }
+        return match ($returnType) {
+            2       => reindex($languages, static function (LanguageModel $e): string {
+                return $e->getCode();
+            }),
+            1       => reindex($languages, static function (LanguageModel $e): int {
+                return $e->getId();
+            }),
+            default => $languages,
+        };
     }
 
     /**
@@ -1037,6 +1005,9 @@ class LanguageHelper
      */
     public static function isDefaultLanguageActive(bool $shop = false, int $languageID = null): bool
     {
+        if (Shop::$forceHost[0]['id'] > 0) {
+            return false;
+        }
         $languageID = $languageID ?? Shop::getLanguageID();
         if ($languageID <= 0) {
             return true;
@@ -1062,10 +1033,10 @@ class LanguageHelper
     private function mappedGetDefaultLanguage(bool $shop = true): LanguageModel
     {
         foreach (Frontend::getLanguages() as $language) {
-            if ($language->isDefault() && !$shop) {
+            if (!$shop && $language->isDefault()) {
                 return $language;
             }
-            if ($language->isShopDefault() && $shop) {
+            if ($shop && $language->isShopDefault()) {
                 return $language;
             }
         }
@@ -1086,40 +1057,56 @@ class LanguageHelper
      */
     public function generateLanguageAndCurrencyLinks(): void
     {
-        global $oZusatzFilter, $AktuellerArtikel;
+        global $AktuellerArtikel;
         $linkID        = Shop::$kLink;
         $pageID        = Shop::$kSeite;
         $shopURL       = Shop::getURL() . '/';
-        $helper        = Shop::Container()->getLinkService();
+        $linkService   = Shop::Container()->getLinkService();
         $productFilter = Shop::getProductFilter();
-        if ($pageID !== null && $pageID > 0) {
+        $pageType      = Shop::getPageType();
+        $state         = Shop::getState();
+        if ($pageID !== null && $pageID > 0 && $pageType !== \PAGE_ARTIKELLISTE) {
             $linkID = $pageID;
         }
-        $ls     = Shop::Container()->getLinkService();
         $mapper = new PageTypeToLinkType();
-        $mapped = $mapper->map(Shop::getPageType());
+        $mapped = $mapper->map($pageType);
         try {
-            $specialPage = $mapped > 0 ? $ls->getSpecialPage($mapped) : null;
-        } catch (SpecialPageNotFoundException $e) {
+            $specialPage = $mapped > 0 ? $linkService->getSpecialPage($mapped) : null;
+        } catch (SpecialPageNotFoundException) {
             $specialPage = null;
         }
-        $page = $linkID > 0 ? $ls->getPageLink($linkID) : null;
-        if (\count(Frontend::getLanguages()) > 1) {
-            foreach (Frontend::getLanguages() as $lang) {
+        $page          = $linkID > 0 ? $linkService->getPageLink($linkID) : null;
+        $languages     = Frontend::getLanguages();
+        $currencies    = Frontend::getCurrencies();
+        $currentLangID = Shop::getLanguageID();
+        $currentLocale = null;
+        if (\count($languages) > 1) {
+            foreach ($languages as $lang) {
                 /** @var Artikel $AktuellerArtikel */
                 $langID  = $lang->getId();
                 $langISO = $lang->getIso();
-                if (isset($AktuellerArtikel->cSprachURL_arr[$langISO])) {
-                    $lang->setUrl(Shop::getURL(false, $langID)  . '/'. $AktuellerArtikel->cSprachURL_arr[$langISO]);
+                if ($currentLangID === $langID) {
+                    $currentLocale = $lang->getIso639();
+                }
+                if ($state->currentRouteName !== null && $state->routeData !== null) {
+                    $url = Shop::getRouter()->getURLByType(
+                        $state->currentRouteName,
+                        \array_merge($state->routeData, ['lang' => $lang->getIso639()]),
+                        true,
+                        true
+                    );
+                    $lang->setUrl($url);
+                } elseif (isset($AktuellerArtikel->cSprachURL_arr[$langISO])) {
+                    $lang->setUrl($AktuellerArtikel->cSprachURL_arr[$langISO]);
                 } elseif ($page !== null) {
                     $url = $page->getURL($langID);
-                    if (\mb_strpos($url, '/?s=') !== false) {
+                    if (\str_contains($url, '/?s=')) {
                         $lang->setUrl(\rtrim($shopURL, '/') . $url);
                     } else {
                         $lang->setUrl($url);
                     }
                 } elseif ($specialPage !== null) {
-                    if (Shop::getPageType() === \PAGE_STARTSEITE) {
+                    if ($pageType === \PAGE_STARTSEITE) {
                         $url = $shopURL . '?lang=' . $langISO;
                     } elseif ($specialPage->getFileName() !== '') {
                         if (Shop::$kNews > 0) {
@@ -1131,13 +1118,13 @@ class LanguageHelper
                             $newsCategory->load(Shop::$kNewsKategorie);
                             $url = $newsCategory->getURL($langID);
                         } else {
-                            $url = $helper->getStaticRoute($specialPage->getFileName(), false, false, $langISO);
+                            $url = $linkService->getStaticRoute($specialPage->getFileName(), false, false, $langISO);
                             // check if there is a SEO link for the given file
                             if ($url === $specialPage->getFileName()) {
                                 // no SEO link - fall back to php file with GET param
                                 $url = $shopURL . $specialPage->getFileName() . '?lang=' . $langISO;
                             } else { //there is a SEO link - make it a full URL
-                                $url = $helper->getStaticRoute($specialPage->getFileName(), true, false, $langISO);
+                                $url = $linkService->getStaticRoute($specialPage->getFileName(), true, false, $langISO);
                             }
                         }
                     } else {
@@ -1151,12 +1138,12 @@ class LanguageHelper
                     $originalBase     = $config->getBaseURL();
                     $config->setLanguageID($langID);
                     $config->setBaseURL(Shop::getURL(false, $langID) . '/');
-                    $url = $productFilter->getFilterURL()->getURL($oZusatzFilter);
+                    $url = $productFilter->getFilterURL()->getURL();
                     // reset
                     $config->setLanguageID($originalLanguage);
                     $config->setBaseURL($originalBase);
                     if ($productFilter->getPage() > 1) {
-                        if (\mb_strpos($url, '?') !== false || \mb_strpos($url, 'navi.php') !== false) {
+                        if (\str_contains($url, '?') || \str_contains($url, 'navi.php')) {
                             $url .= '&amp;seite=' . $productFilter->getPage();
                         } else {
                             $url .= \SEP_SEITE . $productFilter->getPage();
@@ -1166,46 +1153,64 @@ class LanguageHelper
                 }
             }
         }
-        if (\count(Frontend::getCurrencies()) > 1) {
+        if (\count($currencies) > 1) {
             $currentCurrencyCode = Frontend::getCurrency()->getID();
-            $currentLangCode     = Shop::getLanguageCode();
-            foreach (Frontend::getCurrencies() as $currency) {
-                if (isset($AktuellerArtikel->cSprachURL_arr[$currentLangCode])) {
-                    $url = $AktuellerArtikel->cSprachURL_arr[$currentLangCode];
-                } elseif ($specialPage !== null) {
-                    $url = $specialPage->getURL();
-                    if (empty($url)) {
-                        if (Shop::getPageType() === \PAGE_STARTSEITE) {
-                            $url = '';
-                        } elseif ($specialPage->getFileName() !== null) {
-                            $url = $helper->getStaticRoute($specialPage->getFileName(), false);
-                            // check if there is a SEO link for the given file
-                            if ($url === $specialPage->getFileName()) {
-                                // no SEO link - fall back to php file with GET param
-                                $url = $shopURL . $specialPage->getFileName();
-                            } else {
-                                // there is a SEO link - make it a full URL
-                                $url = $helper->getStaticRoute($specialPage->getFileName());
-                            }
-                        }
-                    }
-                } elseif ($page !== null) {
-                    $url = $page->getURL();
-                } else {
-                    $url = $productFilter->getFilterURL()->getURL($oZusatzFilter);
+            foreach ($currencies as $currency) {
+                $code       = $currency->getCode();
+                $additional = $currency->getID() === $currentCurrencyCode
+                    ? []
+                    : ['currency' => $code];
+                if ($currentLocale !== null && $state->currentRouteName !== null && $state->routeData !== null) {
+                    $url = Shop::getRouter()->getURLByType(
+                        $state->currentRouteName,
+                        \array_merge($state->routeData, ['lang' => $currentLocale, 'currency' => $code]),
+                        true,
+                        true
+                    );
+                    $currency->setURL($url);
+                    $currency->setURLFull($url);
+                    continue;
                 }
-                if ($currency->getID() !== $currentCurrencyCode) {
-                    $url .= (\mb_strpos($url, '?') === false ? '?' : '&') . 'curr=' . $currency->getCode();
+                if (isset($AktuellerArtikel)) {
+                    $original = $AktuellerArtikel->getURLs();
+                    $AktuellerArtikel->createBySlug($AktuellerArtikel->kArtikel, $additional);
+                    $url = $AktuellerArtikel->getURL($currentLangID);
+                    $currency->setURL($url);
+                    $currency->setURLFull($url);
+                    $AktuellerArtikel->setURLs($original);
+                    continue;
+                }
+                if ($page !== null) {
+                    $original = $page->getURLs();
+                    $page->createBySlug($page->getID(), $additional);
+                    $url = $page->getURL($currentLangID);
+                    $currency->setURL($url);
+                    $currency->setURLFull($url);
+                    $page->setURLs($original);
+                    continue;
+                }
+                if ($specialPage !== null) {
+                    $original = $specialPage->getURLs();
+                    $specialPage->createBySlug($specialPage->getID(), $additional);
+                    $url = $specialPage->getURL($currentLangID);
+                    $currency->setURL($url);
+                    $currency->setURLFull($url);
+                    $specialPage->setURLs($original);
+                    continue;
+                }
+                $url = $productFilter->getFilterURL()->getURL(null, false, $additional);
+                if ($currency->getID() !== $currentCurrencyCode && !\str_contains($url, '/' . $code . '/')) {
+                    $url .= (!\str_contains($url, '?') ? '?' : '&') . 'curr=' . $code;
                 }
                 $currency->setURL($url);
-                $currency->setURLFull(\mb_strpos($url, Shop::getURL()) === false
+                $currency->setURLFull(!\str_contains($url, Shop::getURL())
                     ? ($shopURL . $url)
                     : $url);
             }
         }
         \executeHook(\HOOK_TOOLSGLOBAL_INC_SETZESPRACHEUNDWAEHRUNG_WAEHRUNG, [
             'oNaviFilter'       => &$productFilter,
-            'oZusatzFilter'     => &$oZusatzFilter,
+            'oZusatzFilter'     => null,
             'cSprachURL'        => [],
             'oAktuellerArtikel' => &$AktuellerArtikel,
             'kSeite'            => &$pageID,
@@ -1238,9 +1243,7 @@ class LanguageHelper
      */
     private function mappedGetIsoCodeByCountryName(string $country): string
     {
-        $iso = Shop::Container()->getCountryService()->getIsoByCountryName($country);
-
-        return $iso ?? 'noISO';
+        return Shop::Container()->getCountryService()->getIsoByCountryName($country) ?? 'noISO';
     }
 
     /**
@@ -1250,6 +1253,12 @@ class LanguageHelper
      */
     public function getLanguageByID(int $langID): LanguageModel
     {
+        foreach (Frontend::getLanguages() as $language) {
+            if ($language->getId() === $langID) {
+                return $language;
+            }
+        }
+
         return LanguageModel::loadByAttributes(['id' => $langID], $this->db);
     }
 }

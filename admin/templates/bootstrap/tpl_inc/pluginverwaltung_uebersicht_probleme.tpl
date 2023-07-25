@@ -1,6 +1,6 @@
 <div id="probleme" class="tab-pane fade {if $cTab === 'probleme'} active show{/if}">
     {if $pluginsProblematic->count() > 0}
-    <form name="pluginverwaltung" method="post" action="pluginverwaltung.php" id="problematic-plugins">
+    <form name="pluginverwaltung" method="post" action="{$adminURL}{$route}" id="problematic-plugins">
         {$jtl_token}
         <input type="hidden" name="pluginverwaltung_uebersicht" value="1" />
         <div>
@@ -16,8 +16,6 @@
                         <th class="text-center">{__('pluginVersion')}</th>
                         <th class="text-center">{__('pluginInstalled')}</th>
                         <th>{__('pluginFolder')}</th>
-                        <th class="text-center">{__('pluginEditLocales')}</th>
-                        <th class="text-center">{__('pluginEditLinkgrps')}</th>
                         <th class="text-center">{__('pluginBtnLicence')}</th>
                         <th class="text-center">&nbsp;</th>
                     </tr>
@@ -48,28 +46,6 @@
                         <td class="text-center">{(string)$plugin->getVersion()}{if $plugin->isUpdateAvailable()} <span class="error">{(string)$plugin->isUpdateAvailable()}</span>{/if}</td>
                         <td class="text-center">{$plugin->getDateInstalled()->format('d.m.Y H:i')}</td>
                         <td>{$plugin->getDir()}</td>
-                        <td class="text-center">
-                            {if $plugin->getLangVarCount() > 0}
-                                <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$plugin->getID()}"
-                                   class="btn btn-link" title="{__('modify')}" data-toggle="tooltip">
-                                    <span class="icon-hover">
-                                        <span class="fal fa-edit"></span>
-                                        <span class="fas fa-edit"></span>
-                                    </span>
-                                </a>
-                            {/if}
-                        </td>
-                        <td class="text-center">
-                            {if $plugin->getLinkCount() > 0}
-                                <a href="links.php?kPlugin={$plugin->getID()}"
-                                   class="btn btn-link" title="{__('modify')}" data-toggle="tooltip">
-                                    <span class="icon-hover">
-                                        <span class="fal fa-edit"></span>
-                                        <span class="fas fa-edit"></span>
-                                    </span>
-                                </a>
-                            {/if}
-                        </td>
                         <td class="text-center">
                             {if $plugin->hasLicenseCheck()}
                                 {if $plugin->getLicenseKey()}

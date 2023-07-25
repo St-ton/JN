@@ -13,10 +13,10 @@ use JTL\Update\Migration;
 class Migration_20180907143600 extends Migration implements IMigration
 {
     protected $author      = 'fm';
-    protected $description = 'update cUnique fields';
+    protected $description = 'Update cUnique fields';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -25,7 +25,7 @@ class Migration_20180907143600 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

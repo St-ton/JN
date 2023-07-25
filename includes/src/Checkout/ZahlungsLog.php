@@ -1,7 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Checkout;
 
+use JTL\Helpers\Text;
 use JTL\Shop;
 use stdClass;
 
@@ -12,31 +13,15 @@ use stdClass;
 class ZahlungsLog
 {
     /**
-     * @var string
-     */
-    public $cModulId;
-
-    /**
-     * @var array
-     */
-    public $oLog_arr = [];
-
-    /**
-     * @var int
-     */
-    public $nEingangAnzahl = 0;
-
-    /**
      * @var bool
      */
-    public $hasError = false;
+    public bool $hasError = false;
 
     /**
-     * @param string $moduleID
+     * @param string $cModulId
      */
-    public function __construct(string $moduleID)
+    public function __construct(public string $cModulId)
     {
-        $this->cModulId = $moduleID;
     }
 
     /**
@@ -48,14 +33,29 @@ class ZahlungsLog
     public function holeLog(string $limit, int $level = -1, string $whereSQL = ''): array
     {
         $condition = $level >= 0 ? ('AND nLevel = ' . $level) : '';
+        $params    = ['mid' => $this->cModulId];
+        $limits    = \explode(',', $limit);
+        if (\count($limits) === 2) {
+            $params['lmt']  = (int)$limits[0];
+            $params['lmte'] = (int)$limits[1];
+        } else {
+            $params['lmt'] = (int)$limit;
+        }
 
-        return Shop::Container()->getDB()->getObjects(
-            "SELECT * FROM tzahlungslog
-                WHERE cModulId = '" . $this->cModulId . "' " .
-            $condition . ($whereSQL !== '' ? ' AND ' . $whereSQL : '') . '
+        return Shop::Container()->getDB()->getCollection(
+            'SELECT * FROM tzahlungslog
+                WHERE cModulId = :mid' . $condition . ($whereSQL !== '' ? ' AND ' . $whereSQL : '') . '
                 ORDER BY dDatum DESC, kZahlunglog DESC 
-                LIMIT ' . $limit
-        );
+                ' . (\count($limits) === 2 ? 'LIMIT :lmt, :lmte' : 'LIMIT :lmt'),
+            $params
+        )->map(static function (stdClass $log): stdClass {
+            $log->cLog     = Text::filterXSS($log->cLog);
+            $log->cModulId = Text::filterXSS($log->cModulId);
+            $log->cLogData = Text::filterXSS($log->cLogData ?? '');
+            $log->nLevel   = (int)$log->nLevel;
+
+            return $log;
+        })->toArray();
     }
 
     /**
@@ -80,42 +80,42 @@ class ZahlungsLog
     }
 
     /**
-     * @param string $cLog
+     * @param string $msg
      * @return int
      */
-    public function log($cLog): int
+    public function log(string $msg): int
     {
-        return self::add($this->cModulId, $cLog);
+        return self::add($this->cModulId, $msg);
     }
 
     /**
-     * @param string      $cModulId
-     * @param string      $cLog
-     * @param string|null $cLogData
-     * @param int         $nLevel
+     * @param string      $moduleID
+     * @param string      $msg
+     * @param string|null $data
+     * @param int         $level
      * @return int
      */
-    public static function add($cModulId, $cLog, $cLogData = '', $nLevel = \LOGLEVEL_ERROR): int
+    public static function add(string $moduleID, string $msg, ?string $data = '', int $level = \LOGLEVEL_ERROR): int
     {
-        if (\mb_strlen($cModulId) === 0) {
+        if (\mb_strlen($moduleID) === 0) {
             return 0;
         }
 
         $log           = new stdClass();
-        $log->cModulId = $cModulId;
-        $log->cLog     = $cLog;
-        $log->cLogData = $cLogData;
-        $log->nLevel   = $nLevel;
+        $log->cModulId = Text::filterXSS($moduleID);
+        $log->cLog     = Text::filterXSS($msg);
+        $log->cLogData = Text::filterXSS($data ?? '');
+        $log->nLevel   = $level;
         $log->dDatum   = 'NOW()';
 
         return Shop::Container()->getDB()->insert('tzahlungslog', $log);
     }
 
     /**
-     * @param array $moduleIDs
-     * @param int   $offset
-     * @param int   $limit
-     * @param int   $level
+     * @param array|mixed $moduleIDs
+     * @param int         $offset
+     * @param int         $limit
+     * @param int         $level
      * @return stdClass[]
      */
     public static function getLog($moduleIDs, int $offset = 0, int $limit = 100, int $level = -1): array
@@ -123,18 +123,33 @@ class ZahlungsLog
         if (!\is_array($moduleIDs)) {
             $moduleIDs = (array)$moduleIDs;
         }
-        \array_walk($moduleIDs, static function (&$value) {
-            $value = \sprintf("'%s'", $value);
-        });
-        $moduleIDlist = \implode(',', $moduleIDs);
+        if (\count($moduleIDs) === 0) {
+            return [];
+        }
         $where        = ($level >= 0) ? ('AND nLevel = ' . $level) : '';
+        $prep         = ['lmts' => $offset, 'lmte' => $limit];
+        $i            = 0;
+        $moduleIDlist = [];
+        foreach ($moduleIDs as $moduleID) {
+            $idx            = 'mid' . $i++;
+            $prep[$idx]     = $moduleID;
+            $moduleIDlist[] = ':' . $idx;
+        }
 
-        return Shop::Container()->getDB()->getObjects(
+        return Shop::Container()->getDB()->getCollection(
             'SELECT * FROM tzahlungslog
-                WHERE cModulId IN(' . $moduleIDlist . ') ' . $where . '
+                WHERE cModulId IN(' . \implode(', ', $moduleIDlist) . ') ' . $where . '
                 ORDER BY dDatum DESC, kZahlunglog DESC 
-                LIMIT ' . $offset . ', ' . $limit
-        );
+                LIMIT :lmts, :lmte',
+            $prep
+        )->map(static function (stdClass $log): stdClass {
+            $log->cLog     = Text::filterXSS($log->cLog);
+            $log->cModulId = Text::filterXSS($log->cModulId);
+            $log->cLogData = Text::filterXSS($log->cLogData ?? '');
+            $log->nLevel   = (int)$log->nLevel;
+
+            return $log;
+        })->toArray();
     }
 
     /**

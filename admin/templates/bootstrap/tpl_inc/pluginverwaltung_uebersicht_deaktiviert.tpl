@@ -1,6 +1,6 @@
 <div id="deaktiviert" class="tab-pane fade {if $cTab === 'deaktiviert'} active show{/if}">
     {if $pluginsDisabled->count() > 0}
-        <form name="pluginverwaltung" method="post" action="pluginverwaltung.php" id="disbled-plugins">
+        <form name="pluginverwaltung" method="post" action="{$adminURL}{$route}" id="disbled-plugins">
             {$jtl_token}
             <input type="hidden" name="pluginverwaltung_uebersicht" value="1" />
             <div>
@@ -16,9 +16,6 @@
                             <th class="text-center">{__('pluginVersion')}</th>
                             <th class="text-center">{__('pluginInstalled')}</th>
                             <th>{__('pluginFolder')}</th>
-                            <th class="text-center">{__('pluginEditLocales')}</th>
-                            <th class="text-center">{__('pluginEditLinkgrps')}</th>
-                            <th class="text-center">{__('pluginBtnLicence')}</th>
                             <th class="text-center">&nbsp;</th>
                         </tr>
                         </thead>
@@ -68,43 +65,6 @@
                                 <td class="text-center plugin-version">{(string)$plugin->getVersion()}{if $plugin->isUpdateAvailable()} <span class="label text-success update-info">{(string)$plugin->isUpdateAvailable()}</span>{/if}</td>
                                 <td class="text-center plugin-install-date">{$plugin->getDateInstalled()->format('d.m.Y H:i')}</td>
                                 <td class="plugin-folder">{$plugin->getDir()}</td>
-                                <td class="text-center plugin-lang-vars">
-                                    {if $plugin->getLangVarCount() > 0}
-                                        <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$plugin->getID()}"
-                                           class="btn btn-link"
-                                           title="{__('modify')}"
-                                           data-toggle="tooltip">
-                                            <span class="icon-hover">
-                                                <span class="fal fa-edit"></span>
-                                                <span class="fas fa-edit"></span>
-                                            </span>
-                                        </a>
-                                    {/if}
-                                </td>
-                                <td class="text-center plugin-frontend-links">
-                                    {if $plugin->getLinkCount() > 0}
-                                        <a href="links.php?kPlugin={$plugin->getID()}"
-                                           class="btn btn-link"
-                                           title="{__('modify')}"
-                                           data-toggle="tooltip">
-                                            <span class="icon-hover">
-                                                <span class="fal fa-edit"></span>
-                                                <span class="fas fa-edit"></span>
-                                            </span>
-                                        </a>
-                                    {/if}
-                                </td>
-                                <td class="text-center plugin-license">
-                                    {if $plugin->hasLicenseCheck()}
-                                        <button name="lizenzkey" type="submit" title="{__('modify')}"
-                                                class="btn btn-link" value="{$plugin->getID()}" data-toggle="tooltip">
-                                            <span class="icon-hover">
-                                                <span class="fal fa-edit"></span>
-                                                <span class="fas fa-edit"></span>
-                                            </span>
-                                        </button>
-                                    {/if}
-                                </td>
                                 <td class="text-center">
                                     {if $plugin->isUpdateAvailable()}
                                         <a onclick="ackCheck({$plugin->getID()}, 'deaktiviert'); return false;"

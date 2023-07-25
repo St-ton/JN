@@ -15,29 +15,17 @@ abstract class AbstractValidator implements ValidatorInterface
     protected const BASE_DIR = \PFAD_ROOT . \PFAD_PLUGIN;
 
     /**
-     * @var DbInterface
+     * @var string|null
      */
-    protected $db;
-
-    /**
-     * @var string
-     */
-    protected $dir;
-
-    /**
-     * @var XMLParser
-     */
-    protected $parser;
+    protected ?string $dir = null;
 
     /**
      * AbstractValidator constructor.
      * @param DbInterface $db
      * @param XMLParser   $parser
      */
-    public function __construct(DbInterface $db, XMLParser $parser)
+    public function __construct(protected DbInterface $db, protected XMLParser $parser)
     {
-        $this->db     = $db;
-        $this->parser = $parser;
     }
 
     /**
@@ -53,7 +41,7 @@ abstract class AbstractValidator implements ValidatorInterface
      */
     public function setDir(string $dir): void
     {
-        $this->dir = \mb_strpos($dir, \PFAD_ROOT) === 0
+        $this->dir = \str_starts_with($dir, \PFAD_ROOT)
             ? $dir
             : self::BASE_DIR . $dir;
     }
@@ -84,7 +72,7 @@ abstract class AbstractValidator implements ValidatorInterface
     public function validateByPluginID(int $pluginID, bool $forUpdate = false): int
     {
         $plugin = $this->db->select('tplugin', 'kPlugin', $pluginID);
-        if (empty($plugin->kPlugin)) {
+        if ($plugin === null || empty($plugin->kPlugin)) {
             return InstallCode::NO_PLUGIN_FOUND;
         }
         $dir  = self::BASE_DIR . $plugin->cVerzeichnis;

@@ -7,11 +7,11 @@
     <div class="card">
         <div class="card-body">
             {include file='tpl_inc/config_section.tpl'
-                    config=$oConfig_arr
                     name='einstellen'
                     a='saveSettings'
-                    action='preisverlauf.php'
+                    action=$adminURL|cat:$route
                     title=__('settings')
+                    skipHeading=true
                     tab='einstellungen'}
         </div>
     </div>

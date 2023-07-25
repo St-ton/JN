@@ -38,6 +38,9 @@ msgstr "Automatically set true when a country is selectable in at least one ship
 msgid "isPermitRegistration"
 msgstr "Selectable as billing country"
 
+msgid "isPermitRegistrationDesc"
+msgstr "Will automatically be set to 'Yes' as soon as a country is activated in a shipping method. Will also automatically be set to 'No' when a country is no longer activated in any shipping methods."
+
 msgid "isRequireStateDefinition"
 msgstr "Federal state is mandatory"
 
@@ -67,3 +70,12 @@ msgstr "A country with ISO code \"%s\" can not be found."
 
 msgid "warningCreateCountryInWawi"
 msgstr "You also need to create the same country in JTL-Wawi and set the corresponding tax zone: <a href=\"https://guide.jtl-software.de/jtl-wawi/global/laender-verwalten/\" target=\"_blank\">Manage countries</a>"
+
+msgid "infoRegistrationCountriesActivated"
+msgstr "The countries <strong>%s</strong> have been added to the selectable billing countries. Please see <a href=\"countries\" target=\"_blank\">Country administration</a>."
+
+msgid "warningRegistrationCountriesDeactivated"
+msgstr "The countries <strong>%s</strong> have been removed from the selectable billing countries. Please see <a href=\"%s/countries\" target=\"_blank\">Country administration</a>."
+
+msgid "warningShippingAvailable"
+msgstr "The country is activated as a destination country in at least one shipping method. We therefore recommend enabling the selection of the country as a billing country as well."

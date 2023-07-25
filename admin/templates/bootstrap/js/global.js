@@ -1,5 +1,6 @@
 
-var JTL_TOKEN = null;
+var JTL_TOKEN = null,
+    BACKEND_URL = '';
 
 /**
  * Functions that communicate with the server like 'ioCall()' need the XSRF token to be set first.
@@ -13,6 +14,10 @@ function setJtlToken(jtlToken)
 {
     JTL_TOKEN = jtlToken;
 }
+function setBackendURL(url)
+{
+    BACKEND_URL = url;
+}
 
 /**
  * @returns {jQuery.fn}
@@ -23,49 +28,6 @@ jQuery.fn.center = function () {
     this.css('left', ( $(window).width() - this.width() ) / 2 + $(window).scrollLeft() + 'px');
     return this;
 };
-
-/**
- * @deprecated since 4.06
- * @param type
- * @param id
- * @returns {*}
- */
-function get_list_callback(type, id) {
-    switch (type) {
-        case 'article':
-            return (id == 0) ? 'getArticleList' :
-                'getArticleListFromString';
-
-        case 'manufacturer':
-            return (id == 0) ? 'getManufacturerList' :
-                'getManufacturerListFromString';
-
-        case 'categories':
-            return (id == 0) ? 'getCategoryList' :
-                'getCategoryListFromString';
-
-        case 'attribute':
-            return (id == 0) ? 'getAttributeList' :
-                'getAttributeListFromString';
-        case 'link':
-            return (id == 0) ? 'getLinkList' :
-                'getLinkListFromString';
-    }
-    return false;
-}
-
-/**
- * @deprecated since 4.06 the functionality of this component can simply be covered with a twitter typeahead. See
- *      the function enableTypeahead() in global.js to turn a text input into a suggestion input.
- * @param type
- */
-function show_simple_search(type) {
-    var browser = $('.single_search_browser');
-    browser.attr('type', type);
-    browser.center().fadeIn(850);
-    browser.find('select').empty();
-    browser.find('input').val('').focus();
-}
 
 /**
  * @param form
@@ -165,51 +127,6 @@ function retract(elemID, picExpandID, picRetractID) {
             }
         }
     }
-}
-
-/**
- * @deprecated since 4.06
- * @param url
- * @param params
- * @param callback
- * @returns {*}
- */
-function ajaxCall(url, params, callback) {
-    return $.ajax({
-        type: "GET",
-        dataType: "json",
-        cache: false,
-        url: url,
-        data: params,
-        success: function (data, textStatus, jqXHR) {
-            if (typeof callback === 'function') {
-                callback(data);
-            }
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            if (typeof callback === 'function' && jqXHR.responseJSON) {
-                callback(jqXHR.responseJSON, jqXHR);
-            }
-        }
-    });
-}
-
-var _queryTimeout = null;
-
-/**
- * @deprecated since 4.06
- * @param url
- * @param params
- * @param callback
- * @returns {*}
- */
-function ajaxCallV2(url, params, callback) {
-    if (_queryTimeout) {
-        window.clearTimeout(_queryTimeout);
-    }
-    _queryTimeout = window.setTimeout(function() {
-        ajaxCall(url, params, callback);
-    }, 300);
 }
 
 /**
@@ -342,31 +259,6 @@ function massCreationCoupons() {
     $("#informCustomers").toggleClass("hidden", checkboxCreationCoupons);
 }
 
-/**
- * @deprecated since 4.06
- */
-function addFav(title, url, success) {
-    ajaxCallV2('favs.php?action=add', { title: title, url: url }, function(result, error) {
-        if (!error) {
-            reloadFavs();
-            if (typeof success == 'function') {
-                success();
-            }
-        }
-    });
-}
-
-/**
- * @deprecated since 4.06
- */
-function reloadFavs() {
-    ajaxCallV2('favs.php?action=list', {}, function(result, error) {
-        if (!error) {
-            $('#favs-drop').html(result.data.tpl);
-        }
-    });
-}
-
 function switchCouponTooltipVisibility() {
     $('#cWertTyp').on('change', function() {
         if ($(this).val() === 'prozent') {
@@ -412,13 +304,17 @@ $(document).ready(function () {
     $('.collapse').removeClass('in');
 
     $('.accordion-toggle').on('click', function () {
-        var self = this;
-        $(self).find('i').toggleClass('fa-minus fa-plus');
-        $('.accordion-toggle').each(function () {
-            if (this !== self) {
-                $(this).find('i').toggleClass('fa-minus', false).toggleClass('fa-plus', true);
-            }
-        });
+        $(this).find('i').toggleClass('fa-minus fa-plus');
+        let parent = $(this).data("parent");
+        if (parent.length > 0) {
+            let clicked = $(this);
+            $(".accordion-toggle[data-parent='" + parent + "']").each(function() {
+                // Remove minus and add a plus sign for all accordion-toggles with same destination except the clicked one
+                if ($(this).attr("href") !== clicked.attr("href")) {
+                    $(this).find('i').removeClass('fa-minus').addClass('fa-plus');
+                }
+            });
+        }
     });
 
     $('.help').each(function () {
@@ -554,6 +450,92 @@ $(document).ready(function () {
     onChangeFormSubmit();
     getSettingListeners();
     deleteConfirmation();
+
+    // Add top scrollbar to tables when they are scrollable.
+    $('.table-responsive').topScrollbar();
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function () {
+        $(this).closest('.tabs').find('.tab-content .table-responsive').topScrollbar();
+    });
+    $('.collapse').on('shown.bs.collapse', function () {
+        $(this).find('.table-responsive').topScrollbar();
+    });
+    $('img[loading="lazy"]').on('load',function(){
+        $(this).closest('.table-responsive').topScrollbar();
+    });
+    let windowResizeTimeout = null;
+    function windowResized() {
+        $('.table-responsive').topScrollbar();
+    }
+    $(window).on('resize', function () {
+        if (windowResizeTimeout) {
+            $('.jquery-top-scrollbar').remove();
+            clearTimeout(windowResizeTimeout);
+        }
+        windowResizeTimeout = setTimeout(windowResized, 500);
+    });
+
+    function toggleCardWidget(elem, $widgetContent, widget) {
+        if ($widgetContent.is(':hidden')) {
+            $widgetContent.slideDown('fast');
+            $('i', elem).attr('class', 'fa fa-chevron-up');
+            $(widget).find('.card-header hr').removeClass('d-none');
+        } else {
+            $widgetContent.slideUp('fast');
+            $('i', elem).attr('class', 'fa fa-chevron-down');
+            $(widget).find('.card-header hr').addClass('d-none');
+        }
+    }
+
+    // Add widget functionality to elements with class card-widget
+    $('.card-widget').each(function (i, widget) {
+        let $widgetContent = $('.card-body', widget),
+            $title = $(widget).find('.card-header > *:first-child');
+
+        // add click handler for widgets collapse button
+        if ($(widget).find('.card-header').length && $(widget).find('.card-body').length && $title.length) {
+            let chevron = $title.html('<a href="#" class="text-decoration-none">' + $title.html() + '<span class="btn-sm chevronToggle"><i class="fa fa-chevron-' + 'down' + '"></i></span></a>')
+                .on('click', function (e) {
+                    toggleCardWidget(this, $widgetContent, widget);
+                    e.preventDefault();
+                })
+                .appendTo($(widget).find('.card-header > *:first-child'));
+            if ($('.body-hidden', widget).length > 0) {
+                chevron.trigger('click');
+            }
+        }
+    });
+
+    $('#theme-toggle a.dropdown-item').on('click', function (e) {
+        e.preventDefault();
+        let btn = $(this),
+            theme = $(this).data('theme');
+        ioCall('setTheme', [theme], function (data) {
+            if (data['theme'] === theme) {
+                $('#theme-toggle a.dropdown-item').removeClass('active');
+                btn.addClass('active');
+
+                $('html')
+                    .removeClass('theme-auto')
+                    .removeClass('theme-light')
+                    .removeClass('theme-dark')
+                    .addClass('theme-' + data['theme']);
+
+                $('#theme-toggle .theme-toggle-auto').addClass('d-none');
+                $('#theme-toggle .theme-toggle-light').addClass('d-none');
+                $('#theme-toggle .theme-toggle-dark').addClass('d-none');
+                $('#theme-toggle .theme-toggle-' + theme).removeClass('d-none');
+
+                if (typeof CKEDITOR !== 'undefined') {
+                    for (let instanceName in CKEDITOR.instances) {
+                        CKEDITOR.instances[instanceName].destroy();
+                    }
+                    CKEDITOR.replaceAll('ckeditor');
+                }
+            } else {
+                showNotify('danger', 'Theme', 'Theme konnte nicht gesetzt werden.');
+            }
+        });
+    });
 });
 
 $(window).on('load', () => {
@@ -603,7 +585,7 @@ function ioCall(name, args = [], success = ()=>{}, error = ()=>{}, context = {},
     }
 
     return $.ajax({
-        url: 'io.php',
+        url: BACKEND_URL + 'io',
         method: 'post',
         dataType: 'json',
         data: {
@@ -670,7 +652,7 @@ function ioDownload(name, args)
         throw 'Error: IO download not possible. JTL_TOKEN was not set on this page.';
     }
 
-    window.location.href = 'io.php?token=' + JTL_TOKEN + '&io=' + encodeURIComponent(JSON.stringify({
+    window.location.href = BACKEND_URL + 'io?token=' + JTL_TOKEN + '&io=' + encodeURIComponent(JSON.stringify({
         name: name,
         params: args
     }));
@@ -738,32 +720,46 @@ function ioManagedCall(adminPath, funcname, params, callback)
  * @param suggestion (default: null) a callback function to customize the sugesstion entry. Takes the item object and
  *      returns a HTML string
  * @param onSelect
+ * @param spinnerElm
+ * @param delay
+ * @param args
+ * @param noDataAvailable
  */
-function enableTypeahead(selector, funcName, display, suggestion, onSelect, spinnerElm)
+function enableTypeahead(selector, funcName, display, suggestion, onSelect, spinnerElm, delay = 0,
+                         args = [], noDataAvailable = '')
 {
     var pendingRequest = null;
+    var timeout;
+    var templates = noDataAvailable === '' ? {suggestion: suggestion} : {
+        suggestion: suggestion,
+        notFound: '<div class="tt-suggestion">' + noDataAvailable + '</div>'
+    }
 
     $(selector)
         .typeahead(
             {
                 highlight: true,
-                hint: true
+                hint: true,
+                minLength: 1
             },
             {
                 limit: 50,
                 source: function (query, syncResults, asyncResults) {
-                    if (pendingRequest !== null) {
-                        pendingRequest.abort();
+                    if (timeout) {
+                        clearTimeout(timeout);
                     }
-                    pendingRequest = ioCall(funcName, [query, 100], function (data) {
-                        pendingRequest = null;
-                        asyncResults(data);
-                    });
+                    timeout = setTimeout(function () {
+                        if (pendingRequest !== null) {
+                            pendingRequest.abort();
+                        }
+                        pendingRequest = ioCall(funcName, [query, 50].concat(args), function (data) {
+                            pendingRequest = null;
+                            asyncResults(data);
+                        });
+                    }, delay);
                 },
                 display: display,
-                templates: {
-                    suggestion: suggestion
-                }
+                templates: templates
             }
         )
         .on('typeahead:select', onSelect)
@@ -784,9 +780,8 @@ function selectAllItems(elm, enable)
 function openElFinder(callback, type)
 {
     window.elfinder = {getFileCallback: callback};
-
     window.open(
-        'elfinder.php?token=' + JTL_TOKEN + '&mediafilesType=' + type,
+        BACKEND_URL + 'elfinder?token=' + JTL_TOKEN + '&mediafilesType=' + type,
         'elfinderWindow',
         'status=0,toolbar=0,location=0,menubar=0,directories=0,resizable=1,scrollbars=0,width=800,height=600'
     );
@@ -913,3 +908,22 @@ function deleteConfirmation()
         $modal.modal('show');
     });
 }
+
+$.fn.isOnScreen = function(){
+
+    var win = $(window);
+
+    var viewport = {
+        top : win.scrollTop(),
+        left : win.scrollLeft()
+    };
+    viewport.right = viewport.left + win.width();
+    viewport.bottom = viewport.top + win.height();
+
+    var bounds = this.offset();
+    bounds.right = bounds.left + this.outerWidth();
+    bounds.bottom = bounds.top + this.outerHeight();
+
+    return (!(viewport.right < bounds.left || viewport.left > bounds.right || viewport.bottom < bounds.top || viewport.top > bounds.bottom));
+
+};

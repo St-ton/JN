@@ -3,8 +3,8 @@
 namespace JTL\Backend\Settings;
 
 use Illuminate\Support\Collection;
-use JTL\Alert\Alert;
 use JTL\Backend\AdminAccount;
+use JTL\Backend\Settings\Sections\SectionInterface;
 use JTL\DB\DbInterface;
 use JTL\GeneralDataProtection\IpAnonymizer;
 use JTL\Helpers\Request;
@@ -13,154 +13,37 @@ use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Smarty\JTLSmarty;
 
 /**
- * Class SettingSection
- * @package Backend\Settings
+ * Class Manager
+ * @package JTL\Backend\Settings
  */
 class Manager
 {
     /**
-     * @var bool
+     * @var string[]
      */
-    public $hasSectionMarkup = false;
-
-    /**
-     * @var bool
-     */
-    public $hasValueMarkup = false;
-
-    /**
-     * @var Manager[]
-     */
-    private $instances = [];
-
-    /**
-     * @var DbInterface
-     */
-    protected $db;
-
-    /**
-     * @var JTLSmarty
-     */
-    protected $smarty;
-
-    /**
-     * @var AdminAccount
-     */
-    protected $adminAccount;
-
-    /**
-     * @var GetText
-     */
-    protected $getText;
-
-    /**
-     * @var AlertServiceInterface
-     */
-    protected $alertService;
-
-    /**
-     * @var array
-     */
-    protected $listboxLogged = [];
+    protected array $listboxLogged = [];
 
     /**
      * Manager constructor.
-     * @param DbInterface $db
-     * @param JTLSmarty $smarty
-     * @param AdminAccount $adminAccount
-     * @param GetText $getText
+     * @param DbInterface           $db
+     * @param JTLSmarty             $smarty
+     * @param AdminAccount          $adminAccount
+     * @param GetText               $getText
      * @param AlertServiceInterface $alertService
      */
     public function __construct(
-        DbInterface $db,
-        JTLSmarty $smarty,
-        AdminAccount $adminAccount,
-        GetText $getText,
-        AlertServiceInterface $alertService
+        protected DbInterface           $db,
+        protected JTLSmarty             $smarty,
+        protected AdminAccount          $adminAccount,
+        protected GetText               $getText,
+        protected AlertServiceInterface $alertService
     ) {
+        $getText->loadAdminLocale('configs/configs');
         $getText->loadConfigLocales(true, true);
-
-        $this->db           = $db;
-        $this->smarty       = $smarty;
-        $this->adminAccount = $adminAccount;
-        $this->getText      = $getText;
-        $this->alertService = $alertService;
     }
 
     /**
-     * get instance of Manager or Sections\..
-     * @param int $sectionID
-     * @return static
-     */
-    public function getInstance(int $sectionID)
-    {
-        if (isset($this->instances[$sectionID])) {
-            return $this->instances[$sectionID];
-        }
-        $section = $this->db->select('teinstellungensektion', 'kEinstellungenSektion', $sectionID);
-        if (isset($section->kEinstellungenSektion)) {
-            $className = 'JTL\Backend\Settings\Sections\\' . \preg_replace(
-                ['([üäöÜÄÖ])', '/[^a-zA-Z_]/'],
-                ['$1e', ''],
-                $section->cName
-            );
-            if (\class_exists($className)) {
-                $this->instances[$sectionID] = new $className($this->db, $this->smarty);
-
-                return $this->instances[$sectionID];
-            }
-        }
-        $this->instances[$sectionID] = new self(
-            $this->db,
-            $this->smarty,
-            $this->adminAccount,
-            $this->getText,
-            $this->alertService
-        );
-
-        return $this->instances[$sectionID];
-    }
-
-    /**
-     * @param object $conf
-     * @param object $confValue
-     * @return bool
-     */
-    public function validate($conf, &$confValue): bool
-    {
-        return true;
-    }
-
-    /**
-     * @param object $conf
-     * @param mixed  $value
-     * @return static
-     */
-    public function setValue(&$conf, $value): self
-    {
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSectionMarkup(): string
-    {
-        return '';
-    }
-
-    /**
-     * @param object $conf
-     * @return string
-     */
-    public function getValueMarkup($conf): string
-    {
-        return '';
-    }
-
-
-    /**
-     * @param string $setting
+     * @param string      $setting
      * @param null|string $oldValue
      * @param null|string $newValue
      */
@@ -173,7 +56,13 @@ class Manager
             return;
         }
 
-        $this->db->executeQueryPrepared(
+        //do not write any password to the log
+        if (str_ends_with($setting, '_pass')) {
+            $oldValue = '***';
+            $newValue = '***';
+        }
+
+        $this->db->queryPrepared(
             'INSERT INTO teinstellungenlog (kAdminlogin, cAdminname, cIP, cEinstellungenName, cEinstellungenWertAlt,
                                cEinstellungenWertNeu, dDatum)
                 SELECT tadminlogin.kAdminlogin, tadminlogin.cName, :cIP, :cEinstellungenName, :cEinstellungenWertAlt,
@@ -192,7 +81,7 @@ class Manager
 
     /**
      * @param string $setting
-     * @param array $newValue
+     * @param array  $newValue
      */
     public function addLogListbox(string $setting, array $newValue): void
     {
@@ -257,8 +146,7 @@ class Manager
             ['settingName' => $settingName]
         );
         if ($defaultValue === null) {
-            $this->alertService->addAlert(
-                Alert::TYPE_DANGER,
+            $this->alertService->addDanger(
                 \sprintf(\__('resetSettingDefaultValueNotFound'), $settingName),
                 'resetSettingDefaultValueNotFound'
             );
@@ -309,7 +197,7 @@ class Manager
             [
                 'unknown' => \__('unknown'),
             ]
-        )->map(static function ($item) {
+        )->map(static function ($item): Log {
             return (new Log())->init($item);
         });
     }
@@ -325,5 +213,104 @@ class Manager
                 FROM teinstellungenlog' .
                 ($where !== '' ? ' WHERE ' . $where : '')
         )->cnt;
+    }
+
+    /**
+     * @return SectionInterface[]
+     */
+    public function getAllSections(): array
+    {
+        $sections   = [];
+        $factory    = new SectionFactory();
+        $sectionIDs = $this->db->getObjects(
+            'SELECT kEinstellungenSektion AS id
+                FROM teinstellungensektion
+                ORDER BY kEinstellungenSektion'
+        );
+        foreach ($sectionIDs as $item) {
+            $sections[] = $factory->getSection((int)$item->id, $this);
+        }
+
+        return $sections;
+    }
+
+    /**
+     * @return DbInterface
+     */
+    public function getDB(): DbInterface
+    {
+        return $this->db;
+    }
+
+    /**
+     * @param DbInterface $db
+     */
+    public function setDB(DbInterface $db): void
+    {
+        $this->db = $db;
+    }
+
+    /**
+     * @return JTLSmarty
+     */
+    public function getSmarty(): JTLSmarty
+    {
+        return $this->smarty;
+    }
+
+    /**
+     * @param JTLSmarty $smarty
+     */
+    public function setSmarty(JTLSmarty $smarty): void
+    {
+        $this->smarty = $smarty;
+    }
+
+    /**
+     * @return AdminAccount
+     */
+    public function getAdminAccount(): AdminAccount
+    {
+        return $this->adminAccount;
+    }
+
+    /**
+     * @param AdminAccount $adminAccount
+     */
+    public function setAdminAccount(AdminAccount $adminAccount): void
+    {
+        $this->adminAccount = $adminAccount;
+    }
+
+    /**
+     * @return GetText
+     */
+    public function getGetText(): GetText
+    {
+        return $this->getText;
+    }
+
+    /**
+     * @param GetText $getText
+     */
+    public function setGetText(GetText $getText): void
+    {
+        $this->getText = $getText;
+    }
+
+    /**
+     * @return AlertServiceInterface
+     */
+    public function getAlertService(): AlertServiceInterface
+    {
+        return $this->alertService;
+    }
+
+    /**
+     * @param AlertServiceInterface $alertService
+     */
+    public function setAlertService(AlertServiceInterface $alertService): void
+    {
+        $this->alertService = $alertService;
     }
 }

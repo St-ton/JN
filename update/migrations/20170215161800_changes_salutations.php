@@ -15,10 +15,10 @@ use JTL\Update\Migration;
 class Migration_20170215161800 extends Migration implements IMigration
 {
     protected $author      = 'ms';
-    protected $description = 'changes female salutation to ms and adds general salutation';
+    protected $description = 'Change female salutation to ms and adds general salutation';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -29,7 +29,7 @@ class Migration_20170215161800 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

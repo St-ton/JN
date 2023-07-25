@@ -89,5 +89,11 @@ msgstr "Ihre aktuelle Version von JTL-Shop"
 msgid "currentTemplateVersion"
 msgstr "Ihre aktuelle Template-Version"
 
+msgid "%d plugins were disabled for compatibility reasons. Please check your installed plugins manually."
+msgstr "%d Plugins wurden aus Kompatibilitätsgründen deaktiviert. Bitte überprüfen Sie Ihre installierten Plugins und aktivieren Sie sie ggf. einzeln manuell."
+
 msgid "errorMinShopVersionRequired"
 msgstr "Ihr Onlineshop verfügt nicht über die benötigte Mindestversion für das Update auf Version %s. Sie benötigen mindestens die Version %s, um das Update auf die Version %s durchführen zu können. Folgen Sie dazu bitte der entsprechenden Anleitung in unserem <a href=\"%s\" target=\"_blank\">Guide</a>."
+
+msgid "%d config values were updated after database update."
+msgstr "Nach dem Datenbank-Update wurden %d Template-Einstellungen aktualisiert."

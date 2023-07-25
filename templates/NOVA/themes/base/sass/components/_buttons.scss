@@ -1,6 +1,16 @@
 // theme buttons
 .btn { text-decoration: none; }
 
+.btn-hidden-default {
+  overflow: visible !important;
+  height: 0 !important;
+  width: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  padding: 0 !important;
+  display: block !important;
+}
+
 .btn-primary { overflow: hidden; position: relative;
   @include hover { background-color: lighten($primary, 8%); border-color: lighten($primary, 8%); color: color-yiq($primary);}
 
@@ -106,7 +116,6 @@
 
 #add-to-cart .btn{
   .btn-basket-check {
-    top: 0; left: 0; width: 100%; height: 100%; white-space: nowrap;
     span {
       margin-right: map_get($spacers, 1);
       display: none;
@@ -256,4 +265,8 @@
 
 .btn-row {
   margin-top: map-get($spacers, 5);
+}
+.btn-show-more {
+  padding-left: 0;
+  padding-bottom: 0;
 }

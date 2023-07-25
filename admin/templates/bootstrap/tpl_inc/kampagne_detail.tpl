@@ -23,7 +23,7 @@
     function selectSubmit(currentSelect) {ldelim}
         var $kKampagne = currentSelect.options[currentSelect.selectedIndex].value;
         if ($kKampagne > 0) {ldelim}
-            window.location.href = 'kampagne.php?detail=1&token={$smarty.session.jtl_token}&kKampagne=' + $kKampagne;
+            window.location.href = '{$adminURL}{$route}?detail=1&token={$smarty.session.jtl_token}&kKampagne=' + $kKampagne;
         {rdelim}
     {rdelim}
 </script>
@@ -33,7 +33,7 @@
 <div id="content">
     <div class="card">
         <div class="card-body">
-            <form method="post" action="kampagne.php">
+            <form method="post" action="{$adminURL}{$route}">
                 {$jtl_token}
                 <input type="hidden" name="detail" value="1" />
                 <input type="hidden" name="zeitraum" value="1" />
@@ -56,7 +56,7 @@
                             <label class="col-sm-3 col-form-label" for="kKampagne">{__('kampagneSingle')}:</label>
                             <div class="col-sm">
                                 <select id="kKampagne" name="kKampagne" class="custom-select combo" onChange="selectSubmit(this);">
-                                    {if isset($oKampagne_arr) && $oKampagne_arr|@count > 0}
+                                    {if isset($oKampagne_arr) && count($oKampagne_arr) > 0}
                                         {foreach $oKampagne_arr as $oKampagneTMP}
                                             <option value="{$oKampagneTMP->kKampagne}"{if $oKampagneTMP->kKampagne == $oKampagne->kKampagne} selected{/if}>{$oKampagneTMP->getName()}</option>
                                         {/foreach}
@@ -95,7 +95,7 @@
                                 </select>
                             </div>
                             <div class="col-sm-auto">
-                                {assign var=cJahr value=$smarty.now|date_format:'%Y'}
+                                {assign var=cJahr value=$smarty.now|date_format:'Y'}
                                 <select name="cFromYear" class="custom-select combo">
                                     {section name=fromYear loop=$cJahr+1 start=2005 step=1}
                                         <option value="{$smarty.section.fromYear.index}"
@@ -134,7 +134,7 @@
                                     <option value="12"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 12} selected{/if}>{__('december')}</option>
                                 </select>
                             </div>
-                            {assign var=cJahr value=$smarty.now|date_format:'%Y'}
+                            {assign var=cJahr value=$smarty.now|date_format:'Y'}
                             <div class="col-sm-auto mb-2">
                                 <select name="cToYear" class="custom-select combo">
                                     {section name=toYear loop=$cJahr+1 start=2005 step=1}
@@ -172,7 +172,7 @@
         </nav>
         <div class="tab-content">
             <div id="detailansicht" class="tab-pane fade {if $cTab === '' || $cTab === 'detailansicht'} active show{/if}">
-                {if isset($oKampagneStat_arr) && $oKampagneStat_arr|@count > 0 && isset($oKampagneDef_arr) && $oKampagneDef_arr|@count > 0}
+                {if isset($oKampagneStat_arr) && count($oKampagneStat_arr) > 0 && isset($oKampagneDef_arr) && count($oKampagneDef_arr) > 0}
                     <div class="table-responsive">
                         <table class="table table-striped text-center">
                             <thead>
@@ -193,7 +193,7 @@
                                             {foreach $oKampagneStatDef_arr as $kKampagneDef => $oKampagneStatDef_arrItem}
                                                 {if $kKampagneDef !== 'cDatum'}
                                                     <td>
-                                                        <a href="kampagne.php?kKampagne={$oKampagne->kKampagne}&defdetail=1&kKampagneDef={$kKampagneDef}&cStamp={$kKey}&token={$smarty.session.jtl_token}">
+                                                        <a href="{$adminURL}{$route}?kKampagne={$oKampagne->kKampagne}&defdetail=1&kKampagneDef={$kKampagneDef}&cStamp={$kKey}&token={$smarty.session.jtl_token}">
                                                             {$oKampagneStat_arr[$kKey][$kKampagneDef]}
                                                         </a>
                                                     </td>
@@ -220,8 +220,8 @@
                 {/if}
             </div>
             <div id="detailgraphen" class="tab-pane fade{if $cTab === 'detailgraphen'} active show{/if}">
-                {if $Charts|@count > 0}
-                    {foreach name=charts from=$Charts key=key item=Chart}
+                {if count($Charts) > 0}
+                    {foreach $Charts as $key => $Chart}
                         <div class="my-5">
                             <div class="subheading1 mb-1">{$TypeNames[$key]}:</div>
                             {if isset($headline)}
@@ -246,7 +246,7 @@
     <div class="save-wrapper card-footer">
         <div class="row">
             <div class="ml-auto col-sm-6 col-xl-auto text-left">
-                <a href="kampagne.php?tab=globalestats&token={$smarty.session.jtl_token}" class="btn btn-outline-primary btn-block">{__('goBack')}</a>
+                <a href="{$adminURL}{$route}?tab=globalestats&token={$smarty.session.jtl_token}" class="btn btn-outline-primary btn-block">{__('goBack')}</a>
             </div>
         </div>
     </div>

@@ -1,6 +1,6 @@
 {block name='account-my-account'}
     {block name='heading'}
-        <div class="h2">{lang key='welcome' section='login'} {$smarty.session.Kunde->cVorname} {$smarty.session.Kunde->cNachname}</div>
+        <div class="h2">{lang key='welcome' section='login'} {$Kunde->cVorname} {$Kunde->cNachname}</div>
     {/block}
     {opcMountPoint id='opc_before_account_page'}
     {block name='account-my-account-head-data'}
@@ -111,9 +111,19 @@
                                                 <small class="text-muted-util d-block">{$Kunde->cStrasse} {$Kunde->cHausnummer}, {$Kunde->cPLZ} {$Kunde->cOrt}, {$Kunde->cLand}</small>
                                             </td>
                                             <td class="text-right-util">
-                                                {link href="$cCanonicalURL?editRechnungsadresse=1"
-                                                    aria=["label"=>{lang key='editBillingAdress' section='account data'}]
-                                                }
+                                                {link href="$cCanonicalURL?editRechnungsadresse=1" aria=["label"=>{lang key='editBillingAdress' section='account data'}]}
+                                                    <span class="fas fa-pencil-alt"></span>
+                                                {/link}
+                                            </td>
+                                        </tr>
+                                    {/block}
+                                    {block name='account-my-account-shipping-address-shipping-address'}
+                                        <tr>
+                                            <td class="min-w-sm">
+                                                {lang key='shippingAdress' section='account data'}
+                                            </td>
+                                            <td class="text-right-util">
+                                                {link href="$cCanonicalURL?editLieferadresse=1" aria=["label"=>{lang key='editShippingAddress' section='account data'}]}
                                                     <span class="fas fa-pencil-alt"></span>
                                                 {/link}
                                             </td>
@@ -175,32 +185,33 @@
                             <div class="table-responsive">
                                 <table class="table table-vertical-middle table-hover">
                                     <tbody>
+                                    {get_static_route id='wunschliste.php' assign='wlSlug'}
                                     {foreach $oWunschliste_arr as $wishlist}
                                         <tr>
                                             {block name='account-my-account-wishlist-name'}
                                                 <td>
-                                                    {link href="{get_static_route id='wunschliste.php'}?wl={$wishlist->kWunschliste}"}{$wishlist->cName}{/link}<br />
-                                                    <small>{$wishlist->productCount} {lang key='products'}</small>
+                                                    {link href="{$wlSlug}?wl={$wishlist->getID()}"}{$wishlist->getName()}{/link}<br />
+                                                    <small>{$wishlist->getProductCount()} {lang key='products'}</small>
                                                 </td>
                                             {/block}
                                             {block name='account-my-account-wishlist-visibility'}
                                                 <td class="text-right-util">
                                                     <div class="d-inline-flex flex-nowrap">
-                                                        <span data-switch-label-state="public-{$wishlist->kWunschliste}" class="{if $wishlist->nOeffentlich != 1}d-none{/if}">
+                                                        <span data-switch-label-state="public-{$wishlist->getID()}" class="{if $wishlist->isPublic() !== true}d-none{/if}">
                                                             {lang key='public'}
                                                         </span>
-                                                        <span data-switch-label-state="private-{$wishlist->kWunschliste}" class="{if $wishlist->nOeffentlich == 1}d-none{/if}">
+                                                        <span data-switch-label-state="private-{$wishlist->getID()}" class="{if $wishlist->isPublic()}d-none{/if}">
                                                             {lang key='private'}
                                                         </span>
                                                         <div class="custom-control custom-switch">
                                                             <input type='checkbox'
                                                                    class='custom-control-input wl-visibility-switch'
-                                                                   id="wl-visibility-{$wishlist->kWunschliste}"
-                                                                   data-wl-id="{$wishlist->kWunschliste}"
-                                                                   {if $wishlist->nOeffentlich == 1}checked{/if}
-                                                                   aria-label="{if $wishlist->nOeffentlich == 1}{lang key='wishlistNoticePublic' section='login'}{else}{lang key='wishlistNoticePrivate' section='login'}{/if}"
+                                                                   id="wl-visibility-{$wishlist->getID()}"
+                                                                   data-wl-id="{$wishlist->getID()}"
+                                                                   {if $wishlist->isPublic()}checked{/if}
+                                                                   aria-label="{if $wishlist->isPublic()}{lang key='wishlistNoticePublic' section='login'}{else}{lang key='wishlistNoticePrivate' section='login'}{/if}"
                                                             >
-                                                            <label class="custom-control-label" for="wl-visibility-{$wishlist->kWunschliste}"></label>
+                                                            <label class="custom-control-label" for="wl-visibility-{$wishlist->getID()}"></label>
                                                         </div>
                                                     </div>
                                                 </td>

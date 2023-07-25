@@ -1,11 +1,12 @@
-{function migration_list manager=null title='' filter=0 plugin=null} {* filter: 0 - All, 1 - Executed, 2 - Pending *}
-    <div class="card">
-        <div class="card-body">
+{function migration_list manager=null title='' filter=0 plugin=null hidden=true hasPendingMigrations=false} {* filter: 0 - All, 1 - Executed, 2 - Pending *}
+    <div class="card card-widget">
+        <div class="card-header">
             {if $title|strlen > 0}
                 <h4>{$title}</h4>
                 <hr class="mb-5">
             {/if}
-
+        </div>
+        <div class="card-body{if $hidden && !$hasPendingMigrations} body-hidden{/if}">
             <div class="table-responsive">
                 <table class="table table-striped table-align-top">
                     <thead>
@@ -19,8 +20,8 @@
                     <tbody>
                       {$migrationIndex = 1}
                       {$executedMigrations = $manager->getExecutedMigrations()}
-                      {foreach $manager->getMigrations()|@array_reverse as $m}
-                          {$executed = $m->getId()|in_array:$executedMigrations}
+                      {foreach array_reverse($manager->getMigrations()) as $m}
+                          {$executed = in_array($m->getId(), $executedMigrations)}
                           {if $filter === 0 || ($filter === 1 && $executed) || ($filter === 2 && !$executed)}
                               <tr>
                                   <td>{$migrationIndex++}</td>
@@ -61,7 +62,7 @@
     </div>
 {/function}
 
-{assign var=migrationURL value=$migrationURL|default:'dbupdater.php'}
+{assign var=migrationURL value=$migrationURL|default:($adminURL|cat:'/'|cat:JTL\Router\Route::DBUPDATER)}
 {assign var=pluginID value=$pluginID|default:null}
 {if $pluginID === null}
     <form name="updateForm" method="post" id="form-update">
@@ -74,7 +75,7 @@
             </div>
             <div id="btn-update-group" class="row">
                 <div class="col-sm-6 col-xl-auto mb-3">
-                    <a href="dbupdater.php?action=update" class="btn btn-success btn-block" data-callback="update"><i class="fa fa-flash"></i> {__('buttonUpdateNow')}</a>
+                    <a href="{$adminURL}{$route}?action=update" class="btn btn-success btn-block" data-callback="update"><i class="fa fa-flash"></i> {__('buttonUpdateNow')}</a>
                 </div>
                 <div class="col-sm-6 col-xl-auto">
                     <button id="backup-button" type="button" class="btn btn-outline-primary btn-block dropdown-toggle ladda-button" data-size="l" data-style="zoom-out" data-spinner-color="#000" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -89,13 +90,15 @@
         {else}
             <div class="alert alert-success h4">
                 <p class="text-center">
-                    {{__('dbUpToDate')}|sprintf:{$currentDatabaseVersion}}
+                    {sprintf(__('dbUpToDate'), $currentDatabaseVersion)}
                 </p>
             </div>
         {/if}
     </form>
 {/if}
+
 {if isset($manager) && is_object($manager)}
-    {migration_list manager=$manager filter=2 title=__('openMigrations') url=$migrationURL plugin=$pluginID}
+    {migration_list manager=$manager filter=2 title=__('openMigrations') url=$migrationURL plugin=$pluginID
+        hasPendingMigrations=$updatesAvailable|default:true}
     {migration_list manager=$manager filter=1 title=__('successfullMigrations') url=$migrationURL plugin=$pluginID}
 {/if}

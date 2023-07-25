@@ -55,7 +55,7 @@ class Characteristic extends AbstractImage
                 WHERE a.kMerkmal = :cid
                     AND tsprache.cShopStandard = \'Y\'',
             ['cid' => $req->getID()]
-        )->each(static function ($item, $key) use ($req) {
+        )->each(static function ($item, $key) use ($req): void {
             if ($key === 0 && !empty($item->path)) {
                 $req->setSourcePath($item->path);
             }
@@ -71,21 +71,23 @@ class Characteristic extends AbstractImage
         switch (Image::getSettings()['naming'][Image::TYPE_CHARACTERISTIC]) {
             case 2:
                 /** @var string|null $result */
-                $result = $mixed->path ?? $mixed->cBildpfad ?? null;
+                $result = \method_exists($mixed, 'getImagePath')
+                    ? $mixed->getImagePath()
+                    : ($mixed->path ?? $mixed->cBildpfad ?? null);
                 if ($result !== null) {
-                    $result = \pathinfo($result)['filename'];
+                    $result = \pathinfo($result, \PATHINFO_FILENAME);
                 }
                 break;
             case 1:
-                $result = $mixed->cName ?? null;
+                $result = \method_exists($mixed, 'getName') ? $mixed->getName() : ($mixed->cName ?? null);
                 break;
             case 0:
             default:
-                $result = $mixed->id ?? $mixed->kMerkmal ?? null;
+                $result = \method_exists($mixed, 'getID') ? $mixed->getID() : ($mixed->id ?? $mixed->kMerkmal ?? null);
                 break;
         }
         if ($result === null && $mixed->currentImagePath !== null) {
-            $result = \pathinfo($mixed->currentImagePath)['filename'];
+            $result = \pathinfo($mixed->currentImagePath, \PATHINFO_FILENAME);
         }
 
         return empty($result) ? 'image' : Image::getCleanFilename((string)$result);

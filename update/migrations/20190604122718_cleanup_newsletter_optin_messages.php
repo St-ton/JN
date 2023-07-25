@@ -18,7 +18,7 @@ class Migration_20190604122718 extends Migration implements IMigration
     protected $description = 'Cleanup newsletter optin messages';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -30,7 +30,7 @@ class Migration_20190604122718 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Services\JTL;
 
@@ -25,11 +25,11 @@ interface BoxServiceInterface
      * @return BoxServiceInterface
      */
     public static function getInstance(
-        array $config,
-        FactoryInterface $factory,
-        DbInterface $db,
+        array             $config,
+        FactoryInterface  $factory,
+        DbInterface       $db,
         JTLCacheInterface $cache,
-        JTLSmarty $smarty,
+        JTLSmarty         $smarty,
         RendererInterface $renderer
     ): BoxServiceInterface;
 
@@ -43,11 +43,11 @@ interface BoxServiceInterface
      * @param RendererInterface $renderer
      */
     public function __construct(
-        array $config,
-        FactoryInterface $factory,
-        DbInterface $db,
+        array             $config,
+        FactoryInterface  $factory,
+        DbInterface       $db,
         JTLCacheInterface $cache,
-        JTLSmarty $smarty,
+        JTLSmarty         $smarty,
         RendererInterface $renderer
     );
 

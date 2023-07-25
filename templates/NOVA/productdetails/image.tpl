@@ -14,12 +14,14 @@
                 {block name='productdetails-image-actions'}
                     <div class="product-actions" data-toggle="product-actions">
                         {if $Einstellungen.artikeldetails.artikeldetails_vergleichsliste_anzeigen === 'Y'
-                            && $Einstellungen.vergleichsliste.vergleichsliste_anzeigen === 'Y'}
+                            && $Einstellungen.vergleichsliste.vergleichsliste_anzeigen === 'Y'
+                            && empty($smarty.get.quickView)}
                             {block name='productdetails-image-include-comparelist-button'}
                                 {include file='snippets/comparelist_button.tpl'}
                             {/block}
                         {/if}
-                        {if $Einstellungen.global.global_wunschliste_anzeigen === 'Y'}
+                        {if $Einstellungen.global.global_wunschliste_anzeigen === 'Y'
+                            && empty($smarty.get.quickView)}
                             {block name='productdetails-image-include-wishlist-button'}
                                 {include file='snippets/wishlist_button.tpl'}
                             {/block}
@@ -37,17 +39,18 @@
                                 {strip}
                                     <div class="square square-image js-gallery-images {if !$image@first}d-none{/if}">
                                         <div class="inner">
-                                            {image alt=$image->cAltAttribut|escape:'html'
+                                            {image alt=$image->cAltAttribut
                                                 class="product-image"
                                                 fluid=true
-                                                lazy=true
+                                                lazy={!$image@first}
                                                 webp=true
                                                 src="{$image->cURLMini}"
-                                                srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                    {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                    {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
-                                                    {$image->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
-                                                data=["list"=>"{$image->galleryJSON|escape:"html"}", "index"=>$image@index, "sizes"=>"auto"]
+                                                srcset="
+                                                    {$image->cURLMini} {$image->imageSizes->xs->size->width}w,
+                                                    {$image->cURLKlein} {$image->imageSizes->sm->size->width}w,
+                                                    {$image->cURLNormal} {$image->imageSizes->md->size->width}w,
+                                                    {$image->cURLGross} {$image->imageSizes->lg->size->width}w"
+                                                data=["list"=>"{$image->galleryJSON|escape:"html"}", "index"=>$image@index]
                                             }
                                         </div>
                                     </div>
@@ -69,8 +72,9 @@
             {/col}
         {/block}
         {block name='productdetails-image-preview'}
+            {if empty($smarty.get.quickView)}
             {col cols=12 align-self='end' class='product-detail-image-preview-bar'}
-            {$imageCount = $Artikel->Bilder|@count}
+            {$imageCount = $Artikel->Bilder|count}
             {$imageCountDefault = 5}
             {if $imageCount > 1}
                 <div id="gallery_preview_wrapper" class="product-thumbnails-wrapper">
@@ -88,7 +92,7 @@
                                     {elseif $image@index >= $imageCountDefault} d-none{/if}
                                     {if $image@last && $imageCount <= $imageCountDefault} last-mr{/if}">
                                     <div class="inner">
-                                        {image alt=$image->cAltAttribut|escape:'html'
+                                        {image alt=$image->cAltAttribut
                                             class="product-image"
                                             fluid=true
                                             lazy=true
@@ -107,6 +111,7 @@
                 </div>
             {/if}
             {/col}
+            {/if}
         {/block}
         {/row}
         {block name='productdetails-image-meta'}
@@ -120,7 +125,7 @@
         {/block}
 
         {block name='productdetails-image-variation-preview'}
-            {if !$isMobile && isset($Artikel->Variationen) && $Artikel->Variationen|@count > 0}
+            {if !$isMobile && isset($Artikel->Variationen) && $Artikel->Variationen|count > 0}
                 {assign var=VariationsSource value='Variationen'}
                 {if isset($ohneFreifeld) && $ohneFreifeld}
                     {assign var=VariationsSource value='VariationenOhneFreifeld'}

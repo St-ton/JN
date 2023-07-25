@@ -15,7 +15,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class StatusCommand extends Command
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function configure(): void
     {
@@ -24,9 +24,9 @@ class StatusCommand extends Command
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $list               = [];
         $manager            = new MigrationManager(Shop::Container()->getDB());
@@ -42,7 +42,7 @@ class StatusCommand extends Command
         }
         $this->printMigrationTable($list);
 
-        return 0;
+        return Command::SUCCESS;
     }
 
     /**

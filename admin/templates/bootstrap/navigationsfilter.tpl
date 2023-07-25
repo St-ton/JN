@@ -117,102 +117,13 @@
 </script>
 
 <div id="content">
-    <form name="einstellen" method="post" id="einstellen">
-        {$jtl_token}
-        <input type="hidden" name="speichern" value="1"/>
-        <div id="settings">
-            {assign var=open value=false}
-            {foreach $oConfig_arr as $oConfig}
-                {if $oConfig->cConf === 'Y'}
-                    <div class="item form-group form-row align-items-center">
-                        <label class="col col-sm-4 col-form-label text-sm-right" for="{$oConfig->cWertName}">{$oConfig->cName}:</label>
-                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 {if $oConfig->cInputTyp === 'number'}config-type-number{/if}">
-                        {if $oConfig->cInputTyp === 'selectbox'}
-                            <select id="{$oConfig->cWertName}" name="{$oConfig->cWertName}"
-                                    class="custom-select combo"
-                                    {if $oConfig->cWertName === 'preisspannenfilter_anzeige_berechnung'}
-                                        onChange="selectCheck(this);"
-                                    {/if}>
-                                {foreach $oConfig->ConfWerte as $wert}
-                                    <option value="{$wert->cWert}"
-                                            {if $oConfig->gesetzterWert == $wert->cWert}selected{/if}>
-                                        {$wert->cName}
-                                    </option>
-                                {/foreach}
-                            </select>
-                        {elseif $oConfig->cInputTyp === 'number'}
-                            <div class="input-group form-counter">
-                                <div class="input-group-prepend">
-                                    <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
-                                        <span class="fas fa-minus"></span>
-                                    </button>
-                                </div>
-                                <input class="form-control" type="number" name="{$oConfig->cWertName}"
-                               id="{$oConfig->cWertName}"
-                               value="{if isset($oConfig->gesetzterWert)}{$oConfig->gesetzterWert}{/if}"
-                               tabindex="1">
-                                <div class="input-group-append">
-                                    <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
-                                        <span class="fas fa-plus"></span>
-                                    </button>
-                                </div>
-                            </div>
-                        {else}
-                            <input class="form-control" type="text" name="{$oConfig->cWertName}"
-                                   id="{$oConfig->cWertName}"
-                                   value="{if isset($oConfig->gesetzterWert)}{$oConfig->gesetzterWert}{/if}"
-                                   tabindex="1">
-                        {/if}
-                        </div>
-                        {include file='snippets/einstellungen_icons.tpl' cnf=$oConfig}
-                        {if $oConfig->cWertName === 'preisspannenfilter_anzeige_berechnung'}
-                    </div>
-                    <div id="Werte" style="display: {if $oConfig->gesetzterWert === 'M'}block{else}none{/if};">
-                        <div id="ranges-error-alert" class="alert alert-danger" style="display: none;"></div>
-                        <div id="price-rows" class="w-100"></div>
-                        <div class="row">
-                            <div class="ml-auto col-sm-6 col-lg-auto">
-                                <button type="button" class="btn btn-primary btn-block" id="btn-add-range">
-                                    <i class="fal fa-plus"></i> {__('addPriceRange')}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="item input-group">
-                        {/if}
-                    </div>
-                {else}
-                    {if $oConfig->cName}
-                        {if $open}
-                    </div>
-                </div>
-                        {/if}
-                <div class="card">
-                    <div class="card-header">
-                        <div class="subheading1">
-                            {$oConfig->cName}
-                        </div>
-                        <hr class="mb-n3">
-                    </div>
-                    <div class="card-body">
-                        {assign var=open value=true}
-                    {/if}
-                {/if}
-            {/foreach}
-            {if $open}
-                    </div>
-                </div>
-            {/if}
-        </div>
-        <div class="submit card-footer save-wrapper">
-            <div class="row">
-                <div class="ml-auto col-sm-6 col-xl-auto">
-                    <button name="speichern" class="btn btn-primary btn-block" type="submit" value="{__('save')}">
-                        {__('saveWithIcon')}
-                    </button>
-                </div>
-            </div>
-        </div>
-    </form>
+    {include file='tpl_inc/config_section.tpl'
+        name='einstellen'
+        a='saveSettings'
+        action=$adminURL|cat:$route
+        buttonCaption=__('saveWithIcon')
+        title=__('settings')
+        tab='einstellungen'
+    }
 </div>
 {include file='tpl_inc/footer.tpl'}

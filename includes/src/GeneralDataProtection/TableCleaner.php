@@ -22,17 +22,33 @@ class TableCleaner
      *
      * @var DateTime
      */
-    private $now;
+    private DateTime $now;
 
     /**
      * @var LoggerInterface|null
      */
-    private $logger;
+    private ?LoggerInterface $logger;
 
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
+
+    /**
+     * @var bool
+     */
+    private bool $isFinished = true;
+
+    /**
+     * @var int
+     */
+    private $taskRepetitions;
+
+    /**
+     * @var int
+     */
+    private $lastProductID;
+
 
     /**
      * anonymize methods
@@ -40,15 +56,15 @@ class TableCleaner
      *
      * @var array
      */
-    private $methods = [
+    private array $methods = [
         ['name' => 'AnonymizeIps'                      , 'intervalDays' => 7],
         ['name' => 'AnonymizeDeletedCustomer'          , 'intervalDays' => 7],
         ['name' => 'CleanupCustomerRelicts'            , 'intervalDays' => 0],
-        ['name' => 'CleanupGuestAccountsWithoutOrders' , 'intervalDays' => 0],
         ['name' => 'CleanupNewsletterRecipients'       , 'intervalDays' => 30],
         ['name' => 'CleanupLogs'                       , 'intervalDays' => 90],
-        ['name' => 'CleanupService'                    , 'intervalDays' => 0], // multiple own intervals
-        ['name' => 'CleanupForgottenOptins'            , 'intervalDays' => 1]  // same as 24 hours
+        ['name' => 'CleanupService'                    , 'intervalDays' => 0],  // multiple own intervals
+        ['name' => 'CleanupForgottenOptins'            , 'intervalDays' => 1],  // same as 24 hours
+        ['name' => 'CleanupGuestAccountsWithoutOrders' , 'intervalDays' => 0]
     ];
 
     /**
@@ -59,7 +75,7 @@ class TableCleaner
     {
         try {
             $this->logger = Shop::Container()->getLogService();
-        } catch (Exception $e) {
+        } catch (Exception) {
             $this->logger = null;
         }
         $this->db  = Shop::Container()->getDB();
@@ -67,9 +83,88 @@ class TableCleaner
     }
 
     /**
-     * run all anonymize and clean up methods
+     * get the count of all methods
+     *
+     * @return int
      */
-    public function execute(): void
+    public function getMethodCount(): int
+    {
+        return \count($this->methods);
+    }
+
+    /**
+     * tells upper processes "this task is unfinished"
+     *
+     * @return bool
+     */
+    public function getIsFinished(): bool
+    {
+        return $this->isFinished;
+    }
+
+    /**
+     * tells upper processes the max repetition count of one task
+     *
+     * @return int
+     */
+    public function getTaskRepetitions(): int
+    {
+        return $this->taskRepetitions;
+    }
+
+    /**
+     * tells upper processes the max ID in table
+     *
+     * @return int
+     */
+    public function getLastProductID(): int
+    {
+        return $this->lastProductID;
+    }
+
+    /**
+     * execute one single job by its index number
+     *
+     * @param int $taskIdx
+     * @param int $taskRepetitions
+     * @param int $lastProductID
+     * @return void
+     */
+    public function executeByStep(int $taskIdx, int $taskRepetitions, int $lastProductID): void
+    {
+        $this->lastProductID = $lastProductID;
+        if ($taskIdx < 0 || $taskIdx > \count($this->methods)) {
+            $this->logger?->notice('GeneralDataProtection: No task ID given.');
+            return;
+        }
+        $methodName = __NAMESPACE__ . '\\' . $this->methods[$taskIdx]['name'];
+        /** @var MethodInterface $instance */
+        $instance = new $methodName($this->now, $this->methods[$taskIdx]['intervalDays'], $this->db);
+        // repetition-value from DB has preference over task-setting!
+        if ($taskRepetitions !== 0) {
+            // override the repetition-value of the instance
+            $instance->taskRepetitions = $taskRepetitions;
+            $this->taskRepetitions     = $taskRepetitions;
+        } else {
+            $this->taskRepetitions = $instance->getTaskRepetitions();
+        }
+        $instance->setLastProductID($this->lastProductID);
+        $instance->execute();
+        $this->taskRepetitions = $instance->getTaskRepetitions();
+        $this->lastProductID   = $instance->getLastProductID();
+        $this->isFinished      = $instance->getIsFinished();
+        $this->logger?->notice(
+            'Anonymize method executed: {name}, {cnt} entities processed.',
+            ['name' => $this->methods[$taskIdx]['name'], 'cnt' => $instance->getWorkSum()]
+        );
+    }
+
+    /**
+     * run all anonymize and clean up methods
+     *
+     * @return void
+     */
+    public function executeAll(): void
     {
         $timeStart = \microtime(true);
         foreach ($this->methods as $method) {
@@ -77,15 +172,9 @@ class TableCleaner
             /** @var MethodInterface $instance */
             $instance = new $methodName($this->now, $method['intervalDays'], $this->db);
             $instance->execute();
-            ($this->logger === null) ?: $this->logger->log(
-                \JTLLOG_LEVEL_NOTICE,
-                'Anonymize method executed: ' . $method['name']
-            );
+            $this->logger?->notice('Anonymize method executed: {method}', ['method' => $method['name']]);
         }
-        ($this->logger === null) ?: $this->logger->log(
-            \JTLLOG_LEVEL_NOTICE,
-            'Anonymizing finished in: ' . \sprintf('%01.4fs', \microtime(true) - $timeStart)
-        );
+        $this->logger?->notice('Anonymizing finished in: ' . \sprintf('%01.4fs', \microtime(true) - $timeStart));
     }
 
     /**

@@ -13,17 +13,11 @@ use JTL\Shop;
 class Test
 {
     /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
      * Test constructor.
      * @param DbInterface $db
      */
-    public function __construct(DbInterface $db)
+    public function __construct(private readonly DbInterface $db)
     {
-        $this->db = $db;
     }
 
     /**
@@ -46,7 +40,7 @@ class Test
             'kZahlungseingang' => 'tzahlungseingang'
         ] as $idField => $table) {
             if (($id = Request::postInt($idField)) > 0) {
-                $state = $this->db->getSingleObject("SHOW TABLE STATUS LIKE '" . $table . "'");
+                $state = $this->db->getSingleObject('SHOW TABLE STATUS LIKE :tbl', ['tbl' => $table]);
                 if ($state !== null && (int)$state->Auto_increment < $id) {
                     $this->db->queryPrepared(
                         'ALTER TABLE ' . $table . ' AUTO_INCREMENT = :newId',

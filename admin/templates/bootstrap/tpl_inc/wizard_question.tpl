@@ -34,7 +34,7 @@
                     </button>
                 </div>
                 <input type="number"
-                       class="form-control rounded-pill"
+                       class="form-control"
                        id="question-{$question->getID()}"
                        placeholder=""
                        data-setup-summary-id="question-{$question->getID()}"
@@ -131,7 +131,7 @@
                         </div>
                         <div class="col-xl">
                             {$option->getDescription()}
-                            <a href="premiumplugin.php?scope={$question->getScope()}&id={$option->getValue()}&fromWizard=true" target="_blank">
+                            <a href="{$adminURL}/premiumplugin?scope={$question->getScope()}&id={$option->getValue()}&fromWizard=true" target="_blank">
                                 {__('getToKnowMore')}
                                 <span class="fal fa-long-arrow-right ml-1"></span>
                             </a>

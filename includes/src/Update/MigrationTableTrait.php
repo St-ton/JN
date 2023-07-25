@@ -43,11 +43,14 @@ trait MigrationTableTrait
      * @param string $table
      * @param string $column
      */
-    public function dropColumn($table, $column): void
+    public function dropColumn(string $table, string $column): void
     {
+        if (!\array_key_exists($column, DBManager::getColumns($table))) {
+            return;
+        }
         try {
-            $this->execute("ALTER TABLE `{$table}` DROP `{$column}`");
-        } catch (Exception $e) {
+            $this->execute("ALTER TABLE `$table` DROP `$column`");
+        } catch (Exception) {
         }
     }
 
@@ -67,21 +70,21 @@ trait MigrationTableTrait
         $sections = $this->getLocaleSections();
 
         if (!isset($locales[$locale])) {
-            throw new Exception("Locale key '{$locale}' not found");
+            throw new Exception("Locale key '$locale' not found");
         }
 
         if (!isset($sections[$section])) {
-            throw new Exception("section name '{$section}' not found");
+            throw new Exception("section name '$section' not found");
         }
 
         $this->execute(
             "INSERT INTO tsprachwerte SET
-            kSprachISO = '{$locales[$locale]}', 
-            kSprachsektion = '{$sections[$section]}', 
-            cName = '{$key}', 
-            cWert = '{$value}', 
-            cStandard = '{$value}', 
-            bSystem = '{$system}' 
+            kSprachISO = '$locales[$locale]', 
+            kSprachsektion = '$sections[$section]', 
+            cName = '$key', 
+            cWert = '$value', 
+            cStandard = '$value', 
+            bSystem = '$system' 
             ON DUPLICATE KEY UPDATE 
                 cWert = IF(cWert = cStandard, VALUES(cStandard), cWert), cStandard = VALUES(cStandard)"
         );
@@ -91,7 +94,7 @@ trait MigrationTableTrait
      * @param string $key
      * @param string|null $section
      */
-    public function removeLocalization($key, $section = null): void
+    public function removeLocalization(string $key, string $section = null): void
     {
         if ($section) {
             $this->getDB()->queryPrepared(
@@ -132,11 +135,11 @@ trait MigrationTableTrait
     /**
      * @param string $table
      * @param string $column
-     * @return mixed
+     * @return int
      */
-    private function getLastId($table, $column)
+    private function getLastId($table, $column): int
     {
-        $result = $this->fetchOne(" SELECT `$column` as last_id FROM `$table` ORDER BY `$column` DESC LIMIT 1");
+        $result = $this->fetchOne(" SELECT `$column` AS last_id FROM `$table` ORDER BY `$column` DESC LIMIT 1");
 
         return ++$result->last_id;
     }
@@ -213,8 +216,8 @@ trait MigrationTableTrait
             $count = $this->fetchOne(
                 "SELECT COUNT(*) AS count 
                     FROM teinstellungenconf 
-                    WHERE cWertName='{$configName}' 
-                        OR kEinstellungenConf={$kEinstellungenConf}"
+                    WHERE cWertName = '$configName' 
+                        OR kEinstellungenConf = $kEinstellungenConf"
             );
             if ((int)$count->count !== 0) {
                 throw new Exception('another entry already present in teinstellungenconf and overwrite is disabled');
@@ -222,7 +225,7 @@ trait MigrationTableTrait
             $count = $this->fetchOne(
                 "SELECT COUNT(*) AS count 
                     FROM teinstellungenconfwerte 
-                    WHERE kEinstellungenConf={$kEinstellungenConf}"
+                    WHERE kEinstellungenConf = $kEinstellungenConf"
             );
             if ((int)$count->count !== 0) {
                 throw new Exception('another entry already present in ' .
@@ -300,22 +303,22 @@ trait MigrationTableTrait
     }
 
     /**
-     * @param string $key the key name to be removed
+     * @param string $key
      */
-    public function removeConfig($key): void
+    public function removeConfig(string $key): void
     {
-        $this->execute("DELETE FROM teinstellungen WHERE cName = '{$key}'");
+        $this->execute("DELETE FROM teinstellungen WHERE cName = '$key'");
         if ($this->getDB()->getSingleObject("SHOW TABLES LIKE 'teinstellungen_default'") !== null) {
-            $this->execute("DELETE FROM teinstellungen_default WHERE cName = '{$key}'");
+            $this->execute("DELETE FROM teinstellungen_default WHERE cName = '$key'");
         }
         $this->execute(
             "DELETE FROM teinstellungenconfwerte 
                 WHERE kEinstellungenConf = (
                     SELECT kEinstellungenConf 
                         FROM teinstellungenconf 
-                        WHERE cWertName = '{$key}'
+                        WHERE cWertName = '$key'
                 )"
         );
-        $this->execute("DELETE FROM teinstellungenconf WHERE cWertName = '{$key}'");
+        $this->execute("DELETE FROM teinstellungenconf WHERE cWertName = '$key'");
     }
 }

@@ -16,34 +16,34 @@ abstract class AbstractSortingOption extends Option implements SortingOptionInte
     /**
      * @var Join
      */
-    protected $join;
+    protected Join $join;
 
     /**
      * @var string
      */
-    protected $orderBy = '';
+    protected string $orderBy = '';
 
     /**
      * @var int
      */
-    protected $priority = 0;
+    protected int $priority = 0;
 
     /**
      * @var PluginInterface|null
      */
-    protected $plugin;
+    protected ?PluginInterface $plugin;
 
     /**
      * @var array
      */
-    public static $mapping = [
+    public static array $mapping = [
         'angezeigterName' => 'Name',
         'value'           => 'Value'
     ];
 
     /**
      * AbstractSortingOption constructor.
-     * @param ProductFilter $productFilter
+     * @param ProductFilter        $productFilter
      * @param PluginInterface|null $plugin
      */
     public function __construct(ProductFilter $productFilter, ?PluginInterface $plugin = null)

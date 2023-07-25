@@ -14,52 +14,52 @@ class Item implements ItemInterface
     /**
      * @var int
      */
-    private $id;
+    private int $id = 0;
 
     /**
      * @var int
      */
-    private $pluginID;
+    private int $pluginID = 0;
 
     /**
      * @var string
      */
-    private $itemID;
+    private string $itemID = '';
 
     /**
      * @var string[]
      */
-    private $name;
+    private array $name = [];
 
     /**
      * @var string[]
      */
-    private $description;
+    private array $description = [];
 
     /**
      * @var string[]
      */
-    private $purpose;
+    private array $purpose = [];
 
     /**
      * @var string[]
      */
-    private $company;
+    private array $company = [];
 
     /**
      * @var string[]
      */
-    private $privacyPolicy;
+    private array $privacyPolicy = [];
 
     /**
      * @var int
      */
-    private $currentLanguageID;
+    private int $currentLanguageID;
 
     /**
      * @var bool
      */
-    private $active;
+    private bool $active = false;
 
     /**
      * Item constructor.
@@ -94,7 +94,7 @@ class Item implements ItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getID()
     {
@@ -102,7 +102,7 @@ class Item implements ItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setID($id): void
     {
@@ -110,7 +110,7 @@ class Item implements ItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getName(int $idx = null): string
     {
@@ -118,7 +118,7 @@ class Item implements ItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setName(string $name, int $idx = null): void
     {
@@ -126,7 +126,7 @@ class Item implements ItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getDescription(int $idx = null): string
     {
@@ -134,7 +134,7 @@ class Item implements ItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setDescription(string $description, int $idx = null): void
     {
@@ -142,7 +142,7 @@ class Item implements ItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getPurpose(int $idx = null): string
     {
@@ -150,7 +150,7 @@ class Item implements ItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setPurpose(string $purpose, int $idx = null): void
     {
@@ -158,7 +158,7 @@ class Item implements ItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getCompany(int $idx = null): string
     {
@@ -166,7 +166,7 @@ class Item implements ItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setCompany(string $company, int $idx = null): void
     {
@@ -174,7 +174,7 @@ class Item implements ItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getPrivacyPolicy(int $idx = null): string
     {
@@ -182,7 +182,7 @@ class Item implements ItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setPrivacyPolicy(string $tos, int $idx = null): void
     {
@@ -190,7 +190,15 @@ class Item implements ItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
+     */
+    public function hasMoreInfo(): bool
+    {
+        return !empty($this->getPurpose()) || !empty($this->getCompany()) || !empty($this->getPrivacyPolicy());
+    }
+
+    /**
+     * @inheritdoc
      */
     public function getCurrentLanguageID(): int
     {
@@ -198,7 +206,7 @@ class Item implements ItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setCurrentLanguageID(int $currentLanguageID): void
     {

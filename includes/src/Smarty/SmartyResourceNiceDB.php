@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Smarty;
 
@@ -13,24 +13,12 @@ use Smarty_Resource_Custom;
 class SmartyResourceNiceDB extends Smarty_Resource_Custom
 {
     /**
-     * @var string
-     */
-    private $type;
-
-    /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
      * SmartyResourceNiceDB constructor.
      * @param DbInterface $db
      * @param string      $type
      */
-    public function __construct(DbInterface $db, string $type = ContextType::EXPORT)
+    public function __construct(private readonly DbInterface $db, private string $type = ContextType::EXPORT)
     {
-        $this->db   = $db;
-        $this->type = $type;
     }
 
     /**
@@ -54,7 +42,7 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
      * @param string $source
      * @param int    $mtime
      */
-    public function fetch($name, &$source, &$mtime)
+    public function fetch($name, &$source, &$mtime): void
     {
         if ($this->type === ContextType::EXPORT) {
             $source = $this->getExportSource((int)$name);
@@ -64,7 +52,10 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
             $source = $this->getNewsletterSource($name);
         } else {
             $source = '';
-            Shop::Container()->getLogService()->notice('Template-Typ ' . $this->type . ' wurde nicht gefunden');
+            Shop::Container()->getLogService()->notice(
+                'Template-Typ {type} wurde nicht gefunden',
+                ['type' => $this->type]
+            );
         }
     }
 
@@ -118,20 +109,23 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
                 [(int)$pcs[1], (int)$pcs[2]]
             );
         }
-        if (isset($vl->cContentHtml)) {
+        if ($vl !== null && isset($vl->cContentHtml)) {
             if ($pcs[0] === 'html') {
                 $source = $vl->cContentHtml;
             } elseif ($pcs[0] === 'text' || $pcs[0] === 'plain') {
                 $source = $vl->cContentText;
             } else {
                 $source = '';
-                Shop::Container()->getLogService()->notice('Ungueltiger Emailvorlagen-Typ: ' . $pcs[0]);
+                Shop::Container()->getLogService()->notice(
+                    'Ungueltiger Emailvorlagen-Typ: {type}',
+                    ['type' => $pcs[0]]
+                );
             }
         } else {
             $source = '';
             Shop::Container()->getLogService()->notice(
-                'Emailvorlage mit der ID ' . (int)$pcs[1] .
-                ' in der Sprache ' . (int)$pcs[2] . ' wurde nicht gefunden'
+                'Emailvorlage mit der ID {id}  in der Sprache {lang} wurde nicht gefunden',
+                ['id' => (int)$pcs[1], 'lang' => (int)$pcs[2]]
             );
         }
 
@@ -144,11 +138,7 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
      */
     private function getExportSource(int $id): string
     {
-        $exportformat = $this->db->select('texportformat', 'kExportformat', $id);
-
-        return empty($exportformat->kExportformat)
-            ? ''
-            : $exportformat->cContent;
+        return $this->db->select('texportformat', 'kExportformat', $id)->cContent ?? '';
     }
 
     /**

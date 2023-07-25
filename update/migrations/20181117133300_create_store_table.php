@@ -15,10 +15,10 @@ use JTL\Update\Migration;
 class Migration_20181117133300 extends Migration implements IMigration
 {
     protected $author      = 'aj';
-    protected $description = 'create store table';
+    protected $description = 'Create store table';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -32,7 +32,7 @@ class Migration_20181117133300 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

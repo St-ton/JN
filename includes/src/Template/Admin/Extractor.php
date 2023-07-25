@@ -19,17 +19,17 @@ class Extractor
 {
     private const UNZIP_DIR = \PFAD_ROOT . \PFAD_DBES_TMP;
 
-    private const GIT_REGEX = '/(.*)((-master)|(-[a-zA-Z0-9]{40}))\/(.*)/';
+    private const GIT_REGEX = '/(.*)((-master)|(-[a-zA-Z\d]{40}))\/(.*)/';
 
     /**
      * @var InstallationResponse
      */
-    private $response;
+    private InstallationResponse $response;
 
     /**
      * @var MountManager
      */
-    private $manager;
+    private MountManager $manager;
 
     /**
      * Extractor constructor.
@@ -59,7 +59,7 @@ class Extractor
      * @param string $errstr
      * @return bool
      */
-    public function handlExtractionErrors($errno, $errstr): bool
+    public function handlExtractionErrors(int $errno, string $errstr): bool
     {
         $this->response->setStatus(InstallationResponse::STATUS_FAILED);
         $this->response->setError($errstr);
@@ -85,7 +85,7 @@ class Extractor
         try {
             $this->manager->createDirectory('tpl://' . $base . $dirName);
         } catch (Throwable $e) {
-            $this->handlExtractionErrors(0, \__('errorDirCreate') . $base . $dirName);
+            $this->handlExtractionErrors(0, \__('errorDirCreate') . $base . $dirName . ' - ' . $e->getMessage());
 
             return false;
         }
@@ -95,13 +95,13 @@ class Extractor
             if ($item->isDir()) {
                 try {
                     $this->manager->createDirectory('tpl://' . $target);
-                } catch (Throwable $e) {
+                } catch (Throwable) {
                     $ok = false;
                 }
             } else {
                 try {
                     $this->manager->move($source, 'tpl://' . $target);
-                } catch (Throwable $e) {
+                } catch (Throwable) {
                     $ok = false;
                     $this->manager->delete('tpl://' . $target);
                     $this->manager->move($source, 'tpl://' . $target);
@@ -135,7 +135,7 @@ class Extractor
         for ($i = 0; $i < $zip->numFiles; $i++) {
             if ($i === 0) {
                 $dirName = $zip->getNameIndex($i);
-                if (\mb_strpos($dirName, '.') !== false) {
+                if (\str_contains($dirName, '.')) {
                     $this->handlExtractionErrors(0, \__('pluginInstallInvalidArchive'));
 
                     return false;

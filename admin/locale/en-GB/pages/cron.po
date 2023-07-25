@@ -17,6 +17,9 @@ msgstr "Start date"
 msgid "headingLastStarted"
 msgstr "Last started"
 
+msgid "headingNextStart"
+msgstr "Next start"
+
 msgid "headingFrequency"
 msgstr "Frequency"
 
@@ -44,8 +47,14 @@ msgstr "Status emails"
 msgid "licensecheck"
 msgstr "License check"
 
+msgid "topsellerupdate"
+msgstr "Topseller update"
+
 msgid "dataprotection"
 msgstr "Anonymisation of customer data"
 
 msgid "exportformat"
 msgstr "Export"
+
+msgid "sendMailQueue"
+msgstr "Send emails with a time delay"

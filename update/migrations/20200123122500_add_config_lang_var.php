@@ -16,10 +16,10 @@ use JTL\Update\Migration;
 class Migration_20200123122500 extends Migration implements IMigration
 {
     protected $author      = 'ms';
-    protected $description = 'adds config lang var';
+    protected $description = 'Add config lang var';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -43,7 +43,7 @@ class Migration_20200123122500 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

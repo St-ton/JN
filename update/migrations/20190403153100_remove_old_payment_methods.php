@@ -13,10 +13,10 @@ use JTL\Update\Migration;
 class Migration_20190403153100 extends Migration implements IMigration
 {
     protected $author      = 'fm';
-    protected $description = 'remove old payment methods';
+    protected $description = 'Remove old payment methods';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -77,7 +77,7 @@ class Migration_20190403153100 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

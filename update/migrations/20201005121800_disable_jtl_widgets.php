@@ -12,7 +12,7 @@ class Migration_20201005121800 extends Migration implements IMigration
     protected $description = 'Disable old JTL Widgets plugin';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -20,7 +20,7 @@ class Migration_20201005121800 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

@@ -27,24 +27,27 @@
                 {if $layout === 'dropdown'}
                 {block name='snippets-linkgroup-recursive-list'}
                     {foreach $links as $li}
-                        {assign var=hasItems value=$li->getChildLinks()->count() > 0 && (($i+1) < $limit)}
+                        {$activeParent = -1}
+                        {$hasItems = $li->getChildLinks()->count() > 0 && (($i+1) < $limit)}
                         {if isset($activeParents) && is_array($activeParents) && isset($activeParents[$i])}
-                            {assign var=activeParent value=$activeParents[$i]}
+                            {$activeParent = $activeParents[$i]}
                         {/if}
+                        {$active = $li->getIsActive()
+                            || (isset($activeParent) && $activeParent == $li->getID())
+                            || ($li->getID() == $activeId)}
                         {if $hasItems}
-                            <li class="link-group-item nav-item {if $hasItems}dropdown{/if}{if $li->getIsActive() || (isset($activeParent) && $activeParent == $li->getID())} active{/if}">
+                            <li class="link-group-item nav-item {if $hasItems}dropdown{/if}{if $active} active{/if}">
                                 {block name='snippets-linkgroup-recursive-link'}
                                     <a class="nav-link dropdown-toggle" target="_self" href="{$li->getURL()}" data-toggle="collapse"
                                        data-target="#link_box_{$li->getID()}_{$i}"
-                                       aria-expanded="{if $li->getIsActive() || (isset($activeParent) && $activeParent == $li->getID())}true{else}false{/if}">
+                                       aria-expanded="{if $active}true{else}false{/if}">
                                         {$li->getName()}
                                     </a>
                                 {/block}
                                 {block name='snippets-linkgroup-recursive-has-items-nav'}
-                                    {nav vertical=true class="collapse {if $li->getID() == $activeId
-                                        || ((isset($activeParent)
-                                        && isset($activeParent->kLink))
-                                        && $activeParent->kLink == $li->getID())}show{/if}" id="link_box_{$li->getID()}_{$i}"
+                                    {nav vertical=true class="collapse {if ($li->getReference() > 0 && $li->getReference() == $activeId)
+                                        || ($li->getReference() > 0 && $li->getReference() == $activeParent)
+                                        || $active || $activeParent === $li->getID()}show{/if}" id="link_box_{$li->getID()}_{$i}"
                                     }
                                     {block name='snippets-linkgroup-recursive-include-linkgroup-recursive'}
                                         {if $li->getChildLinks()->count() > 0}
@@ -58,9 +61,7 @@
                             </li>
                         {else}
                             {block name='snippets-linkgroup-recursive-has-not-items'}
-                                {navitem class="{if $li->getIsActive() || (isset($activeParent) && $activeParent == $li->getID())} active{/if}"
-                                    href=$li->getURL()
-                                }
+                                {navitem class="{if $active || $li->getID() === $activeId} active{/if}" href=$li->getURL() target=$li->getTarget()}
                                     {$li->getName()}
                                 {/navitem}
                             {/block}
@@ -73,7 +74,8 @@
                             {link href=$mainLink->getURL()
                                 nofollow=$mainLink->getNoFollow()
                                 class="d-lg-block {if $firstChild}submenu-headline submenu-headline-toplevel{/if} {$subCategory} {if $mainLink->getChildLinks()->count() > 0}nav-link dropdown-toggle{/if}"
-                                aria=["expanded"=>"false"]}
+                                aria=["expanded"=>"false"]
+                                target=$mainLink->getTarget()}
                                 <span class="text-truncate d-block">
                                     {$mainLink->getName()}
                                 </span>
@@ -85,7 +87,7 @@
                                     {nav}
                                     {block name='snippets-linkgroup-recursive-mega-child-header'}
                                         <li class="nav-item d-lg-none">
-                                            {link href=$mainLink->getURL() nofollow=true}
+                                            {link href=$mainLink->getURL() nofollow=true target=$mainLink->getTarget()}
                                                 <strong class="nav-mobile-heading">
                                                     {lang key='menuShow' printf=$mainLink->getName()}
                                                 </strong>
@@ -110,7 +112,8 @@
                                             {else}
                                                 {block name='snippets-linkgroup-recursive-mega-child-link-no-child'}
                                                     {navitem href=$link->getURL()
-                                                        nofollow=$link->getNoFollow()}
+                                                        nofollow=$link->getNoFollow()
+                                                        target=$link->getTarget()}
                                                         <span class="text-truncate d-block">
                                                             {$link->getName()}
                                                         </span>

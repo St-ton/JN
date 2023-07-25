@@ -95,6 +95,27 @@ interface MailInterface
     public function setToMail($toMail): self;
 
     /**
+     * @param string $mail
+     * @param string $name
+     * @return void
+     * @since 5.3.0
+     */
+    public function addRecipient(string $mail, string $name = ''): void;
+
+    /**
+     * @return array{mail: string, name: string}
+     * @since 5.3.0
+     */
+    public function getRecipients(): array;
+
+    /**
+     * @param array $recipients
+     * @return void
+     * @since 5.3.0
+     */
+    public function setRecipients(array $recipients): void;
+
+    /**
      * @return string
      */
     public function getToName(): string;

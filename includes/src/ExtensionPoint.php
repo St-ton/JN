@@ -2,6 +2,7 @@
 
 namespace JTL;
 
+use JTL\DB\DbInterface;
 use stdClass;
 
 /**
@@ -11,45 +12,25 @@ use stdClass;
 class ExtensionPoint
 {
     /**
-     * @var int
+     * @param int   $nSeitenTyp
+     * @param array $cParam_arr
+     * @param int   $kSprache
+     * @param int   $kKundengruppe
      */
-    protected $nSeitenTyp;
-
-    /**
-     * @var array
-     */
-    protected $cParam_arr;
-
-    /**
-     * @var int
-     */
-    protected $kSprache;
-
-    /**
-     * @var int
-     */
-    protected $kKundengruppe;
-
-    /**
-     * @param int   $pageType
-     * @param array $params
-     * @param int   $languageID
-     * @param int   $customerGroupID
-     */
-    public function __construct(int $pageType, array $params, int $languageID, int $customerGroupID)
-    {
-        $this->nSeitenTyp    = $pageType;
-        $this->cParam_arr    = $params;
-        $this->kSprache      = $languageID;
-        $this->kKundengruppe = $customerGroupID;
+    public function __construct(
+        protected int   $nSeitenTyp,
+        protected array $cParam_arr,
+        protected int   $kSprache,
+        protected int   $kKundengruppe
+    ) {
     }
 
     /**
      * @return $this
      */
-    public function load(): self
+    public function load(?DbInterface $db = null): self
     {
-        $db         = Shop::Container()->getDB();
+        $db         = $db ?? Shop::Container()->getDB();
         $key        = $this->getPageKey();
         $extensions = $db->getObjects(
             "SELECT cClass, kInitial FROM textensionpoint
@@ -68,12 +49,15 @@ class ExtensionPoint
         foreach ($extensions as $extension) {
             $instance = null;
             $class    = \ucfirst($extension->cClass);
+            if (!\class_exists($class)) {
+                $class = '\\JTL\\' . $class;
+            }
             if (\class_exists($class)) {
                 /** @var IExtensionPoint $instance */
                 $instance = new $class($db);
                 $instance->init((int)$extension->kInitial);
             } else {
-                Shop::Container()->getLogService()->error('Extension "' . $class . '" not found');
+                Shop::Container()->getLogService()->error('Extension {ext} not found', ['ext' => $class]);
             }
         }
 

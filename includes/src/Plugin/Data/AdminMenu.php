@@ -14,7 +14,7 @@ class AdminMenu
     /**
      * @var Collection
      */
-    private $items;
+    private Collection $items;
 
     /**
      * AdminMenu constructor.
@@ -43,7 +43,7 @@ class AdminMenu
     /**
      * @param stdClass $item
      */
-    public function addItem($item): void
+    public function addItem(stdClass $item): void
     {
         $this->items->push($item);
     }
@@ -53,7 +53,7 @@ class AdminMenu
      */
     public function removeItem(int $menuID): void
     {
-        $this->items = $this->items->reject(static function ($value, $key) use ($menuID) {
+        $this->items = $this->items->reject(static function ($value, $key) use ($menuID): bool {
             return $value->kPluginAdminMenu === $menuID;
         });
     }

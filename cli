@@ -1,19 +1,23 @@
+#!/usr/bin/env php
 <?php declare(strict_types=1);
+
+use JTL\Console\Application;
+use JTL\Shop;
 
 if (PHP_SAPI !== 'cli') {
     echo 'Error: Shop CLI should be invoked via the CLI version of PHP, not the ' . PHP_SAPI . ' SAPI' . PHP_EOL;
     exit;
 }
 
-set_error_handler(function($code, $description, $file = null, $line = null, $context = null) {
+set_error_handler(static function($code, $description, $file = null, $line = null, $context = null) {
     if ($code === E_ERROR) {
-        echo $error . ' (' . $code . '): ' . $description . ' in [' . $file . ', line ' . $line . ']' . PHP_EOL;
+        echo 'Error (' . $code . '): ' . $description . ' in [' . $file . ', line ' . $line . ']' . PHP_EOL;
         exit;
     }
 });
 
-define('CLI_BATCHRUN', true);
-define('PFAD_INCLUDES', 'includes/');
+const CLI_BATCHRUN = true;
+const PFAD_INCLUDES = 'includes/';
 
 if (file_exists(__DIR__ . '/' . PFAD_INCLUDES . 'config.JTL-Shop.ini.php')) {
     require_once __DIR__ . '/' . PFAD_INCLUDES . 'config.JTL-Shop.ini.php';
@@ -25,8 +29,7 @@ if (!defined('PFAD_ROOT')) {
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'defines.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
-\JTL\Shop::setLanguage(1, 'ger');
-$application = new \JTL\Console\Application();
+Shop::setLanguage(1, 'ger');
+$application = new Application();
 $application->initPluginCommands();
 $application->run();

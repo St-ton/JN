@@ -24,17 +24,17 @@ class Nice
     /**
      * @var string
      */
-    private $apiKey = '';
+    private string $apiKey = '';
 
     /**
      * @var string
      */
-    private $domain = '';
+    private string $domain = '';
 
     /**
      * @var array
      */
-    private $moduleIDs = [];
+    private array $moduleIDs = [];
 
     /**
      * @return Nice
@@ -81,7 +81,7 @@ class Nice
                     FROM tbrocken 
                     LIMIT 1'
             );
-            if (!empty($data->cBrocken)) {
+            if ($data !== null && !empty($data->cBrocken)) {
                 $passA   = \mb_substr(\base64_decode($data->cBrocken), 0, 9);
                 $passE   = \mb_substr(
                     \base64_decode($data->cBrocken),

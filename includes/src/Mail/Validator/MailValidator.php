@@ -14,24 +14,12 @@ use stdClass;
 final class MailValidator implements ValidatorInterface
 {
     /**
-     * @var array
-     */
-    private $config;
-
-    /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
      * MailValidator constructor.
      * @param DbInterface $db
      * @param array       $config
      */
-    public function __construct(DbInterface $db, array $config)
+    public function __construct(private readonly DbInterface $db, private readonly array $config)
     {
-        $this->db     = $db;
-        $this->config = $config;
     }
 
     /**
@@ -65,7 +53,7 @@ final class MailValidator implements ValidatorInterface
             return false;
         }
         $blackList = $this->db->select('temailblacklist', 'cEmail', $email);
-        if (empty($blackList->cEmail)) {
+        if ($blackList === null || empty($blackList->cEmail)) {
             return false;
         }
         $block                = new stdClass();

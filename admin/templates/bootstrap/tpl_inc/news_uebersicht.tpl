@@ -1,3 +1,4 @@
+
 <script type="text/javascript" src="{$templateBaseURL}js/sorttable.js"></script>
 <script>
     $(window).on('load', function(){
@@ -71,9 +72,9 @@
         </nav>
         <div class="tab-content">
             <div id="inaktiv" class="tab-pane fade{if $cTab === '' || $cTab === 'inaktiv'} active show{/if}">
-                {if $comments && $comments|@count > 0}
+                {if $comments && count($comments) > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiKommentar cAnchor='inaktiv'}
-                    <form method="post" action="news.php">
+                    <form method="post" action="{$adminURL}{$route}">
                         {$jtl_token}
                         <input type="hidden" name="news" value="1" />
                         <input type="hidden" name="newskommentar_freischalten" value="1" />
@@ -105,11 +106,7 @@
                                             </td>
                                             <td class="TD2">
                                                 <label for="comment-{$comment->getID()}">
-                                                {*{if $comment->cVorname|strlen > 0}*}
-                                                    {*{$comment->cVorname} {$comment->cNachname}*}
-                                                {*{else}*}
-                                                    {$comment->getName()}
-                                                {*{/if}*}
+                                                    {$comment->getName()} ({$comment->getMail()})
                                                 </label>
                                             </td>
                                             <td class="TD3">{$comment->getNewsTitle()|truncate:50:'...'}</td>
@@ -117,7 +114,7 @@
                                             <td class="text-center">{$comment->getDateCreatedCompat()}</td>
                                             <td class="text-center">
                                                 <div class="btn-group">
-                                                    <a href="news.php?news=1&kNews={$comment->getNewsID()}&kNewsKommentar={$comment->getID()}&nkedit=1&tab=inaktiv&token={$smarty.session.jtl_token}"
+                                                    <a href="{$adminURL}{$route}?news=1&kNews={$comment->getNewsID()}&kNewsKommentar={$comment->getID()}&nkedit=1&tab=inaktiv&token={$smarty.session.jtl_token}"
                                                        class="btn btn-link px-2"
                                                        title="{__('modify')}"
                                                        data-toggle="tooltip">
@@ -143,7 +140,7 @@
                                         </div>
                                     </div>
                                     <div class="ml-auto col-sm-6 col-xl-auto">
-                                        <input name="kommentareloeschenSubmit" type="submit" data-id="loeschen" value="{__('delete')}" class="hidden-soft">
+                                        <input name="kommentareloeschenSubmit" type="submit" data-id="loeschen" value="1" class="hidden-soft">
                                         <button name="kommentareloeschenSubmit" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger btn-block"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
                                     </div>
                                     <div class="col-sm-6 col-xl-auto">
@@ -159,10 +156,9 @@
             </div>
             <div id="aktiv" class="tab-pane fade{if $cTab === 'aktiv'} active show{/if}">
                 {include file='tpl_inc/pagination.tpl' pagination=$oPagiNews cAnchor='aktiv'}
-                <form name="news" method="post" action="news.php">
+                <form name="news" method="post" action="{$adminURL}{$route}">
                     {$jtl_token}
                     <input type="hidden" name="news" value="1" />
-                    <input type="hidden" name="news_loeschen" value="1" />
                     <input type="hidden" name="tab" value="aktiv" />
                     <div>
                         <div class="subheading1">{__('newsOverview')}</div>
@@ -182,7 +178,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {if $oNews_arr|@count > 0}
+                                {if count($oNews_arr) > 0}
                                     {foreach $oNews_arr as $oNews}
                                         <tr>
                                             <td class="check">
@@ -194,7 +190,7 @@
                                             <td class="TD2"><label for="news-cb-{$oNews->getID()}">{$oNews->getTitle()}</label></td>
                                             <td class="TD4">
                                                 {foreach $oNews->getCustomerGroups() as $customerGroupID}
-                                                    {if $customerGroupID === -1}{__('all')}{else}{Kundengruppe::getNameByID($customerGroupID)}{/if}{if !$customerGroupID@last},{/if}
+                                                    {if $customerGroupID === -1}{__('all')}{else}{\JTL\Customer\CustomerGroup::getNameByID($customerGroupID)}{/if}{if !$customerGroupID@last},{/if}
                                                 {/foreach}
                                             </td>
                                             <td class="text-center">{$oNews->getDateValidFromLocalizedCompat()}</td>
@@ -203,7 +199,7 @@
                                             </td>
                                             <td class="text-center">
                                                 {if $oNews->getCommentCount() > 0}
-                                                    <a href="news.php?news=1&nd=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}">{$oNews->getCommentCount()}</a>
+                                                    <a href="{$adminURL}{$route}?news=1&nd=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}">{$oNews->getCommentCount()}</a>
                                                 {else}
                                                     {$oNews->getCommentCount()}
                                                 {/if}
@@ -211,7 +207,7 @@
                                             <td class="text-center">{$oNews->getDateCompat()}</td>
                                             <td class="text-center">
                                                 <div class="btn-group">
-                                                    <a href="news.php?news=1&nd=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}"
+                                                    <a href="{$adminURL}{$route}?news=1&nd=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}"
                                                        class="btn btn-link px-2"
                                                        title="{__('preview')}"
                                                        data-toggle="tooltip">
@@ -220,7 +216,7 @@
                                                             <span class="fas fa-eye"></span>
                                                         </span>
                                                     </a>
-                                                    <a href="news.php?news=1&news_editieren=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}"
+                                                    <a href="{$adminURL}{$route}?news=1&news_editieren=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}"
                                                        class="btn btn-link px-2"
                                                        title="{__('modify')}"
                                                        data-toggle="tooltip">
@@ -244,7 +240,6 @@
                             </table>
                         </div>
                         <input type="hidden" name="news" value="1" />
-                        <input type="hidden" name="erstellen" value="1" />
                         <input type="hidden" name="tab" value="aktiv" />
                         {include file='tpl_inc/pagination.tpl' pagination=$oPagiNews cAnchor='aktiv' isBottom=true}
                         <div class="card-footer save-wrapper">
@@ -256,29 +251,27 @@
                                     </div>
                                 </div>
                                 <div class="ml-auto col-sm-6 col-xl-auto">
-                                    <input name="loeschen" type="submit" data-id="loeschen" value="{__('delete')}" class="hidden-soft">
-                                    <button name="loeschen" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger btn-block"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
+                                    <input name="news_loeschen" type="submit" data-id="loeschen" value="1" class="hidden-soft">
+                                    <button name="news_loeschen" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger btn-block"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
                                 </div>
                                 <div class="col-sm-6 col-xl-auto">
-                                    <button name="news_erstellen" type="submit" value="{__('newAdd')}" class="btn btn-primary btn-block"><i class="fa fa-share"></i> {__('newAdd')}</button>
+                                    <button name="news_erstellen" type="submit" value="1" class="btn btn-primary btn-block"><i class="fa fa-share"></i> {__('newAdd')}</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </form>
                 <div class="container2">
-                    <form name="erstellen" method="post" action="news.php">
+                    <form name="erstellen" method="post" action="{$adminURL}{$route}">
                         {$jtl_token}
                     </form>
                 </div>
             </div>
-            <!-- #inaktiv -->
             <div id="kategorien" class="tab-pane fade{if $cTab === 'kategorien'} active show{/if}">
                 {include file='tpl_inc/pagination.tpl' pagination=$oPagiKats cAnchor='kategorien'}
-                <form name="news" method="post" action="news.php">
+                <form name="news" method="post" action="{$adminURL}{$route}">
                     {$jtl_token}
                     <input type="hidden" name="news" value="1" />
-                    <input type="hidden" name="news_kategorie_loeschen" value="1" />
                     <input type="hidden" name="tab" value="kategorien" />
                     <div>
                         <div class="subheading1">{__('newsCatOverview')}</div>
@@ -296,27 +289,27 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {if $oNewsKategorie_arr|@count}
-                                    {foreach $oNewsKategorie_arr as $oNewsKategorie}
-                                        <tr scope="row" class="tab_bg{$oNewsKategorie@iteration % 2}{if $oNewsKategorie->getLevel() > 1} hidden-soft{/if}" data-level="{$oNewsKategorie->getLevel()}">
+                                {if count($newsCategories) > 0}
+                                    {foreach $newsCategories as $category}
+                                        <tr scope="row" class="tab_bg{$category@iteration % 2}{if $category->getLevel() > 1} hidden-soft{/if}" data-level="{$category->getLevel()}">
                                             <th class="check">
                                                 <div class="custom-control custom-checkbox">
-                                                    <input class="custom-control-input" type="checkbox" name="kNewsKategorie[]" data-name="{$oNewsKategorie->getName()}" value="{$oNewsKategorie->getID()}" id="newscat-{$oNewsKategorie->getID()}" />
-                                                    <label class="custom-control-label" for="newscat-{$oNewsKategorie->getID()}"></label>
+                                                    <input class="custom-control-input" type="checkbox" name="kNewsKategorie[]" data-name="{$category->getName()}" value="{$category->getID()}" id="newscat-{$category->getID()}" />
+                                                    <label class="custom-control-label" for="newscat-{$category->getID()}"></label>
                                                 </div>
                                             </th>
-                                            <td class="TD2{if $oNewsKategorie->getLevel() === 1} hide-toggle-on{/if}" data-name="category">
-                                                <i class="fa fa-caret-right nav-toggle{if $oNewsKategorie->getChildren()->count() === 0} hidden{/if} cursor-pointer"></i>
-                                                <label for="newscat-{$oNewsKategorie->getID()}">{$oNewsKategorie->getName()|default:'???'}</label>
+                                            <td class="TD2{if $category->getLevel() === 1} hide-toggle-on{/if}" data-name="category">
+                                                <i class="fa fa-caret-right nav-toggle{if $category->getChildren()->count() === 0} hidden{/if} cursor-pointer"></i>
+                                                <label for="newscat-{$category->getID()}">{$category->getName()|default:'???'}</label>
                                             </td>
-                                            <td class="text-center">{$oNewsKategorie->getSort()}</td>
+                                            <td class="text-center">{$category->getSort()}</td>
                                             <td class="text-center">
-                                                <i class="fal fa-{if $oNewsKategorie->getIsActive()}check text-success{else}times text-danger{/if}"></i>
+                                                <i class="fal fa-{if $category->getIsActive()}check text-success{else}times text-danger{/if}"></i>
                                             </td>
-                                            <td class="text-center">{$oNewsKategorie->getDateLastModified()->format('d.m.Y H:i')}</td>
+                                            <td class="text-center">{$category->getDateLastModified()->format('d.m.Y H:i')}</td>
                                             <td class="text-center">
                                                 <div class="btn-group">
-                                                    <a href="news.php?news=1&newskategorie_editieren=1&kNewsKategorie={$oNewsKategorie->getID()}&tab=kategorien&token={$smarty.session.jtl_token}"
+                                                    <a href="{$adminURL}{$route}?news=1&newskategorie_editieren=1&kNewsKategorie={$category->getID()}&tab=kategorien&token={$smarty.session.jtl_token}"
                                                        class="btn btn-link px-2"
                                                        title="{__('modify')}"
                                                        data-toggle="tooltip">
@@ -328,7 +321,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                        {include 'tpl_inc/newscategories_recursive.tpl' children=$oNewsKategorie->getChildren() level=$oNewsKategorie->getLevel()}
+                                        {include 'tpl_inc/newscategories_recursive.tpl' children=$category->getChildren() level=$category->getLevel()}
                                     {/foreach}
                                 {else}
                                     <tr>
@@ -341,7 +334,6 @@
                             </table>
                         </div>
                         <input type="hidden" name="news" value="1" />
-                        <input type="hidden" name="erstellen" value="1" />
                         <input type="hidden" name="tab" value="kategorien" />
                         {include file='tpl_inc/pagination.tpl' pagination=$oPagiKats cAnchor='kategorien' isBottom=true}
                         <div class="card-footer save-wrapper">
@@ -353,13 +345,13 @@
                                     </div>
                                 </div>
                                 <div class="ml-auto col-sm-6 col-xl-auto">
-                                    <input name="loeschen" type="submit" data-id="loeschen" value="{__('delete')}" class="hidden-soft">
-                                    <button name="loeschen" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger btn-block">
+                                    <input name="news_kategorie_loeschen" type="submit" data-id="loeschen" value="1" class="hidden-soft">
+                                    <button name="news_kategorie_loeschen" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger btn-block">
                                         <i class="fas fa-trash-alt"></i> {__('delete')}
                                     </button>
                                 </div>
                                 <div class="col-sm-6 col-xl-auto">
-                                    <button name="news_kategorie_erstellen" type="submit" value="{__('newsCatCreate')}" class="btn btn-primary btn-block">
+                                    <button name="news_kategorie_erstellen" type="submit" value="1" class="btn btn-primary btn-block">
                                         <i class="fa fa-share"></i> {__('newsCatCreate')}
                                     </button>
                                 </div>
@@ -369,84 +361,16 @@
                 </form>
             </div>
             <div id="einstellungen" class="tab-pane fade{if $cTab === 'einstellungen'} active show{/if}">
-                <form name="einstellen" method="post" action="news.php">
-                    {$jtl_token}
-                    <input type="hidden" name="einstellungen" value="1" />
-                    <input type="hidden" name="tab" value="einstellungen" />
-                    <input type="hidden" name="news" value="1" />
-
-                    <div class="settings">
-                        <div class="subheading1">
-                            {__('settings')}
-                            <hr class="mb-3">
-                        </div>
-                        <div>
-                            {foreach $oConfig_arr as $oConfig}
-                                {if $oConfig->cConf === 'Y'}
-                                    <div class="form-group form-row align-items-center mb-5 mb-md-3">
-                                        <label class="col col-sm-4 col-form-label text-sm-right" for="{$oConfig->cWertName}">{$oConfig->cName}:</label>
-                                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 {if $oConfig->cInputTyp === 'number'}config-type-number{/if}">
-                                            {if $oConfig->cInputTyp === 'selectbox'}
-                                                <select name="{$oConfig->cWertName}" id="{$oConfig->cWertName}" class="custom-select combo">
-                                                    {foreach $oConfig->ConfWerte as $wert}
-                                                        <option value="{$wert->cWert}" {if $oConfig->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
-                                                    {/foreach}
-                                                </select>
-                                            {elseif $oConfig->cInputTyp === 'listbox'}
-                                                <select name="{$oConfig->cWertName}[]"
-                                                        id="{$oConfig->cWertName}"
-                                                        multiple="multiple"
-                                                        class="selectpicker custom-select"
-                                                        data-selected-text-format="count > 2"
-                                                        data-size="7"
-                                                        data-actions-box="true">
-                                                    {foreach $oConfig->ConfWerte as $wert}
-                                                        <option value="{$wert->kKundengruppe}" {foreach $oConfig->gesetzterWert as $gesetzterWert}{if $gesetzterWert->cWert == $wert->kKundengruppe}selected{/if}{/foreach}>{$wert->cName}</option>
-                                                    {/foreach}
-                                                </select>
-                                            {elseif $oConfig->cInputTyp === 'number'}
-                                                <div class="input-group form-counter">
-                                                    <div class="input-group-prepend">
-                                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
-                                                            <span class="fas fa-minus"></span>
-                                                        </button>
-                                                    </div>
-                                                    <input class="form-control" type="number" name="{$oConfig->cWertName}" id="{$oConfig->cWertName}" value="{if isset($oConfig->gesetzterWert)}{$oConfig->gesetzterWert}{/if}" tabindex="1" />
-                                                    <div class="input-group-append">
-                                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
-                                                            <span class="fas fa-plus"></span>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            {else}
-                                                <input class="form-control" type="text" name="{$oConfig->cWertName}" id="{$oConfig->cWertName}" value="{if isset($oConfig->gesetzterWert)}{$oConfig->gesetzterWert}{/if}" tabindex="1" />
-                                            {/if}
-                                        </div>
-                                        {include file='snippets/einstellungen_icons.tpl' cnf=$oConfig}
-                                    </div>
-                                {/if}
-                            {/foreach}
-
-                            {foreach $oNewsMonatsPraefix_arr as $oNewsMonatsPraefix}
-                                <div class="form-group form-row align-items-center mb-5 mb-md-3">
-                                    <label class="col col-sm-4 col-form-label text-sm-right" for="praefix_{$oNewsMonatsPraefix->cISOSprache}">{__('newsPraefix')} ({$oNewsMonatsPraefix->name})</label>
-                                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                        <input type="text" class="form-control" id="praefix_{$oNewsMonatsPraefix->cISOSprache}" name="praefix_{$oNewsMonatsPraefix->cISOSprache}" value="{$oNewsMonatsPraefix->cPraefix}" tabindex="1" />
-                                    </div>
-                                </div>
-                            {/foreach}
-                        </div>
-                        <div class="card-footer save-wrapper">
-                            <div class="row">
-                                <div class="ml-auto col-sm-6 col-xl-auto">
-                                    <button type="submit" value="{__('save')}" class="btn btn-primary btn-block">
-                                        {__('saveWithIcon')}
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </form>
+                {include file='tpl_inc/news_month_prefixes.tpl' assign='additional'}
+                {include file='tpl_inc/config_section.tpl'
+                    name='einstellen'
+                    a='saveSettings'
+                    action=$adminURL|cat:$route
+                    buttonCaption=__('saveWithIcon')
+                    title=__('settings')
+                    skipHeading=true
+                    additional=$additional
+                    tab='einstellungen'}
             </div>
         </div>
     </div>

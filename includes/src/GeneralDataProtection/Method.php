@@ -20,68 +20,130 @@ class Method
      *
      * @var DateTime
      */
-    protected $now;
+    protected DateTime $now;
 
     /**
-     * interval in "number of days"
+     * select the maximum of 1000 rows for one "step per task"!
+     * (CONSIDER: some tasks need to overwrite this!)
      *
      * @var int
      */
-    protected $interval = 0;
+    protected int $workLimit = 1000;
 
     /**
-     * select the maximum of 10,000 rows for one step!
-     * (if the scripts are running each day, we need some days
-     * to anonymize more than 10,000 data sets)
+     * summery of processed entities per method
      *
      * @var int
      */
-    protected $workLimit = 10000;
+    protected $workSum = 0;
+
+    /**
+     * is this task finished
+     *
+     * @var bool
+     */
+    protected $isFinished = false;
+
+    /**
+     * max repetitions of one task
+     * (can be overridden in each task)
+     *
+     * @var int
+     */
+    protected $taskRepetitions = 0;
+
+    /**
+     * last ID for `CleanupGuestAccountsWithoutOrders`
+     *
+     * @var int
+     */
+    protected $lastProductID = 0;
 
     /**
      * the last date we keep
      * (depends on interval)
      *
-     * @var string
+     * @var string|null
      */
-    protected $dateLimit;
+    protected ?string $dateLimit = null;
 
     /**
      * main shop logger
      *
      * @var LoggerInterface|null
      */
-    protected $logger;
-
-    /**
-     * @var DbInterface
-     */
-    protected $db;
+    protected ?LoggerInterface $logger;
 
     /**
      * @param DateTime    $now
      * @param int         $interval
      * @param DbInterface $db
      */
-    public function __construct(DateTime $now, int $interval, DbInterface $db)
+    public function __construct(DateTime $now, protected int $interval, protected DbInterface $db)
     {
         try {
             $this->logger = Shop::Container()->getLogService();
-        } catch (Exception $e) {
+        } catch (Exception) {
             $this->logger = null;
         }
-        $this->db       = $db;
-        $this->now      = clone $now;
-        $this->interval = $interval;
+        $this->now = clone $now;
         try {
             $this->dateLimit = $this->now->sub(
                 new DateInterval('P' . $this->interval . 'D')
             )->format('Y-m-d H:i:s');
-        } catch (Exception $e) {
-            ($this->logger === null) ?: $this->logger->log(
-                \JTLLOG_LEVEL_WARNING,
-                'Wrong Interval given: ' . $this->interval
-            );
+        } catch (Exception) {
+            $this->logger?->warning('Wrong interval given: {interval}', ['interval' => $this->interval]);
         }
+    }
+
+    /**
+     * deliver the state of a method
+     *
+     * @return bool
+     */
+    public function getIsFinished(): bool
+    {
+        return $this->isFinished;
+    }
+
+    /**
+     * deliver the summery of processed entities in method
+     *
+     * @return int
+     */
+    public function getWorkSum(): int
+    {
+        return $this->workSum;
+    }
+
+    /**
+     * deliver the max alowed repetition of one task
+     *
+     * @return int
+     */
+    public function getTaskRepetitions(): int
+    {
+        return $this->taskRepetitions;
+    }
+
+    /**
+     * deliver the last ID in table (CleanupGuestAccountsWithoutOrders)
+     *
+     * @return int
+     */
+    public function getLastProductID(): int
+    {
+        return $this->lastProductID ?? 0;
+    }
+
+    /**
+     * set the last processed tupel ID of a table
+     *
+     * @param int $lastProductID
+     * @return void
+     */
+    public function setLastProductID(int $lastProductID): void
+    {
+        $this->lastProductID = $lastProductID;
     }
 }

@@ -31,44 +31,19 @@ final class Export
     private const EXPORT_DIR = \PFAD_ROOT . \PFAD_EXPORT;
 
     /**
-     * @var DbInterface
+     * @var string
      */
-    private $db;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @var RendererInterface
-     */
-    private $renderer;
-
-    /**
-     * @var SchemaRendererInterface
-     */
-    private $schemaRenderer;
-
-    /**
-     * @var array
-     */
-    private $config;
+    private string $baseURL;
 
     /**
      * @var string
      */
-    private $baseURL;
-
-    /**
-     * @var string
-     */
-    private $baseImageURL;
+    private string $baseImageURL;
 
     /**
      * @var array
      */
-    private $blockedURLs = [
+    private array $blockedURLs = [
         'navi.php',
         'suche.php',
         'jtl.php',
@@ -80,22 +55,22 @@ final class Export
     /**
      * @var bool
      */
-    private $gzip;
+    private bool $gzip;
 
     /**
      * @var int
      */
-    private $itemLimit = \SITEMAP_ITEMS_LIMIT;
+    private int $itemLimit = \SITEMAP_ITEMS_LIMIT;
 
     /**
      * @var string
      */
-    private $fileName = 'sitemap_';
+    private string $fileName = 'sitemap_';
 
     /**
      * @var string|null
      */
-    private $indexFileName = 'sitemap_index.xml';
+    private ?string $indexFileName = 'sitemap_index.xml';
 
     /**
      * Export constructor.
@@ -106,20 +81,15 @@ final class Export
      * @param array                   $config
      */
     public function __construct(
-        DbInterface $db,
-        LoggerInterface $logger,
-        RendererInterface $renderer,
-        SchemaRendererInterface $schemaRenderer,
-        array $config
+        private DbInterface             $db,
+        private LoggerInterface         $logger,
+        private RendererInterface       $renderer,
+        private SchemaRendererInterface $schemaRenderer,
+        private array                   $config
     ) {
-        $this->db             = $db;
-        $this->logger         = $logger;
-        $this->renderer       = $renderer;
-        $this->schemaRenderer = $schemaRenderer;
-        $this->config         = $config;
-        $this->baseImageURL   = Shop::getImageBaseURL();
-        $this->baseURL        = Shop::getURL() . '/';
-        $this->gzip           = \function_exists('gzopen');
+        $this->baseImageURL = Shop::getImageBaseURL();
+        $this->baseURL      = Shop::getURL() . '/';
+        $this->gzip         = \function_exists('gzopen');
         \executeHook(\HOOK_SITEMAP_EXPORT_INIT, ['instance' => $this]);
         $this->schemaRenderer->setConfig($config);
         $this->renderer->setConfig($config);
@@ -183,9 +153,9 @@ final class Export
     private function setSessionData(array $customerGroupIDs): void
     {
         $defaultLang             = LanguageHelper::getDefaultLanguage();
-        $defaultLangID           = (int)$defaultLang->kSprache;
+        $defaultLangID           = $defaultLang->getId();
         $_SESSION['kSprache']    = $defaultLangID;
-        $_SESSION['cISOSprache'] = $defaultLang->cISO;
+        $_SESSION['cISOSprache'] = $defaultLang->getCode();
         Tax::setTaxRates();
         if (!isset($_SESSION['Kundengruppe'])) {
             $_SESSION['Kundengruppe'] = new CustomerGroup();
@@ -241,8 +211,8 @@ final class Export
      */
     private function isURLBlocked(string $url): bool
     {
-        return some($this->blockedURLs, static function ($e) use ($url) {
-            return \mb_strpos($url, $e) !== false;
+        return some($this->blockedURLs, static function ($e) use ($url): bool {
+            return \str_contains($url, $e);
         });
     }
 
@@ -278,7 +248,7 @@ final class Export
             return false;
         }
         while (($file = \readdir($dh)) !== false) {
-            if ($file === $this->indexFileName || \mb_strpos($file, $this->fileName) !== false) {
+            if ($file === $this->indexFileName || \str_contains($file, $this->fileName)) {
                 \unlink(self::EXPORT_DIR . $file);
             }
         }

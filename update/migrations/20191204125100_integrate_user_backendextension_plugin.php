@@ -10,6 +10,7 @@
 use JTL\Plugin\Admin\StateChanger;
 use JTL\Plugin\Admin\Validation\LegacyPluginValidator;
 use JTL\Plugin\Admin\Validation\PluginValidator;
+use JTL\Shop;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
 use JTL\XMLParser;
@@ -23,7 +24,7 @@ class Migration_20191204125100 extends Migration implements IMigration
     protected $description = 'Integrate user backendextension plugin in shop core';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -53,7 +54,7 @@ class Migration_20191204125100 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

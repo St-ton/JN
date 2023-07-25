@@ -15,14 +15,9 @@ use JTL\Plugin\PluginInterface;
 class Factory
 {
     /**
-     * @var ProductFilter
-     */
-    private $productFilter;
-
-    /**
      * @var array
      */
-    private static $defaultSortingOptions = [
+    private static array $defaultSortingOptions = [
         \SEARCH_SORT_STANDARD,
         \SEARCH_SORT_NAME_ASC,
         \SEARCH_SORT_NAME_DESC,
@@ -40,21 +35,19 @@ class Factory
     /**
      * @var array
      */
-    private $mapping = [];
+    private array $mapping = [];
 
     /**
      * @var PluginInterface[]
      */
-    private $plugins = [];
+    private array $plugins = [];
 
     /**
      * Factory constructor.
      * @param ProductFilter $productFilter
      */
-    public function __construct(ProductFilter $productFilter)
+    public function __construct(private readonly ProductFilter $productFilter)
     {
-        $this->productFilter = $productFilter;
-
         \executeHook(\HOOK_PRODUCTFILTER_REGISTER_SEARCH_OPTION, [
             'factory'       => $this,
             'productFilter' => $this->productFilter
@@ -88,7 +81,7 @@ class Factory
             $all->push(new $class($this->productFilter, $this->plugins[$id]));
         }
 
-        return $all->filter(static function (SortingOptionInterface $option) {
+        return $all->filter(static function (SortingOptionInterface $option): bool {
             return $option->getPriority() !== 0;
         });
     }
@@ -106,6 +99,9 @@ class Factory
             $mapping = $this->mapping[$type] ?? null;
         }
         if ($mapping === null) {
+            if ($type !== \SEARCH_SORT_STANDARD) {
+                return $this->getSortingOption(\SEARCH_SORT_STANDARD);
+            }
             throw new InvalidArgumentException('Cannot map type ' . $type);
         }
 

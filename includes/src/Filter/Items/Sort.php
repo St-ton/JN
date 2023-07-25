@@ -8,7 +8,6 @@ use JTL\Filter\FilterInterface;
 use JTL\Filter\Option;
 use JTL\Filter\ProductFilter;
 use JTL\Filter\SortingOptions\Factory;
-use JTL\Filter\SortingOptions\SortDefault;
 use JTL\Filter\SortingOptions\SortingOptionInterface;
 use JTL\Mapper\SortingType;
 use JTL\Shop;
@@ -20,24 +19,19 @@ use JTL\Shop;
 class Sort extends AbstractFilter
 {
     /**
-     * @var Factory
+     * @var Factory|null
      */
-    private $factory;
+    private ?Factory $factory = null;
 
     /**
      * @var Collection
      */
-    private $sortingOptions;
-
-    /**
-     * @var SortingOptionInterface
-     */
-    protected $activeSorting;
+    private Collection $sortingOptions;
 
     /**
      * @var int
      */
-    protected $activeSortingType;
+    protected int $activeSortingType;
 
     /**
      * Sort constructor.
@@ -127,7 +121,7 @@ class Sort extends AbstractFilter
         if ($this->factory === null) {
             throw new \LogicException('Factory has to be set first.');
         }
-        $this->sortingOptions = $this->factory->getAll()->sortByDesc(static function (SortingOptionInterface $i) {
+        $this->sortingOptions = $this->factory->getAll()->sortByDesc(static function (SortingOptionInterface $i): int {
             return $i->getPriority();
         });
     }
@@ -159,11 +153,8 @@ class Sort extends AbstractFilter
         $options          = [];
         $additionalFilter = new self($this->productFilter);
         $activeSortType   = (int)($_SESSION['Usersortierung'] ?? -1);
+        /** @var SortingOptionInterface $sortingOption */
         foreach ($this->sortingOptions as $i => $sortingOption) {
-            if (\get_class($sortingOption) === SortDefault::class) {
-                continue;
-            }
-            /** @var SortingOptionInterface $sortingOption */
             $value     = $sortingOption->getValue();
             $options[] = (new Option())
                 ->setIsActive($activeSortType === $value)

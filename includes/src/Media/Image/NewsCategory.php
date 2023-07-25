@@ -54,7 +54,7 @@ class NewsCategory extends AbstractImage
                     ON a.kNewsKategorie = t.kNewsKategorie
                 WHERE a.kNewsKategorie = :nid',
             ['nid' => $req->getID()]
-        )->each(static function ($item, $key) use ($req) {
+        )->each(static function ($item, $key) use ($req): void {
             if ($key === 0 && !empty($item->path)) {
                 $req->setSourcePath(\str_replace(\PFAD_NEWSKATEGORIEBILDER, '', $item->path));
             }
@@ -77,16 +77,16 @@ class NewsCategory extends AbstractImage
      */
     public function getPathByID($id, int $number = null): ?string
     {
-        $item = $this->db->getSingleObject(
+        $path = $this->db->getSingleObject(
             'SELECT cPreviewImage AS path
                 FROM tnewskategorie
                 WHERE kNewsKategorie = :cid LIMIT 1',
             ['cid' => $id]
         )->path ?? null;
 
-        return empty($item->path)
+        return empty($path)
             ? null
-            : \str_replace(\PFAD_NEWSKATEGORIEBILDER, '', $item->path);
+            : \str_replace(\PFAD_NEWSKATEGORIEBILDER, '', $path);
     }
 
     /**

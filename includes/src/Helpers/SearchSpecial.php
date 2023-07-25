@@ -18,24 +18,12 @@ use function Functional\map;
 class SearchSpecial
 {
     /**
-     * @var JTLCacheInterface
-     */
-    private $cache;
-
-    /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
      * SearchSpecial constructor.
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */
-    public function __construct(DbInterface $db, JTLCacheInterface $cache)
+    public function __construct(private readonly DbInterface $db, private readonly JTLCacheInterface $cache)
     {
-        $this->db    = $db;
-        $this->cache = $cache;
     }
 
     /**
@@ -55,12 +43,13 @@ class SearchSpecial
         }
         if (($overlays = Shop::Container()->getCache()->get($cacheID)) === false) {
             $overlays = [];
-            $types    = Shop::Container()->getDB()->getObjects(
+            $types    = Shop::Container()->getDB()->getInts(
                 'SELECT kSuchspecialOverlay
-                    FROM tsuchspecialoverlay'
+                    FROM tsuchspecialoverlay',
+                'kSuchspecialOverlay'
             );
             foreach ($types as $type) {
-                $overlay = Overlay::getInstance((int)$type->kSuchspecialOverlay, $langID);
+                $overlay = Overlay::getInstance($type, $langID);
                 if ($overlay->getActive() === 1) {
                     $overlays[] = $overlay;
                 }
@@ -115,15 +104,13 @@ class SearchSpecial
 
     /**
      * @param int $key
-     * @return mixed|string
+     * @return string
      * @former baueSuchSpecialURL()
      * @since 5.0.0
      */
-    public static function buildURL(int $key)
+    public static function buildURL(int $key): string
     {
-        $self = new self(Shop::Container()->getDB(), Shop::Container()->getCache());
-
-        return $self->getURL($key);
+        return (new self(Shop::Container()->getDB(), Shop::Container()->getCache()))->getURL($key);
     }
 
     /**
@@ -152,7 +139,7 @@ class SearchSpecial
 
         $seo->kSuchspecial = $type;
         \executeHook(\HOOK_BOXEN_INC_SUCHSPECIALURL);
-        $url = URL::buildURL($seo, \URLART_SEARCHSPECIALS);
+        $url = URL::buildURL($seo, \URLART_SEARCHSPECIALS, true);
         $this->cache->set($cacheID, $url, [\CACHING_GROUP_CATEGORY]);
 
         return $url;
@@ -201,19 +188,19 @@ class SearchSpecial
         $cacheID = 'ssp_top_offers_' . $customerGroupID;
         $top     = $this->cache->get($cacheID);
         if ($top === false || !\is_countable($top)) {
-            $top = map($this->db->getObjects(
-                'SELECT tartikel.kArtikel
+            $top = $this->db->getInts(
+                "SELECT tartikel.kArtikel
                     FROM tartikel
                     LEFT JOIN tartikelsichtbarkeit 
                         ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                        AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . "
+                        AND tartikelsichtbarkeit.kKundengruppe = :cgid
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
                         AND tartikel.cTopArtikel = 'Y'
                         " . self::getParentSQL() . '
-                        ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL()
-            ), static function ($e) {
-                return (int)$e->kArtikel;
-            });
+                        ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL(),
+                'kArtikel',
+                ['cgid' => $customerGroupID]
+            );
             $this->cache->set($cacheID, $top, $this->getCacheTags($top));
         }
 
@@ -236,21 +223,21 @@ class SearchSpecial
         $cacheID     = 'ssp_bestsellers_' . $customerGroupID . '_' . $minAmount;
         $bestsellers = $this->cache->get($cacheID);
         if ($bestsellers === false || !\is_countable($bestsellers)) {
-            $bestsellers = map($this->db->getObjects(
+            $bestsellers = $this->db->getInts(
                 'SELECT tartikel.kArtikel, tbestseller.fAnzahl
-                    FROM tbestseller, tartikel
+                    FROM tbestseller
+                    JOIN tartikel ON tbestseller.kArtikel = tartikel.kArtikel
                     LEFT JOIN tartikelsichtbarkeit 
                         ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                        AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
+                        AND tartikelsichtbarkeit.kKundengruppe = :cgid
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                        AND tbestseller.kArtikel = tartikel.kArtikel
-                        AND ROUND(tbestseller.fAnzahl) >= ' . $minAmount . '
+                        AND tbestseller.isBestseller = 1
                         ' . self::getParentSQL() . '
                         ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() . '
-                    ORDER BY fAnzahl DESC'
-            ), static function ($e) {
-                return (int)$e->kArtikel;
-            });
+                    ORDER BY fAnzahl DESC',
+                'kArtikel',
+                ['cgid' => $customerGroupID]
+            );
             $this->cache->set($cacheID, $bestsellers, $this->getCacheTags($bestsellers));
         }
 
@@ -272,8 +259,8 @@ class SearchSpecial
         $cacheID       = 'ssp_special_offers_' . $customerGroupID;
         $specialOffers = $this->cache->get($cacheID);
         if ($specialOffers === false || !\is_countable($specialOffers)) {
-            $specialOffers = map($this->db->getObjects(
-                'SELECT tartikel.kArtikel, tsonderpreise.fNettoPreis
+            $specialOffers = $this->db->getInts(
+                "SELECT tartikel.kArtikel, tsonderpreise.fNettoPreis
                     FROM tartikel
                     JOIN tartikelsonderpreis 
                         ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
@@ -281,19 +268,19 @@ class SearchSpecial
                         ON tsonderpreise.kArtikelSonderpreis = tartikelsonderpreis.kArtikelSonderpreis
                     LEFT JOIN tartikelsichtbarkeit 
                         ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                        AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
+                        AND tartikelsichtbarkeit.kKundengruppe = :cgid
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
                         AND tartikelsonderpreis.kArtikel = tartikel.kArtikel
-                        AND tsonderpreise.kKundengruppe = ' . $customerGroupID . "
+                        AND tsonderpreise.kKundengruppe = :cgid
                         AND tartikelsonderpreis.cAktiv = 'Y'
                         AND tartikelsonderpreis.dStart <= NOW()
                         AND (tartikelsonderpreis.dEnde IS NULL OR tartikelsonderpreis.dEnde >= CURDATE())
                         AND (tartikelsonderpreis.nAnzahl < tartikel.fLagerbestand OR tartikelsonderpreis.nIstAnzahl = 0)
                         " . self::getParentSQL() . '
-                        ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL()
-            ), static function ($e) {
-                return (int)$e->kArtikel;
-            });
+                        ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL(),
+                'kArtikel',
+                ['cgid' => $customerGroupID]
+            );
             $this->cache->set($cacheID, $specialOffers, $this->getCacheTags($specialOffers), 3600);
         }
 
@@ -317,20 +304,19 @@ class SearchSpecial
         $cacheID = 'ssp_new_' . $customerGroupID . '_days';
         $new     = $this->cache->get($cacheID);
         if ($new === false || !\is_countable($new)) {
-            $new = map($this->db->getObjects(
-                'SELECT tartikel.kArtikel
+            $new = $this->db->getInts(
+                "SELECT tartikel.kArtikel
                     FROM tartikel
                     LEFT JOIN tartikelsichtbarkeit 
                         ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                        AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . "
+                        AND tartikelsichtbarkeit.kKundengruppe = :cgid
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
                         AND tartikel.cNeu = 'Y'
-                        AND DATE_SUB(NOW(), INTERVAL " . $days . ' DAY) < tartikel.dErstellt
-                        ' . self::getParentSQL() . '
-                        ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL()
-            ), static function ($e) {
-                return (int)$e->kArtikel;
-            });
+                        AND DATE_SUB(NOW(), INTERVAL :dys DAY) < tartikel.dErstellt
+                        " . self::getParentSQL() . ' ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL(),
+                'kArtikel',
+                ['cgid' => $customerGroupID, 'dys' => $days]
+            );
             $this->cache->set($cacheID, $new, $this->getCacheTags($new), 3600);
         }
 

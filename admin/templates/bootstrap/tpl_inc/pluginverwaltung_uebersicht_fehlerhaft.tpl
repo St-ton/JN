@@ -1,6 +1,6 @@
 <div id="fehlerhaft" class="tab-pane fade {if $cTab === 'fehlerhaft'} active show{/if}">
     {if $pluginsErroneous->count() > 0}
-        <form name="pluginverwaltung" method="post" action="pluginverwaltung.php" id="erroneous-plugins">
+        <form name="pluginverwaltung" method="post" action="{$adminURL}{$route}" id="erroneous-plugins">
             {$jtl_token}
             <input type="hidden" name="pluginverwaltung_uebersicht" value="1" />
             <div>
@@ -24,6 +24,7 @@
                                 <td class="check">
                                     <div class="custom-control custom-checkbox">
                                         <input type="hidden" id="plugin-ext-{$listingItem->getDir()}" name="isExtension[]" value="{if $listingItem->isLegacy()}0{else}1{/if}">
+                                        <input type="hidden" name="kPlugin[]" value="{$listingItem->getID()}">
                                         <input class="custom-control-input" type="checkbox" name="cVerzeichnis[]" id="plugin-err-check-{$listingItem->getDir()}" value="{$listingItem->getDir()}" />
                                         <label class="custom-control-label" for="plugin-err-check-{$listingItem->getDir()}"></label>
                                     </div>

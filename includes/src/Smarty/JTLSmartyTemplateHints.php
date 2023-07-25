@@ -9,9 +9,9 @@ namespace JTL\Smarty;
 class JTLSmartyTemplateHints extends JTLSmartyTemplateClass
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
-    public function fetch($template = null, $cache_id = null, $compile_id = null, $parent = null)
+    public function fetch($template = null, $cache_id = null, $compile_id = null, $parent = null): string
     {
         $prefix  = '';
         $postfix = '';
@@ -34,7 +34,7 @@ class JTLSmartyTemplateHints extends JTLSmartyTemplateClass
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function _subTemplateRender(
         $template,
@@ -49,7 +49,7 @@ class JTLSmartyTemplateHints extends JTLSmartyTemplateClass
         $content_func = null
     ) {
         $tplID   = null;
-        $tplName = \mb_strpos($template, ':') !== false
+        $tplName = \str_contains($template, ':')
             ? \mb_substr($template, \mb_strpos($template, ':') + 1)
             : $template;
         if (\SHOW_TEMPLATE_HINTS === 1) {

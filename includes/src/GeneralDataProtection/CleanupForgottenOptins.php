@@ -2,6 +2,8 @@
 
 namespace JTL\GeneralDataProtection;
 
+use JTL\DB\ReturnType;
+
 /**
  * Class CleanupForgottenOptins
  * @package JTL\GeneralDataProtection
@@ -17,10 +19,20 @@ namespace JTL\GeneralDataProtection;
  */
 class CleanupForgottenOptins extends Method implements MethodInterface
 {
+    /**
+     * max repetitions of this task
+     *
+     * @var int
+     */
+    public $taskRepetitions = 0;
 
+    /**
+     * @return void
+     */
     public function execute(): void
     {
         $this->cleanupOptins();
+        $this->isFinished = ($this->workSum < $this->workLimit);
     }
 
     /**
@@ -46,13 +58,13 @@ class CleanupForgottenOptins extends Method implements MethodInterface
                     AND e.nAktiv = 0
                     OR e.cOptCode IS NULL
             WHERE
-                o.dCreated <= :pDateLimit
+                o.dCreated <= :dateLimit
                 AND o.dActivated IS NULL
             ORDER BY o.kOptin
-            LIMIT :pLimit',
+            LIMIT :workLimit',
             [
-                'pDateLimit' => $this->dateLimit,
-                'pLimit'     => $this->workLimit
+                'dateLimit' => $this->dateLimit,
+                'workLimit' => $this->workLimit
             ]
         );
 
@@ -65,13 +77,17 @@ class CleanupForgottenOptins extends Method implements MethodInterface
         $recipientIDs = \array_filter($recipientIDs);
         $optinIDs     = \array_filter($optinIDs);
         if (\count($optinIDs) > 0) {
-            $this->db->query('DELETE FROM toptin WHERE kOptin IN (' . \implode(',', $optinIDs) . ')');
+            $this->workSum += $this->db->query(
+                'DELETE FROM toptin WHERE kOptin IN (' . \implode(',', $optinIDs) . ')',
+                ReturnType::AFFECTED_ROWS
+            );
         }
         if (\count($recipientIDs) > 0) {
-            $this->db->query(
+            $this->workSum += $this->db->query(
                 'DELETE from tnewsletterempfaenger WHERE kNewsletterEmpfaenger IN (' .
                 \implode(',', $recipientIDs) .
-                ')'
+                ')',
+                ReturnType::AFFECTED_ROWS
             );
         }
     }

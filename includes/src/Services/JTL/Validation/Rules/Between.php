@@ -15,18 +15,13 @@ use JTL\Services\JTL\Validation\RuleResult;
  */
 class Between implements RuleInterface
 {
-    protected $lower;
-    protected $upper;
-
     /**
      * Between constructor.
      * @param mixed $lower
      * @param mixed $upper
      */
-    public function __construct($lower, $upper)
+    public function __construct(protected $lower, protected $upper)
     {
-        $this->lower = $lower;
-        $this->upper = $upper;
     }
 
     /**

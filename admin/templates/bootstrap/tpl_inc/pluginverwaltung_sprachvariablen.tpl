@@ -3,7 +3,7 @@
     {
         var bCheck = confirm('{__('sureResetLangVar')}');
         if (bCheck) {
-            window.location.href = 'pluginverwaltung.php?pluginverwaltung_sprachvariable=1&kPlugin=' + kPlugin +
+            window.location.href = '{$adminURL}{$route}?pluginverwaltung_sprachvariable=1&kPlugin=' + kPlugin +
                 '&kPluginSprachvariable=' + kPluginSprachvariable + '&token={$smarty.session.jtl_token}';
         }
     }
@@ -11,7 +11,7 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('pluginverwaltung') cBeschreibung=__('pluginverwaltungDesc')}
 <div id="content">
     {if $plugin->getLocalization()->getLangVars()->count() > 0}
-        <form name="pluginverwaltung" method="post" action="pluginverwaltung.php">
+        <form name="pluginverwaltung" method="post" action="{$adminURL}{$route}">
             {$jtl_token}
             <input type="hidden" name="pluginverwaltung_sprachvariable" value="1" />
             <input type="hidden" name="kPlugin" value="{$kPlugin}" />
@@ -20,56 +20,58 @@
                     <div class="subheading1">{__('pluginverwaltungLocales')}</div>
                     <hr class="mb-n3">
                 </div>
-                <div class="table-responsive card-body">
-                    <table class="list table min-w-lg">
-                        <thead>
-                        <tr>
-                            <th class="text-left">{__('pluginName')}</th>
-                            <th class="text-left">{__('description')}</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {foreach $plugin->getLocalization()->getLangVars() as $var}
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="list table min-w-lg">
+                            <thead>
                             <tr>
-                                <td style="max-width:150px"><i>{$var->name}</i></td>
-                                <td>{__($var->description)}</td>
+                                <th class="text-left">{__('pluginName')}</th>
+                                <th class="text-left">{__('description')}</th>
                             </tr>
-                            {foreach $pluginLanguages as $lang}
+                            </thead>
+                            <tbody>
+                            {foreach $plugin->getLocalization()->getLangVars() as $var}
                                 <tr>
-                                    {assign var=cISOSprache value=strtoupper($lang->getIso())}
+                                    <td style="max-width:150px"><i>{$var->name}</i></td>
+                                    <td>{__($var->description)}</td>
+                                </tr>
+                                {foreach $pluginLanguages as $pluginLanguage}
+                                    <tr>
+                                        {assign var=cISOSprache value=strtoupper($pluginLanguage->getIso())}
+                                        <td>
+                                            <label for="lv-{$var->id}_{$cISOSprache}">{$pluginLanguage->getLocalizedName()}</label>
+                                        </td>
+                                        <td>
+                                            {if isset($var->values[$cISOSprache]) && $var->values[$cISOSprache]|strlen > 0}
+                                                {$value = $var->values[$cISOSprache]|escape:'html'}
+                                            {else}
+                                                {$value = ''}
+                                            {/if}
+                                            {if $var->type === 'textarea'}
+                                                <textarea id="lv-{$var->id}_{$cISOSprache}" class="form-control" name="{$var->id}_{$cISOSprache}" type="{$var->type}">{$value}</textarea>
+                                            {else}
+                                                <input id="lv-{$var->id}_{$cISOSprache}" class="form-control" name="{$var->id}_{$cISOSprache}" type="{$var->type}" value="{$value}" />
+                                            {/if}
+                                        </td>
+                                    </tr>
+                                {/foreach}
+                                <tr>
+                                    <td>&nbsp;</td>
                                     <td>
-                                        <label for="lv-{$var->id}_{$cISOSprache}">{$lang->getLocalizedName()}</label>
-                                    </td>
-                                    <td>
-                                        {if isset($var->values[$cISOSprache]) && $var->values[$cISOSprache]|strlen > 0}
-                                            {$value = $var->values[$cISOSprache]|escape:'html'}
-                                        {else}
-                                            {$value = ''}
-                                        {/if}
-                                        {if $var->type === 'textarea'}
-                                            <textarea id="lv-{$var->id}_{$cISOSprache}" class="form-control" name="{$var->id}_{$cISOSprache}" type="{$var->type}">{$value}</textarea>
-                                        {else}
-                                            <input id="lv-{$var->id}_{$cISOSprache}" class="form-control" name="{$var->id}_{$cISOSprache}" type="{$var->type}" value="{$value}" />
-                                        {/if}
+                                        <button onclick="ackCheck({$var->id}, {$kPlugin}); return false;" class="btn btn-danger">
+                                            <i class="fal fa-exclamation-triangle"></i> {__('pluginLocalesStd')}
+                                        </button>
                                     </td>
                                 </tr>
                             {/foreach}
-                            <tr>
-                                <td>&nbsp;</td>
-                                <td>
-                                    <button onclick="ackCheck({$var->id}, {$kPlugin}); return false;" class="btn btn-danger">
-                                        <i class="fal fa-exclamation-triangle"></i> {__('pluginLocalesStd')}
-                                    </button>
-                                </td>
-                            </tr>
-                        {/foreach}
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 <div class="card-footer save-wrapper">
                     <div class="row">
                         <div class="ml-auto col-sm-6 col-xl-auto">
-                            <a class="btn btn-outline-primary btn-block" href="pluginverwaltung.php">
+                            <a class="btn btn-outline-primary btn-block" href="{$adminURL}{$route}">
                                 {__('cancelWithIcon')}
                             </a>
                         </div>

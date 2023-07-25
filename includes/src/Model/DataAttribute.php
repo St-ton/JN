@@ -11,17 +11,17 @@ class DataAttribute
     /**
      * @var string
      */
-    public $name;
+    public string $name;
 
     /**
      * @var string
      */
-    public $dataType;
+    public string $dataType;
 
     /**
      * @var bool
      */
-    public $nullable = true;
+    public bool $nullable = true;
 
     /**
      * @var mixed
@@ -31,27 +31,27 @@ class DataAttribute
     /**
      * @var bool
      */
-    public $isPrimaryKey = false;
+    public bool $isPrimaryKey = false;
 
     /**
      * @var string|null
      */
-    public $foreignKey;
+    public ?string $foreignKey = null;
 
     /**
      * @var string|null
      */
-    public $foreignKeyChild;
+    public ?string $foreignKeyChild = null;
 
     /**
      * @var bool
      */
-    public $dynamic = false;
+    public bool $dynamic = false;
 
     /**
      * @var InputConfig
      */
-    public $inputConfig;
+    public InputConfig $inputConfig;
 
     /**
      * DataAttribute constructor.
@@ -209,6 +209,7 @@ class DataAttribute
     public function setForeignKeyChild(?string $foreignKeyChild): DataAttribute
     {
         $this->foreignKeyChild = $foreignKeyChild;
+
         return $this;
     }
 
@@ -248,11 +249,11 @@ class DataAttribute
         string $name,
         string $dataType,
         $default = null,
-        bool $nullable = true,
-        bool $isPrimaryKey = false,
+        bool   $nullable = true,
+        bool   $isPrimaryKey = false,
         string $foreignKey = null,
         $foreignKeyChild = null,
-        bool $dynamic = false
+        bool   $dynamic = false
     ): self {
         $item = new self();
         $item->setName($name)

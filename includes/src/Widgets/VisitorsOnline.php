@@ -3,8 +3,9 @@
 namespace JTL\Widgets;
 
 use JTL\Catalog\Product\Preise;
+use JTL\Customer\Visitor;
+use JTL\Helpers\Text;
 use JTL\Shop;
-use JTL\Visitor;
 use stdClass;
 
 /**
@@ -16,9 +17,9 @@ class VisitorsOnline extends AbstractWidget
     /**
      *
      */
-    public function init()
+    public function init(): void
     {
-        Visitor::archive();
+        (new Visitor($this->getDB(), Shop::Container()->getCache()))->archive();
         $this->setPermission('STATS_VISITOR_VIEW');
     }
 
@@ -60,7 +61,9 @@ class VisitorsOnline extends AbstractWidget
         );
         $cryptoService = Shop::Container()->getCryptoService();
         foreach ($visitors as $visitor) {
-            $visitor->cNachname = \trim($cryptoService->decryptXTEA($visitor->cNachname ?? ''));
+            $visitor->cNachname       = \trim($cryptoService->decryptXTEA($visitor->cNachname ?? ''));
+            $visitor->cEinstiegsseite = Text::filterXSS($visitor->cEinstiegsseite);
+            $visitor->cAusstiegsseite = Text::filterXSS($visitor->cAusstiegsseite);
             if ($visitor->kBestellung > 0) {
                 $visitor->fGesamtsumme = Preise::getLocalizedPriceString($visitor->fGesamtsumme);
             }
@@ -93,12 +96,12 @@ class VisitorsOnline extends AbstractWidget
     /**
      * @return string
      */
-    public function getContent()
+    public function getContent(): string
     {
         $visitors = $this->getVisitors();
 
         return $this->oSmarty->assign('oVisitors_arr', $visitors)
-                             ->assign('oVisitorsInfo', $this->getVisitorsInfo($visitors))
-                             ->fetch('tpl_inc/widgets/visitors_online.tpl');
+            ->assign('oVisitorsInfo', $this->getVisitorsInfo($visitors))
+            ->fetch('tpl_inc/widgets/visitors_online.tpl');
     }
 }

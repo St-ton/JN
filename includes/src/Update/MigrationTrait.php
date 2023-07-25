@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Update;
 
@@ -16,7 +16,7 @@ trait MigrationTrait
     /**
      * @var DbInterface
      */
-    protected $db;
+    protected DbInterface $db;
 
     /**
      * executes query and returns misc data
@@ -26,7 +26,7 @@ trait MigrationTrait
      * @return mixed
      * @throws InvalidArgumentException
      */
-    protected function __execute(string $query, int $return)
+    protected function exec(string $query, int $return)
     {
         if (\JTL_CHARSET === 'iso-8859-1') {
             $query = Text::utf8_convert_recursive($query, false);
@@ -55,9 +55,9 @@ trait MigrationTrait
      * @param string $query
      * @return int
      */
-    public function execute(string $query)
+    public function execute(string $query): int
     {
-        return $this->__execute($query, ReturnType::AFFECTED_ROWS);
+        return $this->exec($query, ReturnType::AFFECTED_ROWS);
     }
 
     /**
@@ -66,24 +66,24 @@ trait MigrationTrait
      */
     public function fetchOne(string $query)
     {
-        return $this->__execute($query, ReturnType::SINGLE_OBJECT);
+        return $this->exec($query, ReturnType::SINGLE_OBJECT);
     }
 
     /**
      * @param string $query
      * @return array
      */
-    public function fetchAll(string $query)
+    public function fetchAll(string $query): array
     {
-        return $this->__execute($query, ReturnType::ARRAY_OF_OBJECTS);
+        return $this->exec($query, ReturnType::ARRAY_OF_OBJECTS);
     }
 
     /**
      * @param string $query
      * @return array
      */
-    public function fetchArray(string $query)
+    public function fetchArray(string $query): array
     {
-        return $this->__execute($query, ReturnType::ARRAY_OF_ASSOC_ARRAYS);
+        return $this->exec($query, ReturnType::ARRAY_OF_ASSOC_ARRAYS);
     }
 }

@@ -3,6 +3,8 @@
 namespace JTL\Filter\Items;
 
 use JTL\Catalog\Category\Kategorie;
+use JTL\Filter\CharacteristicOption;
+use JTL\Filter\CharacteristicValueOption;
 use JTL\Filter\FilterInterface;
 use JTL\Filter\Join;
 use JTL\Filter\Option;
@@ -30,29 +32,29 @@ class Characteristic extends BaseCharacteristic
     use MagicCompatibilityTrait;
 
     /**
-     * @var int
+     * @var int|null
      */
     private $characteristicValueID;
 
     /**
-     * @var int
+     * @var int|null
      */
     private $id;
 
     /**
      * @var bool
      */
-    private $isMultiSelect = false;
+    private bool $isMultiSelect = false;
 
     /**
      * @var array
      */
-    private $batchCharacteristicData;
+    private array $batchCharacteristicData = [];
 
     /**
      * @var array
      */
-    public static $mapping = [
+    public static array $mapping = [
         'kMerkmal'     => 'CharacteristicIDCompat',
         'kMerkmalWert' => 'ValueCompat',
         'cName'        => 'Name',
@@ -248,7 +250,7 @@ class Characteristic extends BaseCharacteristic
     {
         return \array_reduce(
             $this->productFilter->getCharacteristicFilter(),
-            static function ($a, $b) use ($characteristicValueID) {
+            static function ($a, $b) use ($characteristicValueID): bool {
                 /** @var Characteristic $b */
                 return $a || $b->getValue() === $characteristicValueID;
             },
@@ -294,7 +296,7 @@ class Characteristic extends BaseCharacteristic
             ->setOrigin(__CLASS__));
 
         $langID           = $this->getLanguageID();
-        $kStandardSprache = LanguageHelper::getDefaultLanguage()->kSprache;
+        $kStandardSprache = LanguageHelper::getDefaultLanguage(false)->kSprache;
         if ($langID !== $kStandardSprache) {
             $state->setSelect([
                 'COALESCE(tmerkmalsprache.cName, tmerkmal.cName) AS cName',
@@ -342,13 +344,11 @@ class Characteristic extends BaseCharacteristic
                     if (\is_array($values)) {
                         $activeOrFilterIDs = $values;
                     } else {
-                        /** @noinspection UnsupportedStringOffsetOperationsInspection */
                         $activeOrFilterIDs[] = $values;
                     }
                 } elseif (\is_array($values)) {
                     $activeAndFilterIDs = $values;
                 } else {
-                    /** @noinspection UnsupportedStringOffsetOperationsInspection */
                     $activeAndFilterIDs[] = $values;
                 }
             }
@@ -409,18 +409,15 @@ class Characteristic extends BaseCharacteristic
         $state->addSelect('tmerkmal.nMehrfachauswahl');
         $state->addSelect('tmerkmal.cBildPfad AS cMMBildPfad');
         if ($category !== null
-            && !empty($category->categoryFunctionAttributes[\KAT_ATTRIBUT_MERKMALFILTER])
+            && !empty($category->getCategoryFunctionAttribute(\KAT_ATTRIBUT_MERKMALFILTER))
             && $this->productFilter->hasCategory()
         ) {
-            $catAttributeFilters = \explode(
-                ';',
-                $category->categoryFunctionAttributes[\KAT_ATTRIBUT_MERKMALFILTER]
-            );
+            $catAttributeFilters = \explode(';', $category->getCategoryFunctionAttribute(\KAT_ATTRIBUT_MERKMALFILTER));
             if (\count($catAttributeFilters) > 0) {
                 $state->addCondition('tmerkmal.cName IN (' . \implode(',', map(
                     $catAttributeFilters,
-                    static function ($e) {
-                            return '"' . $e . '"';
+                    static function ($e): string {
+                        return '"' . $e . '"';
                     }
                 )) . ')');
             }
@@ -430,7 +427,7 @@ class Characteristic extends BaseCharacteristic
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getOptions($mixed = null): array
     {
@@ -452,48 +449,52 @@ class Characteristic extends BaseCharacteristic
         }
         $state     = $this->getState($mixed['oAktuelleKategorie'] ?? null);
         $baseQuery = $this->productFilter->getFilterSQL()->getBaseQuery($state);
-        $cacheID   = $this->getCacheID($baseQuery);
-        if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
-            $this->options = $cached;
-
-            return $this->options;
-        }
-        $qryRes           = $this->productFilter->getDB()->getObjects(
-            'SELECT ssMerkmal.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, 
+        $cache     = $this->productFilter->getCache();
+        $cacheID   = $this->getCacheID($baseQuery) . '_' . $limit . '_' . $valueLimit;
+        if (($filterCollection = $this->productFilter->getCache()->get($cacheID)) === false) {
+            $qryRes           = $this->productFilter->getDB()->getObjects(
+                'SELECT ssMerkmal.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, 
             ssMerkmal.nMehrfachauswahl, ssMerkmal.cWert, ssMerkmal.cName, ssMerkmal.cTyp, 
             ssMerkmal.cMMBildPfad, '
-            . ($conf['merkmalfilter_trefferanzahl_anzeigen'] !== 'N'
-                ? 'COUNT(DISTINCT ssMerkmal.kArtikel)'
-                : '1') . ' AS nAnzahl
+                . ($conf['merkmalfilter_trefferanzahl_anzeigen'] !== 'N'
+                    ? 'COUNT(DISTINCT ssMerkmal.kArtikel)'
+                    : '1') . ' AS nAnzahl
                 FROM (' . $baseQuery . ') AS ssMerkmal
                 GROUP BY ssMerkmal.kMerkmalWert
                 ORDER BY ssMerkmal.nSortMerkmal, ssMerkmal.nSort, ssMerkmal.cWert'
-        );
-        $currentValue     = $this->productFilter->getCharacteristicValue()->getValue();
-        $additionalFilter = new self($this->productFilter);
-        $filterCollection = group($qryRes, static function ($e) {
-            return $e->kMerkmal;
-        });
-        foreach ($filterCollection as $characteristicID => $characteristicValues) {
-            $first                                = first($characteristicValues);
-            $characteristic                       = new stdClass();
-            $characteristic->kMerkmal             = (int)$first->kMerkmal;
-            $characteristic->nMehrfachauswahl     = (int)$first->nMehrfachauswahl;
-            $characteristic->cName                = $first->cName;
-            $characteristic->cMMBildPfad          = $first->cMMBildPfad;
-            $characteristic->cTyp                 = $first->cTyp;
-            $characteristic->characteristicValues = map($characteristicValues, static function ($e) {
-                $av               = new stdClass();
-                $av->kMerkmal     = (int)$e->kMerkmal;
-                $av->kMerkmalWert = (int)$e->kMerkmalWert;
-                $av->cMMWBildPfad = $e->cMMWBildPfad;
-                $av->cWert        = $e->cWert;
-                $av->nAnzahl      = (int)$e->nAnzahl;
-
-                return $av;
+            );
+            $filterCollection = group($qryRes, static function ($e) {
+                return $e->kMerkmal;
             });
-            $filterCollection[$characteristicID]  = $characteristic;
+            foreach ($filterCollection as $characteristicID => $characteristicValues) {
+                $first                                = first($characteristicValues);
+                $characteristic                       = new stdClass();
+                $characteristic->kMerkmal             = (int)$first->kMerkmal;
+                $characteristic->nMehrfachauswahl     = (int)$first->nMehrfachauswahl;
+                $characteristic->cName                = $first->cName;
+                $characteristic->cMMBildPfad          = $first->cMMBildPfad;
+                $characteristic->cTyp                 = $first->cTyp;
+                $characteristic->characteristicValues = map($characteristicValues, static function ($e) {
+                    $av               = new stdClass();
+                    $av->kMerkmal     = (int)$e->kMerkmal;
+                    $av->kMerkmalWert = (int)$e->kMerkmalWert;
+                    $av->cMMWBildPfad = $e->cMMWBildPfad;
+                    $av->cWert        = $e->cWert;
+                    $av->nAnzahl      = (int)$e->nAnzahl;
+
+                    return $av;
+                });
+                $filterCollection[$characteristicID]  = $characteristic;
+            }
+
+            $cache->set(
+                $cacheID,
+                $filterCollection,
+                [\CACHING_GROUP_FILTER, \CACHING_GROUP_FILTER_CHARACTERISTIC]
+            );
         }
+        $currentValue       = $this->productFilter->getCharacteristicValue()->getValue();
+        $additionalFilter   = new self($this->productFilter);
         $imageBaseURL       = Shop::getImageBaseURL();
         $filterURLGenerator = $this->productFilter->getFilterURL();
         $i                  = 0;
@@ -505,7 +506,7 @@ class Characteristic extends BaseCharacteristic
                 ? \PFAD_MERKMALBILDER_NORMAL . $filter->cMMBildPfad
                 : \BILD_KEIN_MERKMALBILD_VORHANDEN;
 
-            $option = new Option();
+            $option = new CharacteristicOption();
             $option->setURL('');
             $option->setData('cTyp', $filter->cTyp)
                 ->setData('kMerkmal', $filter->kMerkmal)
@@ -524,13 +525,13 @@ class Characteristic extends BaseCharacteristic
             $option->setFrontendName($filter->cName);
             $option->setValue($filter->kMerkmal);
             $option->setCount(0);
-            $option->generateAllImageSizes();
+            $option->generateCachableData($cache, $this->getLanguageID());
             $additionalFilter->setBatchCharacteristicData(
                 $this->batchGetDataForCharacteristicValue($filter->characteristicValues)
             );
             foreach ($filter->characteristicValues as $filterValue) {
                 $filterValue->kMerkmalWert = (int)$filterValue->kMerkmalWert;
-                $characteristicOption      = new Option();
+                $characteristicOption      = new CharacteristicValueOption();
                 $baseSrcSmall              = \mb_strlen($filterValue->cMMWBildPfad) > 0
                     ? \PFAD_MERKMALWERTBILDER_KLEIN . $filterValue->cMMWBildPfad
                     : \BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
@@ -559,7 +560,7 @@ class Characteristic extends BaseCharacteristic
                 }
                 $url = $filterURLGenerator->getURL($additionalFilter->init($filterValue->kMerkmalWert));
                 $characteristicOption->setURL($url);
-                $characteristicOption->generateAllImageSizes();
+                $characteristicOption->generateCachableData($cache, $this->getLanguageID());
                 $option->addOption($characteristicOption);
             }
             // backwards compatibility
@@ -584,11 +585,6 @@ class Characteristic extends BaseCharacteristic
             $this->applyOptionLimit($af, $valueLimit);
         }
         $this->options = $characteristicFilters;
-        $this->productFilter->getCache()->set(
-            $cacheID,
-            $characteristicFilters,
-            [\CACHING_GROUP_FILTER, \CACHING_GROUP_FILTER_CHARACTERISTIC]
-        );
 
         return $characteristicFilters;
     }
@@ -599,7 +595,7 @@ class Characteristic extends BaseCharacteristic
      */
     protected function isNumeric(Option $option): bool
     {
-        return every($option->getOptions(), static function (Option $item) {
+        return every($option->getOptions(), static function (Option $item): bool {
             return \is_numeric($item->getValue());
         });
     }
@@ -650,7 +646,7 @@ class Characteristic extends BaseCharacteristic
         if (\count($characteristicValues) === 0) {
             return [];
         }
-        $characteristicValueIDs = \implode(',', \array_map(static function ($row) {
+        $characteristicValueIDs = \implode(',', \array_map(static function ($row): int {
             return (int)$row->kMerkmalWert;
         }, $characteristicValues));
         $queryResult            = $this->productFilter->getDB()->getObjects(

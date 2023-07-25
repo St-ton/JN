@@ -11,8 +11,8 @@
                 {if $isReference === true}<i>{/if}
                 {$link->getDisplayName()}
                 {if $isReference === true} ({__('Referenz')})</i>{/if}
-                {if $missingLinkTranslations|count > 0}
-                    <i title="{__('missingTranslations')}: {$missingLinkTranslations|count}"
+                {if count($missingLinkTranslations) > 0}
+                    <i title="{__('missingTranslations')}: {count($missingLinkTranslations)}"
                        class="fal fa-exclamation-triangle text-warning"
                        data-toggle="tooltip"
                        data-placement="top"></i>
@@ -27,7 +27,7 @@
         </td>
         <td class="text-center floatforms min-w-sm" style="width: 60%">
             <div class="row">
-                <form class="navbar-form2 col-lg-4 col-md-12 left px-1" method="post" action="links.php"
+                <form class="navbar-form2 col-lg-4 col-md-12 left px-1" method="post" action="{$adminURL}{$route}"
                       name="aenderlinkgruppe_{$link->getID()}_{$id}">
                     {$jtl_token}
                     <input type="hidden" name="action" value="move-to-linkgroup" />
@@ -37,7 +37,8 @@
                         <input type="hidden" name="kPlugin" value="{$kPlugin}" />
                     {/if}
                     {if $link->getParent() === 0}
-                        <select title="{__('linkGroupMove')}" class="custom-select" name="kLinkgruppe" onchange="document.forms['aenderlinkgruppe_{$link->getID()}_{$id}'].submit();">
+                        <select title="{__('linkGroupMove')}" class="custom-select" name="kLinkgruppe"
+                                onchange="confirmLinkAction(this, 'aenderlinkgruppe_{$link->getID()}_{$id}','{__('linkGroupMove')}');">
                             <option value="-1">{__('linkGroupMove')}</option>
                             {foreach $linkgruppen as $linkgruppeTMP}
                                 {if $linkgruppeTMP->getID() != $id && $linkgruppeTMP->getID() > 0}
@@ -51,7 +52,7 @@
                         </select>
                     {/if}
                 </form>
-                <form class="navbar-form2 col-lg-4 col-md-12 left px-1" method="post" action="links.php" name="kopiereinlinkgruppe_{$link->getID()}_{$id}">
+                <form class="navbar-form2 col-lg-4 col-md-12 left px-1" method="post" action="{$adminURL}{$route}" name="kopiereinlinkgruppe_{$link->getID()}_{$id}">
                     {$jtl_token}
                     <input type="hidden" name="action" value="copy-to-linkgroup" />
                     <input type="hidden" name="kLink" value="{$link->getID()}" />
@@ -60,7 +61,8 @@
                     {/if}
                     {if $id > 0}
                         {if $link->getParent() === 0}
-                            <select title="{__('linkGroupCopy')}" class="custom-select" name="kLinkgruppe" onchange="document.forms['kopiereinlinkgruppe_{$link->getID()}_{$id}'].submit();">
+                            <select title="{__('linkGroupCopy')}" class="custom-select" name="kLinkgruppe"
+                                    onchange="confirmLinkAction(this, 'kopiereinlinkgruppe_{$link->getID()}_{$id}','{__('linkGroupCopy')}');">
                                 <option value="-1">{__('linkGroupCopy')}</option>
                                 {foreach $linkgruppen as $linkgruppeTMP}
                                     {if $linkgruppeTMP->getID() !== $id && $linkgruppeTMP->getID() > 0}
@@ -75,7 +77,7 @@
                         {/if}
                     {/if}
                 </form>
-                <form class="navbar-form2 col-lg-4 col-md-12 left px-1" method="post" action="links.php" name="aenderlinkvater_{$link->getID()}_{$id}">
+                <form class="col-lg-4 col-md-12 left px-1" method="post" action="{$adminURL}{$route}" name="aenderlinkvater_{$link->getID()}_{$id}">
                     {$jtl_token}
                     <input type="hidden" name="action" value="change-parent" />
                     <input type="hidden" name="kLink" value="{$link->getID()}" />
@@ -84,21 +86,33 @@
                         <input type="hidden" name="kPlugin" value="{$kPlugin}" />
                     {/if}
                     {if $id > 0}
-                        <select title="{__('linkMove')}" class="custom-select" name="kVaterLink" onchange="document.forms['aenderlinkvater_{$link->getID()}_{$id}'].submit();">
-                            <option value="-1">{__('linkMove')}</option>
-                            <option value="0">-- Root --</option>
-                            {foreach $list as $linkTMP}
-                                {if $linkTMP->getID() !== $link->getID() && $linkTMP->getID() !== $link->getParent()}
-                                    <option value="{$linkTMP->getID()}">{$linkTMP->getName()}</option>
-                                {/if}
-                            {/foreach}
-                        </select>
+                        {if count($list) < 20}
+                            <select title="{__('linkMove')}" class="custom-select" name="kVaterLink"
+                                    onchange="confirmLinkAction(this, 'aenderlinkvater_{$link->getID()}_{$id}','{__('linkMove')}');">
+                                <option value="-1">{__('linkMove')}</option>
+                                <option value="0">-- Root --</option>
+                                {foreach $list as $linkTMP}
+                                    {if $linkTMP->getID() !== $link->getID() && $linkTMP->getID() !== $link->getParent()}
+                                        <option value="{$linkTMP->getID()}">{$linkTMP->getDisplayName()}</option>
+                                    {/if}
+                                {/foreach}
+                            </select>
+                        {else}
+                            <input title="{__('linkMove')}" class="form-control" id="kVaterLink-{$link->getID()}"
+                                   value="" aria-label="{__('linkMove')}" placeholder="{__('linkMove')}"
+                                   onchange="confirmLinkAction(this, 'aenderlinkvater_{$link->getID()}_{$id}','{__('linkMove')}');">
+                            <input type="hidden" name="kVaterLink" value="">
+                            <script>
+                                enableTypeahead('#kVaterLink-{$link->getID()}', 'getPagesByLinkGroup', 'cName', null,
+                                    onSelectVaterLink, null, 500, [{$id}], '{__("noData")}');
+                            </script>
+                        {/if}
                     {/if}
                 </form>
             </div>
         </td>
         <td class="text-center" style="width: 10%;min-width: 160px;">
-            <form method="post" action="links.php">
+            <form method="post" action="{$adminURL}{$route}">
                 {$jtl_token}
                 {if $kPlugin > 0}
                     <input type="hidden" name="kPlugin" value="{$kPlugin}" />
@@ -110,9 +124,9 @@
                     <button type="submit"
                             name="action"
                             value="delete-link"
-                            class="btn btn-link px-2{if $link->getPluginID() > 0} disabled{else} delete-confirm{/if}"
+                            class="btn btn-link px-2{if $link->getPluginID() > 0 && $link->getReference() === 0} disabled{else} delete-confirm{/if}"
                             {if $link->getPluginID() === 0} data-modal-body="{__('sureDeleteLink')}"{/if}
-                            title="{if $deleteCount > 1}{{__('dangerLinkWillGetDeleted')}|sprintf:{$deleteCount}}{else}{__('delete')}{/if}"
+                            title="{if $deleteCount > 1}{sprintf(__('dangerLinkWillGetDeleted'), $deleteCount)}{else}{__('delete')}{/if}"
                             {if $link->isSystem() && $link->getReference() === 0 && !$link->hasDuplicateSpecialLink()} disabled{/if}
                             data-toggle="tooltip">
                         <span class="icon-hover">
@@ -122,16 +136,6 @@
                         {if $deleteCount > 1} ({$deleteCount}){/if}
                     </button>
                     {if $id > 0}
-                        <button name="action"
-                                value="remove-linklfrom-linkgroup"
-                                class="btn btn-link px-2"
-                                title="{__('linkGroupRemove')}"
-                                data-toggle="tooltip">
-                            <span class="icon-hover">
-                                <span class="fal fa-unlink"></span>
-                                <span class="fas fa-unlink"></span>
-                            </span>
-                        </button>
                         <button name="action" value="edit-link" class="btn btn-link px-2" title="{__('modify')}"
                                 data-toggle="tooltip">
                             <span class="icon-hover">

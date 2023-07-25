@@ -8,6 +8,7 @@ use JTL\Shop;
 /**
  * Class KategoriePict
  * @package JTL\Catalog\Category
+ * @deprecated since 5.2.0
  */
 class KategoriePict
 {
@@ -37,6 +38,7 @@ class KategoriePict
      */
     public function __construct(int $id = 0)
     {
+        \trigger_error(__CLASS__ . ' is deprecated and should not be used anymore.', \E_USER_DEPRECATED);
         if ($id > 0) {
             $this->loadFromDB($id);
         }
@@ -48,7 +50,7 @@ class KategoriePict
      */
     public function loadFromDB(int $id): self
     {
-        $obj = Shop::Container()->getDB()->select('tkategoriepict', 'kKategoriePict', $id);
+        $obj = Shop::Container()->getDB()->select('tkategoriepict', 'kKategoriePict', $id) ?? new \stdClass();
         foreach (\get_object_vars($obj) as $k => $v) {
             $this->$k = $v;
         }
@@ -72,14 +74,5 @@ class KategoriePict
         $obj = GeneralObject::copyMembers($this);
 
         return Shop::Container()->getDB()->update('tkategoriepict', 'kKategoriePict', $obj->kKategoriePict, $obj);
-    }
-
-    /**
-     * @return bool
-     * @deprecated since 5.0.0
-     */
-    public function setzePostDaten(): bool
-    {
-        return false;
     }
 }

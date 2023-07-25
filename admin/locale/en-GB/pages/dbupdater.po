@@ -83,5 +83,11 @@ msgstr "Database update"
 msgid "required"
 msgstr "required"
 
+msgid "%d plugins were disabled for compatibility reasons. Please check your installed plugins manually."
+msgstr "%d plugins were disabled for compatibility reasons. Please check your installed plugins manually."
+
 msgid "errorMinShopVersionRequired"
 msgstr "Your online shop does not have the minimum version required to update to version %s. Please update to version $s first and then to version %s. Please visit our <a href=\"%s\" target=\"_blank\">Guide</a> for further instructions."
+
+msgid "%d config values were updated after database update."
+msgstr "%d config values were updated after database update."

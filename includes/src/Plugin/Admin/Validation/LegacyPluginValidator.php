@@ -17,12 +17,12 @@ final class LegacyPluginValidator extends AbstractValidator
     protected const BASE_DIR = \PFAD_ROOT . \PFAD_PLUGIN;
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function validateByPluginID(int $pluginID, bool $forUpdate = false): int
     {
         $plugin = $this->db->select('tplugin', 'kPlugin', $pluginID);
-        if (empty($plugin->kPlugin)) {
+        if ($plugin === null || empty($plugin->kPlugin)) {
             return InstallCode::NO_PLUGIN_FOUND;
         }
         $dir  = self::BASE_DIR . $plugin->cVerzeichnis;
@@ -40,7 +40,7 @@ final class LegacyPluginValidator extends AbstractValidator
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function validateByPath(string $path, bool $forUpdate = false): int
     {
@@ -62,9 +62,9 @@ final class LegacyPluginValidator extends AbstractValidator
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
-    public function pluginPlausiIntern($xml, bool $forUpdate): int
+    public function pluginPlausiIntern(?array $xml, bool $forUpdate): int
     {
         $isShop4Compatible = false;
         $shopVersion       = Version::parse(\APPLICATION_VERSION);
@@ -75,7 +75,7 @@ final class LegacyPluginValidator extends AbstractValidator
         if (!isset($baseNode['XMLVersion'])) {
             return InstallCode::INVALID_XML_VERSION;
         }
-        \preg_match('/[0-9]{3}/', $baseNode['XMLVersion'], $hits);
+        \preg_match('/\d{3}/', $baseNode['XMLVersion'], $hits);
         if (\count($hits) === 0
             || (\mb_strlen($hits[0]) !== \mb_strlen($baseNode['XMLVersion']) && (int)$baseNode['XMLVersion'] >= 100)
         ) {
@@ -88,25 +88,22 @@ final class LegacyPluginValidator extends AbstractValidator
             return InstallCode::INVALID_PLUGIN_ID;
         }
         if ($forUpdate === false) {
-            $oPluginTMP = $this->db->select('tplugin', 'cPluginID', $baseNode['PluginID']);
-            if (isset($oPluginTMP->kPlugin) && $oPluginTMP->kPlugin > 0) {
+            $tmpPlugin = $this->db->select('tplugin', 'cPluginID', $baseNode['PluginID']);
+            if ($tmpPlugin !== null && $tmpPlugin->kPlugin > 0) {
                 return InstallCode::DUPLICATE_PLUGIN_ID;
             }
         }
         try {
             if (isset($baseNode['Shop4Version'])) {
-                $parsedXMLShopVersion = Version::parse($baseNode['Shop4Version']);
-                $isShop4Compatible    = true;
+                $parsedShopVersion = Version::parse($baseNode['Shop4Version']);
+                $isShop4Compatible = true;
             } else {
-                $parsedXMLShopVersion = Version::parse($baseNode['MaxShopVersion'] ?? $baseNode['ShopVersion']);
+                $parsedShopVersion = Version::parse($baseNode['MaxShopVersion'] ?? $baseNode['ShopVersion']);
             }
         } catch (InvalidArgumentException $e) {
-            $parsedXMLShopVersion = null;
+            $parsedShopVersion = null;
         }
-        if (empty($shopVersion)
-            || $parsedXMLShopVersion === null
-            || $parsedXMLShopVersion->greaterThan($shopVersion)
-        ) {
+        if ($shopVersion === null || $parsedShopVersion === null || $parsedShopVersion->greaterThan($shopVersion)) {
             return InstallCode::SHOP_VERSION_COMPATIBILITY;
         }
 
@@ -142,11 +139,11 @@ final class LegacyPluginValidator extends AbstractValidator
         $version = '';
         foreach ($node['Version'] as $i => $Version) {
             $i = (string)$i;
-            \preg_match('/[0-9]+\sattr/', $i, $hits1);
-            \preg_match('/[0-9]+/', $i, $hits2);
+            \preg_match('/\d+\sattr/', $i, $hits1);
+            \preg_match('/\d+/', $i, $hits2);
             if (isset($hits1[0]) && \mb_strlen($hits1[0]) === \mb_strlen($i)) {
                 $version = $Version['nr'];
-                \preg_match('/[0-9]+/', $Version['nr'], $hits);
+                \preg_match('/\d+/', $Version['nr'], $hits);
                 if (\mb_strlen($hits[0]) !== \mb_strlen($Version['nr'])) {
                     return InstallCode::INVALID_VERSION_NUMBER;
                 }
@@ -161,11 +158,7 @@ final class LegacyPluginValidator extends AbstractValidator
                 if (!\is_dir($dir . '/' . \PFAD_PLUGIN_VERSION . $version)) {
                     return InstallCode::MISSING_VERSION_DIR;
                 }
-                \preg_match(
-                    '/[0-9]{4}-[0-1]{1}[0-9]{1}-[0-3]{1}[0-9]{1}/',
-                    $Version['CreateDate'],
-                    $hits
-                );
+                \preg_match('/\d{4}-[0-1]\d-[0-3]\d/', $Version['CreateDate'], $hits);
                 if (!isset($hits[0]) || \mb_strlen($hits[0]) !== \mb_strlen($Version['CreateDate'])) {
                     return InstallCode::INVALID_DATE;
                 }

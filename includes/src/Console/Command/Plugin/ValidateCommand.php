@@ -21,7 +21,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ValidateCommand extends Command
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function configure(): void
     {
@@ -42,7 +42,7 @@ class ValidateCommand extends Command
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function interact(InputInterface $input, OutputInterface $output): void
     {
@@ -54,7 +54,7 @@ class ValidateCommand extends Command
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function execute(InputInterface $input, OutputInterface $output): ?int
     {
@@ -66,15 +66,17 @@ class ValidateCommand extends Command
         $pluginPath = \PFAD_ROOT . \PLUGIN_DIR . $pluginDir;
         if ($zip !== null) {
             if (!\file_exists($zip)) {
-                $io->writeln("<error>Zipfile does not exist:</error> <comment>'{$zip}'</comment>");
+                $io->writeln(\sprintf('<error>Zip file does not exist:</error> <comment>%s</comment>', $zip));
 
                 return -1;
             }
             $response = $this->unzip($zip, $parser);
             if ($response->getStatus() === InstallationResponse::STATUS_OK) {
-                $io->writeln("<info>Successfully unzipped to</info> <comment>'{$response->getPath()}'</comment>");
+                $io->writeln(
+                    \sprintf('<info>Successfully unzipped to</info> <comment>%s</comment>', $response->getPath())
+                );
             }
-            if (!\is_dir($pluginPath) || \strpos($response->getDirName(), $pluginDir) === false) {
+            if (!\is_dir($pluginPath) || !\str_contains($response->getDirName(), $pluginDir)) {
                 $io->writeln('<error>Could not extract or wrong dir name</error>');
                 $this->cleanup($delete, $pluginDir, $zip);
 
@@ -82,11 +84,11 @@ class ValidateCommand extends Command
             }
         }
         if (\is_dir($pluginPath)) {
-            $io->writeln("<info>Validating plugin at</info> <comment>'{$pluginDir}'</comment>");
+            $io->writeln(\sprintf('<info>Validating plugin at</info> <comment>%s</comment>', $pluginDir));
             $validator = new PluginValidator(Shop::Container()->getDB(), $parser);
             $res       = $validator->validateByPath($pluginPath);
             if ($res === InstallCode::OK) {
-                $io->writeln("<info>Successfully validated</info> <comment>'{$pluginDir}'</comment>");
+                $io->writeln(\sprintf('<info>Successfully validated</info> <comment>%s</comment>', $pluginDir));
             } else {
                 $io->writeln('<error>Could not validate. Result code: ' . $res . '</error>');
             }
@@ -95,9 +97,9 @@ class ValidateCommand extends Command
             return $res;
         }
         if (\is_dir(\PFAD_ROOT . \PFAD_PLUGIN . $pluginDir)) {
-            $io->writeln("<info>Cannot validate legacy plugin at</info> <comment>'{$pluginDir}'</comment>");
+            $io->writeln(\sprintf('<info>Cannot validate legacy plugin at</info> <comment>%s</comment>', $pluginDir));
         } else {
-            $io->writeln("<error>No plugin dir:</error> <comment>'{$pluginDir}'</comment>");
+            $io->writeln(\sprintf('<error>No plugin dir:</error> <comment>%s</comment>', $pluginDir));
         }
         $this->cleanup($delete, $pluginDir, $zip);
 
@@ -128,8 +130,6 @@ class ValidateCommand extends Command
      */
     private function unzip(string $zipfile, XMLParser $parser): InstallationResponse
     {
-        $extractor = new Extractor($parser);
-
-        return $extractor->extractPlugin($zipfile);
+        return (new Extractor($parser))->extractPlugin($zipfile);
     }
 }

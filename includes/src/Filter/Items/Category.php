@@ -40,7 +40,20 @@ class Category extends BaseCategory
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
+     */
+    public function setSeo(array $languages): FilterInterface
+    {
+        parent::setSeo($languages);
+        foreach ($this->slugs as $langID => $slug) {
+            $this->cSeo[$langID] = $slug;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @inheritdoc
      */
     public function setValue($value): FilterInterface
     {
@@ -77,10 +90,14 @@ class Category extends BaseCategory
         if (!\is_array($value)) {
             $value = [$value];
         }
-        $values = ' IN (' . \implode(', ', $value)  . ')';
+        $values = ' IN (' . \implode(', ', $value) . ')';
 
         if ($this->getIncludeSubCategories() === true) {
-            return ' tkategorieartikel.kKategorie IN (
+            $row = $this->getConfig('navigationsfilter')['kategoriefilter_anzeigen_als'] === 'HF'
+                ? 'tkategorieartikelgesamt'
+                : 'tkategorieartikel';
+
+            return $row . '.kKategorie IN (
                         SELECT tchild.kKategorie FROM tkategorie AS tparent
                             JOIN tkategorie AS tchild
                                 ON tchild.lft BETWEEN tparent.lft AND tparent.rght
@@ -99,7 +116,7 @@ class Category extends BaseCategory
     public function getSQLJoin()
     {
         $join = (new Join())
-            ->setOrigin(__CLASS__)
+            ->setOrigin(__CLASS__ . '::getSQLJoin')
             ->setComment('join from ' . __METHOD__)
             ->setType('JOIN');
         if ($this->getConfig('navigationsfilter')['kategoriefilter_anzeigen_als'] === 'HF') {
@@ -112,11 +129,11 @@ class Category extends BaseCategory
                             ON tkategorie.lft BETWEEN oberkategorie.lft 
                             AND oberkategorie.rght
                     ) tkategorieartikelgesamt')
-                 ->setOn('tartikel.kArtikel = tkategorieartikelgesamt.kArtikel');
+                ->setOn('tartikel.kArtikel = tkategorieartikelgesamt.kArtikel');
         }
 
         return $join->setTable('tkategorieartikel')
-                    ->setOn('tartikel.kArtikel = tkategorieartikel.kArtikel');
+            ->setOn('tartikel.kArtikel = tkategorieartikel.kArtikel');
     }
 
     /**
@@ -148,20 +165,24 @@ class Category extends BaseCategory
                 ? ''
                 : ' AND tkategorieartikelgesamt.kOberKategorie = 0';
 
-            $sql->addJoin((new Join())
-                ->setComment('join1 from ' . __METHOD__)
-                ->setType('JOIN')
-                ->setTable('(
-            SELECT tkategorieartikel.kArtikel, oberkategorie.kOberKategorie, oberkategorie.kKategorie
-                FROM tkategorieartikel
-                INNER JOIN tkategorie 
-                    ON tkategorie.kKategorie = tkategorieartikel.kKategorie
-                INNER JOIN tkategorie oberkategorie 
-                    ON tkategorie.lft BETWEEN oberkategorie.lft 
-                    AND oberkategorie.rght
-                ) tkategorieartikelgesamt')
-                ->setOn('tartikel.kArtikel = tkategorieartikelgesamt.kArtikel ' . $categoryIDFilter)
-                ->setOrigin(__CLASS__));
+            if (\count(\array_filter($sql->getJoins(), static function (Join $join) {
+                return $join->getOrigin() === __CLASS__ . '::getSQLJoin';
+            })) === 0) {
+                $sql->addJoin((new Join())
+                    ->setComment('join1 from ' . __METHOD__)
+                    ->setType('JOIN')
+                    ->setTable('(
+                SELECT tkategorieartikel.kArtikel, oberkategorie.kOberKategorie, oberkategorie.kKategorie
+                    FROM tkategorieartikel
+                    INNER JOIN tkategorie
+                        ON tkategorie.kKategorie = tkategorieartikel.kKategorie
+                    INNER JOIN tkategorie oberkategorie
+                        ON tkategorie.lft BETWEEN oberkategorie.lft
+                        AND oberkategorie.rght
+                    ) tkategorieartikelgesamt')
+                    ->setOn('tartikel.kArtikel = tkategorieartikelgesamt.kArtikel ' . $categoryIDFilter)
+                    ->setOrigin(__CLASS__ . '::getOptions'));
+            }
             $sql->addJoin((new Join())
                 ->setComment('join2 from ' . __METHOD__)
                 ->setType('JOIN')
@@ -169,7 +190,6 @@ class Category extends BaseCategory
                 ->setOn('tkategorie.kKategorie = tkategorieartikelgesamt.kKategorie')
                 ->setOrigin(__CLASS__));
         } else {
-            // @todo: this instead of $naviFilter->Kategorie?
             if (!$this->productFilter->hasCategory()) {
                 $sql->addJoin((new Join())
                     ->setComment('join3 from ' . __METHOD__)
@@ -222,53 +242,61 @@ class Category extends BaseCategory
 
         $baseQuery = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
         $cacheID   = $this->getCacheID($baseQuery);
-        if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
-            $this->options = $cached;
-
-            return $this->options;
-        }
-        $categories         = $this->productFilter->getDB()->getObjects(
-            'SELECT tseo.cSeo, ssMerkmal.kKategorie, ssMerkmal.cName, 
-                ssMerkmal.nSort, COUNT(*) AS nAnzahl
+        if (($categories = $this->productFilter->getCache()->get($cacheID)) === false) {
+            $db         = $this->productFilter->getDB();
+            $categories = $db->getObjects(
+                'SELECT tseo.cSeo AS slug, ssMerkmal.kKategorie AS id, ssMerkmal.cName AS name, 
+                ssMerkmal.nSort AS sort, COUNT(*) AS cnt
                 FROM (' . $baseQuery . " ) AS ssMerkmal
                     LEFT JOIN tseo ON tseo.kKey = ssMerkmal.kKategorie
                         AND tseo.cKey = 'kKategorie'
                         AND tseo.kSprache = :lid
                     GROUP BY ssMerkmal.kKategorie
                     ORDER BY ssMerkmal.nSort, ssMerkmal.cName",
-            ['lid' => $this->getLanguageID()]
-        );
-        $langID             = $this->getLanguageID();
+                ['lid' => $this->getLanguageID()]
+            );
+            foreach ($categories as $category) {
+                $category->id   = (int)$category->id;
+                $category->sort = (int)$category->sort;
+                $category->cnt  = (int)$category->cnt;
+            }
+            if ($categoryFilterType === 'KP') { // category path
+                $langID = $this->getLanguageID();
+                $helper = CategoryHelper::getInstance($langID, $customerGroupID);
+                foreach ($categories as $category) {
+                    $category->name = $helper->getPath(new Kategorie(
+                        $category->id,
+                        $langID,
+                        $customerGroupID,
+                        false,
+                        $db
+                    ));
+                }
+            }
+            $this->productFilter->getCache()->set($cacheID, $categories, [\CACHING_GROUP_FILTER]);
+        }
         $additionalFilter   = new self($this->productFilter);
-        $helper             = CategoryHelper::getInstance($langID, $customerGroupID);
         $filterURLGenerator = $this->productFilter->getFilterURL();
         foreach ($categories as $category) {
-            $category->kKategorie = (int)$category->kKategorie;
-            if ($categoryFilterType === 'KP') { // category path
-                $category->cName = $helper->getPath(new Kategorie($category->kKategorie, $langID, $customerGroupID));
-            }
             $options[] = (new Option())
-                ->setIsActive($this->productFilter->filterOptionIsActive($this->getClassName(), $category->kKategorie))
+                ->setIsActive($this->productFilter->filterOptionIsActive($this->getClassName(), $category->id))
                 ->setParam($this->getUrlParam())
-                ->setURL($filterURLGenerator->getURL(
-                    $additionalFilter->init((int)$category->kKategorie)
-                ))
+                ->setURL($filterURLGenerator->getURL($additionalFilter->init($category->id)))
                 ->setType($this->getType())
                 ->setClassName($this->getClassName())
-                ->setName($category->cName)
-                ->setValue($category->kKategorie)
-                ->setCount((int)$category->nAnzahl)
-                ->setSort((int)$category->nSort);
+                ->setName($category->name)
+                ->setValue($category->id)
+                ->setCount($category->cnt)
+                ->setSort($category->sort);
         }
         if ($categoryFilterType === 'KP') {
-            \usort($options, static function ($a, $b) {
+            \usort($options, static function ($a, $b): int {
                 /** @var Option $a */
                 /** @var Option $b */
                 return \strcmp($a->getName(), $b->getName());
             });
         }
         $this->options = $options;
-        $this->productFilter->getCache()->set($cacheID, $options, [\CACHING_GROUP_FILTER]);
 
         return $options;
     }

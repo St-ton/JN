@@ -12,7 +12,7 @@ class Migration_20200407153000 extends Migration implements IMigration
     protected $description = 'Add license data table';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -28,7 +28,7 @@ class Migration_20200407153000 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

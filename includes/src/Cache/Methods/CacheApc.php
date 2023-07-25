@@ -16,33 +16,28 @@ class CacheApc implements ICachingMethod
     use JTLCacheTrait;
 
     /**
-     * @var CacheApc
-     */
-    public static $instance;
-
-    /**
      * check whether apc_ or apcu_ functions should be used
      *
      * @var bool
      */
-    private $u;
+    private bool $u;
 
     /**
      * @param array $options
      */
-    public function __construct($options)
+    public function __construct(array $options)
     {
-        $this->isInitialized = true;
-        $this->journalID     = 'apc_journal';
-        $this->options       = $options;
-        $this->u             = \function_exists('apcu_store');
-        self::$instance      = $this;
+        $this->setIsInitialized(true);
+        $this->setJournalID('apc_journal');
+        $this->setOptions($options);
+        $this->u        = \function_exists('apcu_store');
+        self::$instance = $this;
     }
 
     /**
      * @inheritdoc
      */
-    public function store($cacheID, $content, $expiration = null): bool
+    public function store($cacheID, $content, int $expiration = null): bool
     {
         $func = $this->u ? 'apcu_store' : 'apc_store';
 
@@ -52,7 +47,7 @@ class CacheApc implements ICachingMethod
     /**
      * @inheritdoc
      */
-    public function storeMulti($idContent, $expiration = null): bool
+    public function storeMulti(array $idContent, int $expiration = null): bool
     {
         $func = $this->u ? 'apcu_store' : 'apc_store';
 
@@ -74,9 +69,6 @@ class CacheApc implements ICachingMethod
      */
     public function loadMulti(array $cacheIDs): array
     {
-        if (!\is_array($cacheIDs)) {
-            return [];
-        }
         $func         = $this->u ? 'apcu_fetch' : 'apc_fetch';
         $prefixedKeys = [];
         foreach ($cacheIDs as $_cid) {
@@ -139,7 +131,7 @@ class CacheApc implements ICachingMethod
                 'inserts' => $tmp['num_inserts'] ?? 0,
                 'mem'     => $tmp['mem_size'] ?? 0
             ];
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             $stats = [];
         }
 

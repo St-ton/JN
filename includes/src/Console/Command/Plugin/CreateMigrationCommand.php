@@ -16,7 +16,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class CreateMigrationCommand extends Command
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function configure(): void
     {
@@ -32,7 +32,7 @@ class CreateMigrationCommand extends Command
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function interact(InputInterface $input, OutputInterface $output): void
     {
@@ -54,9 +54,9 @@ class CreateMigrationCommand extends Command
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
-    protected function execute(InputInterface $input, OutputInterface $output): ?int
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $pluginDir   = \trim($input->getOption('plugin-dir') ?? '');
         $description = \trim($input->getOption('description') ?? '');
@@ -66,11 +66,11 @@ class CreateMigrationCommand extends Command
             $migrationPath = MigrationHelper::create($pluginDir, $description, $author);
             $output->writeln("<info>Created Migration:</info> <comment>'" . $migrationPath . "'</comment>");
 
-            return 0;
+            return Command::SUCCESS;
         } catch (\Exception $e) {
             $this->getIO()->error($e->getMessage());
 
-            return 1;
+            return Command::FAILURE;
         }
     }
 }

@@ -17,6 +17,9 @@ msgstr "Startdatum"
 msgid "headingLastStarted"
 msgstr "zuletzt gestartet"
 
+msgid "headingNextStart"
+msgstr "nächster Start"
+
 msgid "headingFrequency"
 msgstr "Frequenz"
 
@@ -41,8 +44,14 @@ msgstr "Bilder-Cache"
 msgid "licensecheck"
 msgstr "Lizenzprüfungen"
 
+msgid "topsellerupdate"
+msgstr "Bestseller berechnen"
+
 msgid "statusemail"
 msgstr "Status-E-Mails"
 
 msgid "dataprotection"
 msgstr "Kundendatenanonymisierung"
+
+msgid "sendMailQueue"
+msgstr "Sende Mails zeitversetzt"

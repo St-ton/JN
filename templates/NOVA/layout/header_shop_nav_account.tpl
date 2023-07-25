@@ -6,7 +6,7 @@
         right=true
         text='<span class="fas fa-user"></span>'
         class="account-icon-dropdown"}
-        {if empty($smarty.session.Kunde->kKunde)}
+        {if JTL\Session\Frontend::getCustomer()->getID() === 0}
             {block name='layout-header-shop-nav-account-logged-out'}
                 <div class="dropdown-body lg-min-w-lg">
                     {form action="{get_static_route id='jtl.php' secure=true}" method="post" class="jtl-validate" slide=true}
@@ -66,22 +66,26 @@
             {/block}
         {else}
             {block name='layout-header-shop-nav-account-logged-in'}
-                {dropdownitem href="{get_static_route id='jtl.php' secure=true}" rel="nofollow" title="{lang key='myAccount'}"}
+                {get_static_route id='jtl.php' secure=true assign='secureAccountURL'}
+                {dropdownitem href=$secureAccountURL rel="nofollow" title="{lang key='myAccount'}"}
                     {lang key='myAccount'}
                 {/dropdownitem}
-                {dropdownitem href="{get_static_route id='jtl.php' secure=true}?bestellungen=1" rel="nofollow" title="{lang key='myAccount'}"}
+                {dropdownitem href="{$secureAccountURL}?bestellungen=1" rel="nofollow" title="{lang key='myAccount'}"}
                     {lang key='myOrders'}
                 {/dropdownitem}
-                {dropdownitem href="{get_static_route id='jtl.php' secure=true}?editRechnungsadresse=1" rel="nofollow" title="{lang key='myAccount'}"}
+                {dropdownitem href="{$secureAccountURL}?editRechnungsadresse=1" rel="nofollow" title="{lang key='myAccount'}"}
                     {lang key='myPersonalData'}
                 {/dropdownitem}
+                {dropdownitem href="{$secureAccountURL}?editLieferadresse=1" rel="nofollow" title="{lang key='myAccount'}"}
+                    {lang key='myShippingAddresses'}
+                {/dropdownitem}
                 {if $Einstellungen.global.global_wunschliste_anzeigen === 'Y'}
-                    {dropdownitem href="{get_static_route id='jtl.php' secure=true}#my-wishlists" rel="nofollow" title="{lang key='myAccount'}"}
+                    {dropdownitem href="{$secureAccountURL}#my-wishlists" rel="nofollow" title="{lang key='myAccount'}"}
                         {lang key='myWishlists'}
                     {/dropdownitem}
                 {/if}
                 {dropdowndivider}
-                {dropdownitem href="{get_static_route id='jtl.php' secure=true}?logout=1" rel="nofollow" title="{lang key='logOut'}" class="account-icon-dropdown-logout"}
+                {dropdownitem href="{$secureAccountURL}?logout=1" rel="nofollow" title="{lang key='logOut'}" class="account-icon-dropdown-logout"}
                     {lang key='logOut'}
                 {/dropdownitem}
             {/block}

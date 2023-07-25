@@ -1,6 +1,6 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('contactformSubject') cBeschreibung=__('contanctformSubjectDesc')}
 <div id="content">
-    <form name="einstellen" method="post" action="kontaktformular.php">
+    <form name="einstellen" method="post" action="{$adminURL}{$route}">
         {$jtl_token}
         <input type="hidden" name="kKontaktBetreff" value="{if isset($Betreff->kKontaktBetreff)}{$Betreff->kKontaktBetreff}{/if}" />
         <input type="hidden" name="betreff" value="1" />
@@ -54,7 +54,7 @@
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="nSort">{__('sortNo')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <input type="text" class="form-control" name="nSort" id="nSort" value="{if isset($Betreff->nSort)}{$Betreff->nSort}{/if}" tabindex="4" />
+                            <input type="number" class="form-control" name="nSort" id="nSort" value="{if isset($Betreff->nSort)}{$Betreff->nSort}{/if}" tabindex="4" />
                         </div>
                     </div>
                 </div>
@@ -62,7 +62,7 @@
             <div class="card-footer save-wrapper">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
-                        <button type="button" onclick="window.location.href='kontaktformular.php?tab=subjects'" class="btn btn-outline-primary btn-block">
+                        <button type="button" onclick="window.location.href='{$adminURL}{$route}?tab=subjects'" class="btn btn-outline-primary btn-block">
                             {__('cancelWithIcon')}
                         </button>
                     </div>

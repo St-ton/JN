@@ -21,28 +21,23 @@ class CacheRedisCluster implements ICachingMethod
     use JTLCacheTrait;
 
     /**
-     * @var CacheRedisCluster
+     * @var RedisCluster|null
      */
-    public static $instance;
-
-    /**
-     * @var RedisCluster
-     */
-    private $redis;
+    private ?RedisCluster $redis = null;
 
     /**
      * @var array
      */
-    private $masters = [];
+    private array $masters = [];
 
     /**
      * @param array $options
      */
     public function __construct(array $options)
     {
-        $res             = false;
-        $this->journalID = 'redis_journal';
-        $this->options   = $options;
+        $res = false;
+        $this->setJournalID('redis_journal');
+        $this->setOptions($options);
         if (isset($options['rediscluster_hosts']) && $this->isAvailable()) {
             $res = $this->setRedisCluster(
                 $options['rediscluster_hosts'],
@@ -51,7 +46,8 @@ class CacheRedisCluster implements ICachingMethod
                 $options['redis_pass']
             );
         }
-        $this->isInitialized = $res;
+        $this->setIsInitialized($res);
+        self::$instance = $this;
     }
 
     /**
@@ -61,8 +57,12 @@ class CacheRedisCluster implements ICachingMethod
      * @param string|null $pass
      * @return bool
      */
-    private function setRedisCluster($hosts = null, $persist = false, $strategy = 0, string $pass = null): bool
-    {
+    private function setRedisCluster(
+        ?string $hosts = null,
+        bool    $persist = false,
+        int     $strategy = 0,
+        ?string $pass = null
+    ): bool {
         try {
             $pass  = $pass !== null && \strlen($pass) > 0 ? $pass : null;
             $redis = new RedisCluster(null, \explode(',', $hosts), 1.5, 1.5, $persist, $pass);
@@ -96,14 +96,14 @@ class CacheRedisCluster implements ICachingMethod
     /**
      * @inheritdoc
      */
-    public function store($cacheID, $content, $expiration = null): bool
+    public function store($cacheID, $content, int $expiration = null): bool
     {
         try {
             $exp = $expiration ?? $this->options['lifetime'];
 
             return $this->redis->set($cacheID, $content, $cacheID !== $this->journalID && $exp > -1 ? $exp : null);
         } catch (RedisClusterException $e) {
-            Shop::Container()->getLogService()->error('RedisClusterException: ' . $e->getMessage());
+            Shop::Container()->getLogService()->error('RedisClusterException: {exc}', ['exc' => $e->getMessage()]);
 
             return false;
         }
@@ -112,7 +112,7 @@ class CacheRedisCluster implements ICachingMethod
     /**
      * @inheritdoc
      */
-    public function storeMulti($idContent, $expiration = null): bool
+    public function storeMulti(array $idContent, int $expiration = null): bool
     {
         try {
             $res = $this->redis->mset($idContent);
@@ -124,7 +124,7 @@ class CacheRedisCluster implements ICachingMethod
 
             return $res;
         } catch (RedisClusterException $e) {
-            Shop::Container()->getLogService()->error('RedisClusterException: ' . $e->getMessage());
+            Shop::Container()->getLogService()->error('RedisClusterException: {exc}', ['exc' => $e->getMessage()]);
 
             return false;
         }
@@ -138,7 +138,7 @@ class CacheRedisCluster implements ICachingMethod
         try {
             return $this->redis->get($cacheID);
         } catch (RedisClusterException $e) {
-            Shop::Container()->getLogService()->error('RedisClusterException: ' . $e->getMessage());
+            Shop::Container()->getLogService()->error('RedisClusterException: {exc}', ['exc' => $e->getMessage()]);
 
             return false;
         }
@@ -198,7 +198,7 @@ class CacheRedisCluster implements ICachingMethod
     /**
      * custom prefix for tag IDs
      *
-     * @param string $tagName
+     * @param string|int $tagName
      * @return string
      */
     private static function _keyFromTagName($tagName): string
@@ -211,7 +211,12 @@ class CacheRedisCluster implements ICachingMethod
      */
     public function flushTags($tags): int
     {
-        return $this->flush(\array_unique($this->getKeysByTag($tags))) ? \count($tags) : 0;
+        $tagged = \array_unique($this->getKeysByTag($tags));
+        $tags   = \is_string($tags)
+            ? [self::_keyFromTagName($tags)]
+            : \array_map(self::_keyFromTagName(...), $tags);
+
+        return $this->flush(\array_merge($tags, $tagged)) ? \count($tags) : 0;
     }
 
     /**
@@ -233,7 +238,7 @@ class CacheRedisCluster implements ICachingMethod
     {
         $matchTags = \is_string($tags)
             ? [self::_keyFromTagName($tags)]
-            : \array_map('JTL\Cache\Methods\CacheRedisCluster::_keyFromTagName', $tags);
+            : \array_map(self::_keyFromTagName(...), $tags);
         $res       = \count($tags) === 1
             ? $this->redis->sMembers($matchTags[0])
             : $this->redis->sUnion($matchTags);
@@ -283,7 +288,7 @@ class CacheRedisCluster implements ICachingMethod
                     : [];
             }
         } catch (RedisClusterException $e) {
-            Shop::Container()->getLogService()->error('RedisClusterException: ' . $e->getMessage());
+            Shop::Container()->getLogService()->error('RedisClusterException: {exc}', ['exc' => $e->getMessage()]);
 
             return [];
         }
@@ -298,7 +303,7 @@ class CacheRedisCluster implements ICachingMethod
             if (isset($stat[$idx])) {
                 $dbStats = \explode(',', $stat[$idx]);
                 foreach ($dbStats as $dbStat) {
-                    if (\mb_strpos($dbStat, 'keys=') !== false) {
+                    if (\str_contains($dbStat, 'keys=')) {
                         $numEntries[] = \str_replace('keys=', '', $dbStat);
                     }
                 }
@@ -323,7 +328,7 @@ class CacheRedisCluster implements ICachingMethod
         return [
             'entries'  => \implode('/', $numEntries),
             'uptime'   => \implode('/', $uptimes), //uptime in seconds
-            'uptime_h' => \implode('/', \array_map([$this, 'secondsToTime'], $uptimes)), //human readable
+            'uptime_h' => \implode('/', \array_map($this->secondsToTime(...), $uptimes)), //human readable
             'hits'     => \implode('/', $hits), //cache hits
             'misses'   => \implode('/', $misses), //cache misses
             'hps'      => \implode('/', $hps), //hits per second

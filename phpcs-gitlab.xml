@@ -2,7 +2,6 @@
 <ruleset name="JTLShop Standard" namespace="JTLShop\CS\Standard">
     <description>A coding standard for JTL Shop</description>
     <exclude-pattern>*/build/*</exclude-pattern>
-    <exclude-pattern>*/classes/*</exclude-pattern>
     <exclude-pattern>*/includes/config.JTL-Shop.ini.php</exclude-pattern>
     <exclude-pattern>*/includes/libs/*</exclude-pattern>
     <exclude-pattern>*/includes/modules/*</exclude-pattern>

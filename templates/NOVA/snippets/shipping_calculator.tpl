@@ -24,12 +24,12 @@
                         {/block}
                         {block name='snippets-shipping-calculator-submit'}
                             {col cols=12 md=3}
-                                {$selectedISO = "
+                                {$selectedISO = trim("
                                     {if isset($VersandPLZ)}
                                         {$VersandPLZ}
-                                    {elseif isset($smarty.session.Kunde->cPLZ)}
-                                        {$smarty.session.Kunde->cPLZ}
-                                    {/if}"|trim}
+                                    {elseif JTL\Session\Frontend::getCustomer()->cPLZ !== null}
+                                        {JTL\Session\Frontend::getCustomer()->cPLZ}
+                                    {/if}")}
                                 {formgroup label-for="plz" label="{lang key='plz' section='forgot password'}"}
                                     {input type="text"
                                         id="plz"
@@ -123,7 +123,7 @@
                     {/block}
                     {block name='snippets-shipping-calculator-link'}
                         {if isset($checkout) && $checkout}
-                            {$link = {get_static_route id='warenkorb.php'}}
+                            {get_static_route id='warenkorb.php' assign='link'}
                         {else}
                             {$link = $ShopURL|cat:'/?s='|cat:$Link->getID()}
                         {/if}

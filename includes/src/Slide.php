@@ -2,7 +2,6 @@
 
 namespace JTL;
 
-use JTL\Helpers\Text;
 use stdClass;
 
 /**
@@ -66,7 +65,7 @@ class Slide
     /**
      * @var array
      */
-    private static $mapping = [
+    private static array $mapping = [
         'kSlide'            => 'ID',
         'kSlider'           => 'SliderID',
         'cTitel'            => 'Title',
@@ -117,8 +116,7 @@ class Slide
             }
 
             $slide = Shop::Container()->getDB()->select('tslide', 'kSlide', $id);
-
-            if (\is_object($slide)) {
+            if ($slide !== null) {
                 $this->set($slide);
 
                 return true;
@@ -167,8 +165,14 @@ class Slide
     private function setAbsoluteImagePaths(): self
     {
         $basePath                = Shop::getImageBaseURL();
-        $this->absoluteImage     = $basePath . $this->image;
-        $this->absoluteThumbnail = $basePath . $this->thumbnail;
+        $this->absoluteImage     = \str_starts_with($this->image, 'http://')
+        || \str_starts_with($this->image, 'https://')
+            ? $this->image
+            : $basePath . $this->image;
+        $this->absoluteThumbnail = \str_starts_with($this->thumbnail, 'http:')
+        || \str_starts_with($this->thumbnail, 'https:')
+            ? $this->thumbnail
+            : $basePath . $this->thumbnail;
 
         return $this;
     }
@@ -179,13 +183,16 @@ class Slide
     public function save(): bool
     {
         if (!empty($this->image)) {
-            if (Text::startsWith($this->image, 'Bilder/')) {
+            if (\str_starts_with($this->image, 'Bilder/')) {
                 $this->setThumbnail(\PFAD_MEDIAFILES . 'Bilder/.tmb/' . \basename($this->getThumbnail()));
             } else {
                 $this->setThumbnail(\STORAGE_OPC . '.tmb/' . \basename($this->getThumbnail()));
             }
-            $path = \parse_url(\Shop::getURL() . '/', \PHP_URL_PATH);
-            if (Text::startsWith($this->image, $path)) {
+            $shopURL = Shop::getURL();
+            $path    = \parse_url($shopURL . '/', \PHP_URL_PATH);
+            if (\str_starts_with($this->image, $shopURL)) {
+                $this->image = \ltrim(\substr($this->image, \mb_strlen($shopURL)), '/');
+            } elseif (\str_starts_with($this->image, $path)) {
                 $this->image = \ltrim(\substr($this->image, \mb_strlen($path)), '/');
             }
         }

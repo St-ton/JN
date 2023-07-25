@@ -1,90 +1,35 @@
-<?php
-
-use JTL\Checkout\Bestellung;
-use JTL\Shop;
+<?php declare(strict_types=1);
 
 /**
  * @param string $limitSQL
  * @param string $query
  * @return array
+ * @deprecated since 5.2.0
  */
 function gibBestellungsUebersicht(string $limitSQL, string $query): array
 {
-    $orders       = [];
-    $searchFilter = '';
-    if (mb_strlen($query)) {
-        $searchFilter = " WHERE cBestellNr LIKE '%" . Shop::Container()->getDB()->escape($query) . "%'";
-    }
-    $items = Shop::Container()->getDB()->getObjects(
-        'SELECT kBestellung
-            FROM tbestellung
-            ' . $searchFilter . '
-            ORDER BY dErstellt DESC' . $limitSQL
-    );
-    foreach ($items as $item) {
-        if (isset($item->kBestellung) && $item->kBestellung > 0) {
-            $order = new Bestellung((int)$item->kBestellung);
-            $order->fuelleBestellung(true, 0, false);
-            $orders[] = $order;
-        }
-    }
-
-    return $orders;
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    return [];
 }
 
 /**
  * @param string $query
  * @return int
+ * @deprecated since 5.2.0
  */
 function gibAnzahlBestellungen(string $query): int
 {
-    $filterSQL = (mb_strlen($query) > 0)
-        ? " WHERE cBestellNr LIKE '%" . Shop::Container()->getDB()->escape($query) . "%'"
-        : '';
-
-    return (int)Shop::Container()->getDB()->getSingleObject(
-        'SELECT COUNT(*) AS cnt
-            FROM tbestellung' . $filterSQL
-    )->cnt;
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    return 0;
 }
 
 /**
  * @param array $orderIDs
  * @return int
+ * @deprecated since 5.2.0
  */
 function setzeAbgeholtZurueck(array $orderIDs): int
 {
-    if (count($orderIDs) === 0) {
-        return 1;
-    }
-    $orderList = implode(',', array_map('\intval', $orderIDs));
-    $customers = Shop::Container()->getDB()->getCollection(
-        'SELECT kKunde
-            FROM tbestellung
-            WHERE kBestellung IN (' . $orderList . ")
-                AND cAbgeholt = 'Y'"
-    )->pluck('kKunde')->map(static function ($item) {
-        return (int)$item;
-    })->unique()->toArray();
-    if (count($customers) > 0) {
-        Shop::Container()->getDB()->query(
-            "UPDATE tkunde
-                SET cAbgeholt = 'N'
-                WHERE kKunde IN (" . implode(',', $customers) . ')'
-        );
-    }
-    Shop::Container()->getDB()->query(
-        "UPDATE tbestellung
-            SET cAbgeholt = 'N'
-            WHERE kBestellung IN (" . $orderList . ")
-                AND cAbgeholt = 'Y'"
-    );
-    Shop::Container()->getDB()->query(
-        "UPDATE tzahlungsinfo
-            SET cAbgeholt = 'N'
-            WHERE kBestellung IN (" . $orderList . ")
-                AND cAbgeholt = 'Y'"
-    );
-
-    return -1;
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    return 1;
 }

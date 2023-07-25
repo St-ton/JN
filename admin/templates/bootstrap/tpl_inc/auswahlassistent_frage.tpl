@@ -11,7 +11,7 @@ cDokuURL=__('auswahlassistentURL')}
 
 <div id="content">
     {if !isset($noModule) || !$noModule}
-        <form class="navbar-form settings" method="post" action="auswahlassistent.php">
+        <form class="navbar-form settings" method="post" action="{$adminURL}{$route}">
             {$jtl_token}
             <input name="speichern" type="hidden" value="1">
             <input name="kSprache" type="hidden" value="{$languageID}">
@@ -104,7 +104,7 @@ cDokuURL=__('auswahlassistentURL')}
                 <div class="card-footer save-wrapper">
                     <div class="row">
                         <div class="ml-auto col-sm-6 col-xl-auto">
-                            <a href="auswahlassistent.php" class="btn btn-outline-primary btn-block">{__('cancelWithIcon')}</a>
+                            <a href="{$adminURL}{$route}" class="btn btn-outline-primary btn-block">{__('cancelWithIcon')}</a>
                         </div>
                         <div class="col-sm-6 col-xl-auto">
                             <button name="speichernSubmit" type="submit" class="btn btn-primary btn-block">{__('saveWithIcon')}</button>

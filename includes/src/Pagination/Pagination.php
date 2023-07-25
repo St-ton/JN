@@ -13,112 +13,112 @@ class Pagination
     /**
      * @var string
      */
-    private $id = 'pagi';
+    private string $id = 'pagi';
 
     /**
      * @var int
      */
-    private $dispPagesRadius = 2;
+    private int $dispPagesRadius = 2;
 
     /**
      * @var array
      */
-    private $itemsPerPageOptions = [10, 20, 50, 100];
+    private array $itemsPerPageOptions = [10, 20, 50, 100];
 
     /**
      * @var array
      */
-    private $sortByOptions = [];
+    private array $sortByOptions = [];
 
     /**
      * @var int
      */
-    private $itemCount = 0;
+    private int $itemCount = 0;
 
     /**
      * @var int
      */
-    private $itemsPerPage = 10;
+    private int $itemsPerPage = 10;
 
     /**
      * @var bool
      */
-    private $itemsPerPageExplicit = false;
+    private bool $itemsPerPageExplicit = false;
 
     /**
      * @var int
      */
-    private $sortBy = 0;
+    private int $sortBy = 0;
 
     /**
      * @var int
      */
-    private $sortDir = 0;
+    private int $sortDir = 0;
 
     /**
      * @var int
      */
-    private $sortByDir = 0;
+    private int $sortByDir = 0;
 
     /**
      * @var int
      */
-    private $page = 0;
+    private int $page = 0;
 
     /**
      * @var int
      */
-    private $pageCount = 0;
+    private int $pageCount = 0;
 
     /**
      * @var int
      */
-    private $prevPage = 0;
+    private int $prevPage = 0;
 
     /**
      * @var int
      */
-    private $nextPage = 0;
+    private int $nextPage = 0;
 
     /**
      * @var int
      */
-    private $leftRangePage = 0;
+    private int $leftRangePage = 0;
 
     /**
      * @var int
      */
-    private $rightRangePage = 0;
+    private int $rightRangePage = 0;
 
     /**
      * @var int
      */
-    private $firstPageItem = 0;
+    private int $firstPageItem = 0;
 
     /**
      * @var int
      */
-    private $pageItemCount = 0;
+    private int $pageItemCount = 0;
 
     /**
      * @var string
      */
-    private $sortBySQL = '';
+    private string $sortBySQL = '';
 
     /**
      * @var string
      */
-    private $sortDirSQL = '';
+    private string $sortDirSQL = '';
 
     /**
      * @var string
      */
-    private $limitSQL = '';
+    private string $limitSQL = '';
 
     /**
      * @var string
      */
-    private $orderSQL = '';
+    private string $orderSQL = '';
 
     /**
      * @var array|Collection
@@ -133,12 +133,17 @@ class Pagination
     /**
      * @var int
      */
-    private $defaultItemsPerPage = 0;
+    private int $defaultItemsPerPage = 0;
 
     /**
      * @var int
      */
-    private $defaultSortByDir = 0;
+    private int $defaultSortByDir = 0;
+
+    /**
+     * @var callable|null
+     */
+    private $sortFunction = null;
 
     /**
      * Pagination constructor.
@@ -157,7 +162,7 @@ class Pagination
      */
     public function setId($id): self
     {
-        $this->id = $id;
+        $this->id = (string)$id;
 
         return $this;
     }
@@ -255,6 +260,17 @@ class Pagination
     }
 
     /**
+     * @param ?callable $func
+     * @return $this
+     */
+    public function setSortFunction(?callable $func): self
+    {
+        $this->sortFunction = $func;
+
+        return $this;
+    }
+
+    /**
      * Load parameters from GET, POST or SESSION store
      * @return $this
      */
@@ -282,7 +298,7 @@ class Pagination
     public function assemble(): self
     {
         $this->loadParameters()
-             ->storeParameters();
+            ->storeParameters();
 
         if ($this->itemsPerPage === -1) {
             // Show all entries on a single page
@@ -328,12 +344,18 @@ class Pagination
             $nSortFac         = $this->sortDir === 0 ? +1 : -1;
             $cSortBy          = $this->sortBySQL;
             if (\is_array($this->items)) {
-                \usort($this->items, static function ($a, $b) use ($cSortBy, $nSortFac) {
-                    $valueA = \is_string($a->$cSortBy) ? \mb_convert_case($a->$cSortBy, \MB_CASE_LOWER) : $a->$cSortBy;
-                    $valueB = \is_string($b->$cSortBy) ? \mb_convert_case($b->$cSortBy, \MB_CASE_LOWER) : $b->$cSortBy;
+                $func = $this->sortFunction;
+                if ($func === null) {
+                    $func = static function ($a, $b) use ($cSortBy, $nSortFac) {
+                        $valueA = \is_string($a->$cSortBy)
+                            ? \mb_convert_case($a->$cSortBy, \MB_CASE_LOWER) : $a->$cSortBy;
+                        $valueB = \is_string($b->$cSortBy)
+                            ? \mb_convert_case($b->$cSortBy, \MB_CASE_LOWER) : $b->$cSortBy;
 
-                    return $valueA == $valueB ? 0 : ($valueA < $valueB ? -$nSortFac : +$nSortFac);
-                });
+                        return $valueA == $valueB ? 0 : ($valueA < $valueB ? -$nSortFac : +$nSortFac);
+                    };
+                }
+                \usort($this->items, $func);
             }
         }
         $this->limitSQL = $this->firstPageItem . ',' . $this->pageItemCount;

@@ -3,7 +3,47 @@
         $('.duplicate-special-link').closest('.link-group-wrapper').find('.duplicate-special-page-warning')
             .removeClass('d-none');
     });
+
+    function onSelectVaterLink(e, item) {
+        $(e.target).closest("form").find("input[name='kVaterLink']").val(item.kLink);
+        $(e.target).trigger("change");
+    }
+
+    function confirmLinkAction(elem, formID, title="") {
+        let modalMSG = "";
+        if ($(elem).val() < 0) {
+            return false;
+        }
+        if (title.length > 0) {
+            let val = "";
+            if ($(elem).find("option:selected").length > 0) {
+                val = $(elem).find("option:selected").html();
+            } else {
+                let suggestions = [];
+                let typeahead = $(elem).closest(".twitter-typeahead");
+
+                if (typeahead.length) {
+                    typeahead.find(".tt-suggestion.tt-selectable").each(function(){
+                        suggestions.push($(this).text());
+                    });
+                }
+                if (suggestions.indexOf($(elem).val()) > -1) {
+                    val = $(elem).val();
+                }
+            }
+            if (val === '') {
+                return false;
+            }
+            modalMSG = title + ": " + val;
+            $("#areYouSureModal .modal-body").html(modalMSG);
+        }
+        $("#areYouSureModal")
+            .attr("data-form-id", formID)
+            .modal("show");
+    }
 </script>
+
+
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('links') cBeschreibung=__('linksDesc') cDokuURL=__('linksUrl')}
 <div id="content">
@@ -18,7 +58,7 @@
             <p>{__('Please create the missing pages manually.')}</p>
         </div>
     {/if}
-    <form action="links.php" method="post">
+    <form action="{$adminURL}{$route}" method="post">
         {$jtl_token}
         <div class="row no-gutters">
             <div class="col-sm-6 col-xl-auto">
@@ -48,11 +88,11 @@
                                     {__('linksWithoutLinkGroup')}
                                 {/if}
                             </a>
-                            {if $missingTranslations|count > 0}
+                            {if count($missingTranslations) > 0}
                                 <i class="fal fa-exclamation-triangle text-warning"
                                       data-toggle="tooltip"
                                       data-placement="top"
-                                      title="{__('missingTranslations')}: {$missingTranslations|count}"></i>
+                                      title="{__('missingTranslations')}: {count($missingTranslations)}"></i>
                             {/if}
                             <i title="{__('hasAtLeastOneDuplicateSpecialLink')}"
                                class="d-none duplicate-special-page-warning fal fa-exclamation-triangle text-danger"
@@ -61,7 +101,7 @@
                         </span>
                     </div>
                     <div class="col-md-6">
-                        <form method="post" action="links.php">
+                        <form method="post" action="{$adminURL}{$route}">
                             {$jtl_token}
                             {if $linkgruppe->getID() > 0}
                                 <input type="hidden" name="kLinkgruppe" value="{$linkgruppe->getID()}">
@@ -91,7 +131,7 @@
                         </form>
                     </div>
                 </div>
-                <div id="collapse{$lgName}" class="card-body collapse" role="tabpanel" aria-labelledby="heading-{$lgName}">
+                <div id="collapse{$lgName}" class="card-body collapse" role="tabpanel" aria-labelledby="heading-{$lgName}" data-parent="#accordion2">
                     {if $linkgruppe->getLinks()->count() > 0}
                         <div class="table-responsive">
                             <table class="table">
@@ -105,7 +145,7 @@
             </div>
         {/foreach}
     </div>{* /accordion *}
-    <form action="links.php" method="post">
+    <form action="{$adminURL}{$route}" method="post">
         {$jtl_token}
         <div class="row no-gutters">
             <div class="col-sm-6 col-xl-auto mb-4">
@@ -116,3 +156,4 @@
         </div>
     </form>
 </div>
+{include file='tpl_inc/links_action_modal.tpl'}

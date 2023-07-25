@@ -11,13 +11,11 @@ class CleanupService extends Method implements MethodInterface
     /**
      * @var array
      */
-    protected $definition = [
+    protected array $definition = [
         'tbesucherarchiv'              => [
             'cDate'     => 'dZeit',
             'cDateType' => 'DATETIME',
-            'cSubTable' => [
-                'tbesuchersuchausdruecke' => 'kBesucher'
-            ],
+            'cSubTable' => null,
             'cInterval' => '2920' // anonymized after 7 days, removed after 8 years (former 180 days)
         ],
         'tcheckboxlogging'             => [
@@ -85,7 +83,16 @@ class CleanupService extends Method implements MethodInterface
     ];
 
     /**
+     * max repetitions of this task
+     *
+     * @var int
+     */
+    public $taskRepetitions = 0;
+
+    /**
      * remove data from various tables
+     *
+     * @return void
      */
     public function execute(): void
     {
@@ -106,7 +113,7 @@ class CleanupService extends Method implements MethodInterface
                 if ($tableData['cDateType'] === 'TIMESTAMP') {
                     $dateCol = 'FROM_UNIXTIME(' . $dateCol . ')';
                 }
-                $this->db->query(
+                $this->workSum += $this->db->query(
                     'DELETE ' . $from . '
                         FROM ' . $table . $join . "
                         WHERE DATE_SUB('" . $cObjectNow . "', INTERVAL " . $cInterval . ' DAY) >= ' . $dateCol
@@ -116,11 +123,12 @@ class CleanupService extends Method implements MethodInterface
                 if ($tableData['cDateType'] === 'TIMESTAMP') {
                     $dateCol = 'FROM_UNIXTIME(' . $dateCol . ')';
                 }
-                $this->db->query(
+                $this->workSum += $this->db->query(
                     'DELETE FROM ' . $table . "
                         WHERE DATE_SUB('" . $cObjectNow . "', INTERVAL " . $cInterval . ' DAY) >= ' . $dateCol
                 );
             }
         }
+        $this->isFinished = ($this->workSum < $this->workLimit);
     }
 }

@@ -3,17 +3,15 @@
     {block name='layout-footer-content-all-closingtags'}
 
         {block name='layout-footer-aside'}
-            {if ($smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp || $Einstellungen.template.theme.left_sidebar === 'Y')
-                && !$bExclusive
-                && $boxesLeftActive
-            }
+            {if !$bExclusive && $boxes.left !== null && !empty(trim(strip_tags($boxes.left)))
+                && (($Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive) || $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp)}
                 {block name='layout-footer-content-productlist-col-closingtag'}
                     </div>{* /col *}
-                {/block}
-                {block name='layout-footer-sidepanel-left'}
-                    <aside id="sidepanel_left" class="sidepanel-left d-print-none col-12 col-lg-4 col-xl-3 order-lg-0 dropdown-full-width">
-                        {block name='footer-sidepanel-left-content'}{$boxes.left}{/block}
-                    </aside>
+                    {block name='layout-footer-sidepanel-left'}
+                         <aside id="sidepanel_left" class="sidepanel-left d-print-none col-12 col-lg-4 col-xl-3 order-last order-lg-first dropdown-full-width">
+                             {block name='footer-sidepanel-left-content'}{$boxes.left}{/block}
+                         </aside>
+                    {/block}
                 {/block}
                 {block name='layout-footer-content-productlist-row-closingtag'}
                     </div>{* /row *}
@@ -109,7 +107,7 @@
                                         <ul class="list-unstyled">
                                         {if !empty($Einstellungen.template.footer.facebook)}
                                             <li>
-                                                {link href="{if $Einstellungen.template.footer.facebook|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.facebook}"
+                                                {link href="{if strpos($Einstellungen.template.footer.facebook, 'http') !== 0}https://{/if}{$Einstellungen.template.footer.facebook}"
                                                     class="btn-icon-secondary btn-facebook btn btn-sm" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Facebook'}"] title="Facebook" target="_blank" rel="noopener"}
                                                     <span class="fab fa-facebook-f fa-fw fa-lg"></span>
                                                 {/link}
@@ -117,7 +115,7 @@
                                         {/if}
                                         {if !empty($Einstellungen.template.footer.twitter)}
                                             <li>
-                                                {link href="{if $Einstellungen.template.footer.twitter|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.twitter}"
+                                                {link href="{if strpos($Einstellungen.template.footer.twitter, 'http') !== 0}https://{/if}{$Einstellungen.template.footer.twitter}"
                                                     class="btn-icon-secondary btn-twitter btn btn-sm" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Twitter'}"] title="Twitter" target="_blank" rel="noopener"}
                                                     <i class="fab fa-twitter fa-fw fa-lg"></i>
                                                 {/link}
@@ -125,7 +123,7 @@
                                         {/if}
                                         {if !empty($Einstellungen.template.footer.youtube)}
                                             <li>
-                                                {link href="{if $Einstellungen.template.footer.youtube|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.youtube}"
+                                                {link href="{if strpos($Einstellungen.template.footer.youtube, 'http') !== 0}https://{/if}{$Einstellungen.template.footer.youtube}"
                                                     class="btn-icon-secondary btn-youtube btn btn-sm" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='YouTube'}"] title="YouTube" target="_blank" rel="noopener"}
                                                     <i class="fab fa-youtube fa-fw fa-lg"></i>
                                                 {/link}
@@ -133,7 +131,7 @@
                                         {/if}
                                         {if !empty($Einstellungen.template.footer.vimeo)}
                                             <li>
-                                                {link href="{if $Einstellungen.template.footer.vimeo|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.vimeo}"
+                                                {link href="{if strpos($Einstellungen.template.footer.vimeo, 'http') !== 0}https://{/if}{$Einstellungen.template.footer.vimeo}"
                                                     class="btn-icon-secondary btn-vimeo btn btn-sm" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Vimeo'}"]  title="Vimeo" target="_blank" rel="noopener"}
                                                     <i class="fab fa-vimeo-v fa-fw fa-lg"></i>
                                                 {/link}
@@ -141,7 +139,7 @@
                                         {/if}
                                         {if !empty($Einstellungen.template.footer.pinterest)}
                                             <li>
-                                                {link href="{if $Einstellungen.template.footer.pinterest|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.pinterest}"
+                                                {link href="{if strpos($Einstellungen.template.footer.pinterest, 'http') !== 0}https://{/if}{$Einstellungen.template.footer.pinterest}"
                                                     class="btn-icon-secondary btn-pinterest btn btn-sm" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Pinterest'}"]  title="Pinterest" target="_blank" rel="noopener"}
                                                     <i class="fab fa-pinterest-p fa-fw fa-lg"></i>
                                                 {/link}
@@ -149,15 +147,23 @@
                                         {/if}
                                         {if !empty($Einstellungen.template.footer.instagram)}
                                             <li>
-                                                {link href="{if $Einstellungen.template.footer.instagram|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.instagram}"
+                                                {link href="{if strpos($Einstellungen.template.footer.instagram, 'http') !== 0}https://{/if}{$Einstellungen.template.footer.instagram}"
                                                     class="btn-icon-secondary btn-instagram btn btn-sm" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Instagram'}"]  title="Instagram" target="_blank" rel="noopener"}
                                                     <i class="fab fa-instagram fa-fw fa-lg"></i>
                                                 {/link}
                                             </li>
                                         {/if}
+                                        {if !empty($Einstellungen.template.footer.tiktok)}
+                                            <li>
+                                                {link href="{if strpos($Einstellungen.template.footer.tiktok, 'http') !== 0}https://{/if}{$Einstellungen.template.footer.tiktok}"
+                                                class="btn-icon-secondary btn-instagram btn btn-sm" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='TikTok'}"]  title="TikTok" target="_blank" rel="noopener"}
+                                                    <i class="fab fa-tiktok fa-fw fa-lg"></i>
+                                                {/link}
+                                            </li>
+                                        {/if}
                                         {if !empty($Einstellungen.template.footer.skype)}
                                             <li>
-                                                {link href="{if $Einstellungen.template.footer.skype|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.skype}"
+                                                {link href="{if strpos($Einstellungen.template.footer.skype, 'http') !== 0}https://{/if}{$Einstellungen.template.footer.skype}"
                                                     class="btn-icon-secondary btn-skype btn btn-sm" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Skype'}"]  title="Skype" target="_blank" rel="noopener"}
                                                     <i class="fab fa-skype fa-fw fa-lg"></i>
                                                 {/link}
@@ -165,7 +171,7 @@
                                         {/if}
                                         {if !empty($Einstellungen.template.footer.xing)}
                                             <li>
-                                                {link href="{if $Einstellungen.template.footer.xing|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.xing}"
+                                                {link href="{if strpos($Einstellungen.template.footer.xing, 'http') !== 0}https://{/if}{$Einstellungen.template.footer.xing}"
                                                     class="btn-icon-secondary btn-xing btn btn-sm" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Xing'}"]  title="Xing" target="_blank" rel="noopener"}
                                                     <i class="fab fa-xing fa-fw fa-lg"></i>
                                                 {/link}
@@ -173,7 +179,7 @@
                                         {/if}
                                         {if !empty($Einstellungen.template.footer.linkedin)}
                                             <li>
-                                                {link href="{if $Einstellungen.template.footer.linkedin|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.linkedin}"
+                                                {link href="{if strpos($Einstellungen.template.footer.linkedin, 'http') !== 0}https://{/if}{$Einstellungen.template.footer.linkedin}"
                                                     class="btn-icon-secondary btn-linkedin btn btn-sm" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Linkedin'}"]  title="Linkedin" target="_blank" rel="noopener"}
                                                     <i class="fab fa-linkedin-in fa-fw fa-lg"></i>
                                                 {/link}
@@ -223,7 +229,7 @@
                                 {/block}
                                 {if !$isBrandFree}
                                     {block name='layout-footer-copyright-brand'}
-                                        {col class="col-auto ml-auto-util{if $Einstellungen.template.theme.button_scroll_top === 'Y'} pr-8{/if}" id="system-credits"}
+                                        {col cols=12 md="auto" class="ml-auto-util{if $Einstellungen.template.theme.button_scroll_top === 'Y'} pr-md-8{/if}" id="system-credits"}
                                             Powered by {link href="https://jtl-url.de/jtlshop" class="text-white text-decoration-underline" title="JTL-Shop" target="_blank" rel="noopener nofollow"}JTL-Shop{/link}
                                         {/col}
                                     {/block}
@@ -261,7 +267,7 @@
                         $('#consent-manager, #consent-settings-btn').removeClass('d-none');
                     }, 100)
                     document.addEventListener('consent.updated', function(e) {
-                        $.post('{$ShopURLSSL}/', {
+                        $.post('{$ShopURLSSL}/_updateconsent', {
                                 'action': 'updateconsent',
                                 'jtl_token': '{$smarty.session.jtl_token}',
                                 'data': e.detail
@@ -275,7 +281,7 @@
                     {/if}
 
                     window.CM = new ConsentManager({
-                        version: 1
+                        version: {$smarty.session.consentVersion|default:1}
                     });
                     var trigger = document.querySelectorAll('.trigger')
                     var triggerCall = function(e) {
@@ -292,7 +298,7 @@
                             });
                         }
                     }
-                    for(let i = 0; i < trigger.length; ++i) {
+                    for (let i = 0; i < trigger.length; ++i) {
                         trigger[i].addEventListener('click', triggerCall)
                     }
                 </script>

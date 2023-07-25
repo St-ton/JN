@@ -1,4 +1,6 @@
-<?php
+<?php declare(strict_types=1);
+
+use JTL\Plugin\HookManager;
 
 // Charset
 ifndef('JTL_CHARSET', 'utf-8');
@@ -17,6 +19,9 @@ ifndef('SMARTY_LOG_LEVEL', E_ERROR | E_PARSE);
 error_reporting(SHOP_LOG_LEVEL);
 ifndef('COMPATIBILITY_TRACE_DEPTH', 0);
 ifndef('TEMPLATE_COMPATIBILITY', false);
+/**
+ * @deprecated since 5.2.0
+ */
 ifndef('EVO_COMPATIBILITY', true);
 // Image compatibility level 0 => disabled, 1 => referenced in history table, 2 => automatic detection
 ifndef('IMAGE_COMPATIBILITY_LEVEL', 1);
@@ -31,6 +36,7 @@ ifndef('PLUGIN_DEV_MODE', false);
 ifndef('CONSISTENT_GROSS_PRICES', true);
 
 ifndef('DB_DEFAULT_SQL_MODE', false);
+ifndef('DB_STARTUP_SQL', '');
 
 /**
  * WARNING !!! DO NOT USE PROFILE_QUERIES IN PRODUCTION ENVIRONMENT OR PUBLIC AVAILABLE SITES. THE PROFILER CANNOT USE
@@ -41,6 +47,7 @@ ifndef('PROFILE_QUERIES', false);
 ifndef('PROFILE_QUERIES_ECHO', false);
 
 ifndef('ADMIN_MIGRATION', false);
+ifndef('ENABLE_EXPERIMENTAL_ROUTING_SCHEMES', false);
 
 ifndef('IO_LOG_CONSOLE', false);
 ifndef('DEFAULT_CURL_OPT_VERIFYPEER', true);
@@ -67,7 +74,6 @@ ifndef('MAX_CORRUPTED_IMAGES', 50);
 ifndef('MAX_IMAGES_PER_STEP', 50000);
 
 // Pfade
-ifndef('PFAD_CLASSES', 'classes/old/'); // DEPRECATED
 ifndef('PFAD_CONFIG', 'config/');
 ifndef('PFAD_INCLUDES', 'includes/');
 ifndef('PFAD_TEMPLATES', 'templates/');
@@ -85,17 +91,7 @@ ifndef('PFAD_INCLUDES_EXT', PFAD_INCLUDES . 'ext/');
 ifndef('PFAD_INCLUDES_MODULES', PFAD_INCLUDES . 'modules/');
 ifndef('PFAD_SMARTY', PFAD_INCLUDES . 'vendor/smarty/smarty/libs/');
 ifndef('SMARTY_DIR', PFAD_ROOT . PFAD_SMARTY);
-/**
- * @deprecated since 5.0.0
- */
-ifndef('PFAD_PHPQUERY', PFAD_INCLUDES . 'vendor/jtlshop/phpquery/src/');
-ifndef('PFAD_PCLZIP', PFAD_INCLUDES . 'vendor/chamilo/pclzip/');
-ifndef('PFAD_PHPMAILER', PFAD_INCLUDES . 'vendor/phpmailer/phpmailer/');
-ifndef('PFAD_BLOWFISH', PFAD_INCLUDES_LIBS . 'vendor/jtlshop/xtea/');
-ifndef('PFAD_CLASSES_CORE', PFAD_CLASSES . 'core/');  // DEPRECATED
-ifndef('PFAD_OBJECT_CACHING', 'caching/');
 ifndef('PFAD_GFX', 'gfx/');
-ifndef('PFAD_GFX_AMPEL', PFAD_GFX . 'ampel/');
 ifndef('PFAD_DBES', 'dbeS/');
 ifndef('PFAD_DBES_TMP', PFAD_DBES . 'tmp/');
 ifndef('PFAD_BILDER', 'bilder/');
@@ -168,6 +164,7 @@ ifndef('STORAGE_CHARACTERISTICS', PFAD_MEDIA_IMAGE_STORAGE . 'characteristics/')
 ifndef('STORAGE_CHARACTERISTIC_VALUES', PFAD_MEDIA_IMAGE_STORAGE . 'characteristicvalues/');
 ifndef('STORAGE_OPC', PFAD_MEDIA_IMAGE_STORAGE . 'opc/');
 ifndef('STORAGE_VIDEO_THUMBS', PFAD_MEDIA_IMAGE_STORAGE . 'videothumbs/');
+ifndef('PATH_MAILATTACHMENTS', PFAD_ROOT . PFAD_COMPILEDIR . 'mailattachments/');
 // Plugins
 ifndef('PFAD_PLUGIN', PFAD_INCLUDES . 'plugins/');
 // dbeS
@@ -202,6 +199,8 @@ ifndef('FORCE_IMAGEDRIVER_GD', false);
 //with more then n categories, some db fields will only be selected if the corresponding options are active
 ifndef('CATEGORY_FULL_LOAD_LIMIT', 10000);
 ifndef('CATEGORY_FULL_LOAD_MAX_LEVEL', 3);
+//maximum number of categories to use for generating bestseller and top products in a category view
+ifndef('PRODUCT_LIST_CATEGORY_LIMIT', 500);
 //maximum number of entries in category filter, -1 for no limit
 ifndef('CATEGORY_FILTER_ITEM_LIMIT', -1);
 ifndef('PRODUCT_LIST_SHOW_RATINGS', false);
@@ -247,6 +246,8 @@ ifndef('SECURE_PHP_FUNCTIONS', '
     strcspn, strip_tags, stripslashes, stristr, strlen, strnatcasecmp, strnatcmp, strncasecmp, strncmp, strpbrk, strpos,
     strrchr, strrev, strripos, strrpos, strspn, strstr, strtok, strtolower, strtoupper, strtr, substr_compare,
     substr_count, substr_replace, substr, trim, ucfirst, ucwords, vsprintf, var_dump, print_r, printf, wordwrap,
+    intval, floatval, strval, doubleval,
+    is_array, is_numeric, is_bool, is_float, is_null, is_int, is_string, is_object,
     
     checkdate, date_add, date_create_from_format, date_create_immutable_from_format, date_create_immutable, date_create,
     date_date_set, date_diff, date_format, date_get_last_errors, date_interval_create_from_date_string,
@@ -275,38 +276,61 @@ ifndef('SECURE_PHP_FUNCTIONS', '
 ifndef('SHOW_TEMPLATE_HINTS', 0);
 
 ifndef('SEO_SLUG_LOWERCASE', false);
+ifndef('REDIR_OLD_ROUTES', true);
+ifndef('SLUG_ALLOW_SLASHES', true);
+ifndef('ROUTE_PREFIX_PRODUCTS', 'products');
+ifndef('ROUTE_PREFIX_CHARACTERISTICS', 'characteristics');
+ifndef('ROUTE_PREFIX_CATEGORIES', 'categories');
+ifndef('ROUTE_PREFIX_SEARCHSPECIALS', 'searchspecials');
+ifndef('ROUTE_PREFIX_SEARCHQUERIES', 'searchqueries');
+ifndef('ROUTE_PREFIX_MANUFACTURERS', 'manufacturers');
+ifndef('ROUTE_PREFIX_NEWS', 'news');
+ifndef('ROUTE_PREFIX_SEARCH', 'search');
+ifndef('ROUTE_PREFIX_PAGES', 'pages');
+ifndef('CATEGORIES_SLUG_HIERARCHICALLY', false);
 
-ifndef('SAFE_MODE', $GLOBALS['plgSafeMode'] ?? file_exists(PFAD_ROOT. PFAD_ADMIN . PFAD_COMPILEDIR . 'safemode.lck'));
+const SAFE_MODE_LOCK = PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR . 'safemode.lck';
+
+ifndef('SAFE_MODE', $GLOBALS['plgSafeMode'] ?? file_exists(SAFE_MODE_LOCK));
 
 ifndef('TRACK_VISITORS', true);
+
+ifndef('COMPRESS_DESCRIPTIONS', false);
+ifndef('COMPRESSION_LEVEL', -1);
+
+ifndef('DELIVERY_TIME_DAYS_TO_WEEKS_LIMIT', 15);
+ifndef('DELIVERY_TIME_DAYS_TO_MONTHS_LIMIT', 61);
+ifndef('DELIVERY_TIME_DAYS_PER_WEEK', 7);
+ifndef('DELIVERY_TIME_DAYS_PER_MONTH', 30);
+
+/**
+ * Mailqueueing
+ */
+ifndef('EMAIL_SEND_IMMEDIATELY', false);
+ifndef('EMAIL_CHUNK_SIZE', 1);
+
+const ADMINGROUP                          = 1;
+const MAX_LOGIN_ATTEMPTS                  = 3;
+const LOCK_TIME                           = 5;
+const SHIPPING_CLASS_MAX_VALIDATION_COUNT = 10;
 
 /**
  * @param string $constant
  * @param mixed  $value
  */
-function ifndef(string $constant, $value)
+function ifndef(string $constant, mixed $value): void
 {
     defined($constant) || define($constant, $value);
 }
 
 /**
- * @deprecated
- * @return array
-function shop_writeable_paths()
-{
-    trigger_error('The function "shop_writeable_paths()" is removed in a future version!', E_USER_DEPRECATED);
-
-    global $shop_writeable_paths;
-
-    return array_map(function ($v) {
-        if (mb_strpos($v, PFAD_ROOT) === 0) {
-            $v = mb_substr($v, mb_strlen(PFAD_ROOT));
-        }
-
-        return trim($v, '/\\');
-    }, $paths);
-}
+ * @param int   $hookID
+ * @param array $args_arr
  */
+function executeHook(int $hookID, array $args_arr = []): void
+{
+    HookManager::getInstance()->executeHook($hookID, $args_arr);
+}
 
 // Static defines (do not edit)
 require_once __DIR__ . '/defines_inc.php';

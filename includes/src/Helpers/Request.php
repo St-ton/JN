@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Helpers;
 
@@ -41,6 +41,7 @@ class Request
     {
         return isset($_GET[$var]) ? (int)$_GET[$var] : $default;
     }
+
     /**
      * @param string $var
      * @param mixed  $default
@@ -73,7 +74,7 @@ class Request
 
             return \is_numeric($val)
                 ? [(int)$val]
-                : \array_map(static function ($e) {
+                : \array_map(static function ($e): int {
                     return (int)$e;
                 }, $val);
         }
@@ -94,7 +95,7 @@ class Request
 
     /**
      * @param string $var
-     * @return string|array
+     * @return string|array|mixed
      * @since 5.0.0
      */
     public static function verifyGPDataString(string $var)
@@ -118,7 +119,6 @@ class Request
         } elseif (!empty($_SERVER['REMOTE_ADDR'])) {
             $ip = $_SERVER['REMOTE_ADDR'];
         }
-
         // if the given IP is not valid, we return placeholders (note: placeholders are the "legacy way")
         if (!\filter_var($ip, \FILTER_VALIDATE_IP, \FILTER_FLAG_IPV4 | \FILTER_FLAG_IPV6)) {
             return (new IpAnonymizer($ip ?? ''))->getPlaceholder();
@@ -182,7 +182,6 @@ class Request
         return $codes[$status] ?? '';
     }
 
-
     /**
      * Prueft ob SSL aktiviert ist und auch durch Einstellung genutzt werden soll
      * -1 = SSL nicht aktiv und nicht erlaubt
@@ -221,7 +220,7 @@ class Request
      * @param int      $maxredirect
      * @return bool|mixed
      */
-    public static function curl_exec_follow($ch, int $maxredirect = 5)
+    public static function curl_exec_follow($ch, int $maxredirect = 5): bool|string
     {
         $mr = $maxredirect <= 0 ? 5 : $maxredirect;
         if (\ini_get('open_basedir') === '') {
@@ -244,8 +243,7 @@ class Request
                         $code = 0;
                     } else {
                         $code = \curl_getinfo($rch, \CURLINFO_HTTP_CODE);
-                        if ($code === 301 || $code === 302) {
-                            \preg_match('/Location:(.*?)\n/', $header, $matches);
+                        if (($code === 301 || $code === 302) && \preg_match('/Location:(.*?)\n/i', $header, $matches)) {
                             $newurl = \trim(\array_pop($matches));
                         } else {
                             $code = 0;
@@ -303,10 +301,10 @@ class Request
      */
     public static function make_http_request(
         string $url,
-        int $timeout = 5,
+        int    $timeout = 5,
         $post = null,
-        bool $state = false,
-        bool $skipStatusCheck = false
+        bool   $state = false,
+        bool   $skipStatusCheck = false
     ) {
         $status = 0;
         $data   = '';

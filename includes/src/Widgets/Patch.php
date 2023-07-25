@@ -11,7 +11,7 @@ class Patch extends AbstractWidget
     /**
      *
      */
-    public function init()
+    public function init(): void
     {
         $this->setPermission('DIAGNOSTIC_VIEW');
     }
@@ -19,8 +19,16 @@ class Patch extends AbstractWidget
     /**
      * @return string
      */
-    public function getContent()
+    public function getContent(): string
     {
-        return $this->oSmarty->assign('version', \getJTLVersionDB())->fetch('tpl_inc/widgets/patch.tpl');
+        return $this->oSmarty->assign('version', $this->getDBVersion())->fetch('tpl_inc/widgets/patch.tpl');
+    }
+
+    /**
+     * @return string
+     */
+    private function getDBVersion(): string
+    {
+        return $this->getDB()->getSingleObject('SELECT nVersion FROM tversion')->nVersion ?? '0.0.0';
     }
 }

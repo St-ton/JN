@@ -35,7 +35,7 @@ final class ProductCategories extends AbstractBox
         if ($boxID > 0) {
             $list2 = [];
             foreach ($list as $key => $item) {
-                /** @var MenuItem $item **/
+                /** @var MenuItem $item */
                 if ($item->getFunctionalAttribute(\KAT_ATTRIBUT_KATEGORIEBOX) !== null
                     && (int)$item->getFunctionalAttribute(\KAT_ATTRIBUT_KATEGORIEBOX) === $boxID
                 ) {

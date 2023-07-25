@@ -12,7 +12,7 @@ class Migration_20210527115400 extends Migration implements IMigration
     protected $description = 'Remove unused vari image setting';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -20,7 +20,7 @@ class Migration_20210527115400 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

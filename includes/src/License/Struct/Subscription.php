@@ -16,12 +16,17 @@ class Subscription
     /**
      * @var DateTime|null
      */
-    private $validUntil;
+    private ?DateTime $validUntil = null;
 
     /**
      * @var bool
      */
-    private $expired = false;
+    private bool $expired = false;
+
+    /**
+     * @var bool
+     */
+    private bool $canBeUsed = true;
 
     /**
      * Subscription constructor.
@@ -42,6 +47,7 @@ class Subscription
         $this->setValidUntil($json->valid_until);
         $now = new DateTime();
         $this->setExpired($json->valid_until !== null && $this->getValidUntil() < $now);
+        $this->setCanBeUsed(!$this->isExpired());
     }
 
     /**
@@ -56,7 +62,7 @@ class Subscription
      * @param DateTime|string|null $validUntil
      * @throws \Exception
      */
-    public function setValidUntil($validUntil): void
+    public function setValidUntil(DateTime|string|null $validUntil): void
     {
         $this->validUntil = null;
         if ($validUntil !== null) {
@@ -94,5 +100,21 @@ class Subscription
     public function setExpired(bool $expired): void
     {
         $this->expired = $expired;
+    }
+
+    /**
+     * @return bool
+     */
+    public function canBeUsed(): bool
+    {
+        return $this->canBeUsed;
+    }
+
+    /**
+     * @param bool $canBeUsed
+     */
+    public function setCanBeUsed(bool $canBeUsed): void
+    {
+        $this->canBeUsed = $canBeUsed;
     }
 }

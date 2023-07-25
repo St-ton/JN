@@ -15,10 +15,10 @@ use JTL\Update\Migration;
 class Migration_20181115115500 extends Migration implements IMigration
 {
     protected $author      = 'ms';
-    protected $description = 'adds aria language section and variables';
+    protected $description = 'Add aria language section and variables';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -44,7 +44,7 @@ class Migration_20181115115500 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

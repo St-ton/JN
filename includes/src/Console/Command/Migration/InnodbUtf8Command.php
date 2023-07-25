@@ -23,7 +23,7 @@ class InnodbUtf8Command extends Command
     private $errCounter = 0;
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function configure(): void
     {
@@ -32,9 +32,9 @@ class InnodbUtf8Command extends Command
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $db    = Shop::Container()->getDB();
         $table = DBMigrationHelper::getNextTableNeedMigration($db, $this->excludeTables);
@@ -42,7 +42,7 @@ class InnodbUtf8Command extends Command
             if ($this->errCounter > 20) {
                 $this->getIO()->error('aborted due to too many errors');
 
-                return 1;
+                return Command::FAILURE;
             }
 
             $output->write('migrate ' . $table->TABLE_NAME . '... ');
@@ -87,7 +87,7 @@ class InnodbUtf8Command extends Command
             $this->getIO()->success('all done');
         }
 
-        return 0;
+        return Command::SUCCESS;
     }
 
     /**
@@ -134,10 +134,10 @@ class InnodbUtf8Command extends Command
      */
     private function nextWithFailure(
         OutputInterface $output,
-        DbInterface $db,
-        stdClass $table,
-        bool $releaseTable = true,
-        string $msg = 'failure!'
+        DbInterface     $db,
+        stdClass        $table,
+        bool            $releaseTable = true,
+        string          $msg = 'failure!'
     ): ?stdClass {
         $this->errCounter++;
         $output->writeln('<error>' . $msg . '</error>');

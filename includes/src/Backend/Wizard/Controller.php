@@ -20,32 +20,23 @@ final class Controller
     /**
      * @var Collection
      */
-    private $steps;
-
-    /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private $cache;
+    private Collection $steps;
 
     /**
      * Controller constructor.
-     * @param DefaultFactory $factory
-     * @param DbInterface $db
+     * @param DefaultFactory    $factory
+     * @param DbInterface       $db
      * @param JTLCacheInterface $cache
-     * @param GetText $getText
+     * @param GetText           $getText
      */
-    public function __construct(DefaultFactory $factory, DbInterface $db, JTLCacheInterface $cache, GetText $getText)
-    {
+    public function __construct(
+        DefaultFactory                     $factory,
+        private readonly DbInterface       $db,
+        private readonly JTLCacheInterface $cache,
+        GetText                            $getText
+    ) {
         $getText->loadAdminLocale('pages/pluginverwaltung');
-
         $this->steps = $factory->getSteps();
-        $this->db    = $db;
-        $this->cache = $cache;
     }
 
     /**
@@ -75,7 +66,7 @@ final class Controller
     private function finish(): array
     {
         $errorMessages = [];
-        /** @var Step $step*/
+        /** @var Step $step */
         foreach ($this->getSteps() as $step) {
             foreach ($step->getQuestions() as $question) {
                 /** @var QuestionInterface $question */
@@ -107,7 +98,7 @@ final class Controller
     {
         $post          = $this->serializeToArray($post);
         $errorMessages = [];
-        /** @var Step $step*/
+        /** @var Step $step */
         foreach ($this->getSteps() as $step) {
             foreach ($step->getQuestions() as $question) {
                 $idx = 'question-' . $question->getID();
@@ -135,7 +126,7 @@ final class Controller
         if (\is_array($post[0])) {
             $postTMP = [];
             foreach ($post as $postItem) {
-                if (\mb_strpos($postItem['name'], '[]') !== false) {
+                if (\str_contains($postItem['name'], '[]')) {
                     $postTMP[\explode('[]', $postItem['name'])[0]][] = $postItem['value'];
                 } else {
                     $postTMP[$postItem['name']] = $postItem['value'];
@@ -168,7 +159,7 @@ final class Controller
      */
     public function hasCriticalError(): bool
     {
-        /** @var Step $step*/
+        /** @var Step $step */
         foreach ($this->getSteps() as $step) {
             if ($step->hasCriticalError()) {
                 return true;

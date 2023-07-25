@@ -3,6 +3,7 @@
 namespace JTL;
 
 use Exception;
+use JTL\DB\DbInterface;
 use stdClass;
 
 /**
@@ -52,12 +53,20 @@ class Emailhistory
     public $dSent;
 
     /**
-     * @param null|int    $id
-     * @param null|object $data
+     * @var DbInterface
      */
-    public function __construct($id = null, $data = null)
+    private DbInterface $db;
+
+    /**
+     * Emailhistory constructor.
+     * @param null|int         $id
+     * @param null|object      $data
+     * @param null|DbInterface $db
+     */
+    public function __construct(int $id = null, $data = null, DbInterface $db = null)
     {
-        if ((int)$id > 0) {
+        $this->db = $db ?? Shop::Container()->getDB();
+        if ($id > 0) {
             $this->loadFromDB($id);
         } elseif ($data !== null && \is_object($data)) {
             foreach (\array_keys(\get_object_vars($data)) as $member) {
@@ -75,8 +84,8 @@ class Emailhistory
      */
     protected function loadFromDB(int $id): self
     {
-        $data = Shop::Container()->getDB()->select('temailhistory', 'kEmailhistory', $id);
-        if (isset($data->kEmailhistory) && $data->kEmailhistory > 0) {
+        $data = $this->db->select('temailhistory', 'kEmailhistory', $id);
+        if ($data !== null && $data->kEmailhistory > 0) {
             foreach (\array_keys(\get_object_vars($data)) as $member) {
                 $this->$member = $data->$member;
             }
@@ -92,15 +101,19 @@ class Emailhistory
      */
     public function save(bool $primary = true)
     {
-        $ins = new stdClass();
-        foreach (\array_keys(\get_object_vars($this)) as $member) {
-            $ins->$member = $this->$member;
-        }
-        if (isset($ins->kEmailhistory) && (int)$ins->kEmailhistory > 0) {
+        if ($this->kEmailhistory > 0) {
             return $this->update();
         }
-        unset($ins->kEmailhistory);
-        $kPrim = Shop::Container()->getDB()->insert('temailhistory', $ins);
+        $ins                = new stdClass();
+        $ins->kEmailvorlage = $this->kEmailvorlage;
+        $ins->cSubject      = $this->cSubject;
+        $ins->cFromName     = $this->cFromName;
+        $ins->cFromEmail    = $this->cFromEmail;
+        $ins->cToName       = $this->cToName;
+        $ins->cToEmail      = $this->cToEmail;
+        $ins->dSent         = $this->dSent;
+
+        $kPrim = $this->db->insert('temailhistory', $ins);
         if ($kPrim > 0) {
             return $primary ? $kPrim : true;
         }
@@ -114,27 +127,17 @@ class Emailhistory
      */
     public function update(): int
     {
-        $sql     = 'UPDATE temailhistory SET ';
-        $set     = [];
-        $members = \array_keys(\get_object_vars($this));
-        if (\is_array($members) && \count($members) > 0) {
-            $db = Shop::Container()->getDB();
-            foreach ($members as $member) {
-                $methodName = 'get' . \mb_substr($member, 1);
-                if (\method_exists($this, $methodName)) {
-                    $val    = $this->$methodName();
-                    $mValue = $val === null
-                        ? 'NULL'
-                        : ("'" . $db->escape($val) . "'");
-                    $set[]  = $member . ' = ' . $mValue;
-                }
-            }
-            $sql .= \implode(', ', $set);
-            $sql .= ' WHERE kEmailhistory = ' . $this->getEmailhistory();
+        $upd                = new stdClass();
+        $upd->kEmailhistory = $this->kEmailhistory;
+        $upd->kEmailvorlage = $this->kEmailvorlage;
+        $upd->cSubject      = $this->cSubject;
+        $upd->cFromName     = $this->cFromName;
+        $upd->cFromEmail    = $this->cFromEmail;
+        $upd->cToName       = $this->cToName;
+        $upd->cToEmail      = $this->cToEmail;
+        $upd->dSent         = $this->dSent;
 
-            return $db->getAffectedRows($sql);
-        }
-        throw new Exception('ERROR: Object has no members!');
+        return $this->db->updateRow('temailhistory', 'kEmailhistory', $this->getEmailhistory(), $upd);
     }
 
     /**
@@ -142,7 +145,7 @@ class Emailhistory
      */
     public function delete(): int
     {
-        return Shop::Container()->getDB()->delete('temailhistory', 'kEmailhistory', $this->getEmailhistory());
+        return $this->db->delete('temailhistory', 'kEmailhistory', $this->getEmailhistory());
     }
 
     /**
@@ -151,7 +154,7 @@ class Emailhistory
      */
     public function getAll(string $limitSQL = ''): array
     {
-        $historyData = Shop::Container()->getDB()->getObjects(
+        $historyData = $this->db->getObjects(
             'SELECT * 
                 FROM temailhistory 
                 ORDER BY dSent DESC' . $limitSQL
@@ -160,7 +163,7 @@ class Emailhistory
         foreach ($historyData as $item) {
             $item->kEmailhistory = (int)$item->kEmailhistory;
             $item->kEmailvorlage = (int)$item->kEmailvorlage;
-            $history[]           = new self(null, $item);
+            $history[]           = new self(null, $item, $this->db);
         }
 
         return $history;
@@ -171,7 +174,7 @@ class Emailhistory
      */
     public function getCount(): int
     {
-        return (int)Shop::Container()->getDB()->getSingleObject('SELECT COUNT(*) AS nCount FROM temailhistory')->nCount;
+        return (int)$this->db->getSingleObject('SELECT COUNT(*) AS cnt FROM temailhistory')->cnt;
     }
 
     /**
@@ -184,7 +187,7 @@ class Emailhistory
             return false;
         }
 
-        return Shop::Container()->getDB()->getAffectedRows(
+        return $this->db->getAffectedRows(
             'DELETE 
                 FROM temailhistory 
                 WHERE kEmailhistory IN (' . \implode(',', \array_map('\intval', $ids)) . ')'
@@ -198,8 +201,8 @@ class Emailhistory
     public function deleteAll(): int
     {
         Shop::Container()->getLogService()->notice('eMail-History gelöscht');
-        $res = Shop::Container()->getDB()->getAffectedRows('DELETE FROM temailhistory');
-        Shop::Container()->getDB()->query('TRUNCATE TABLE temailhistory');
+        $res = $this->db->getAffectedRows('DELETE FROM temailhistory');
+        $this->db->query('TRUNCATE TABLE temailhistory');
 
         return $res;
     }

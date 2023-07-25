@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Extensions\Config;
 
@@ -17,29 +17,29 @@ class ItemPrice
     public const PRICE_TYPE_SUM = 0;
 
     /**
-     * @var int
+     * @var int|null
      */
-    protected $kKonfigitem;
+    protected ?int $kKonfigitem = null;
 
     /**
      * @var int
      */
-    protected $kKundengruppe;
+    protected int $kKundengruppe = 0;
 
     /**
      * @var int
      */
-    protected $kSteuerklasse;
+    protected int $kSteuerklasse = 0;
 
     /**
-     * @var float
+     * @var float|null
      */
-    protected $fPreis;
+    protected ?float $fPreis = null;
 
     /**
-     * @var int
+     * @var int|null
      */
-    protected $nTyp;
+    protected ?int $nTyp = null;
 
     /**
      * ItemPrice constructor.
@@ -75,48 +75,13 @@ class ItemPrice
             $customerGroupID
         );
 
-        if (isset($item->kKonfigitem, $item->kKundengruppe)
-            && $item->kKonfigitem > 0
-            && $item->kKundengruppe > 0
-        ) {
-            foreach (\array_keys(\get_object_vars($item)) as $member) {
-                $this->$member = $item->$member;
-            }
-            $this->kKonfigitem   = (int)$this->kKonfigitem;
-            $this->kKundengruppe = (int)$this->kKundengruppe;
-            $this->kSteuerklasse = (int)$this->kSteuerklasse;
-            $this->nTyp          = (int)$this->nTyp;
+        if ($item !== null && $item->kKonfigitem > 0 && $item->kKundengruppe > 0) {
+            $this->kKonfigitem   = (int)$item->kKonfigitem;
+            $this->kKundengruppe = (int)$item->kKundengruppe;
+            $this->kSteuerklasse = (int)$item->kSteuerklasse;
+            $this->nTyp          = (int)$item->nTyp;
+            $this->fPreis        = (float)$item->fPreis;
         }
-    }
-
-    /**
-     * @return bool
-     * @deprecated since 5.0.0
-     */
-    public function save(): bool
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return false;
-    }
-
-    /**
-     * @return int
-     * @deprecated since 5.0.0
-     */
-    public function update(): int
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return 0;
-    }
-
-    /**
-     * @return int
-     * @deprecated since 5.0.0
-     */
-    public function delete(): int
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return 0;
     }
 
     /**
@@ -134,7 +99,7 @@ class ItemPrice
      * @param int $customerGroupID
      * @return $this
      */
-    public function setKundengruppe(int $customerGroupID):self
+    public function setKundengruppe(int $customerGroupID): self
     {
         $this->kKundengruppe = $customerGroupID;
 
@@ -168,7 +133,7 @@ class ItemPrice
      */
     public function getKonfigitem(): int
     {
-        return (int)$this->kKonfigitem;
+        return $this->kKonfigitem ?? 0;
     }
 
     /**
@@ -176,7 +141,7 @@ class ItemPrice
      */
     public function getKundengruppe(): int
     {
-        return (int)$this->kKundengruppe;
+        return $this->kKundengruppe;
     }
 
     /**
@@ -184,7 +149,7 @@ class ItemPrice
      */
     public function getSteuerklasse(): int
     {
-        return (int)$this->kSteuerklasse;
+        return $this->kSteuerklasse;
     }
 
     /**

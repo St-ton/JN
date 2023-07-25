@@ -2,8 +2,10 @@
 
 namespace JTL\Cache\Methods;
 
+use Exception;
 use JTL\Cache\ICachingMethod;
 use JTL\Cache\JTLCacheTrait;
+use JTL\Shop;
 use Redis;
 use RedisException;
 
@@ -19,37 +21,34 @@ class CacheRedis implements ICachingMethod
     use JTLCacheTrait;
 
     /**
-     * @var CacheRedis
+     * @var Redis|null
      */
-    public static $instance;
-
-    /**
-     * @var Redis
-     */
-    private $redis;
+    private ?Redis $redis = null;
 
     /**
      * @param array $options
      */
     public function __construct(array $options)
     {
-        $res             = false;
-        $this->journalID = 'redis_journal';
-        $this->options   = $options;
+        $res = false;
+        $this->setJournalID('redis_journal');
+        $this->setOptions($options);
         if ($this->isAvailable()) {
             $res = $this->setRedis(
                 $options['redis_host'],
-                $options['redis_port'],
+                (int)$options['redis_port'],
                 $options['redis_pass'],
-                $options['redis_db'],
+                $options['redis_user'] ?? null,
+                (int)$options['redis_db'],
                 $options['redis_persistent']
             );
         }
-        if ($res === false) {
-            $this->redis         = null;
-            $this->isInitialized = false;
+        if ($res !== false) {
+            $this->setIsInitialized(true);
+            self::$instance = $this;
         } else {
-            $this->isInitialized = true;
+            $this->redis = null;
+            $this->setIsInitialized(false);
         }
     }
 
@@ -57,12 +56,19 @@ class CacheRedis implements ICachingMethod
      * @param string|null $host
      * @param int|null    $port
      * @param string|null $pass
+     * @param string|null $user
      * @param int|null    $database
      * @param bool        $persist
      * @return bool
      */
-    private function setRedis($host = null, $port = null, $pass = null, $database = null, $persist = false): bool
-    {
+    private function setRedis(
+        ?string $host = null,
+        ?int    $port = null,
+        ?string $pass = null,
+        ?string $user = null,
+        ?int    $database = null,
+        bool    $persist = false
+    ): bool {
         $redis   = new Redis();
         $connect = $persist === false ? 'connect' : 'pconnect';
         if ($host === null) {
@@ -70,7 +76,7 @@ class CacheRedis implements ICachingMethod
         }
         try {
             $res = ($port !== null && $host[0] !== '/')
-                ? $redis->$connect($host, (int)$port, \REDIS_CONNECT_TIMEOUT)
+                ? $redis->$connect($host, $port, \REDIS_CONNECT_TIMEOUT)
                 : $redis->$connect($host); // for connecting to socket
         } catch (RedisException $e) {
             $this->setError($e->getMessage());
@@ -78,7 +84,11 @@ class CacheRedis implements ICachingMethod
         }
         if ($pass !== null && $pass !== '') {
             try {
-                $res = $redis->auth($pass);
+                if ($user !== null && $user !== '') {
+                    $res = $redis->auth([$user, $pass]);
+                } else {
+                    $res = $redis->auth($pass);
+                }
             } catch (RedisException $e) {
                 $this->setError($e->getMessage());
                 $res = false;
@@ -108,7 +118,7 @@ class CacheRedis implements ICachingMethod
     /**
      * @inheritdoc
      */
-    public function store($cacheID, $content, $expiration = null): bool
+    public function store($cacheID, $content, int $expiration = null): bool
     {
         try {
             $res = $this->redis->set($cacheID, $content);
@@ -120,7 +130,7 @@ class CacheRedis implements ICachingMethod
 
             return \is_bool($res) ? $res : false;
         } catch (RedisException $e) {
-            echo 'Redis exception: ' . $e->getMessage();
+            $this->handleException($e);
 
             return false;
         }
@@ -129,7 +139,7 @@ class CacheRedis implements ICachingMethod
     /**
      * @inheritdoc
      */
-    public function storeMulti($idContent, $expiration = null): bool
+    public function storeMulti(array $idContent, int $expiration = null): bool
     {
         try {
             $res = $this->redis->mset($idContent);
@@ -139,7 +149,7 @@ class CacheRedis implements ICachingMethod
 
             return $res;
         } catch (RedisException $e) {
-            echo 'Redis exception: ' . $e->getMessage();
+            $this->handleException($e);
 
             return false;
         }
@@ -153,7 +163,7 @@ class CacheRedis implements ICachingMethod
         try {
             return $this->redis->get($cacheID);
         } catch (RedisException $e) {
-            echo 'Redis exception: ' . $e->getMessage();
+            $this->handleException($e);
 
             return false;
         }
@@ -175,7 +185,7 @@ class CacheRedis implements ICachingMethod
 
             return $return;
         } catch (RedisException $e) {
-            echo 'Redis exception: ' . $e->getMessage();
+            $this->handleException($e);
 
             return [];
         }
@@ -197,7 +207,7 @@ class CacheRedis implements ICachingMethod
         try {
             return $this->redis->del($cacheID) > 0;
         } catch (RedisException $e) {
-            echo 'Redis exception: ' . $e->getMessage();
+            $this->handleException($e);
 
             return false;
         }
@@ -238,7 +248,12 @@ class CacheRedis implements ICachingMethod
      */
     public function flushTags($tags): int
     {
-        return $this->flush(\array_unique($this->getKeysByTag($tags))) ? \count($tags) : 0;
+        $tagged = \array_unique($this->getKeysByTag($tags));
+        $tags   = \is_string($tags)
+            ? [self::_keyFromTagName($tags)]
+            : \array_map(self::_keyFromTagName(...), $tags);
+
+        return $this->flush(\array_merge($tags, $tagged)) ? \count($tags) : 0;
     }
 
     /**
@@ -256,7 +271,7 @@ class CacheRedis implements ICachingMethod
     {
         $matchTags = \is_string($tags)
             ? [self::_keyFromTagName($tags)]
-            : \array_map('JTL\Cache\Methods\CacheRedis::_keyFromTagName', $tags);
+            : \array_map(self::_keyFromTagName(...), $tags);
         $res       = \count($matchTags) === 1
             ? $this->redis->sMembers($matchTags[0])
             : $this->redis->sUnion($matchTags);
@@ -294,7 +309,7 @@ class CacheRedis implements ICachingMethod
         try {
             $stats = $this->redis->info();
         } catch (RedisException $e) {
-            echo 'Redis exception: ' . $e->getMessage();
+            $this->handleException($e);
 
             return [];
         }
@@ -303,14 +318,14 @@ class CacheRedis implements ICachingMethod
                 ? $this->redis->slowlog('get', 25)
                 : [];
         } catch (RedisException $e) {
-            echo 'Redis exception: ' . $e->getMessage();
+            $this->handleException($e);
         }
         $db  = $this->redis->getDBNum();
         $idx = 'db' . $db;
         if (isset($stats[$idx])) {
             $dbStats = \explode(',', $stats[$idx]);
             foreach ($dbStats as $stat) {
-                if (\mb_strpos($stat, 'keys=') !== false) {
+                if (\str_contains($stat, 'keys=')) {
                     $numEntries = \str_replace('keys=', '', $stat);
                 }
             }
@@ -331,20 +346,40 @@ class CacheRedis implements ICachingMethod
 
         return [
             'entries'  => $numEntries,
-            'uptime'   => $stats['uptime_in_seconds'] ?? null, //uptime in seconds
+            'uptime'   => $stats['uptime_in_seconds'] ?? null, // uptime in seconds
             'uptime_h' => isset($stats['uptime_in_seconds'])
                 ? $this->secondsToTime($stats['uptime_in_seconds'])
-                : null, //human readable
-            'hits'     => $stats['keyspace_hits'], //cache hits
-            'misses'   => $stats['keyspace_misses'], //cache misses
+                : null, // human readable
+            'hits'     => $stats['keyspace_hits'], // cache hits
+            'misses'   => $stats['keyspace_misses'], // cache misses
             'hps'      => isset($stats['uptime_in_seconds'])
                 ? ($stats['keyspace_hits'] / $stats['uptime_in_seconds'])
-                : null, //hits per second
+                : null, // hits per second
             'mps'      => isset($stats['uptime_in_seconds'])
                 ? ($stats['keyspace_misses'] / $stats['uptime_in_seconds'])
-                : null, //misses per second
-            'mem'      => $stats['used_memory'], //used memory in bytes
-            'slow'     => $slowLogData //redis slow log
+                : null, // misses per second
+            'mem'      => $stats['used_memory'], // used memory in bytes
+            'max'      => $stats['maxmemory'] ?? null,
+            'slow'     => $slowLogData // redis slow log
         ];
+    }
+
+    /**
+     * @param Exception $e
+     * @return void
+     * @throws Exception
+     */
+    private function handleException(Exception $e): void
+    {
+        if ($this->options['debug'] === true && $this->options['debug_method'] === 'echo') {
+            echo $e->getMessage();
+
+            return;
+        }
+        try {
+            Shop::Container()->getLogService()->error($e->getMessage());
+        } catch (Exception) {
+            throw $e;
+        }
     }
 }

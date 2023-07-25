@@ -1,13 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\dbeS\Sync;
 
 use JTL\dbeS\Starter;
 use JTL\Media\Image;
-use JTL\Media\Image\Category;
-use JTL\Media\Image\Characteristic;
-use JTL\Media\Image\CharacteristicValue;
-use JTL\Media\Image\Manufacturer;
 use JTL\Media\IMedia;
 use JTL\Media\Media;
 use JTL\Shop;
@@ -24,17 +20,17 @@ final class Images extends AbstractSync
     /**
      * @var array
      */
-    private $config;
+    private array $config;
 
     /**
      * @var array
      */
-    private $brandingConfig;
+    private array $brandingConfig;
 
     /**
      * @var string
      */
-    private $unzipPath;
+    private string $unzipPath;
 
     /**
      * @param Starter $starter
@@ -43,11 +39,11 @@ final class Images extends AbstractSync
     public function handle(Starter $starter)
     {
         $this->brandingConfig = $this->initBrandingConfig();
-        $this->config         = Shop::getSettings([\CONF_BILDER])['bilder'];
+        $this->config         = Shop::getSettingSection(\CONF_BILDER);
         $this->db->query('START TRANSACTION');
-        foreach ($starter->getXML() as $i => $item) {
+        foreach ($starter->getXML() as $item) {
             [$file, $xml] = [\key($item), \reset($item)];
-            switch (\pathinfo($file)['basename']) {
+            switch (\pathinfo($file, \PATHINFO_BASENAME)) {
                 case 'bilder_ka.xml':
                 case 'bilder_a.xml':
                 case 'bilder_k.xml':
@@ -112,7 +108,7 @@ final class Images extends AbstractSync
      * @param array  $xml
      * @param string $unzipPath
      */
-    private function handleInserts($xml, string $unzipPath): void
+    private function handleInserts(array $xml, string $unzipPath): void
     {
         if (!\is_array($xml['bilder'])) {
             return;
@@ -160,6 +156,7 @@ final class Images extends AbstractSync
      */
     private function handleConfigGroupImages(array $images): void
     {
+        $flushIDs = [];
         foreach ($images as $image) {
             if (empty($image->cPfad) || empty($image->kKonfiggruppe)) {
                 continue;
@@ -169,6 +166,7 @@ final class Images extends AbstractSync
             $item->kKonfiggruppe = (int)$image->kKonfiggruppe;
             $original            = $this->unzipPath . $item->cBildPfad;
             $extension           = $this->getExtension($original);
+            $flushIDs[]          = $item->kKonfiggruppe;
             if (!$extension) {
                 $this->logger->error(
                     'Bildformat des Konfiggruppenbildes konnte nicht ermittelt werden. Datei ' .
@@ -178,27 +176,15 @@ final class Images extends AbstractSync
             }
             $item->cBildPfad = $this->getNewFilename($item->kKonfiggruppe . '.' . $extension);
             \copy($original, \PFAD_ROOT . \STORAGE_CONFIGGROUPS . $item->cBildPfad);
-            if ($this->createThumbnail(
-                $original,
-                \PFAD_KONFIGURATOR_KLEIN . $item->cBildPfad,
-                $this->config['bilder_konfiggruppe_klein_breite'],
-                $this->config['bilder_konfiggruppe_klein_hoehe'],
-                $this->config['bilder_jpg_quali']
-            )) {
-                $this->db->update(
-                    'tkonfiggruppe',
-                    'kKonfiggruppe',
-                    $item->kKonfiggruppe,
-                    (object)['cBildPfad' => $item->cBildPfad]
-                );
-            }
+            $this->db->update(
+                'tkonfiggruppe',
+                'kKonfiggruppe',
+                $item->kKonfiggruppe,
+                (object)['cBildPfad' => $item->cBildPfad]
+            );
             \unlink($original);
         }
-        if (\count($images) > 0) {
-            $instance = Media::getClass(Image::TYPE_CONFIGGROUP);
-            /** @var IMedia $instance */
-            $instance::clearCache();
-        }
+        $this->clearImageCache(Image::TYPE_CONFIGGROUP, $flushIDs);
     }
 
     /**
@@ -206,13 +192,15 @@ final class Images extends AbstractSync
      */
     private function handleCharacteristicValueImages(array $images): void
     {
+        $flushIDs = [];
         foreach ($images as $image) {
             $image->kMerkmalWert = (int)$image->kMerkmalWert;
             if (empty($image->cPfad) || $image->kMerkmalWert <= 0) {
                 continue;
             }
-            $original  = $this->unzipPath . $image->cPfad;
-            $extension = $this->getExtension($original);
+            $original   = $this->unzipPath . $image->cPfad;
+            $extension  = $this->getExtension($original);
+            $flushIDs[] = $image->kMerkmalWert;
             if (!$extension) {
                 $this->logger->error(
                     'Bildformat des Merkmalwertbildes konnte nicht ermittelt werden. Datei ' .
@@ -222,35 +210,19 @@ final class Images extends AbstractSync
             }
             $image->cPfad = $this->getCharacteristicValueImageName($image, $extension);
             \copy($original, \PFAD_ROOT . \STORAGE_CHARACTERISTIC_VALUES . $image->cPfad);
-            $this->createThumbnail(
-                $original,
-                \PFAD_MERKMALWERTBILDER_NORMAL . $image->cPfad,
-                $this->config['bilder_merkmalwert_normal_breite'],
-                $this->config['bilder_merkmalwert_normal_hoehe'],
-                $this->config['bilder_jpg_quali'],
-                $this->getBrandingConfig(Image::TYPE_CHARACTERISTIC_VALUE)
+            $this->db->update(
+                'tmerkmalwert',
+                'kMerkmalWert',
+                $image->kMerkmalWert,
+                (object)['cBildpfad' => $image->cPfad]
             );
-            if ($this->createThumbnail(
-                $original,
-                \PFAD_MERKMALWERTBILDER_KLEIN . $image->cPfad,
-                $this->config['bilder_merkmalwert_klein_breite'],
-                $this->config['bilder_merkmalwert_klein_hoehe'],
-                $this->config['bilder_jpg_quali']
-            )) {
-                $this->db->update(
-                    'tmerkmalwert',
-                    'kMerkmalWert',
-                    (int)$image->kMerkmalWert,
-                    (object)['cBildpfad' => $image->cPfad]
-                );
-                $charValImage               = new stdClass();
-                $charValImage->kMerkmalWert = (int)$image->kMerkmalWert;
-                $charValImage->cBildpfad    = $image->cPfad;
-
-                $this->upsert('tmerkmalwertbild', [$charValImage], 'kMerkmalWert');
-            }
+            $charValImage               = new stdClass();
+            $charValImage->kMerkmalWert = $image->kMerkmalWert;
+            $charValImage->cBildpfad    = $image->cPfad;
+            $this->upsert('tmerkmalwertbild', [$charValImage], 'kMerkmalWert');
             \unlink($original);
         }
+        $this->clearImageCache(Image::TYPE_CHARACTERISTIC_VALUE, $flushIDs);
     }
 
     /**
@@ -258,6 +230,7 @@ final class Images extends AbstractSync
      */
     private function handleCharacteristicImages(array $images): void
     {
+        $flushIDs = [];
         foreach ($images as $image) {
             if (empty($image->cPfad) || empty($image->kMerkmal)) {
                 continue;
@@ -265,6 +238,7 @@ final class Images extends AbstractSync
             $image->kMerkmal = (int)$image->kMerkmal;
             $original        = $this->unzipPath . $image->cPfad;
             $extension       = $this->getExtension($original);
+            $flushIDs[]      = $image->kMerkmal;
             if (!$extension) {
                 $this->logger->error(
                     'Bildformat des Merkmalbildes konnte nicht ermittelt werden. Datei ' .
@@ -274,30 +248,15 @@ final class Images extends AbstractSync
             }
             $image->cPfad = $this->getCharacteristicImageName($image, $extension);
             \copy($original, \PFAD_ROOT . \STORAGE_CHARACTERISTICS . $image->cPfad);
-            $this->createThumbnail(
-                $original,
-                \PFAD_MERKMALBILDER_NORMAL . $image->cPfad,
-                $this->config['bilder_merkmal_normal_breite'],
-                $this->config['bilder_merkmal_normal_hoehe'],
-                $this->config['bilder_jpg_quali'],
-                $this->getBrandingConfig(Image::TYPE_CHARACTERISTIC)
+            $this->db->update(
+                'tmerkmal',
+                'kMerkmal',
+                $image->kMerkmal,
+                (object)['cBildpfad' => $image->cPfad]
             );
-            if ($this->createThumbnail(
-                $original,
-                \PFAD_MERKMALBILDER_KLEIN . $image->cPfad,
-                $this->config['bilder_merkmal_klein_breite'],
-                $this->config['bilder_merkmal_klein_hoehe'],
-                $this->config['bilder_jpg_quali']
-            )) {
-                $this->db->update(
-                    'tmerkmal',
-                    'kMerkmal',
-                    $image->kMerkmal,
-                    (object)['cBildpfad' => $image->cPfad]
-                );
-            }
             \unlink($original);
         }
+        $this->clearImageCache(Image::TYPE_CHARACTERISTIC, $flushIDs);
     }
 
     /**
@@ -305,6 +264,7 @@ final class Images extends AbstractSync
      */
     private function handleManufacturerImages(array $images): void
     {
+        $flushIDs = [];
         foreach ($images as $image) {
             if (empty($image->cPfad) || empty($image->kHersteller)) {
                 continue;
@@ -312,6 +272,7 @@ final class Images extends AbstractSync
             $image->kHersteller = (int)$image->kHersteller;
             $original           = $this->unzipPath . $image->cPfad;
             $extension          = $this->getExtension($original);
+            $flushIDs[]         = $image->kHersteller;
             if (!$extension) {
                 $this->logger->error(
                     'Bildformat des Herstellerbildes konnte nicht ermittelt werden. Datei ' .
@@ -321,28 +282,12 @@ final class Images extends AbstractSync
             }
             $image->cPfad = $this->getManufacturerImageName($image, $extension);
             \copy($original, \PFAD_ROOT . \STORAGE_MANUFACTURERS . $image->cPfad);
-            $this->createThumbnail(
-                $original,
-                \PFAD_HERSTELLERBILDER_NORMAL . $image->cPfad,
-                $this->config['bilder_hersteller_normal_breite'],
-                $this->config['bilder_hersteller_normal_hoehe'],
-                $this->config['bilder_jpg_quali'],
-                $this->getBrandingConfig(Image::TYPE_MANUFACTURER)
+            $this->db->update(
+                'thersteller',
+                'kHersteller',
+                $image->kHersteller,
+                (object)['cBildpfad' => $image->cPfad]
             );
-            if ($this->createThumbnail(
-                $original,
-                \PFAD_HERSTELLERBILDER_KLEIN . $image->cPfad,
-                $this->config['bilder_hersteller_klein_breite'],
-                $this->config['bilder_hersteller_klein_hoehe'],
-                $this->config['bilder_jpg_quali']
-            )) {
-                $this->db->update(
-                    'thersteller',
-                    'kHersteller',
-                    $image->kHersteller,
-                    (object)['cBildpfad' => $image->cPfad]
-                );
-            }
             $cacheTags = [];
             foreach ($this->db->selectAll(
                 'tartikel',
@@ -355,6 +300,7 @@ final class Images extends AbstractSync
             $this->cache->flushTags($cacheTags);
             \unlink($original);
         }
+        $this->clearImageCache(Image::TYPE_MANUFACTURER, $flushIDs);
     }
 
     /**
@@ -362,12 +308,15 @@ final class Images extends AbstractSync
      */
     private function handlePropertyImages(array $images): void
     {
+        $flushIDs = [];
         foreach ($images as $image) {
             if (empty($image->cPfad)) {
                 continue;
             }
-            $original  = $this->unzipPath . $image->cPfad;
-            $extension = $this->getExtension($original);
+            $image->kEigenschaftWert = (int)($image->kEigenschaftWert ?? 0);
+            $flushIDs[]              = $image->kEigenschaftWert;
+            $original                = $this->unzipPath . $image->cPfad;
+            $extension               = $this->getExtension($original);
             if (!$extension) {
                 $this->logger->error(
                     'Bildformat des Eigenschaftwertbildes konnte nicht ermittelt werden. Datei ' .
@@ -378,32 +327,10 @@ final class Images extends AbstractSync
             $image->cPfad = $this->getPropertiesImageName($image, $extension);
             $image->cPfad = $this->getNewFilename($image->cPfad);
             \copy($original, \PFAD_ROOT . \STORAGE_VARIATIONS . $image->cPfad);
-            $this->createThumbnail(
-                $original,
-                \PFAD_VARIATIONSBILDER_GROSS . $image->cPfad,
-                $this->config['bilder_variationen_gross_breite'],
-                $this->config['bilder_variationen_gross_hoehe'],
-                $this->config['bilder_jpg_quali'],
-                $this->getBrandingConfig(Image::TYPE_VARIATION)
-            );
-            $this->createThumbnail(
-                $original,
-                \PFAD_VARIATIONSBILDER_NORMAL . $image->cPfad,
-                $this->config['bilder_variationen_breite'],
-                $this->config['bilder_variationen_hoehe'],
-                $this->config['bilder_jpg_quali']
-            );
-            if ($this->createThumbnail(
-                $original,
-                \PFAD_VARIATIONSBILDER_MINI . $image->cPfad,
-                $this->config['bilder_variationen_mini_breite'],
-                $this->config['bilder_variationen_mini_hoehe'],
-                $this->config['bilder_jpg_quali']
-            )) {
-                $this->upsert('teigenschaftwertpict', [$image], 'kEigenschaftWert');
-            }
+            $this->upsert('teigenschaftwertpict', [$image], 'kEigenschaftWert');
             \unlink($original);
         }
+        $this->clearImageCache(Image::TYPE_VARIATION, $flushIDs);
     }
 
     /**
@@ -411,12 +338,14 @@ final class Images extends AbstractSync
      */
     private function handleCategoryImages(array $images): void
     {
+        $flushIDs = [];
         foreach ($images as $image) {
             if (empty($image->cPfad)) {
                 continue;
             }
-            $original  = $this->unzipPath . $image->cPfad;
-            $extension = $this->getExtension($original);
+            $flushIDs[] = (int)$image->kKategorie;
+            $original   = $this->unzipPath . $image->cPfad;
+            $extension  = $this->getExtension($original);
             if (!$extension) {
                 $this->logger->error(
                     'Bildformat des Kategoriebildes konnte nicht ermittelt werden. Datei ' .
@@ -426,26 +355,18 @@ final class Images extends AbstractSync
             }
             $image->cPfad = $this->getCategoryImageName($image, $extension);
             \copy($original, \PFAD_ROOT . \STORAGE_CATEGORIES . $image->cPfad);
-            if ($this->createThumbnail(
-                $original,
-                \PFAD_KATEGORIEBILDER . $image->cPfad,
-                $this->config['bilder_kategorien_breite'],
-                $this->config['bilder_kategorien_hoehe'],
-                $this->config['bilder_jpg_quali'],
-                $this->getBrandingConfig(Image::TYPE_CATEGORY)
-            )) {
-                $this->upsert('tkategoriepict', [$image], 'kKategorie');
-            }
+            $this->upsert('tkategoriepict', [$image], 'kKategorie');
             \unlink($original);
         }
+        $this->clearImageCache(Image::TYPE_CATEGORY, $flushIDs);
     }
 
     /**
-     * @param object $image
-     * @param string $extension
+     * @param stdClass $image
+     * @param string   $extension
      * @return string
      */
-    private function getPropertiesImageName($image, string $extension): string
+    private function getPropertiesImageName(stdClass $image, string $extension): string
     {
         if (empty($image->kEigenschaftWert) || !$this->config['bilder_variation_namen']) {
             return (\stripos(\strrev($image->cPfad), \strrev($extension)) === 0)
@@ -456,11 +377,12 @@ final class Images extends AbstractSync
             'SELECT kEigenschaftWert, cArtNr, cName, kEigenschaft
                 FROM teigenschaftwert
                 WHERE kEigenschaftWert = :aid',
-            ['aid' => (int)$image->kEigenschaftWert]
+            ['aid' => $image->kEigenschaftWert]
         );
         if ($propValue === null) {
             $this->logger->warning(
-                'Eigenschaftswertbild fuer nicht existierenden Eigenschaftswert ' . (int)$image->kEigenschaftWert
+                'Eigenschaftswertbild fuer nicht existierenden Eigenschaftswert {id}',
+                ['id' => $image->kEigenschaftWert]
             );
             return $image->cPfad;
         }
@@ -486,7 +408,7 @@ final class Images extends AbstractSync
                                 AND tsprache.cShopStandard = 'Y'
                                 AND teigenschaft.kArtikel = tartikel.kArtikel
                                 AND teigenschaftwert.kEigenschaftWert = :cid",
-                        ['cid' => (int)$image->kEigenschaftWert]
+                        ['cid' => $image->kEigenschaftWert]
                     );
                     if ($product !== null && !empty($product->cArtNr) && !empty($propValue->cArtNr)) {
                         $imageName = $this->convertUmlauts($product->cArtNr) .
@@ -546,7 +468,7 @@ final class Images extends AbstractSync
     {
         $imageName = $image->cPfad;
         if (empty($image->kKategorie) || !$this->config['bilder_kategorie_namen']) {
-            return $this->getNewFilename((\pathinfo($imageName)['filename']) . '.' . $ext);
+            return $this->getNewFilename((\pathinfo($imageName, \PATHINFO_FILENAME)) . '.' . $ext);
         }
         $data = $this->db->getSingleObject(
             "SELECT tseo.cSeo, tkategorie.cName
@@ -563,7 +485,7 @@ final class Images extends AbstractSync
         if ($data !== null && !empty($data->cName) && (int)$this->config['bilder_kategorie_namen'] === 1) {
             $imageName = $this->removeSpecialChars($data->cSeo ?: $this->convertUmlauts($data->cName)) . '.' . $ext;
         } else {
-            $imageName = \pathinfo($image->cPfad)['filename'] . '.' . $ext;
+            $imageName = \pathinfo($image->cPfad, \PATHINFO_FILENAME) . '.' . $ext;
         }
 
         return $this->getNewFilename($imageName);
@@ -585,7 +507,7 @@ final class Images extends AbstractSync
         if ($data !== null && !empty($data->cSeo) && (int)$this->config['bilder_hersteller_namen'] === 1) {
             $imageName = $this->removeSpecialChars($data->cSeo ?: $this->convertUmlauts($data->cName)) . '.' . $ext;
         } else {
-            $imageName = \pathinfo($image->cPfad)['filename'] . '.' . $ext;
+            $imageName = \pathinfo($image->cPfad, \PATHINFO_FILENAME) . '.' . $ext;
         }
 
         return $this->getNewFilename($imageName);
@@ -596,7 +518,7 @@ final class Images extends AbstractSync
      * @param string   $ext
      * @return string
      */
-    private function getCharacteristicValueImageName(stdClass$image, string $ext): string
+    private function getCharacteristicValueImageName(stdClass $image, string $ext): string
     {
         $conf = (int)$this->config['bilder_merkmalwert_namen'];
         if ($conf === 2) {
@@ -614,7 +536,7 @@ final class Images extends AbstractSync
             if ($data !== null && !empty($data->cSeo) && $conf === 1) {
                 $imageName = $this->removeSpecialChars($data->cSeo ?: $this->convertUmlauts($data->cName)) . '.' . $ext;
             } else {
-                $imageName = \pathinfo($image->cPfad)['filename'] . '.' . $ext;
+                $imageName = \pathinfo($image->cPfad, \PATHINFO_FILENAME) . '.' . $ext;
             }
         }
 
@@ -623,7 +545,7 @@ final class Images extends AbstractSync
 
     /**
      * @param stdClass $image
-     * @param string $ext
+     * @param string   $ext
      * @return string
      */
     private function getCharacteristicImageName(stdClass $image, string $ext): string
@@ -641,7 +563,7 @@ final class Images extends AbstractSync
             if ($data !== null && !empty($data->cName) && $conf === 1) {
                 $imageName = $this->removeSpecialChars($this->convertUmlauts($data->cName)) . '.' . $ext;
             } else {
-                $imageName = \pathinfo($image->cPfad)['filename'] . '.' . $ext;
+                $imageName = \pathinfo($image->cPfad, \PATHINFO_FILENAME) . '.' . $ext;
             }
         }
 
@@ -668,52 +590,7 @@ final class Images extends AbstractSync
     {
         $str = \str_replace(['/', ' '], '-', $str);
 
-        return \preg_replace('/[^a-zA-Z0-9\.\-_]/', '', $str);
-    }
-
-    /**
-     * @param string $source
-     * @param string $target
-     * @param int    $targetWidth
-     * @param int    $targetHeight
-     * @param int    $quality
-     * @param null   $branding
-     * @return bool
-     */
-    private function createThumbnail(
-        string $source,
-        string $target,
-        int $targetWidth,
-        int $targetHeight,
-        int $quality = 80,
-        $branding = null
-    ): bool {
-        $container        = $this->config['container_verwenden'] === 'Y';
-        $extension        = $this->getNewExtension($target);
-        $target           = \PFAD_ROOT . $target;
-        [$width, $height] = \getimagesize($source);
-        if ($width <= 0 || $height <= 0) {
-            $this->logger->error('Bild konnte nicht erstellt werden. Quelle ungueltig: ' . $source);
-
-            return false;
-        }
-        if ($width < $targetWidth && $height < $targetHeight) {
-            $newWidth  = $width;
-            $newHeight = $height;
-        } else {
-            $ratio     = $width / $height;
-            $newWidth  = $targetWidth;
-            $newHeight = (int)\round($newWidth / $ratio);
-            if ($newHeight > $targetHeight) {
-                $newHeight = $targetHeight;
-                $newWidth  = (int)\round($newHeight * $ratio);
-            }
-        }
-        $image = $container === true
-            ? $this->createImage($source, $newWidth, $newHeight, false, $targetWidth, $targetHeight)
-            : $this->createImage($source, $newWidth, $newHeight);
-
-        return $this->saveImage($this->brandImage($image, $branding), $extension, $target, $quality) !== false;
+        return \preg_replace('/[^a-zA-Z\d\.\-_]/', '', $str);
     }
 
     /**
@@ -768,7 +645,7 @@ final class Images extends AbstractSync
         foreach ($ids as $id) {
             $this->db->delete('tkategoriepict', 'kKategorie', $id);
         }
-        Category::clearCache($ids);
+        $this->clearImageCache(Image::TYPE_CATEGORY, $ids);
     }
 
     /**
@@ -799,7 +676,7 @@ final class Images extends AbstractSync
             }
         }
         $this->cache->flushTags($cacheTags);
-        Manufacturer::clearCache($ids);
+        $this->clearImageCache(Image::TYPE_MANUFACTURER, $ids);
     }
 
     /**
@@ -820,7 +697,7 @@ final class Images extends AbstractSync
                 (object)['cBildpfad' => '']
             );
         }
-        Characteristic::clearCache($ids);
+        $this->clearImageCache(Image::TYPE_CHARACTERISTIC, $ids);
     }
 
     /**
@@ -842,15 +719,15 @@ final class Images extends AbstractSync
             );
             $this->db->delete('tmerkmalwertbild', 'kMerkmalWert', (int)$attrValID);
         }
-        CharacteristicValue::clearCache($ids);
+        $this->clearImageCache(Image::TYPE_CHARACTERISTIC_VALUE, $ids);
     }
 
     /**
      * @param resource|\GdImage $im
-     * @param object|null      $config
+     * @param stdClass|null     $config
      * @return mixed
      */
-    private function brandImage($im, $config)
+    private function brandImage($im, ?stdClass $config)
     {
         if ($config === null
             || (isset($config->nAktiv) && (int)$config->nAktiv === 0)
@@ -919,11 +796,11 @@ final class Images extends AbstractSync
      */
     private function getBrandingCoordinates(
         string $position,
-        int $imageWidth,
-        int $imageHeight,
-        int $brandingNewWidth,
-        int $brandingNewHeight,
-        int $margin
+        int    $imageWidth,
+        int    $imageHeight,
+        int    $brandingNewWidth,
+        int    $brandingNewHeight,
+        int    $margin
     ): array {
         switch ($position) {
             case 'top':
@@ -1000,7 +877,6 @@ final class Images extends AbstractSync
         $h = \imagesy($srcImg);
         // Turn alpha blending off
         \imagealphablending($srcImg, false);
-        $minalpha = 0;
         // loop through image pixels and modify alpha
         for ($x = 0; $x < $w; $x++) {
             for ($y = 0; $y < $h; $y++) {
@@ -1008,11 +884,7 @@ final class Images extends AbstractSync
                 $colorxy = \imagecolorat($srcImg, $x, $y);
                 $alpha   = ($colorxy >> 24) & 0xFF;
                 // calculate new alpha
-                if ($minalpha !== 127) {
-                    $alpha = 127 + 127 * $pct * ($alpha - 127) / (127 - $minalpha);
-                } else {
-                    $alpha += 127 * $pct;
-                }
+                $alpha = 127 + 127 * $pct * ($alpha - 127) / 127;
                 // get the color index with new alpha
                 $alphacolorxy = \imagecolorallocatealpha(
                     $srcImg,
@@ -1042,25 +914,14 @@ final class Images extends AbstractSync
             return null;
         }
         $size = \getimagesize($filename);
-        switch ($size[2]) {
-            case \IMAGETYPE_JPEG:
-                $ext = 'jpg';
-                break;
-            case \IMAGETYPE_PNG:
-                $ext = \function_exists('imagecreatefrompng') ? 'png' : false;
-                break;
-            case \IMAGETYPE_GIF:
-                $ext = \function_exists('imagecreatefromgif') ? 'gif' : false;
-                break;
-            case \IMAGETYPE_BMP:
-                $ext = \function_exists('imagecreatefromwbmp') ? 'bmp' : false;
-                break;
-            default:
-                $ext = null;
-                break;
-        }
 
-        return $ext;
+        return match ($size[2]) {
+            \IMAGETYPE_JPEG => 'jpg',
+            \IMAGETYPE_PNG  => \function_exists('imagecreatefrompng') ? 'png' : false,
+            \IMAGETYPE_GIF  => \function_exists('imagecreatefromgif') ? 'gif' : false,
+            \IMAGETYPE_BMP  => \function_exists('imagecreatefromwbmp') ? 'bmp' : false,
+            default         => null,
+        };
     }
 
     /**
@@ -1087,26 +948,18 @@ final class Images extends AbstractSync
      */
     private function createImage(
         string $source,
-        int $width = 0,
-        int $height = 0,
-        bool $branding = false,
-        int $containerWidth = null,
-        int $containerHeight = null
+        int    $width = 0,
+        int    $height = 0,
+        bool   $branding = false,
+        int    $containerWidth = null,
+        int    $containerHeight = null
     ) {
         $imgInfo = \getimagesize($source);
-        switch ($imgInfo[2]) {
-            case \IMAGETYPE_GIF:
-                $im = \imagecreatefromgif($source);
-                break;
-            case \IMAGETYPE_PNG:
-                $im = \imagecreatefrompng($source);
-                break;
-            case \IMAGETYPE_JPEG:
-            default:
-                $im = \imagecreatefromjpeg($source);
-                break;
-        }
-
+        $im      = match ($imgInfo[2]) {
+            \IMAGETYPE_GIF => \imagecreatefromgif($source),
+            \IMAGETYPE_PNG => \imagecreatefrompng($source),
+            default        => \imagecreatefromjpeg($source),
+        };
         if ($width === 0 && $height === 0) {
             [$width, $height] = $imgInfo;
         }
@@ -1133,7 +986,7 @@ final class Images extends AbstractSync
             $posX = ($containerWidth / 2) - ($width / 2);
             $posY = ($containerHeight / 2) - ($height / 2);
         }
-        \imagecopyresampled($newImg, $im, $posX, $posY, 0, 0, $width, $height, $imgInfo[0], $imgInfo[1]);
+        \imagecopyresampled($newImg, $im, (int)$posX, (int)$posY, 0, 0, $width, $height, $imgInfo[0], $imgInfo[1]);
 
         return $newImg;
     }
@@ -1144,7 +997,7 @@ final class Images extends AbstractSync
      */
     private function getNewFilename(string $path): string
     {
-        return \pathinfo($path)['filename'] . '.' . $this->getNewExtension($path);
+        return \pathinfo($path, \PATHINFO_FILENAME) . '.' . $this->getNewExtension($path);
     }
 
     /**
@@ -1159,23 +1012,13 @@ final class Images extends AbstractSync
         if (!$im) {
             return false;
         }
-        switch (\strtolower($format)) {
-            case 'jpg':
-                $res = \function_exists('imagejpeg') && \imagejpeg($im, $path, $quality);
-                break;
-            case 'png':
-                $res = \function_exists('imagepng') && \imagepng($im, $path);
-                break;
-            case 'gif':
-                $res = \function_exists('imagegif') && \imagegif($im, $path);
-                break;
-            case 'bmp':
-                $res = \function_exists('imagewbmp') && \imagewbmp($im, $path);
-                break;
-            default:
-                $res = false;
-                break;
-        }
+        $res = match (\strtolower($format)) {
+            'jpg'   => \function_exists('imagejpeg') && \imagejpeg($im, $path, $quality),
+            'png'   => \function_exists('imagepng') && \imagepng($im, $path),
+            'gif'   => \function_exists('imagegif') && \imagegif($im, $path),
+            'bmp'   => \function_exists('imagewbmp') && \imagewbmp($im, $path),
+            default => false,
+        };
         if ($res !== false) {
             @\chmod($path, 0644);
         } else {
@@ -1187,14 +1030,13 @@ final class Images extends AbstractSync
 
     /**
      * @param string $color
-     * @return array|bool
+     * @return array
      */
-    private function html2rgb(string $color)
+    private function html2rgb(string $color): array
     {
-        if (\strpos($color, '#') === 0) {
+        if (\str_starts_with($color, '#')) {
             $color = \substr($color, 1);
         }
-
         if (\strlen($color) === 6) {
             [$r, $g, $b] = [
                 $color[0] . $color[1],
@@ -1207,10 +1049,36 @@ final class Images extends AbstractSync
                 $color[1] . $color[1],
                 $color[2] . $color[2]
             ];
+        } elseif (\str_starts_with($color, 'rgb')) {
+            if (\str_starts_with($color, 'rgba(')) {
+                $color = Image::rgba2rgb($color);
+            }
+            $rgbaColor = \explode(',', \rtrim(\substr($color, \strlen('rgb(')), ')'));
+
+            return [
+                (int)\trim($rgbaColor[0]),
+                (int)\trim($rgbaColor[1]),
+                (int)\trim($rgbaColor[2])
+            ];
         } else {
-            return false;
+            [$r, $g, $b] = ['ff', 'ff', 'ff'];
         }
 
         return [\hexdec($r), \hexdec($g), \hexdec($b)];
+    }
+
+    /**
+     * @param string $class
+     * @param array  $ids
+     * @return bool
+     */
+    private function clearImageCache(string $class, array $ids): bool
+    {
+        if (\count($ids) === 0) {
+            return false;
+        }
+        $instance = Media::getClass($class);
+        /** @var IMedia $instance */
+        return $instance::clearCache($ids);
     }
 }

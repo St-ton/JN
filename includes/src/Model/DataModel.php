@@ -22,33 +22,38 @@ abstract class DataModel implements DataModelInterface, Iterator
      * @var array
      * Stores the property values
      */
-    protected $members = [];
+    protected array $members = [];
 
     /**
      * @var callable[]
      * List of setting handlers
      */
-    protected $setters = [];
+    protected array $setters = [];
 
     /**
      * @var callable[]
      * List of getting handlers
      */
-    protected $getters = [];
+    protected array $getters = [];
+
+    /**
+     * @var array
+     */
+    protected static array $nameMapping = [];
 
     /**
      * true when loaded from database
      * @var bool
      */
-    protected $loaded = false;
+    protected bool $loaded = false;
 
     /**
-     * @var DbInterface
+     * @var DbInterface|null
      */
-    private $db;
+    private ?DbInterface $db = null;
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getDB(): ?DbInterface
     {
@@ -56,7 +61,7 @@ abstract class DataModel implements DataModelInterface, Iterator
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setDB(DbInterface $db): void
     {
@@ -64,7 +69,7 @@ abstract class DataModel implements DataModelInterface, Iterator
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function wasLoaded(): void
     {
@@ -72,7 +77,7 @@ abstract class DataModel implements DataModelInterface, Iterator
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getWasLoaded(): bool
     {
@@ -80,7 +85,7 @@ abstract class DataModel implements DataModelInterface, Iterator
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setWasLoaded(bool $loaded): void
     {
@@ -102,7 +107,7 @@ abstract class DataModel implements DataModelInterface, Iterator
      */
     public function __sleep()
     {
-        return select(\array_keys(\get_object_vars($this)), static function ($e) {
+        return select(\array_keys(\get_object_vars($this)), static function ($e): bool {
             return $e !== 'getters' && $e !== 'db' && $e !== 'setters';
         });
     }
@@ -121,10 +126,10 @@ abstract class DataModel implements DataModelInterface, Iterator
     {
         $attribute = \lcfirst(\substr($name, 3));
         if (\array_key_exists($attribute, $this->members)) {
-            if (\strpos($name, 'get') === 0) {
+            if (\str_starts_with($name, 'get')) {
                 return $this->$attribute;
             }
-            if (\strpos($name, 'set') === 0) {
+            if (\str_starts_with($name, 'set')) {
                 $this->$attribute = $arguments[0];
 
                 return null;
@@ -208,12 +213,16 @@ abstract class DataModel implements DataModelInterface, Iterator
      * @return $this
      * @throws Exception
      */
-    protected function createNew($option = self::NONE): self
+    protected function createNew(int $option = self::NONE): self
     {
         $pkValue = $this->db->insert($this->getTableName(), $this->getSqlObject(true));
+
         if (!empty($pkValue)) {
-            if (empty($this->getKey())) {
-                $this->setKey($pkValue);
+            if (!empty($this->getKeyName())) {
+                $key = $this->getKey();
+                if (empty($key)) {
+                    $this->setKey($pkValue);
+                }
             }
         } elseif ($option === self::ON_EXISTS_UPDATE) {
             $this->save();
@@ -225,7 +234,7 @@ abstract class DataModel implements DataModelInterface, Iterator
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public static function create($attributes, DbInterface $db, $option = self::NONE)
     {
@@ -238,7 +247,7 @@ abstract class DataModel implements DataModelInterface, Iterator
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function init(array $attributes, $option = self::NONE): DataModelInterface
     {
@@ -270,7 +279,7 @@ abstract class DataModel implements DataModelInterface, Iterator
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public static function load($attributes, DbInterface $db, $option = self::ON_NOTEXISTS_NEW)
     {
@@ -278,7 +287,7 @@ abstract class DataModel implements DataModelInterface, Iterator
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public static function loadByAttributes($attributes, DbInterface $db, $option = self::ON_NOTEXISTS_FAIL)
     {
@@ -330,7 +339,7 @@ abstract class DataModel implements DataModelInterface, Iterator
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public static function loadAll(DbInterface $db, $key, $value): Collection
     {
@@ -386,7 +395,7 @@ abstract class DataModel implements DataModelInterface, Iterator
             case 'object':
                 return $value;
             case 'yesno':
-                if (\is_string($value) && \in_array($value, ['Y', 'N'], true)) {
+                if (\in_array($value, ['Y', 'N'], true)) {
                     $result = $value;
                 } elseif (\is_numeric($value) || \is_bool($value)) {
                     $result = (bool)$value === true ? 'Y' : 'N';
@@ -505,7 +514,7 @@ abstract class DataModel implements DataModelInterface, Iterator
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function fill($attributes): DataModelInterface
     {
@@ -550,18 +559,19 @@ abstract class DataModel implements DataModelInterface, Iterator
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
-    public function save(array $partial = null): bool
+    public function save(array $partial = null, bool $updateChildModels = true): bool
     {
         $noPrimaryKey = false;
         $keyValue     = null;
         $keyName      = null;
         $members      = $this->getSqlObject();
-        $allKeyNames  = $this->getAllKeyNames(true);
+        $allKeyNames  = [];
         try {
-            $keyValue = $this->getKey();
-            $keyName  = $this->getKeyName(true);
+            $allKeyNames = $this->getAllKeyNames(true);
+            $keyName     = $this->getKeyName(true);
+            $keyValue    = $this->getKey();
             if (\count($allKeyNames) === 1 && empty($members->$keyName)) {
                 unset($members->$keyName);
             }
@@ -576,12 +586,19 @@ abstract class DataModel implements DataModelInterface, Iterator
         if (!$this->loaded || $noPrimaryKey || $keyValue === null || $keyValue === 0) {
             $pkValue = $this->db->insert($this->getTableName(), $members);
             if ((empty($keyValue) || $noPrimaryKey) && !empty($pkValue)) {
-                $this->setKey($pkValue);
-                $this->updateChildModels();
+                try {
+                    $this->setKey($pkValue);
+                } catch (Exception) {
+                }
+                if ($updateChildModels) {
+                    $this->updateChildModels();
+                }
 
                 return true;
             }
-            $this->updateChildModels();
+            if ($updateChildModels) {
+                $this->updateChildModels();
+            }
 
             return false;
         }
@@ -595,7 +612,9 @@ abstract class DataModel implements DataModelInterface, Iterator
             }
         }
         $res = $this->db->update($this->getTableName(), $keyName, $keyValue, $members) >= 0;
-        $this->updateChildModels();
+        if ($updateChildModels) {
+            $this->updateChildModels();
+        }
 
         return $res;
     }
@@ -633,7 +652,7 @@ abstract class DataModel implements DataModelInterface, Iterator
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function delete(): bool
     {
@@ -663,7 +682,7 @@ abstract class DataModel implements DataModelInterface, Iterator
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function reload()
     {
@@ -679,21 +698,21 @@ abstract class DataModel implements DataModelInterface, Iterator
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getMapping($attribName): string
     {
-        static $nameMapping = [];
-        if (!isset($nameMapping[$attribName])) {
+        $tableName = $this->getTableName();
+        if (!isset(static::$nameMapping[$tableName][$attribName])) {
             foreach ($this->getAttributes() as $name => $attribute) {
                 if ($attribute->name === $attribName) {
-                    $nameMapping[$attribName] = $name;
+                    static::$nameMapping[$tableName][$attribName] = $name;
                     break;
                 }
             }
         }
 
-        return $nameMapping[$attribName] ?? $attribName;
+        return static::$nameMapping[$tableName][$attribName] ?? $attribName;
     }
 
     /**
@@ -702,17 +721,17 @@ abstract class DataModel implements DataModelInterface, Iterator
      */
     private function hasMapping(string $attribName): bool
     {
-        static $mapping = [];
-        if (!isset($mapping[$attribName])) {
+        $tableName = $this->getTableName();
+        if (!isset(static::$nameMapping[$tableName][$attribName])) {
             foreach ($this->getAttributes() as $name => $attribute) {
                 if ($attribute->name === $attribName) {
-                    $mapping[$attribName] = $name;
+                    static::$nameMapping[$tableName][$attribName] = $name;
                     break;
                 }
             }
         }
 
-        return isset($mapping[$attribName]);
+        return isset(static::$nameMapping[$tableName][$attribName]);
     }
 
     /**
@@ -725,7 +744,7 @@ abstract class DataModel implements DataModelInterface, Iterator
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getKey(): int
     {
@@ -733,7 +752,7 @@ abstract class DataModel implements DataModelInterface, Iterator
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setKey($value)
     {
@@ -743,50 +762,45 @@ abstract class DataModel implements DataModelInterface, Iterator
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getKeyName(bool $realName = false): string
     {
-        static $keyName = null;
-        if ($keyName === null) {
-            foreach ($this->getAttributes() as $attribute) {
-                if ($attribute->isPrimaryKey) {
-                    $keyName = $attribute->name;
-                    break;
-                }
+        $keyName = null;
+        foreach ($this->getAttributes() as $attribute) {
+            if ($attribute->isPrimaryKey) {
+                $keyName = $attribute->name;
+                break;
             }
         }
 
         if (!isset($keyName)) {
-            throw new Exception(__METHOD__ . ': no primary key exists', self::ERR_NO_PRIMARY_KEY);
+            throw new Exception(__METHOD__ . ': no primary key1 exists', self::ERR_NO_PRIMARY_KEY);
         }
 
         return $realName ? $keyName : $this->getMapping($keyName);
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getAllKeyNames(bool $realName = false): array
     {
-        static $keyNames = null;
-        if ($keyNames === null) {
-            foreach ($this->getAttributes() as $attribute) {
-                if ($attribute->isPrimaryKey) {
-                    $keyNames[] = $attribute->name;
-                }
+        $keyNames = [];
+        foreach ($this->getAttributes() as $attribute) {
+            if ($attribute->isPrimaryKey) {
+                $keyNames[] = $attribute->name;
             }
         }
-
-        if ($keyNames === null) {
-            throw new Exception(__METHOD__ . ': no primary key exists', self::ERR_NO_PRIMARY_KEY);
+        if (\count($keyNames) === 0) {
+            throw new Exception(__METHOD__ . ': no primary key', self::ERR_NO_PRIMARY_KEY);
         }
 
-        return $realName ? $keyNames : \array_map([$this, 'getMapping'], $keyNames);
+        return $realName ? $keyNames : \array_map($this->getMapping(...), $keyNames);
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getAttribValue($attribName, $default = null)
     {
@@ -806,7 +820,7 @@ abstract class DataModel implements DataModelInterface, Iterator
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setAttribValue($attribName, $value)
     {
@@ -833,7 +847,7 @@ abstract class DataModel implements DataModelInterface, Iterator
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function rawJSON(int $options = 0, bool $iterated = false)
     {
@@ -841,7 +855,7 @@ abstract class DataModel implements DataModelInterface, Iterator
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function rawArray(bool $iterated = false): array
     {
@@ -849,7 +863,7 @@ abstract class DataModel implements DataModelInterface, Iterator
         if ($iterated) {
             foreach ($this as $member => $value) {
                 if (\is_a($value, Collection::class)) {
-                    $value = $value->map(static function (DataModelInterface $e) {
+                    $value = $value->map(static function (DataModelInterface $e): array {
                         return $e->rawArray(true);
                     })->toArray();
                 } elseif ($value instanceof DataModelInterface) {
@@ -867,7 +881,7 @@ abstract class DataModel implements DataModelInterface, Iterator
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function rawObject(bool $iterated = false): stdClass
     {
@@ -887,7 +901,7 @@ abstract class DataModel implements DataModelInterface, Iterator
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getSqlObject(bool $noPrimary = false): stdClass
     {
@@ -912,7 +926,7 @@ abstract class DataModel implements DataModelInterface, Iterator
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function replicate(array $except = null)
     {
@@ -925,9 +939,8 @@ abstract class DataModel implements DataModelInterface, Iterator
                 }
             }
         }
-        $instance = static::newInstance($this->db);
 
-        return $instance->init((array)$members);
+        return static::newInstance($this->db)->init((array)$members);
     }
 
     /**
@@ -939,7 +952,7 @@ abstract class DataModel implements DataModelInterface, Iterator
             if (!\is_a($childModel, Collection::class)) {
                 continue;
             }
-            $childModel->each(function (DataModelInterface $model) {
+            $childModel->each(function (DataModelInterface $model): void {
                 $class = \get_class($model);
                 foreach ($this->getKeyUpdates($class) as $k => $v) {
                     $model->$k = $v;
@@ -978,7 +991,7 @@ abstract class DataModel implements DataModelInterface, Iterator
     {
         foreach ($this->getChildModels() as $childModel) {
             if (\is_a($childModel, Collection::class)) {
-                $childModel->each(function (DataModelInterface $model) {
+                $childModel->each(function (DataModelInterface $model): void {
                     $model->setDB($this->db);
                     $model->delete();
                 });

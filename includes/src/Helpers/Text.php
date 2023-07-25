@@ -1,11 +1,11 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Helpers;
 
 use Exception;
 
 /**
- * Class Strings
+ * Class Text
  * @package JTL\Helpers
  */
 class Text
@@ -13,7 +13,7 @@ class Text
     /**
      * @var array
      */
-    private static $mappings = [
+    private static array $mappings = [
         'aar' => 'aa', // Afar
         'abk' => 'ab', // Abkhazian
         'afr' => 'af', // Afrikaans
@@ -207,7 +207,7 @@ class Text
      */
     public static function startsWith(string $haystack, string $needle): bool
     {
-        return \mb_strpos($haystack, $needle) === 0;
+        return \str_starts_with($haystack, $needle);
     }
 
     /**
@@ -257,7 +257,7 @@ class Text
     public static function htmlentitiesSubstr(string $input, int $length): string
     {
         if ($length > 0 && \mb_strlen($input) > $length) {
-            $regex = '/(&#x?[0-9a-f]+;)|(&\w{2,8};)|(\e)/i';
+            $regex = '/(&#x?[\da-f]+;)|(&\w{2,8};)|(\e)/i';
             if (\preg_match_all($regex, $input, $hits)) {
                 // set escape-sequence as placeholder for html entities
                 $input = \preg_replace($regex, \chr(27), $input);
@@ -283,16 +283,16 @@ class Text
         }
         // replace numeric entities
         $input = \preg_replace_callback(
-            '~&#x([0-9a-fA-F]+);~i',
-            static function ($x) {
+            '~&#x([\da-fA-F]+);~i',
+            static function ($x): string {
                 return \mb_chr(\hexdec($x[1]));
             },
             $input
         );
 
         return self::htmlentitydecode(\preg_replace_callback(
-            '~&#([0-9]+);~',
-            static function ($x) {
+            '~&#(\d+);~',
+            static function ($x): string {
                 return \mb_chr((int)$x[1]);
             },
             $input
@@ -307,7 +307,7 @@ class Text
      */
     public static function htmlspecialchars(
         string $input,
-        int $flags = \ENT_COMPAT,
+        int    $flags = \ENT_COMPAT,
         string $enc = \JTL_CHARSET
     ): string {
         return \htmlspecialchars($input, $flags, $enc);
@@ -370,7 +370,7 @@ class Text
      * @param string $input
      * @return int
      */
-    public static function is_utf8(string $input)
+    public static function is_utf8(string $input): int
     {
         $res = \preg_match(
             '%^(?:[\x09\x0A\x0D\x20-\x7E]  # ASCII
@@ -385,8 +385,8 @@ class Text
             $input
         );
         if ($res === false) {
-            //some kind of pcre error happend - probably PREG_JIT_STACKLIMIT_ERROR.
-            //we could check this via preg_last_error()
+            // some kind of pcre error happend - probably PREG_JIT_STACKLIMIT_ERROR.
+            // we could check this via preg_last_error()
             $res = (int)(\mb_detect_encoding($input, 'UTF-8', true) === 'UTF-8');
         }
 
@@ -401,14 +401,14 @@ class Text
     {
         $convert = false;
         if (!self::is_utf8($data)) {
-            //with non-utf8 input this function would return an empty string
+            // with non-utf8 input this function would return an empty string
             $convert = true;
             $data    = self::convertUTF8($data);
         }
         // Fix &entity\n;
         $data = \str_replace(['&amp;', '&lt;', '&gt;'], ['&amp;amp;', '&amp;lt;', '&amp;gt;'], $data);
         $data = \preg_replace('/(&#*\w+)[\x00-\x20]+;/u', '$1;', $data);
-        $data = \preg_replace('/(&#x*[0-9A-F]+);*/iu', '$1;', $data);
+        $data = \preg_replace('/(&#x*[\dA-F]+);*/iu', '$1;', $data);
         $data = \html_entity_decode($data, \ENT_COMPAT, 'UTF-8');
         // Remove any attribute starting with "on" or xmlns
         $data = \preg_replace('#(<[^>]+?[\x00-\x20"\'])(?:on|xmlns)[^>]*+>#iu', '$1>', $data);
@@ -568,9 +568,9 @@ class Text
     public static function parseSSKint($ssk): array
     {
         return \is_string($ssk)
-            ? \array_map(static function ($e) {
+            ? \array_map(static function ($e): int {
                 return (int)\trim($e);
-            }, \array_filter(\explode(';', $ssk), static function ($e) {
+            }, \array_filter(\explode(';', $ssk), static function ($e): bool {
                 return $e !== '' && $e !== null;
             }))
             : [];
@@ -591,8 +591,13 @@ class Text
         if (\mb_detect_encoding($input) !== 'UTF-8' || !self::is_utf8($input)) {
             $input = self::convertUTF8($input);
         }
-        $input     = \idn_to_ascii($input, \IDNA_DEFAULT, \INTL_IDNA_VARIANT_UTS46);
-        $sanitized = \filter_var($input, \FILTER_SANITIZE_EMAIL);
+        $inputParts = \explode('@', $input);
+        if (\count($inputParts) !== 2) {
+            return false;
+        }
+        $inputParts[1] = \idn_to_ascii($inputParts[1], \IDNA_DEFAULT, \INTL_IDNA_VARIANT_UTS46);
+        $input         = \implode('@', $inputParts);
+        $sanitized     = \filter_var($input, \FILTER_SANITIZE_EMAIL);
 
         return $validate
             ? \filter_var($sanitized, \FILTER_VALIDATE_EMAIL)
@@ -609,7 +614,7 @@ class Text
      */
     public static function filterURL($input, bool $validate = true, bool $setHTTP = false)
     {
-        if (!\is_string($input)) {
+        if (!\is_string($input) || $input === '') {
             return false;
         }
         if (\mb_detect_encoding($input) !== 'UTF-8' || !self::is_utf8($input)) {
@@ -621,9 +626,8 @@ class Text
         }
         $hasScheme = isset($parsed['scheme']);
         $domain    = $parsed['host'] ?? $parsed['path'];
-
         $idnDomain = \idn_to_ascii($domain, \IDNA_DEFAULT, \INTL_IDNA_VARIANT_UTS46);
-        if ($idnDomain !== $domain) {
+        if ($idnDomain !== false && $idnDomain !== $domain) {
             $input = \str_replace($domain, $idnDomain, $input);
         }
         if ($setHTTP && $hasScheme === false) {
@@ -640,17 +644,13 @@ class Text
      * Build an URL string from a given associative array of parts according to PHP's \parse_url()
      *
      * @param array $parts
-     * @return string - the resulting URL
+     * @return string
+     * @deprecated since 5.1.1
      */
     public static function buildUrl(array $parts): string
     {
-        return (isset($parts['scheme']) ? $parts['scheme'] . '://' : '') .
-            (isset($parts['user']) ? $parts['user'] . (isset($parts['pass']) ? ':' . $parts['pass'] : '') . '@' : '') .
-            ($parts['host'] ?? '') .
-            (isset($parts['port']) ? ':' . $parts['port'] : '') .
-            ($parts['path'] ?? '') .
-            (isset($parts['query']) ? '?' . $parts['query'] : '') .
-            (isset($parts['fragment']) ? '#' . $parts['fragment'] : '');
+        \trigger_error(__METHOD__ . ' is deprecated. Use JTL\Helpers\URL::unparseURL() instead.', \E_USER_DEPRECATED);
+        return URL::unparseURL($parts);
     }
 
     /**
@@ -668,7 +668,7 @@ class Text
 
             return 0;
         }
-        if (!\preg_match('/^[0-9\-\(\)\/\+\s]{1,}$/', $number)) {
+        if (!\preg_match('/^[\d\-\(\)\/\+\s]+$/', $number)) {
             return 2;
         }
 
@@ -780,7 +780,7 @@ class Text
      */
     public static function removeNumerousWhitespaces(string $string): string
     {
-        while (\mb_strpos($string, '  ') !== false) {
+        while (\str_contains($string, '  ')) {
             $string = \str_replace('  ', ' ', $string);
         }
 
@@ -798,5 +798,47 @@ class Text
             ['Ae', 'Oe', 'Ue', 'ss', 'ae', 'oe', 'ue', 'ae'],
             $text
         );
+    }
+
+    /**
+     * @param string $bic
+     * @return bool
+     */
+    public static function checkBIC(string $bic): bool
+    {
+        return \preg_match('/^[A-Z]{6}[A-Z\d]{2}([A-Z\d]{3})?$/i', $bic) === 1;
+    }
+
+    /**
+     * @param string $iban
+     * @return array|bool|string|string[]
+     */
+    public static function checkIBAN(string $iban)
+    {
+        if ($iban === '' || \mb_strlen($iban) < 6) {
+            return false;
+        }
+        $iban  = \str_replace(' ', '', $iban);
+        $iban1 = \mb_substr($iban, 4)
+            . (string)(\mb_ord($iban[0]) - 55)
+            . (string)(\mb_ord($iban[1]) - 55)
+            . \mb_substr($iban, 2, 2);
+        $len   = \mb_strlen($iban1);
+        for ($i = 0; $i < $len; $i++) {
+            if (\mb_ord($iban1[$i]) > 64 && \mb_ord($iban1[$i]) < 91) {
+                $iban1 = \mb_substr($iban1, 0, $i) . (string)(\mb_ord($iban1[$i]) - 55) . \mb_substr($iban1, $i + 1);
+            }
+        }
+
+        $rest = 0;
+        $len  = \mb_strlen($iban1);
+        for ($pos = 0; $pos < $len; $pos += 7) {
+            $part = (string)$rest . \mb_substr($iban1, $pos, 7);
+            $rest = (int)$part % 97;
+        }
+
+        return \mb_substr($iban, 2, 2) === '00'
+            ? \substr_replace($iban, \sprintf('%02d', 98 - $rest), 2, 2)
+            : $rest === 1;
     }
 }

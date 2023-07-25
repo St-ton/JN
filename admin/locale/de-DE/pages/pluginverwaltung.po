@@ -164,14 +164,14 @@ msgstr "Ein Plugin konnte nicht aktualisiert werden. Bitte installieren Sie das 
 msgid "successPluginUpdate"
 msgstr "Plugin wurde erfolgreich aktualisiert."
 
-msgid "errorPluginUpdate"
-msgstr "Aktualisierung konnte nicht durchgeführt werden. Fehlercode: "
+msgid "Could not perform update. Error code %d - %s"
+msgstr "Aktualisierung konnte nicht durchgeführt werden. Fehlercode %d - %s"
 
 msgid "successPluginInstall"
 msgstr "Ausgewählte Plugins wurden erfolgreich installiert."
 
-msgid "errorPluginInstall"
-msgstr "Bei der Installation ist ein Fehler aufgetreten. Fehlercode: "
+msgid "Error during the installation. Error code %d - %s"
+msgstr "Bei der Installation ist ein Fehler aufgetreten. Fehlercode %d - %s"
 
 msgid "successVariableRestore"
 msgstr "Sie haben den Installationszustand der ausgewählten Variable erfolgreich wiederhergestellt."
@@ -772,6 +772,9 @@ msgstr "Invalider consent vendor Firma."
 
 msgid "INVALID_LINK_IDENTIFIER"
 msgstr "Ungültiger Link Identifier."
+
+msgid "INVALID_MIGRATION"
+msgstr "Ungültige Migration."
 
 msgid "Deaktiviert"
 msgstr "Deaktiviert"

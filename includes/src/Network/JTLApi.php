@@ -3,11 +3,12 @@
 namespace JTL\Network;
 
 use Exception;
+use JTL\Cache\JTLCacheInterface;
 use JTL\Helpers\Request;
 use JTL\Nice;
 use JTLShop\SemVer\Version;
 use stdClass;
-use function Functional\first;
+use function Functional\last;
 
 /**
  * Class JTLApi
@@ -20,25 +21,12 @@ final class JTLApi
     public const URI_VERSION = 'https://api.jtl-shop.de';
 
     /**
-     * @var array
-     */
-    private $session;
-
-    /**
-     * @var Nice
-     */
-    private $nice;
-
-    /**
      * JTLApi constructor.
-     *
-     * @param array $session
-     * @param Nice  $nice
+     * @param Nice              $nice
+     * @param JTLCacheInterface $cache
      */
-    public function __construct(array &$session, Nice $nice)
+    public function __construct(private readonly Nice $nice, private readonly JTLCacheInterface $cache)
     {
-        $this->session = &$session;
-        $this->nice    = $nice;
     }
 
     /**
@@ -46,31 +34,51 @@ final class JTLApi
      */
     public function getSubscription(): ?stdClass
     {
-        if (!isset($this->session['rs']['subscription'])) {
-            $uri          = self::URI . '/check/subscription';
-            $subscription = $this->call($uri, [
-                'key'    => $this->nice->getAPIKey(),
-                'domain' => $this->nice->getDomain(),
-            ]);
-
-            $this->session['rs']['subscription'] = (isset($subscription->kShop) && $subscription->kShop > 0)
-                ? $subscription
-                : null;
+        $cacheID = 'rs_subscriptions';
+        $cached  = $this->cache->get($cacheID);
+        if ($cached !== false) {
+            return $cached;
         }
+        $uri          = self::URI . '/check/subscription';
+        $subscription = $this->call($uri, [
+            'key'    => $this->nice->getAPIKey(),
+            'domain' => $this->nice->getDomain(),
+        ]);
+        if (!\is_object($subscription)) {
+            return null;
+        }
+        $data = (isset($subscription->kShop) && $subscription->kShop > 0)
+            ? $subscription
+            : null;
+        $this->cache->set($cacheID, $data, [\CACHING_GROUP_CORE], 60 * 60);
 
-        return $this->session['rs']['subscription'];
+        return $subscription;
     }
 
     /**
+     * @param bool $includingDev
+     *
      * @return array|null
      */
-    public function getAvailableVersions()
+    public function getAvailableVersions(bool $includingDev = false): ?array
     {
-        if (!isset($this->session['rs']['versions'])) {
-            $this->session['rs']['versions'] = $this->call(self::URI_VERSION . '/versions');
+        $cacheID = 'rs_versions';
+        $cached  = $this->cache->get($cacheID);
+        if ($cached !== false) {
+            return $cached;
         }
+        $url = self::URI_VERSION . '/versions';
+        if ($includingDev === true) {
+            $url .= '-dev';
+        }
+        $versions = $this->call($url);
+        if (!\is_object($versions)) {
+            return null;
+        }
+        $data = (array)$versions;
+        $this->cache->set($cacheID, $data, [\CACHING_GROUP_CORE], 60 * 60);
 
-        return $this->session['rs']['versions'];
+        return $data;
     }
 
     /**
@@ -81,14 +89,17 @@ final class JTLApi
     {
         $shopVersion       = \APPLICATION_VERSION;
         $parsedShopVersion = Version::parse($shopVersion);
-        $oVersions         = $this->getAvailableVersions();
-
-        $oNewerVersions = \array_filter((array)$oVersions, static function ($v) use ($parsedShopVersion) {
+        $availableVersions = $this->getAvailableVersions();
+        $newerVersions     = \array_filter((array)$availableVersions, static function ($v) use ($parsedShopVersion) {
+            try {
                 return Version::parse($v->reference)->greaterThan($parsedShopVersion);
+            } catch (Exception) {
+                return false;
+            }
         });
-        $oVersion       = \count($oNewerVersions) > 0 ? first($oNewerVersions) : \end($oVersions);
+        $version           = \count($newerVersions) > 0 ? last($newerVersions) : \end($availableVersions);
 
-        return Version::parse($oVersion->reference);
+        return Version::parse($version->reference);
     }
 
     /**
@@ -100,7 +111,7 @@ final class JTLApi
             return \APPLICATION_BUILD_SHA === '#DEV#'
                 ? false
                 : $this->getLatestVersion()->greaterThan(Version::parse(\APPLICATION_VERSION));
-        } catch (Exception $e) {
+        } catch (Exception) {
             return false;
         }
     }

@@ -16,25 +16,20 @@ class CacheNull implements ICachingMethod
     use JTLCacheTrait;
 
     /**
-     * @var CacheNull|null
-     */
-    public static $instance;
-
-    /**
      * @param array $options
      */
-    public function __construct($options)
+    public function __construct(array $options)
     {
-        $this->isInitialized = true;
-        $this->options       = $options;
-        $this->journalID     = 'null_journal';
-        self::$instance      = $this;
+        $this->setIsInitialized(true);
+        $this->setJournalID('null_journal');
+        $this->setOptions($options);
+        self::$instance = $this;
     }
 
     /**
      * @inheritdoc
      */
-    public function store($cacheID, $content, $expiration = null): bool
+    public function store($cacheID, $content, int $expiration = null): bool
     {
         return false;
     }
@@ -42,7 +37,7 @@ class CacheNull implements ICachingMethod
     /**
      * @inheritdoc
      */
-    public function storeMulti($idContent, $expiration = null): bool
+    public function storeMulti(array $idContent, int $expiration = null): bool
     {
         return false;
     }
@@ -85,6 +80,14 @@ class CacheNull implements ICachingMethod
     public function flushAll(): bool
     {
         return false;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function flushTags($tags): int
+    {
+        return 0;
     }
 
     /**

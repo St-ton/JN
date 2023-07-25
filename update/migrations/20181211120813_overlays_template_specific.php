@@ -15,10 +15,10 @@ use JTL\Update\Migration;
 class Migration_20181211120813 extends Migration implements IMigration
 {
     protected $author      = 'mh';
-    protected $description = 'make overlays template specific';
+    protected $description = 'Make overlays template specific';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -30,7 +30,7 @@ class Migration_20181211120813 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

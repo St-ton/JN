@@ -14,14 +14,14 @@ use stdClass;
 abstract class AbstractItem implements ItemInterface
 {
     /**
-     * @var DbInterface
+     * @var DbInterface|null
      */
-    protected $db;
+    protected ?DbInterface $db;
 
     /**
-     * @var stdClass
+     * @var stdClass|null
      */
-    protected $plugin;
+    protected ?stdClass $plugin;
 
     /**
      * @var stdClass|LegacyPlugin|null
@@ -29,9 +29,9 @@ abstract class AbstractItem implements ItemInterface
     protected $oldPlugin;
 
     /**
-     * @var array
+     * @var array|null
      */
-    protected $baseNode;
+    protected ?array $baseNode;
 
     /**
      * @inheritdoc
@@ -52,7 +52,7 @@ abstract class AbstractItem implements ItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getDB(): DbInterface
     {
@@ -60,7 +60,7 @@ abstract class AbstractItem implements ItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setDB(DbInterface $db): void
     {
@@ -68,7 +68,7 @@ abstract class AbstractItem implements ItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getPlugin(): stdClass
     {
@@ -76,7 +76,7 @@ abstract class AbstractItem implements ItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setPlugin(stdClass $plugin): void
     {
@@ -84,7 +84,7 @@ abstract class AbstractItem implements ItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getOldPlugin(): ?PluginInterface
     {
@@ -92,7 +92,7 @@ abstract class AbstractItem implements ItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setOldPlugin($plugin): void
     {
@@ -100,7 +100,7 @@ abstract class AbstractItem implements ItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getBaseNode(): array
     {
@@ -108,7 +108,7 @@ abstract class AbstractItem implements ItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setBaseNode(array $baseNode): void
     {

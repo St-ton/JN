@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Session\Handler;
 
@@ -14,51 +14,38 @@ class DB extends JTLDefault
     /**
      * @var int
      */
-    protected $lifeTime;
-
-    /**
-     * @var DbInterface
-     */
-    protected $db;
-
-    /**
-     * @var string
-     */
-    protected $tableName;
+    protected int $lifeTime;
 
     /**
      * SessionHandlerDB constructor.
      * @param DbInterface $db
      * @param string      $tableName
      */
-    public function __construct(DbInterface $db, string $tableName = 'tsession')
+    public function __construct(protected DbInterface $db, protected string $tableName = 'tsession')
     {
-        $this->db        = $db;
-        $this->tableName = $tableName;
+        $this->lifeTime = (int)\get_cfg_var('session.gc_maxlifetime');
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
-    public function open($path, $name)
+    public function open($path, $name): bool
     {
-        $this->lifeTime = (int)\get_cfg_var('session.gc_maxlifetime');
-
         return $this->db->isConnected();
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
-    public function close()
+    public function close(): bool
     {
         return true;
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
-    public function read($id)
+    public function read($id): string|false
     {
         $res = $this->db->getSingleObject(
             'SELECT cSessionData FROM ' . $this->tableName . '
@@ -74,9 +61,9 @@ class DB extends JTLDefault
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
-    public function write($id, $data)
+    public function write($id, $data): bool
     {
         // set new session expiration
         $newExp = \time() + $this->lifeTime;
@@ -106,21 +93,21 @@ class DB extends JTLDefault
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
-    public function destroy($sessID)
+    public function destroy($id): bool
     {
         // if session was deleted, return true,
-        return $this->db->delete($this->tableName, 'cSessionId', $sessID) > 0;
+        return $this->db->delete($this->tableName, 'cSessionId', $id) > 0;
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
-    public function gc($max_lifetime)
+    public function gc($max_lifetime): int|false
     {
         return $this->db->getAffectedRows(
             'DELETE FROM ' . $this->tableName . ' WHERE nSessionExpires < ' . \time()
-        ) > 0;
+        );
     }
 }

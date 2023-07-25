@@ -17,7 +17,7 @@ use Symfony\Component\Finder\Finder;
 class FilesCommand extends Command
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function configure(): void
     {
@@ -32,9 +32,9 @@ class FilesCommand extends Command
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io       = $this->getIO();
         $fs       = Shop::Container()->get(LocalFilesystem::class);
@@ -64,6 +64,6 @@ class FilesCommand extends Command
             ->newLine()
             ->success('Archive "' . $archive . '" created.');
 
-        return 0;
+        return Command::SUCCESS;
     }
 }

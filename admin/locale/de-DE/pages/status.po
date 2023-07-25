@@ -58,3 +58,6 @@ msgstr "Alle Voraussetzungen wurden erfüllt."
 
 msgid "extensions"
 msgstr "Erweiterungen"
+
+msgid "Localizations"
+msgstr "Lokalisierungen"

@@ -31,15 +31,15 @@
                                 {foreach $oBox->getItems() as $wishlistItem}
                                         {if $wishlistItem@iteration > $maxItems}{break}{/if}
                                     <tr>
-                                        <td class="w-100-util" data-id={$wishlistItem->kArtikel}>
+                                        <td class="w-100-util" data-id={$wishlistItem->getProductID()}>
                                             {block name='boxes-box-wishlist-dropdown-products-image-title'}
                                                 {formrow class="align-items-center-util"}
                                                     {if $oBox->getShowImages()}
                                                         {col class="col-auto"}
                                                             {block name='boxes-box-wishlist-dropdown-products-image'}
-                                                                {link href=$wishlistItem->Artikel->cURLFull title=$wishlistItem->cArtikelName|escape:'quotes'}
+                                                                {link href=$wishlistItem->Artikel->cURLFull title=$wishlistItem->getProductName()|escape:'quotes'}
                                                                     {include file='snippets/image.tpl'
-                                                                        item=$wishlistItem->Artikel
+                                                                        item=$wishlistItem->getProduct()
                                                                         square=false
                                                                         srcSize='xs'
                                                                         sizes='24px'}
@@ -49,8 +49,8 @@
                                                     {/if}
                                                     {col}
                                                         {block name='boxes-box-wishlist-dropdown-products-title'}
-                                                            {link href=$wishlistItem->Artikel->cURLFull title=$wishlistItem->cArtikelName|escape:'quotes'}
-                                                                {$wishlistItem->fAnzahl|replace_delim} &times; {$wishlistItem->cArtikelName|truncate:40:'...'}
+                                                            {link href=$wishlistItem->getProduct()->cURLFull title=$wishlistItem->getProductName()|escape:'quotes'}
+                                                                {$wishlistItem->getQty()|replace_delim} &times; {$wishlistItem->getProductName()|truncate:40:'...'}
                                                             {/link}
                                                         {/block}
                                                     {/col}
@@ -60,11 +60,12 @@
                                         <td class="box-delete-button">
                                             {block name='snippets-wishlist-dropdown-products-remove'}
                                                 {link class="remove"
-                                                    href=$wishlistItem->cURL
+                                                    href=$wishlistItem->getURL()
                                                     data=["name"=>"Wunschliste.remove",
                                                     "toggle"=>"product-actions",
-                                                    "value"=>['a'=>$wishlistItem->kWunschlistePos]|json_encode|escape:'html'
+                                                    "value"=>json_encode(['a'=>$wishlistItem->getID()])|escape:'html'
                                                     ]
+                                                    title="{lang section='login' key='wishlistremoveItem'}"
                                                     aria=["label"=>"{lang section='login' key='wishlistremoveItem'}"]}
                                                     <span class="fas fa-times"></span>
                                                 {/link}

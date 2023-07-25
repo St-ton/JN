@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Cron\Starter;
 
@@ -11,7 +11,7 @@ interface StarterInterface
     /**
      * @return bool
      */
-    public function start() : bool;
+    public function start(): bool;
 
     /**
      * @return int

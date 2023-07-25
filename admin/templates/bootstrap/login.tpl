@@ -13,8 +13,9 @@
             <div id="login_outer" class="card">
                 <div class="card-body">
                     <p class="text-center mb-4">
-                        <a href="index.php">
+                        <a href="{$adminURL}/">
                             <img class="brand-logo" width="120" height="38" src="{$templateBaseURL}gfx/JTL-Shop-Logo-rgb.png" alt="JTL-Shop">
+                            <img class="brand-logo brand-logo-white" width="120" height="38" src="{$templateBaseURL}gfx/JTL-Shop-Logo-rgb-white.png" alt="JTL-Shop">
                         </a>
                     </p>
                     {if $alertError}
@@ -30,7 +31,7 @@
                         <div class="alert alert-success" role="alert"><i class="fal fa-info-circle"></i> {__('successPasswordChange')}</div>
                     {/if}
 
-                    <form method="post" action="index.php" class="form-horizontal" role="form">
+                    <form method="post" action="{$adminURL}/" class="form-horizontal" role="form">
                         {$jtl_token}
                         <input id="benutzer" type="hidden" name="adminlogin" value="1" />
                         {if isset($uri) && $uri|strlen > 0}
@@ -82,12 +83,11 @@
                                         }, 1000);
 
                                     });
-
+                            {/literal}
                                     function switchUser() {
-                                        window.location.href = 'logout.php?token=' + $("[name$=jtl_token]").val();
+                                        window.location.href = '{$adminURL}/logout?token=' + $("[name$=jtl_token]").val();
                                     }
                                 </script>
-                            {/literal}
                         {else}
                             <div class="input-group">
                                 <div class="input-group-prepend"><span class="input-group-text"><i class="fa fa-user"></i></span></div>
@@ -118,7 +118,7 @@
                 </div>
             </div>
             <p class="forgot-pw-wrap text-center">
-                <small><a href="pass.php" title="{__('forgotPassword')}"><i class="fa fa-lock"></i> {__('forgotPassword')}</a></small>
+                <small><a href="{$adminURL}/pass" title="{__('forgotPassword')}"><i class="fa fa-lock"></i> {__('forgotPassword')}</a></small>
             </p>
         </div>
     </div>

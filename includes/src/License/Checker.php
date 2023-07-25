@@ -22,31 +22,16 @@ use Psr\Log\LoggerInterface;
 class Checker
 {
     /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private $cache;
-
-    /**
      * Checker constructor.
      * @param LoggerInterface   $logger
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */
-    public function __construct(LoggerInterface $logger, DbInterface $db, JTLCacheInterface $cache)
-    {
-        $this->logger = $logger;
-        $this->db     = $db;
-        $this->cache  = $cache;
+    public function __construct(
+        private readonly LoggerInterface   $logger,
+        private readonly DbInterface       $db,
+        private readonly JTLCacheInterface $cache
+    ) {
     }
 
     /**
@@ -63,8 +48,7 @@ class Checker
      */
     public function handleExpiredLicenses(Manager $manager): void
     {
-        $mapper     = new Mapper($manager);
-        $collection = $mapper->getCollection();
+        $collection = (new Mapper($manager))->getCollection();
         $this->notifyPlugins($collection);
         $this->notifyTemplates($collection);
         $this->handleExpiredPluginTestLicenses($collection);
@@ -76,7 +60,13 @@ class Checker
      */
     public function getLicenseViolations(Mapper $mapper): Collection
     {
-        return $this->getPluginsWithoutLicense($mapper->getCollection()->getLicenseViolations());
+        $collection = $this->getPluginsWithoutLicense($mapper->getCollection()->getLicenseViolations());
+        $tplLicense = $this->getTemplatesWithoutLicense();
+        if ($tplLicense !== null && \is_a($tplLicense, ExpiredExsLicense::class)) {
+            $collection->add($tplLicense);
+        }
+
+        return $collection;
     }
 
     /**
@@ -99,6 +89,14 @@ class Checker
     }
 
     /**
+     * @return ExsLicense|null
+     */
+    private function getTemplatesWithoutLicense(): ?ExsLicense
+    {
+        return Shop::Container()->getTemplateService()->getActiveTemplate()->getExsLicense();
+    }
+
+    /**
      * @param Collection $collection
      */
     private function notifyTemplates(Collection $collection): void
@@ -107,9 +105,7 @@ class Checker
             /** @var ExsLicense $license */
             $this->logger->info(\sprintf('License for template %s is expired.', $license->getID()));
             $bootstrapper = BootChecker::bootstrap($license->getID());
-            if ($bootstrapper !== null) {
-                $bootstrapper->licenseExpired($license);
-            }
+            $bootstrapper?->licenseExpired($license);
         }
     }
 
@@ -123,7 +119,7 @@ class Checker
         foreach ($collection->getPlugins()->getDedupedActiveExpired() as $license) {
             /** @var ExsLicense $license */
             $this->logger->info(\sprintf('License for plugin %s is expired.', $license->getID()));
-            if (($p = PluginHelper::bootstrap($license->getReferencedItem()->getInternalID(), $loader)) !== null) {
+            if (($p = PluginHelper::bootstrap($license->getReferencedItem()?->getInternalID(), $loader)) !== null) {
                 $p->boot($dispatcher);
                 $p->licenseExpired($license);
             }
@@ -135,7 +131,7 @@ class Checker
      */
     private function handleExpiredPluginTestLicenses(Collection $collection): void
     {
-        $expired = $collection->getDedupedExpiredBoundTests()->filter(static function (ExsLicense $e) {
+        $expired = $collection->getDedupedExpiredBoundTests()->filter(static function (ExsLicense $e): bool {
             return $e->getType() === ExsLicense::TYPE_PLUGIN;
         });
         if ($expired->count() === 0) {
@@ -148,7 +144,7 @@ class Checker
             if ($ref === null || $ref->getInternalID() === 0 || $ref->isActive() === false) {
                 continue;
             }
-            $this->logger->warning(\sprintf('Plugin %s disabled due to expired test license.', $license->getID()));
+            $this->logger->warning('Plugin {id} disabled due to expired test license.', ['id' => $license->getID()]);
             $stateChanger->deactivate($ref->getInternalID(), State::LICENSE_KEY_INVALID);
         }
     }

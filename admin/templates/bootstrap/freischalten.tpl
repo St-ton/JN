@@ -5,10 +5,10 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-sm-6 col-xl-auto mb-sm-0 mb-3">
-                    {include file='tpl_inc/language_switcher.tpl' id='formSprachwechselSelect' action='freischalten.php"'}
+                    {include file='tpl_inc/language_switcher.tpl' id='formSprachwechselSelect' action=$adminURL|cat:$route}
                 </div>
                 <div class="ml-auto col-sm-6 col-xl-auto">
-                    <form name="suche" method="post" action="freischalten.php">
+                    <form name="suche" method="post" action="{$adminURL}{$route}">
                         <div class="row">
                             {$jtl_token}
                             <div class="col-sm-6 col-xl-auto mb-sm-0 mb-3">
@@ -70,9 +70,9 @@
         </nav>
         <div class="tab-content">
             <div id="bewertungen" class="tab-pane fade {if $cTab === '' || $cTab === 'bewertungen'} active show{/if}">
-                {if $ratings|@count > 0}
+                {if count($ratings) > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiBewertungen cAnchor='bewertungen'}
-                    <form method="post" action="freischalten.php">
+                    <form method="post" action="{$adminURL}{$route}">
                         {$jtl_token}
                         <input type="hidden" name="freischalten" value="1" />
                         <input type="hidden" name="bewertungen" value="1" />
@@ -103,16 +103,15 @@
                                                 <input type="hidden" name="kArtikel[]" value="{$rating->kArtikel}" />
                                                 <input type="hidden" name="kBewertungAll[]" value="{$rating->kBewertung}" />
                                             </td>
-                                            <td><a href="{$shopURL}/index.php?a={$rating->kArtikel}" target="_blank">{$rating->ArtikelName}</a></td>
+                                            <td><a href="{$shopURL}/?a={$rating->kArtikel}" target="_blank">{$rating->ArtikelName}</a></td>
                                             <td>{$rating->cName}.</td>
                                             <td class="text-center">{$rating->nSterne}</td>
                                             <td class="text-center">{$rating->Datum}</td>
                                             <td class="text-center">
                                                 <div class="btn-group">
                                                     <a class="btn btn-link px-2" title="{__('modify')}"
-                                                       href="bewertung.php?a=editieren&kBewertung={$rating->kBewertung}&nFZ=1&token={$smarty.session.jtl_token}"
-                                                       data-toggle="tooltip"
-                                                    >
+                                                       href="{$adminURL}/reviews?a=editieren&kBewertung={$rating->kBewertung}&nFZ=1&token={$smarty.session.jtl_token}"
+                                                       data-toggle="tooltip">
                                                         <span class="icon-hover">
                                                             <span class="fal fa-edit"></span>
                                                             <span class="fas fa-edit"></span>
@@ -160,10 +159,10 @@
                 {/if}
             </div>
             <div id="livesearch" class="tab-pane fade {if $cTab === 'livesearch'} active show{/if}">
-                {if $searchQueries|@count > 0}
+                {if count($searchQueries) > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiSuchanfragen cAnchor='livesearch'}
                     <div>
-                        <form method="post" action="freischalten.php">
+                        <form method="post" action="{$adminURL}{$route}">
                             {$jtl_token}
                             <input type="hidden" name="freischalten" value="1" />
                             <input type="hidden" name="suchanfragen" value="1" />
@@ -181,9 +180,9 @@
                                     <thead>
                                     <tr>
                                         <th class="check">&nbsp;</th>
-                                        <th class="text-left">(<a href="freischalten.php?tab=livesearch&{$cSuchStr}nSort=1{if !isset($nSort) || $nSort != 11}1{/if}&token={$smarty.session.jtl_token}" style="text-decoration: underline;">{if !isset($nSort) || $nSort != 11}Z...A{else}A...Z{/if}</a>) {__('freischaltenLivesearchSearch')}</th>
-                                        <th class="text-center">(<a href="freischalten.php?tab=livesearch&{$cSuchStr}nSort=2{if !isset($nSort) || $nSort != 22}2{/if}&token={$smarty.session.jtl_token}" style="text-decoration: underline;">{if !isset($nSort) || $nSort != 22}1...9{else}9...1{/if}</a>) {__('freischaltenLivesearchCount')}</th>
-                                        <th class="text-center">(<a href="freischalten.php?tab=livesearch&{$cSuchStr}nSort=3{if !isset($nSort) || $nSort != 33}3{/if}&token={$smarty.session.jtl_token}" style="text-decoration: underline;">{if !isset($nSort) || $nSort != 33}0...1{else}1...0{/if}</a>) {__('freischaltenLivesearchHits')}</th>
+                                        <th class="text-left">(<a href="{$adminURL}{$route}p?tab=livesearch&{$cSuchStr}nSort=1{if !isset($nSort) || $nSort != 11}1{/if}&token={$smarty.session.jtl_token}" style="text-decoration: underline;">{if !isset($nSort) || $nSort != 11}Z...A{else}A...Z{/if}</a>) {__('freischaltenLivesearchSearch')}</th>
+                                        <th class="text-center">(<a href="{$adminURL}{$route}?tab=livesearch&{$cSuchStr}nSort=2{if !isset($nSort) || $nSort != 22}2{/if}&token={$smarty.session.jtl_token}" style="text-decoration: underline;">{if !isset($nSort) || $nSort != 22}1...9{else}9...1{/if}</a>) {__('freischaltenLivesearchCount')}</th>
+                                        <th class="text-center">(<a href="{$adminURL}{$route}?tab=livesearch&{$cSuchStr}nSort=3{if !isset($nSort) || $nSort != 33}3{/if}&token={$smarty.session.jtl_token}" style="text-decoration: underline;">{if !isset($nSort) || $nSort != 33}0...1{else}1...0{/if}</a>) {__('freischaltenLivesearchHits')}</th>
                                         <th class="text-center">{__('freischaltenLiveseachDate')}</th>
                                     </tr>
                                     </thead>
@@ -244,10 +243,10 @@
                 {/if}
             </div>
             <div id="newscomments" class="tab-pane fade {if $cTab === 'newscomments'} active show{/if}">
-                {if $comments|@count > 0 && $comments}
+                {if count($comments) > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiNewskommentare cAnchor='newscomments'}
                     <div>
-                        <form method="post" action="freischalten.php">
+                        <form method="post" action="{$adminURL}{$route}">
                             {$jtl_token}
                             <input type="hidden" name="freischalten" value="1" />
                             <input type="hidden" name="newskommentare" value="1" />
@@ -279,6 +278,7 @@
                                                         {else}
                                                             {$comment->cName}
                                                         {/if}
+                                                        ({$comment->cEmail})
                                                     </label>
                                                 </td>
                                                 <td>{$comment->cBetreff|truncate:50:'...'}</td>
@@ -286,9 +286,8 @@
                                                 <td class="text-center">
                                                     <div class="btn-group">
                                                         <a class="btn btn-link px-2" title="{__('modify')}"
-                                                           href="news.php?news=1&kNews={$comment->kNews}&kNewsKommentar={$comment->kNewsKommentar}&nkedit=1&nFZ=1&token={$smarty.session.jtl_token}"
-                                                           data-toggle="tooltip"
-                                                        >
+                                                           href="{$adminURL}/news?news=1&kNews={$comment->kNews}&kNewsKommentar={$comment->kNewsKommentar}&nkedit=1&nFZ=1&token={$smarty.session.jtl_token}"
+                                                           data-toggle="tooltip">
                                                             <span class="icon-hover">
                                                                 <span class="fal fa-edit"></span>
                                                                 <span class="fas fa-edit"></span>
@@ -329,10 +328,10 @@
                 {/if}
             </div>
             <div id="newsletter" class="tab-pane fade {if $cTab === 'newsletter'} active show{/if}">
-                {if $recipients|@count > 0}
+                {if count($recipients) > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiNewsletterEmpfaenger cAnchor='newsletter'}
                     <div>
-                        <form method="post" action="freischalten.php">
+                        <form method="post" action="{$adminURL}{$route}">
                             {$jtl_token}
                             <input type="hidden" name="freischalten" value="1" />
                             <input type="hidden" name="newsletterempfaenger" value="1" />
@@ -348,7 +347,7 @@
                                             <th class="text-left">{__('email')}</th>
                                             <th class="text-left">{__('firstName')}</th>
                                             <th class="text-left">{__('lastName')}</th>
-                                            <th class="text-center">(<a href="freischalten.php?tab=newsletter&{$cSuchStr}nSort=4{if !isset($nSort) || $nSort != 44}4{/if}&token={$smarty.session.jtl_token}">{if !isset($nSort) || $nSort != 44}{__('old')}...{__('new')}{elseif isset($nSort) && $nSort == 44}{__('new')}...{__('old')}{/if}</a>) {__('date')}</th>
+                                            <th class="text-center">(<a href="{$adminURL}{$route}?tab=newsletter&{$cSuchStr}nSort=4{if !isset($nSort) || $nSort != 44}4{/if}&token={$smarty.session.jtl_token}">{if !isset($nSort) || $nSort != 44}{__('old')}...{__('new')}{elseif isset($nSort) && $nSort == 44}{__('new')}...{__('old')}{/if}</a>) {__('date')}</th>
                                         </tr>
                                     </thead>
                                     <tbody>

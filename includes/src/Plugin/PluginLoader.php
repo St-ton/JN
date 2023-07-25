@@ -87,7 +87,7 @@ class PluginLoader extends AbstractLoader
         $hm = HookManager::getInstance();
         $id = (int)$obj->kPlugin;
         $hm->lock($id);
-        $paths   = $this->loadPaths($obj->cVerzeichnis);
+        $paths   = $this->loadPaths($obj->cVerzeichnis, $id);
         $plugin  = new Plugin();
         $getText = Shop::Container()->getGetText();
         $getText->setLanguage();

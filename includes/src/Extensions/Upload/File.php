@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Extensions\Upload;
 
@@ -13,39 +13,44 @@ use stdClass;
 class File
 {
     /**
-     * @var int
+     * @var int|null
      */
-    public $kUpload;
+    public ?int $kUpload = null;
 
     /**
      * @var int
      */
-    public $kCustomID;
+    public int $kCustomID = 0;
 
     /**
      * @var int
      */
-    public $nTyp;
+    public int $nTyp = 0;
 
     /**
-     * @var string
+     * @var int
      */
-    public $cName;
+    public int $nBytes = 0;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cPfad;
+    public ?string $cName = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $dErstellt;
+    public ?string $cPfad = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $dErstellt = null;
 
     /**
      * @var bool
      */
-    private $licenseOK;
+    private bool $licenseOK;
 
     /**
      * File constructor.
@@ -74,8 +79,14 @@ class File
     public function loadFromDB(int $id): bool
     {
         $upload = Shop::Container()->getDB()->select('tuploaddatei', 'kUpload', $id);
-        if ($this->licenseOK && isset($upload->kUpload) && (int)$upload->kUpload > 0) {
-            self::copyMembers($upload, $this);
+        if ($this->licenseOK && $upload !== null && $upload->kUpload > 0) {
+            $this->kUpload   = (int)$upload->kUpload;
+            $this->kCustomID = (int)$upload->kCustomID;
+            $this->nTyp      = (int)$upload->nTyp;
+            $this->nBytes    = (int)$upload->nBytes;
+            $this->cName     = $upload->cName;
+            $this->cPfad     = $upload->cPfad;
+            $this->dErstellt = $upload->dErstellt;
 
             return true;
         }
@@ -100,39 +111,9 @@ class File
     }
 
     /**
-     * @return int
-     * @deprecated since 5.0.0
-     */
-    public function save(): int
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return 0;
-    }
-
-    /**
-     * @return int
-     * @deprecated since 5.0.0
-     */
-    public function update(): int
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return 0;
-    }
-
-    /**
-     * @return int
-     * @deprecated since 5.0.0
-     */
-    public function delete(): int
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return 0;
-    }
-
-    /**
      * @param int $customID
      * @param int $type
-     * @return array
+     * @return stdClass[]
      */
     public static function fetchAll(int $customID, int $type): array
     {
@@ -147,7 +128,10 @@ class File
         $baseURL = Shop::getURL();
         $crypto  = Shop::Container()->getCryptoService();
         foreach ($files as &$upload) {
-            $upload             = self::copyMembers($upload);
+            $upload = self::copyMembers($upload);
+            if ($upload === null) {
+                continue;
+            }
             $upload->cGroesse   = Upload::formatGroesse($upload->nBytes);
             $upload->bVorhanden = \is_file(\PFAD_UPLOADS . $upload->cPfad);
             $upload->bVorschau  = Upload::vorschauTyp($upload->cName);
@@ -193,9 +177,9 @@ class File
     {
         $browser   = 'other';
         $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? '';
-        if (\preg_match('/Opera\/([0-9].[0-9]{1,2})/', $userAgent, $log_version)) {
+        if (\preg_match('/Opera\/(\d.\d{1,2})/', $userAgent, $log_version)) {
             $browser = 'opera';
-        } elseif (\preg_match('/MSIE ([0-9].[0-9]{1,2})/', $userAgent, $log_version)) {
+        } elseif (\preg_match('/MSIE (\d.\d{1,2})/', $userAgent, $log_version)) {
             $browser = 'ie';
         }
         if (($mimetype === 'application/octet-stream') || ($mimetype === 'application/octetstream')) {

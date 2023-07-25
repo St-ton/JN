@@ -1,7 +1,7 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('agbwrb') cBeschreibung=__('agbWrbInfo')}
 <div id="content">
     <div class="ocontainer">
-        <form name="umfrage" method="post" action="agbwrb.php">
+        <form name="umfrage" method="post" action="{$adminURL}{$route}">
             {$jtl_token}
             <input type="hidden" name="agbwrb" value="1" />
             <input type="hidden" name="agbwrb_editieren_speichern" value="1" />
@@ -68,9 +68,12 @@
                 <div class="card-footer save-wrapper">
                     <div class="row">
                         <div class="ml-auto col-sm-6 col-xl-auto">
-                            <a class="btn btn-outline-primary btn-block" href="agbwrb.php">
+                            <a class="btn btn-outline-primary btn-block" href="{$adminURL}{$route}">
                                 {__('cancelWithIcon')}
                             </a>
+                        </div>
+                        <div class="col-sm-6 col-xl-auto">
+                            {include file='snippets/buttons/saveAndContinueButton.tpl'}
                         </div>
                         <div class="col-sm-6 col-xl-auto">
                             <button name="agbwrbsubmit" type="submit" value="{__('save')}" class="btn btn-primary btn-block">{__('saveWithIcon')}</button>

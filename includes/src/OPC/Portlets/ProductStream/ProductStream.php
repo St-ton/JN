@@ -6,11 +6,12 @@ use Illuminate\Support\Collection;
 use JTL\Catalog\Product\Artikel;
 use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\ServiceNotFoundException;
-use JTL\Filter\AbstractFilter;
 use JTL\Filter\Config;
+use JTL\Filter\Items\Manufacturer;
 use JTL\Filter\ProductFilter;
 use JTL\Filter\Type;
 use JTL\Helpers\Product;
+use JTL\Helpers\Text;
 use JTL\OPC\InputType;
 use JTL\OPC\Portlet;
 use JTL\OPC\PortletInstance;
@@ -28,10 +29,10 @@ class ProductStream extends Portlet
     public function getPropertyDesc(): array
     {
         return [
-            'listStyle'    => [
+            'listStyle'   => [
                 'type'    => InputType::SELECT,
                 'label'   => \__('presentation'),
-                'width'   => 66,
+                'width'   => 33,
                 'options' => [
                     'gallery'      => \__('presentationGallery'),
                     'list'         => \__('presentationList'),
@@ -44,21 +45,50 @@ class ProductStream extends Portlet
             'maxProducts' => [
                 'type'     => InputType::NUMBER,
                 'label'    => \__('maxProducts'),
-                'width'    => 33,
+                'width'    => 30,
                 'default'  => 15,
                 'required' => true,
             ],
-            'search' => [
-                'type'        => InputType::SEARCH,
-                'label'       => \__('search'),
-                'placeholder' => \__('search'),
-                'width'       => 50,
-            ],
-            'filters'      => [
-                'type'     => InputType::FILTER,
-                'label'    => \__('itemFilter'),
-                'default'  => [],
-                'searcher' => 'search',
+            'source'      => [
+                'type'        => InputType::SELECT,
+                'label'       => \__('productSource'),
+                'width'       => 33,
+                'options'     => [
+                    'filter'   => \__('productSourceFiltering'),
+                    'explicit' => \__('productSourceExplicit'),
+                ],
+                'childrenFor' => [
+                    'filter'   => [
+                        'search'  => [
+                            'type'        => InputType::SEARCH,
+                            'label'       => '',
+                            'placeholder' => \__('search'),
+                            'width'       => 100,
+                        ],
+                        'filters' => [
+                            'type'     => InputType::FILTER,
+                            'label'    => \__('itemFilter'),
+                            'default'  => [],
+                            'searcher' => 'search',
+                        ],
+                    ],
+                    'explicit' => [
+                        'searchExplicit' => [
+                            'type'        => InputType::SEARCH,
+                            'label'       => \__('labelSearchProduct'),
+                            'placeholder' => \__('search'),
+                            'width'       => 100,
+                        ],
+                        'productIds'     => [
+                            'type'           => InputType::SEARCHPICKER,
+                            'searcher'       => 'searchExplicit',
+                            'dataIoFuncName' => 'getProducts',
+                            'keyName'        => 'kArtikel',
+                        ],
+                    ],
+                ],
+                'default'     => 'filter',
+                'required'    => true,
             ],
         ];
     }
@@ -75,25 +105,50 @@ class ProductStream extends Portlet
 
     /**
      * @param PortletInstance $instance
+     * @return int[]
+     */
+    public function getExplicitProductIds(PortletInstance $instance): array
+    {
+        return Text::parseSSKint($instance->getProperty('productIds'));
+    }
+
+    /**
+     * @param PortletInstance $instance
      * @return Collection
      */
     public function getFilteredProductIds(PortletInstance $instance): Collection
     {
+        if ($instance->getProperty('source') === 'explicit') {
+            return (new Collection($this->getExplicitProductIds($instance)))
+                ->slice(0, $instance->getProperty('maxProducts'));
+        }
+
+        $params         = [
+            'MerkmalFilter_arr'   => [],
+            'SuchFilter_arr'      => [],
+            'SuchFilter'          => [],
+            'manufacturerFilters' => []
+        ];
         $enabledFilters = $instance->getProperty('filters');
-        $productFilter  = new ProductFilter(
+        $pf             = new ProductFilter(
             Config::getDefault(),
             Shop::Container()->getDB(),
             Shop::Container()->getCache()
         );
-
+        $service        = Shop::Container()->getOPC();
+        $pf->getBaseState()->init(0);
         foreach ($enabledFilters as $enabledFilter) {
-            /** @var AbstractFilter $newFilter * */
-            $newFilter = new $enabledFilter['class']($productFilter);
-            $newFilter->setType(Type::AND);
-            $productFilter->addActiveFilter($newFilter, $enabledFilter['value']);
+            $service->getFilterClassParamMapping($enabledFilter['class'], $params, $enabledFilter['value'], $pf);
+        }
+        $service->overrideConfig($pf);
+        $pf->initStates($params);
+        foreach ($pf->getActiveFilters() as $filter) {
+            if ($filter->getClassName() !== Manufacturer::class) {
+                $filter->setType(Type::AND);
+            }
         }
 
-        return $productFilter->getProductKeys()->slice(0, $instance->getProperty('maxProducts'));
+        return $pf->getProductKeys()->slice(0, $instance->getProperty('maxProducts'));
     }
 
     /**
@@ -106,8 +161,9 @@ class ProductStream extends Portlet
     {
         $products       = [];
         $defaultOptions = Artikel::getDefaultOptions();
+        $db             = Shop::Container()->getDB();
         foreach ($this->getFilteredProductIds($instance) as $productID) {
-            $products[] = (new Artikel())->fuelleArtikel($productID, $defaultOptions);
+            $products[] = (new Artikel($db))->fuelleArtikel($productID, $defaultOptions);
         }
 
         return Product::separateByAvailability($products);

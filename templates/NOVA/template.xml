@@ -3,8 +3,8 @@
     <Name>NOVA</Name>
     <Author>JTL-Software-GmbH</Author>
     <URL>https://www.jtl-software.de</URL>
-    <MinShopVersion>5.1.0</MinShopVersion>
-    <Version>1.1.0</Version>
+    <MinShopVersion>5.2.0</MinShopVersion>
+    <Version>1.2.2</Version>
     <Preview>preview.png</Preview>
     <Description>JTL-Shop Responsive-Template</Description>
     <Framework>Bootstrap4</Framework>
@@ -26,10 +26,6 @@
             <Setting Description="Animation für Schaltflächen beim Hovern" Key="button_animated" Type="select" Value="N">
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
-            </Setting>
-            <Setting Description="Anzeige der Suche auf mobilen Geräten" Key="mobile_search_type" Type="select" Value="fixed">
-                <Option Value="fixed">Suche beim Hochscrollen einblenden</Option>
-                <Option Value="dropdown">Icon mit Dropdown</Option>
             </Setting>
             <Setting Description="Wunschzettel und Vergleichsliste - Animation anzeigen" Key="wish_compare_animation" Type="select" Value="mobile">
                 <Option Value="both">Auf Desktop und mobilen Geräten</Option>
@@ -55,6 +51,58 @@
             </Setting>
             <Setting Description="Favicon" Key="favicon" Type="upload" Value="favicon.ico" maxFileSize="123456" showPreview="false" allowedFileExtensions="['ico','png']" accept="image/*" target="themes/base/images/" targetFileName="favicon.ico"/>
         </Section>
+        <Section Name="Header" Key="header">
+            <Setting Description="Gewählte Vorlage" Key="menu_template" Type="select" Value="standard" MarginBottom="true">
+                <Option Value="headerStandard">Standard</Option>
+                <Option Value="headerLogo">Logo zentriert</Option>
+                <Option Value="headerSingle">Menü in eigener Zeile</Option>
+                <Option Value="headerBoxed">Header Boxed - Menü mehrspaltig</Option>
+                <Option Value="headerTopbar">Ohne Topbar - Header volle breite</Option>
+                <Option Value="headerCustom">Custom</Option>
+            </Setting>
+            <Setting Description="Menü in eigener Zeile anzeigen" Key="menu_single_row" Type="select" Value="N">
+                <Option Value="Y">Ja</Option>
+                <Option Value="N">Nein</Option>
+            </Setting>
+            <Setting Description="Anzeige bei vielen Menüeinträgen" Key="menu_multiple_rows" Type="select" Value="scroll">
+                <Option Value="multiple">Mehrzeilig</Option>
+                <Option Value="scroll">Einzeilig und scrollbar nach links/rechts</Option>
+            </Setting>
+            <Setting Description="Menüausrichtung" Key="menu_center" Type="select" Value="center">
+                <Option Value="center">Zentriert</Option>
+                <Option Value="left">Linksbündig</Option>
+                <Option Value="space-between">Blocksatz</Option>
+            </Setting>
+            <Setting Description="Anzeige beim Scrollen" Key="menu_scroll" Type="select" Value="menu">
+                <Option Value="menu">Menü</Option>
+                <Option Value="all">Menü, Logo, Suche</Option>
+                <Option Value="none">Nichts</Option>
+            </Setting>
+            <Setting Description="Logo Höhe (in px)" Key="menu_logoheight" Type="number" Value="49"/>
+            <Setting Description="Logo zentriert" Key="menu_logo_centered" Type="select" Value="N">
+                <Option Value="Y">Ja</Option>
+                <Option Value="N">Nein</Option>
+            </Setting>
+            <Setting Description="Topbar anzeigen" Key="menu_show_topbar" Type="select" Value="Y">
+                <Option Value="Y">Ja</Option>
+                <Option Value="N">Nein</Option>
+            </Setting>
+            <Setting Description="Suchfeld Breite (in px)" Key="menu_search_width" Type="number" Value="0"/>
+            <Setting Description="Suchfeld Positionierung" Key="menu_search_position" Type="select" Value="center">
+                <Option Value="left">Linksbündig</Option>
+                <Option Value="right">Rechtsbündig</Option>
+                <Option Value="center">Zentriert</Option>
+            </Setting>
+            <Setting Description="Header über gesamte Bildschirmbreite darstellen" Key="header_full_width" Type="select" Value="N" MarginBottom="true">
+                <Option Value="Y">Ja</Option>
+                <Option Value="N">Nein</Option>
+                <Option Value="B">Boxed</Option>
+            </Setting>
+            <Setting Description="Anzeige der Suche auf mobilen Geräten" Key="mobile_search_type" Type="select" Value="fixed">
+                <Option Value="fixed">Suche beim Hochscrollen einblenden</Option>
+                <Option Value="dropdown">Icon mit Dropdown</Option>
+            </Setting>
+        </Section>
         <Section Name="Megamenu" Key="megamenu">
             <Setting Description="Kategorien (anstelle einer Kategoriebox / Boxenverwaltung)" Key="show_categories" Type="select" Value="Y">
                 <Option Value="Y">Auf Desktop und mobilen Geräten</Option>
@@ -62,15 +110,19 @@
                 <Option Value="desktop">Nur Desktop</Option>
                 <Option Value="N">Inaktiv</Option>
             </Setting>
+            <Setting Description="Mobile Geräte: Menü in aktueller Kategorie öffnen" Key="mobile_start_category" Type="select" Value="N">
+                <Option Value="Y">Ja</Option>
+                <Option Value="N">Nein</Option>
+            </Setting>
             <Setting Description="Kategoriebilder für erste Unterkategorie" Key="show_category_images" Type="select" Value="N">
                 <Option Value="Y">Aktiv</Option>
                 <Option Value="N">Inaktiv</Option>
             </Setting>
-            <Setting Description="Unterkategorien" Key="show_subcategories" Type="select" Value="Y">
+            <Setting Description="Unterkategorien" Key="show_subcategories" Type="select" Value="Y" MarginBottom="true">
                 <Option Value="Y">Aktiv</Option>
                 <Option Value="N">Inaktiv</Option>
             </Setting>
-            <Setting Description="Seiten der Linkgruppe „megamenu“" Key="show_pages" Type="select" Value="Y">
+            <Setting Description="Seiten der Linkgruppe „megamenu“" Key="show_pages" Type="select" Value="Y" MarginBottom="true">
                 <Option Value="Y">Aktiv</Option>
                 <Option Value="N">Inaktiv</Option>
             </Setting>
@@ -82,55 +134,85 @@
                 <Option Value="Y">Aktiv</Option>
                 <Option Value="N">Inaktiv</Option>
             </Setting>
-            <Setting Description="Header über gesamte Bildschirmbreite darstellen" Key="header_full_width" Type="select" Value="N">
-                <Option Value="Y">Ja</Option>
-                <Option Value="N">Nein</Option>
-            </Setting>
         </Section>
-        <Section Name="Listen- und Gallerieansicht" Key="productlist">
+        <Section Name="Listen- und Galerieansicht" Key="productlist">
             <Setting Description="Auswahloptionen bei „Filter anzeigen in (Desktop)“" Key="filter_placement" Type="select" Value="sidebar">
                 <Option Value="sidebar">Seitenleiste (Einstellung einzelner Filter unter „Standardelemente > Footer /Boxen“ und „Standardansichten > Artikelübersicht“)</Option>
                 <Option Value="modal">Eigenes Fenster (Einstellung einzelner Filter unter „Standardansichten > Artikelübersicht“)</Option>
             </Setting>
             <Setting Description="Suchfeld in Filtern anzeigen ab x Einträgen" Key="filter_search_count" Type="number" Value="20"/>
-            <Setting Description="Schaltfläche „Warenkorb“ in Artikelübersicht (Listenansicht) anzeigen" Key="buy_productlist" Type="select" Value="Y">
-                <Option Value="Y">Ja</Option>
-                <Option Value="N">Nein</Option>
-            </Setting>
-            <Setting Description="Zusatzinfos zu Artikeln beim Hovern/Antippen anzeigen" Key="hover_productlist" Type="select" Value="Y">
-                <Option Value="Y">Ja</Option>
-                <Option Value="N">Nein</Option>
-            </Setting>
             <Setting Description="Filter immer ausgeklappt" Key="filter_items_always_visible" Type="select" Value="N">
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
             </Setting>
-            <Setting Description="Variationsauswahl anzeigen" Key="variation_select_productlist" Type="select" Value="3">
-                <Option Value="N"><![CDATA[Nein]]></Option>
-                <Option Value="1"><![CDATA[max. 1]]></Option>
-                <Option Value="2"><![CDATA[max. 2]]></Option>
-                <Option Value="3"><![CDATA[max. 3]]></Option>
-                <Option Value="5"><![CDATA[max. 5]]></Option>
-                <Option Value="9999"><![CDATA[keine Beschränkung]]></Option>
-            </Setting>
-            <Setting Description="Anzahl der möglichen Variationswerte für Radio und Swatches" Key="variation_max_werte_productlist" Type="select" Value="3">
-                <Option Value="3"><![CDATA[max. 3]]></Option>
-                <Option Value="5"><![CDATA[max. 5]]></Option>
-                <Option Value="9"><![CDATA[max. 9]]></Option>
-                <Option Value="12"><![CDATA[max. 12]]></Option>
-                <Option Value="9999"><![CDATA[keine Beschränkung]]></Option>
-            </Setting>
-            <Setting Description="Anzahl der sichtbaren Filteroptionen in Boxen" Key="filter_max_options" Type="select" Value="5">
+            <Setting Description="Anzahl der sichtbaren Filteroptionen in Boxen" Key="filter_max_options" Type="select" Value="5" MarginBottom="true">
                 <Option Value="3"><![CDATA[max. 3]]></Option>
                 <Option Value="5"><![CDATA[max. 5]]></Option>
                 <Option Value="9"><![CDATA[max. 9]]></Option>
                 <Option Value="12"><![CDATA[max. 12]]></Option>
                 <Option Value="-1"><![CDATA[keine Beschränkung]]></Option>
             </Setting>
+            <Setting Description="Artikel über die Artikelübersicht (Liste) in den Warenkorb legen" Key="buy_productlist" Type="select" Value="Y" Subheader="header list">
+                <Option Value="Y">Ja</Option>
+                <Option Value="N">Nein</Option>
+            </Setting>
+            <Setting Description="Variationsauswahl in Liste anzeigen" Key="variation_select_productlist_list" Type="select" Value="3">
+                <Option Value="N"><![CDATA[0 - Keine Auswahl anzeigen]]></Option>
+                <Option Value="1"><![CDATA[max. 1]]></Option>
+                <Option Value="2"><![CDATA[max. 2]]></Option>
+                <Option Value="3"><![CDATA[max. 3]]></Option>
+                <Option Value="5"><![CDATA[max. 5]]></Option>
+                <Option Value="9999"><![CDATA[keine Beschränkung]]></Option>
+            </Setting>
+            <Setting Description="Anzahl der möglichen Variationswerte für Radio und Swatches in der Liste" Key="variation_max_werte_productlist_list" Type="select" Value="3" MarginBottom="true">
+                <Option Value="3"><![CDATA[max. 3]]></Option>
+                <Option Value="5"><![CDATA[max. 5]]></Option>
+                <Option Value="9"><![CDATA[max. 9]]></Option>
+                <Option Value="12"><![CDATA[max. 12]]></Option>
+                <Option Value="9999"><![CDATA[keine Beschränkung]]></Option>
+            </Setting>
+            <Setting Description="Variationsvorschau in Galerie anzeigen" Key="variation_select_productlist_gallery" Type="select" Value="2" Subheader="header gallery">
+                <Option Value="N"><![CDATA[0 - Keine Auswahl anzeigen]]></Option>
+                <Option Value="1"><![CDATA[max. 1]]></Option>
+                <Option Value="2"><![CDATA[max. 2]]></Option>
+            </Setting>
+            <Setting Description="Anzahl der möglichen Variationswerte für Radio und Swatches in der Galerie" Key="variation_max_werte_productlist_gallery" Type="select" Value="3" MarginBottom="true">
+                <Option Value="3"><![CDATA[max. 3]]></Option>
+                <Option Value="5"><![CDATA[max. 5]]></Option>
+                <Option Value="9"><![CDATA[max. 9]]></Option>
+                <Option Value="12"><![CDATA[max. 12]]></Option>
+                <Option Value="9999"><![CDATA[keine Beschränkung]]></Option>
+            </Setting>
             <Setting Description="Preisspanne immer anzeigen (empfohlen)" Key="always_show_price_range" Type="select" Value="Y" Editable="false">
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
             </Setting>
+        </Section>
+        <Section Name="Artikeldetailseite" Key="productdetails">
+            <Setting Description="Slider für Swatches anzeigen, ab x Elementen" Key="swatch_slider" Type="number" Value="12"/>
+            <Setting Description="Position des Konfigurators" Key="config_position" Type="select" Value="details" Editable="false">
+                <Option Value="popup">als Popup anzeigen</Option>
+                <Option Value="details">in den Artikeldetails anzeigen</Option>
+            </Setting>
+            <Setting Description="Darstellung der Konfiguratoroptionen" Key="config_layout" Type="select" Value="list" Editable="false">
+                <Option Value="list">als kompakte Liste</Option>
+                <Option Value="gallery">als Galerie</Option>
+            </Setting>
+        </Section>
+        <Section Name="Colors" Key="colors">
+            <Setting Description="colorPrimary" Key="primary" Type="colorpicker" Value=""/>
+            <Setting Description="colorSecondary" Key="secondary" Type="colorpicker" Value="" MarginBottom="true"/>
+            <Setting Description="colorHeaderBgColor" Key="header-bg-color" Type="colorpicker" Value="" Subheader="header header"/>
+            <Setting Description="colorHeaderColor" Key="header-color" Type="colorpicker" Value=""/>
+            <Setting Description="colorHeaderBgColorSecondary" Key="header-bg-color-secondary" Type="colorpicker" Value=""/>
+            <Setting Description="colorHeaderColorSecondary" Key="header-color-secondary" Type="colorpicker" Value="" MarginBottom="true"/>
+            <Setting Description="colorFooterBgColor" Key="footer-bg-color" Type="colorpicker" Value="" Subheader="header footer"/>
+            <Setting Description="colorFooterColor" Key="footer-color" Type="colorpicker" Value=""/>
+            <Setting Description="colorCopyrightBgColor" Key="copyright-bg-color" Type="colorpicker" Value=""/>
+        </Section>
+        <Section Name="Custom Sass" Key="customsass">
+            <Setting Description="customVariables" Key="customVariables" Type="textarea" Class="codemirror sass" Value=""/>
+            <Setting Description="customContent" Key="customContent" Type="textarea" Class="codemirror sass" Value=""/>
         </Section>
         <Section Name="Footer-Einstellungen" Key="footer">
             <Setting Description="Newsletter-Anmeldung im Footer" Key="newsletter_footer" Type="select" Value="N">
@@ -150,6 +232,7 @@
             <Setting Description="Instagram-Link" Key="instagram" Type="text" Value=""/>
             <Setting Description="Pinterest-Link" Key="pinterest" Type="text" Value=""/>
             <Setting Description="Skype-Link" Key="skype" Type="text" Value=""/>
+            <Setting Description="TikTok-Link" Key="tiktok" Type="text" Value=""/>
         </Section>
     </Settings>
     <Minify>
@@ -174,7 +257,7 @@
             <File Path="js/jquery.nivo.slider.pack.js"/>
             <File Path="js/bootstrap-select.min.js"/>
             <File Path="js/jtl.evo.js"/>
-            <File Path="js/typeahead.bundle.js"/>
+            <File Path="js/typeahead.bundle.min.js"/>
             <File Path="js/wow.min.js"/>
             <File Path="js/colcade.js"/>
             <File Path="js/global.js"/>

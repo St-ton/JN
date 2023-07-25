@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Services;
 
@@ -125,6 +125,7 @@ interface DefaultServicesInterface extends ContainerInterface
 
     /**
      * @return NewsServiceInterface
+     * @deprecated since 5.2.0
      */
     public function getNewsService(): NewsServiceInterface;
 

@@ -17,7 +17,7 @@ use JTL\Shop;
 class LicensedItemUpdates extends AbstractWidget
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function init(): void
     {
@@ -26,7 +26,7 @@ class LicensedItemUpdates extends AbstractWidget
         $token         = AuthToken::getInstance($this->getDB());
         $data          = $manager->getLicenseData();
         $collection    = $mapper->getCollection();
-        $testLicenses  = $collection->filter(static function (ExsLicense  $exsLicense) {
+        $testLicenses  = $collection->filter(static function (ExsLicense $exsLicense): bool {
             return $exsLicense->getLicense()->getType() === License::TYPE_TEST;
         });
         $lastPurchases = $collection->sort(static function (ExsLicense $a, ExsLicense $b) {
@@ -34,7 +34,7 @@ class LicensedItemUpdates extends AbstractWidget
         })->slice(0, 3);
         $updates       = $collection->getUpdateableItems();
         $securityFixes = 0;
-        $updates->each(static function (ExsLicense $exsLicense) use (&$securityFixes) {
+        $updates->each(static function (ExsLicense $exsLicense) use (&$securityFixes): void {
             $avail = $exsLicense->getReleases()->getAvailable();
             if ($avail !== null && ($avail->includesSecurityFixes() || $avail->getType() === Release::TYPE_SECURITY)) {
                 ++$securityFixes;
@@ -55,7 +55,7 @@ class LicensedItemUpdates extends AbstractWidget
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getContent(): string
     {

@@ -1,8 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Services\JTL;
 
-use JTL\Boxes\Admin\BoxAdmin;
+use InvalidArgumentException;
 use JTL\Boxes\FactoryInterface;
 use JTL\Boxes\Items\BoxInterface;
 use JTL\Boxes\Items\Extension;
@@ -13,9 +13,10 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Filter\ProductFilter;
 use JTL\Filter\Visibility;
-use JTL\Plugin\LegacyPlugin;
+use JTL\Plugin\LegacyPluginLoader;
 use JTL\Plugin\PluginLoader;
 use JTL\Plugin\State;
+use JTL\Router\Controller\Backend\BoxController;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
@@ -34,64 +35,34 @@ class BoxService implements BoxServiceInterface
     /**
      * @var BoxInterface[]
      */
-    public $boxes = [];
-
-    /**
-     * @var array
-     */
-    public $config = [];
+    public array $boxes = [];
 
     /**
      * unrendered box template file name + data
      *
      * @var array
      */
-    public $rawData = [];
+    public array $rawData = [];
 
     /**
-     * @var array
+     * @var array|null
      */
-    public $visibilities;
+    public ?array $visibilities = null;
 
     /**
-     * @var FactoryInterface
+     * @var BoxService|null
      */
-    private $factory;
-
-    /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private $cache;
-
-    /**
-     * @var JTLSmarty
-     */
-    private $smarty;
-
-    /**
-     * @var RendererInterface
-     */
-    private $renderer;
-
-    /**
-     * @var BoxServiceInterface
-     */
-    private static $instance;
+    private static ?self $instance = null;
 
     /**
      * @inheritdoc
      */
     public static function getInstance(
-        array $config,
-        FactoryInterface $factory,
-        DbInterface $db,
+        array             $config,
+        FactoryInterface  $factory,
+        DbInterface       $db,
         JTLCacheInterface $cache,
-        JTLSmarty $smarty,
+        JTLSmarty         $smarty,
         RendererInterface $renderer
     ): BoxServiceInterface {
         return self::$instance ?? new self($config, $factory, $db, $cache, $smarty, $renderer);
@@ -100,27 +71,21 @@ class BoxService implements BoxServiceInterface
     /**
      * BoxService constructor.
      *
-     * @inheritDoc
+     * @inheritdoc
      */
     public function __construct(
-        array $config,
-        FactoryInterface $factory,
-        DbInterface $db,
-        JTLCacheInterface $cache,
-        JTLSmarty $smarty,
-        RendererInterface $renderer
+        private readonly array             $config,
+        private readonly FactoryInterface  $factory,
+        private readonly DbInterface       $db,
+        private readonly JTLCacheInterface $cache,
+        private readonly JTLSmarty         $smarty,
+        private RendererInterface          $renderer
     ) {
-        $this->config   = $config;
-        $this->factory  = $factory;
-        $this->db       = $db;
-        $this->cache    = $cache;
-        $this->smarty   = $smarty;
-        $this->renderer = $renderer;
         self::$instance = $this;
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function addRecentlyViewed(int $productID, int $limit = null): void
     {
@@ -149,7 +114,7 @@ class BoxService implements BoxServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getVisibility(int $pageType, bool $global = true)
     {
@@ -173,7 +138,7 @@ class BoxService implements BoxServiceInterface
         if (($grouped = $this->cache->get($cacheID)) === false) {
             $grouped = \collect($this->db->selectAll('tboxenanzeige', [], []))
                 ->groupBy('nSeite')->transform(static function ($data) {
-                    return \collect($data)->mapWithKeys(static function ($item) {
+                    return \collect($data)->mapWithKeys(static function ($item): array {
                         return [$item->ePosition => (bool)$item->bAnzeigen];
                     });
                 })->toArray();
@@ -184,7 +149,7 @@ class BoxService implements BoxServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function filterBoxVisibility(int $boxID, int $pageType, $filter = ''): int
     {
@@ -201,7 +166,7 @@ class BoxService implements BoxServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function showBoxes(ProductFilter $pf): bool
     {
@@ -227,7 +192,7 @@ class BoxService implements BoxServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getRawData(): array
     {
@@ -235,7 +200,7 @@ class BoxService implements BoxServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getBoxes(): array
     {
@@ -243,7 +208,7 @@ class BoxService implements BoxServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function compatGet(): array
     {
@@ -266,20 +231,20 @@ class BoxService implements BoxServiceInterface
     {
         $pageID = 0;
         if ($pageType === \PAGE_ARTIKELLISTE) {
-            $pageID = (int)Shop::$kKategorie;
+            $pageID = Shop::getState()->categoryID;
         } elseif ($pageType === \PAGE_ARTIKEL) {
-            $pageID = (int)Shop::$kArtikel;
+            $pageID = Shop::getState()->productID;
         } elseif ($pageType === \PAGE_EIGENE) {
-            $pageID = (int)Shop::$kLink;
+            $pageID = Shop::getState()->linkID;
         } elseif ($pageType === \PAGE_HERSTELLER) {
-            $pageID = (int)Shop::$kHersteller;
+            $pageID = Shop::getState()->manufacturerID;
         }
 
         return $pageID;
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function render(array $positionedBoxes, int $pageType): array
     {
@@ -326,7 +291,7 @@ class BoxService implements BoxServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function buildList(int $pageType = \PAGE_UNBEKANNT, bool $activeOnly = true): array
     {
@@ -336,8 +301,7 @@ class BoxService implements BoxServiceInterface
         if ($activeOnly === true && \count($visiblePositions) === 0) {
             return [];
         }
-        $boxAdmin   = new BoxAdmin($this->db);
-        $validPages = \implode(',', $boxAdmin->getValidPageTypes());
+        $validPages = \implode(',', BoxController::getValidPageTypes());
         $cacheID    = 'bx_' . $pageType . '_' . (int)$activeOnly . '_' . Shop::getLanguageID();
         $activeSQL  = $activeOnly
             ? ' AND FIND_IN_SET(tboxensichtbar.kSeite, "' . $validPages . '") > 0  
@@ -436,6 +400,7 @@ class BoxService implements BoxServiceInterface
             if ($first->kContainer > 0) {
                 $box = $this->factory->getBoxByBaseType($first->kBoxvorlage, $first->eTyp);
                 $box->map($boxes);
+                $this->loadPluginBox($box);
                 if (!isset($children[$first->kContainer])) {
                     $children[$first->kContainer] = [];
                 }
@@ -447,22 +412,10 @@ class BoxService implements BoxServiceInterface
             $first = first($boxes);
             $box   = $this->factory->getBoxByBaseType($first->kBoxvorlage, $first->eTyp);
             $box->map($boxes);
-            $class = \get_class($box);
-            if ($class === Plugin::class) {
-                $plugin = new LegacyPlugin($box->getCustomID());
-                $box->setTemplateFile(
-                    $plugin->getPaths()->getFrontendPath()
-                    . \PFAD_PLUGIN_BOXEN
-                    . $box->getTemplateFile()
-                );
-                $box->setPlugin($plugin);
-            } elseif ($class === Extension::class) {
-                $loader = new PluginLoader($this->db, $this->cache);
-                $plugin = $loader->init($box->getCustomID());
-                $box->setTemplateFile($plugin->getPaths()->getFrontendPath() . $box->getTemplateFile());
-                $box->setExtension($plugin);
-                $box->setPlugin($plugin);
-            } elseif ($box->getType() === Type::CONTAINER) {
+            if ($this->loadPluginBox($box) === false) {
+                continue;
+            }
+            if ($box->getType() === Type::CONTAINER) {
                 $box->setChildren($children);
             }
             $result[] = $box;
@@ -475,5 +428,44 @@ class BoxService implements BoxServiceInterface
         });
 
         return $this->boxes;
+    }
+
+    /**
+     * @param BoxInterface $box
+     * @return bool
+     */
+    private function loadPluginBox(BoxInterface $box): bool
+    {
+        $class = \get_class($box);
+        if ($class === Extension::class) {
+            $loader = new PluginLoader($this->db, $this->cache);
+            try {
+                $plugin = $loader->init($box->getCustomID());
+            } catch (InvalidArgumentException) {
+                return false;
+            }
+            $box->setTemplateFile($plugin->getPaths()->getFrontendPath() . $box->getTemplateFile());
+            $box->setExtension($plugin);
+            $box->setPlugin($plugin);
+
+            return true;
+        }
+
+        if ($class === Plugin::class) {
+            $loader = new LegacyPluginLoader($this->db, $this->cache);
+            try {
+                $plugin = $loader->init($box->getCustomID());
+            } catch (InvalidArgumentException) {
+                return false;
+            }
+            $box->setTemplateFile(
+                $plugin->getPaths()->getFrontendPath()
+                . \PFAD_PLUGIN_BOXEN
+                . $box->getTemplateFile()
+            );
+            $box->setPlugin($plugin);
+        }
+
+        return true;
     }
 }

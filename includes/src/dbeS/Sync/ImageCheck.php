@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\dbeS\Sync;
 
@@ -18,9 +18,9 @@ final class ImageCheck extends AbstractSync
      */
     public function handle(Starter $starter)
     {
-        foreach ($starter->getXML(true) as $i => $item) {
+        foreach ($starter->getXML(true) as $item) {
             [$file, $xml] = [\key($item), \reset($item)];
-            if (\strpos($file, 'bildercheck.xml') !== false) {
+            if (\str_contains($file, 'bildercheck.xml')) {
                 $this->handleCheck($xml);
             }
         }
@@ -52,22 +52,13 @@ final class ImageCheck extends AbstractSync
                 $this->db->delete('tartikelpict', 'kBild', $image->id);
             }
         }
-        if ($object->cloud) {
-            foreach ($object->items as $item) {
-                if (\in_array($item->id, $found, true)) {
-                    continue;
-                }
-            }
-        }
         $missing = \array_filter($object->items, static function ($item) use ($found) {
             return !\in_array($item->id, $found, true);
         });
-
-        $ids = \array_map(static function ($item) {
+        $ids     = \array_map(static function ($item) {
             return $item->id;
         }, $missing);
-
-        $idlist = \implode(';', $ids);
+        $idlist  = \implode(';', $ids);
         $this->pushResponse("0;\n<bildcheck><notfound>" . $idlist . '</notfound></bildcheck>');
     }
 

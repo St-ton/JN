@@ -13,10 +13,10 @@ use JTL\Update\Migration;
 class Migration_20190405115700 extends Migration implements IMigration
 {
     protected $author      = 'fm';
-    protected $description = 'remove trusted shops';
+    protected $description = 'Remove trusted shops';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -40,7 +40,7 @@ class Migration_20190405115700 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

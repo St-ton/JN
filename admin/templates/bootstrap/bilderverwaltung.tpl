@@ -34,10 +34,10 @@
                             </td>
                             <td class="text-center">
                                 <span class="item-generated">
-                                  {(($item->stats->getGeneratedBySize(Image::SIZE_XS)
-                                  + $item->stats->getGeneratedBySize(Image::SIZE_SM)
-                                  + $item->stats->getGeneratedBySize(Image::SIZE_MD)
-                                  + $item->stats->getGeneratedBySize(Image::SIZE_LG)) / 4)|round:0}
+                                  {(($item->stats->getGeneratedBySize(JTL\Media\Image::SIZE_XS)
+                                  + $item->stats->getGeneratedBySize(JTL\Media\Image::SIZE_SM)
+                                  + $item->stats->getGeneratedBySize(JTL\Media\Image::SIZE_MD)
+                                  + $item->stats->getGeneratedBySize(JTL\Media\Image::SIZE_LG)) / 4)|round:0}
                                 </span>
                             </td>
                             <td class="text-center">
@@ -67,20 +67,18 @@
             </div>
         </div>
     </div>
-
-    {foreach $corruptedPicsTypes as $corruptedPicsType}
-        {if $corruptedPicsType > 0}
+    {foreach $corruptedImagesByType as $corruptedPicsType}
+        {if count($corruptedPicsType) > 0}
             {$corruptedPics = true}
         {/if}
     {/foreach}
-
     {if $corruptedPics}
         <div class="content-header">
-            <h1 class="content-header-headline  top40">
+            <h1 class="content-header-headline top40">
                 {__('currentCorruptedPics')}
             </h1>
-            <div class="description ">
-                {__('corruptedPicsNote')|sprintf:$smarty.const.MAX_CORRUPTED_IMAGES}
+            <div class="description">
+                {sprintf(__('corruptedPicsNote'), $smarty.const.MAX_CORRUPTED_IMAGES)}
             </div>
         </div>
         <div class="card">

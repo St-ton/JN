@@ -13,7 +13,7 @@
             {/container}
         {/block}
         {container fluid=$Link->getIsFluid() class="account-password {if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
-            {if $step === 'formular'}
+            {if $step !== 'confirm'}
                 {row}
                     {col cols=12 lg=8}
                         {block name='account-password-alert'}
@@ -33,6 +33,13 @@
                                                 {lang key='emailadress'}, true
                                             ]
                                         }
+                                        {if (!isset($smarty.session.bAnti_spam_already_checked) || $smarty.session.bAnti_spam_already_checked !== true)
+                                        && ($Einstellungen.kunden.forgot_password_captcha|default:'N')}
+                                            <div class="form-group float-label-control{if isset($fehlendeAngaben.captcha) && $fehlendeAngaben.captcha !== false} has-error{/if}">
+                                                {captchaMarkup getBody=true}
+                                            </div>
+                                            <hr>
+                                        {/if}
                                         {block name='account-password-form-reset-submit'}
                                             {row}
                                                 {col class='col-md-auto ml-md-auto'}
@@ -52,7 +59,7 @@
                         {/block}
                     {/col}
                 {/row}
-            {elseif $step === 'confirm'}
+            {else}
                 {row}
                     {col cols=12 md=8 md-offset=2}
                         {block name='account-password-form-password-reset-confirm'}
@@ -89,10 +96,6 @@
                         {/block}
                     {/col}
                 {/row}
-            {else}
-                {block name='account-password-alert-success'}
-                    {alert variant="success"}{lang key='newPasswortWasGenerated' section='forgot password'}{/alert}
-                {/block}
             {/if}
         {/container}
     {/block}

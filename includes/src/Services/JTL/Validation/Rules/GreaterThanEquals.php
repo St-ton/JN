@@ -6,7 +6,7 @@ use JTL\Services\JTL\Validation\RuleInterface;
 use JTL\Services\JTL\Validation\RuleResult;
 
 /**
- * Class GreaterThan
+ * Class GreaterThanEquals
  * @package JTL\Services\JTL\Validation\Rules
  *
  * Validates, that $value is greater than a specified value
@@ -16,17 +16,11 @@ use JTL\Services\JTL\Validation\RuleResult;
 class GreaterThanEquals implements RuleInterface
 {
     /**
-     * @var mixed
-     */
-    protected $gt;
-
-    /**
      * GreaterThan constructor.
      * @param mixed $gt
      */
-    public function __construct($gt)
+    public function __construct(protected $gt)
     {
-        $this->gt = $gt;
     }
 
     /**

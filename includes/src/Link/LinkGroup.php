@@ -6,8 +6,6 @@ use Illuminate\Support\Collection;
 use JTL\DB\DbInterface;
 use JTL\MagicCompatibilityTrait;
 use JTL\Shop;
-use function Functional\flatten;
-use function Functional\map;
 
 /**
  * Class LinkGroup
@@ -20,7 +18,7 @@ final class LinkGroup implements LinkGroupInterface
     /**
      * @var array
      */
-    public static $mapping = [
+    public static array $mapping = [
         'cLocalizedName' => 'Name',
         'Links'          => 'Links'
     ];
@@ -28,7 +26,7 @@ final class LinkGroup implements LinkGroupInterface
     /**
      * @var array
      */
-    private $names = [];
+    private array $names = [];
 
     /**
      * @var string
@@ -48,40 +46,34 @@ final class LinkGroup implements LinkGroupInterface
     /**
      * @var bool
      */
-    private $isSpecial = true;
+    private bool $isSpecial = true;
 
     /**
      * @var bool
      */
-    private $isSystem = true;
+    private bool $isSystem = true;
 
     /**
      * @var array
      */
-    private $languageID = [];
+    private array $languageID = [];
 
     /**
      * @var array
      */
-    private $languageCode = [];
+    private array $languageCode = [];
 
     /**
      * @var Collection
      */
-    private $links;
-
-    /**
-     * @var DbInterface
-     */
-    private $db;
+    private Collection $links;
 
     /**
      * LinkGroup constructor.
      * @param DbInterface $db
      */
-    public function __construct(DbInterface $db)
+    public function __construct(private readonly DbInterface $db)
     {
-        $this->db    = $db;
         $this->links = new Collection();
     }
 
@@ -123,17 +115,16 @@ final class LinkGroup implements LinkGroupInterface
             $this->template              = $groupLanguage->template;
             $this->groupName             = $groupLanguage->groupName;
         }
-        $this->links = (new LinkList($this->db))->createLinks(map(flatten($this->db->getArrays(
+        $this->links = (new LinkList($this->db))->createLinks($this->db->getInts(
             'SELECT kLink
                 FROM tlink
                 JOIN tlinkgroupassociations a 
                     ON tlink.kLink = a.linkID
                 WHERE a.linkGroupID = :lgid
                 ORDER BY tlink.nSort, tlink.cName',
+            'kLink',
             ['lgid' => $this->id]
-        )), static function ($e) {
-            return (int)$e;
-        }));
+        ));
         \executeHook(\HOOK_LINKGROUP_MAPPED, ['group' => $this]);
 
         return $this;
@@ -201,6 +192,16 @@ final class LinkGroup implements LinkGroupInterface
     public function getLinks(): Collection
     {
         return $this->links;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getHierarchy(): Collection
+    {
+        return $this->links->filter(static function (LinkInterface $link) {
+            return $link->getParent() === 0;
+        });
     }
 
     /**

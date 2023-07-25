@@ -17,7 +17,7 @@ class Migration_20190909161500 extends Migration implements IMigration
     protected $description = 'Remove box scroll configs';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -84,7 +84,7 @@ class Migration_20190909161500 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

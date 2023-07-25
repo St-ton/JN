@@ -15,9 +15,7 @@
         {block name='newsletter-index-include-extension'}
             {include file='snippets/extension.tpl'}
         {/block}
-        {if !isset($cPost_arr)}
-            {assign var=cPost_arr value=array()}
-        {/if}
+        {assign var=cPost_arr value=$cPost_arr|default:[]}
         {block name='newsletter-index-link-content'}
             {if !empty($Link->getContent())}
                 {opcMountPoint id='opc_before_newsletter_content' inContainer=false}
@@ -59,7 +57,7 @@
                                             {/block}
                                             {assign var=plausiArr value=$oPlausi->nPlausi_arr|default:[]}
                                             {if (!isset($smarty.session.bAnti_spam_already_checked) || $smarty.session.bAnti_spam_already_checked !== true) &&
-                                            isset($Einstellungen.newsletter.newsletter_sicherheitscode) && $Einstellungen.newsletter.newsletter_sicherheitscode !== 'N' && empty($smarty.session.Kunde->kKunde)}
+                                            isset($Einstellungen.newsletter.newsletter_sicherheitscode) && $Einstellungen.newsletter.newsletter_sicherheitscode !== 'N' && JTL\Session\Frontend::getCustomer()->getID() === 0}
                                                 {block name='newsletter-index-form-captcha'}
                                                     <div class="form-group simple-captcha-wrapper{if !empty($plausiArr.captcha) && $plausiArr.captcha === true} has-error{/if}">
                                                         {captchaMarkup getBody=true}

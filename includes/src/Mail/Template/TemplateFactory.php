@@ -11,21 +11,15 @@ use JTL\DB\DbInterface;
 final class TemplateFactory
 {
     /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
      * TemplateFactory constructor.
      * @param DbInterface $db
      */
-    public function __construct(DbInterface $db)
+    public function __construct(private readonly DbInterface $db)
     {
-        $this->db = $db;
     }
 
     /**
-     * @param int      $id
+     * @param int $id
      * @return TemplateInterface|null
      */
     public function getTemplateByID(int $id): ?TemplateInterface
@@ -103,7 +97,7 @@ final class TemplateFactory
                 return new Footer($this->db);
             case \MAILTEMPLATE_AKZ:
                 return new AKZ($this->db);
-            case \strpos($templateID, 'kPlugin') !== false:
+            case \str_contains($templateID, 'kPlugin'):
                 $tpl = new Plugin($this->db);
                 $tpl->setID($templateID);
 

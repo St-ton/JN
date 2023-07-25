@@ -6,8 +6,8 @@ use League\Flysystem\FilesystemAdapter;
 use League\Flysystem\Ftp\FtpAdapter;
 use League\Flysystem\Ftp\FtpConnectionOptions;
 use League\Flysystem\Local\LocalFilesystemAdapter;
-use League\Flysystem\PhpseclibV2\SftpAdapter;
-use League\Flysystem\PhpseclibV2\SftpConnectionProvider;
+use League\Flysystem\PhpseclibV3\SftpAdapter;
+use League\Flysystem\PhpseclibV3\SftpConnectionProvider;
 
 /**
  * Class AdapterFactory
@@ -16,18 +16,12 @@ use League\Flysystem\PhpseclibV2\SftpConnectionProvider;
 class AdapterFactory
 {
     /**
-     * @var array
-     */
-    private $config;
-
-    /**
      * AdapterFactory constructor.
      *
      * @param array $config
      */
-    public function __construct(array $config)
+    public function __construct(private array $config)
     {
-        $this->config = $config;
     }
 
     /**
@@ -35,15 +29,11 @@ class AdapterFactory
      */
     public function getAdapter(): FilesystemAdapter
     {
-        switch ($this->config['fs_adapter'] ?? $this->config['fs']['fs_adapter']) {
-            case 'ftp':
-                return new FtpAdapter(FtpConnectionOptions::fromArray($this->getFtpConfig()));
-            case 'sftp':
-                return new SftpAdapter($this->getSftpConfig(), \rtrim($this->config['sftp_path'], '/') . '/');
-            case 'local':
-            default:
-                return new LocalFilesystemAdapter(\PFAD_ROOT);
-        }
+        return match ($this->config['fs_adapter'] ?? $this->config['fs']['fs_adapter']) {
+            'ftp'   => new FtpAdapter(FtpConnectionOptions::fromArray($this->getFtpConfig())),
+            'sftp'  => new SftpAdapter($this->getSftpConfig(), \rtrim($this->config['sftp_path'], '/') . '/'),
+            default => new LocalFilesystemAdapter(\PFAD_ROOT),
+        };
     }
 
     /**
@@ -93,12 +83,19 @@ class AdapterFactory
      */
     public function getSftpConfig(): SftpConnectionProvider
     {
+        $pass    = empty($this->config['sftp_pass']) ? null : $this->config['sftp_pass'];
+        $key     = empty($this->config['sftp_privkey']) ? null : $this->config['sftp_privkey'];
+        $keyPass = null;
+        if ($key !== null && $pass !== null) {
+            $keyPass = $pass;
+        }
+
         return new SftpConnectionProvider(
             $this->config['sftp_hostname'],
             $this->config['sftp_user'],
-            $this->config['sftp_pass'],
-            $this->config['sftp_privkey'],
-            null,
+            $pass,
+            $key,
+            $keyPass,
             $this->config['sftp_port'],
             false,
             $this->config['fs_timeout']

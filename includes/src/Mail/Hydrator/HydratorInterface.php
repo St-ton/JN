@@ -3,6 +3,7 @@
 namespace JTL\Mail\Hydrator;
 
 use JTL\DB\DbInterface;
+use JTL\Language\LanguageModel;
 use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
 
@@ -13,14 +14,14 @@ use JTL\Smarty\JTLSmarty;
 interface HydratorInterface
 {
     /**
-     * @param object|null $data
-     * @param object      $language
+     * @param object|null   $data
+     * @param LanguageModel $language
      */
-    public function hydrate(?object $data, object $language): void;
+    public function hydrate(?object $data, LanguageModel $language): void;
 
     /**
      * @param string $variable
-     * @param mixed   $content
+     * @param mixed  $content
      */
     public function add(string $variable, $content): void;
 

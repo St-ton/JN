@@ -12,7 +12,7 @@ class Migration_20201001121000 extends Migration implements IMigration
     protected $description = 'Remove nTransparenzfarbe from tbrandingeinstellung';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -20,7 +20,7 @@ class Migration_20201001121000 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

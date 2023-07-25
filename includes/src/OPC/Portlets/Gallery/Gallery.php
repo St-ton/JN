@@ -18,10 +18,10 @@ class Gallery extends Portlet
     {
         return [
             'galleryStyle' => [
-                'type'    => InputType::GALLERY_LAYOUT,
-                'label'   => 'Layout',
+                'type'  => InputType::GALLERY_LAYOUT,
+                'label' => 'Layout',
             ],
-            'images' => [
+            'images'       => [
                 'type'        => InputType::IMAGE_SET,
                 'label'       => \__('imageList'),
                 'default'     => [],

@@ -13,7 +13,7 @@
 
 {if $linechart->getActive()}
     <div id="{$id}" style="background: {$chartbg|default:'#fff'}; width: {$width}; height: {$height}; padding: {$chartpad|default:'0'};"></div>
-    
+
     <script type="text/javascript">
         var chart;
 
@@ -81,7 +81,7 @@
                         width: 2,
                         color: '#ddd'
                     }],
-                    {if isset($ymin) && $ymin|@count_characters > 0}
+                    {if isset($ymin) && strlen($ymin) > 0}
                         min: {$ymin}
                     {/if}
                 },

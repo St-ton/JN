@@ -1,19 +1,23 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Update;
 
 use Exception;
 use Ifsnop\Mysqldump\Mysqldump;
 use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
 use JTL\Minify\MinifyService;
 use JTL\Network\JTLApi;
 use JTL\Shop;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
+use JTL\Template\Config;
+use JTL\Template\XMLReader;
 use JTLShop\SemVer\Version;
 use JTLShop\SemVer\VersionCollection;
 use PDOException;
 use stdClass;
+use function Functional\first;
 
 /**
  * Class Updater
@@ -24,21 +28,15 @@ class Updater
     /**
      * @var bool
      */
-    protected static $isVerified = false;
-
-    /**
-     * @var DbInterface
-     */
-    protected $db;
+    protected static bool $isVerified = false;
 
     /**
      * Updater constructor.
      * @param DbInterface $db
      * @throws Exception
      */
-    public function __construct(DbInterface $db)
+    public function __construct(protected DbInterface $db)
     {
-        $this->db = $db;
         $this->verify();
     }
 
@@ -112,17 +110,12 @@ class Updater
      */
     public function createSqlDump(string $file, bool $compress = true): void
     {
-        if ($compress) {
-            $info = \pathinfo($file);
-            if ($info['extension'] !== 'gz') {
-                $file .= '.gz';
-            }
+        if ($compress && \pathinfo($file, \PATHINFO_EXTENSION) !== 'gz') {
+            $file .= '.gz';
         }
-
         if (\file_exists($file)) {
             @\unlink($file);
         }
-
         $connectionStr = \sprintf('mysql:host=%s;dbname=%s', \DB_HOST, \DB_NAME);
         $sql           = new Mysqldump($connectionStr, \DB_USER, \DB_PASS, [
             'skip-comments'  => true,
@@ -203,29 +196,63 @@ class Updater
         }
 
         if (empty($targetVersion)) {
-            $api               = Shop::Container()->get(JTLApi::class);
-            $availableUpdates  = $api->getAvailableVersions() ?? [];
-            $versionCollection = new VersionCollection();
+            /** @var JTLApi $api */
+            $api              = Shop::Container()->get(JTLApi::class);
+            $availableUpdates = $api->getAvailableVersions(true) ?? [];
+            foreach ($availableUpdates as $key => $availVersion) {
+                try {
+                    $availVersion->referenceVersion = Version::parse($availVersion->reference);
+                } catch (Exception) {
+                    unset($availableUpdates[$key]);
+                }
+            }
+            // sort versions ascending
+            \usort($availableUpdates, static function (stdClass $x, stdClass $y): int {
+                /** @var Version $versionX */
+                $versionX = $x->referenceVersion;
+                /** @var Version $versionY */
+                $versionY = $y->referenceVersion;
+                if ($versionX->smallerThan($versionY)) {
+                    return -1;
+                }
+                if ($versionX->greaterThan($versionY)) {
+                    return 1;
+                }
 
+                return 0;
+            });
+
+            $versionCollection = new VersionCollection();
             foreach ($availableUpdates as $availableUpdate) {
+                /** @var Version $referenceVersion */
+                $referenceVersion = $availableUpdate->referenceVersion;
+                if ($availableUpdate->isPublic === 0
+                    && $referenceVersion->equals($this->getCurrentFileVersion()) === false
+                ) {
+                    continue;
+                }
                 $versionCollection->append($availableUpdate->reference);
             }
 
             $targetVersion = $version->smallerThan(Version::parse($this->getCurrentFileVersion()))
                 ? $versionCollection->getNextVersion($version)
                 : $version;
+
+            // if target version is greater than file version: set file version as target version to avoid
+            // mistakes with missing versions in the version list from the API (fallback)
+            if ($targetVersion?->greaterThan($this->getCurrentFileVersion()) ?? false) {
+                $targetVersion = Version::parse($this->getCurrentFileVersion());
+            }
         }
 
         return $targetVersion ?? Version::parse(\APPLICATION_VERSION);
     }
 
     /**
-     * getPreviousVersion
-     *
      * @param int $version
-     * @return int|mixed
+     * @return int
      */
-    public function getPreviousVersion(int $version)
+    public function getPreviousVersion(int $version): int
     {
         $majors = [300 => 219, 400 => 320];
         if (\array_key_exists($version, $majors)) {
@@ -257,10 +284,10 @@ class Updater
 
     /**
      * @param Version $targetVersion
-     * @return array|bool
+     * @return array
      * @throws Exception
      */
-    protected function getSqlUpdates(Version $targetVersion)
+    protected function getSqlUpdates(Version $targetVersion): array
     {
         $sqlFilePathVersion = \sprintf('%d%02d', $targetVersion->getMajor(), $targetVersion->getMinor());
         $sqlFile            = $this->getSqlUpdatePath((int)$sqlFilePathVersion);
@@ -268,11 +295,13 @@ class Updater
         if (!\file_exists($sqlFile)) {
             throw new Exception('SQL file in path "' . $sqlFile . '" not found');
         }
-
         $lines = \file($sqlFile);
+        if ($lines === false) {
+            $lines = [];
+        }
         foreach ($lines as $i => $line) {
             $line = \trim($line);
-            if (\mb_strpos($line, '--') === 0 || \mb_strpos($line, '#') === 0) {
+            if (\str_starts_with($line, '--') || \str_starts_with($line, '#')) {
                 unset($lines[$i]);
             }
         }
@@ -293,11 +322,50 @@ class Updater
 
     public function finalize(): void
     {
+        $this->updateTemplateConfig();
         $smarty = new JTLSmarty(true, ContextType::FRONTEND);
         $smarty->clearCompiledTemplate();
         Shop::Container()->getCache()->flushAll();
         $ms = new MinifyService();
         $ms->flushCache();
+        $this->db->query('UPDATE tglobals SET dLetzteAenderung = NOW()');
+    }
+
+    protected function updateTemplateConfig(): void
+    {
+        $parentFolder = null;
+        $reader       = new XMLReader();
+        $current      = Shop::Container()->getTemplateService()->getActiveTemplate();
+        $tplXML       = $reader->getXML($current->getPaths()->getBaseDirName());
+        if ($tplXML !== null && !empty($tplXML->Parent)) {
+            $parentFolder = (string)$tplXML->Parent;
+        }
+        $config    = new Config($current->getPaths()->getBaseDirName(), $this->db);
+        $oldConfig = $config->loadConfigFromDB();
+        $updates   = 0;
+        foreach ($config->getConfigXML($reader, $parentFolder) as $conf) {
+            foreach ($conf->settings as $setting) {
+                if ($setting->cType === 'upload') {
+                    continue;
+                }
+                if (isset($oldConfig[$setting->section][$setting->key])) {
+                    // not a new setting - no need to update
+                    continue;
+                }
+                $value = $setting->value ?? null;
+                if ($value === null) {
+                    continue;
+                }
+                if (\is_array($value)) {
+                    $value = first($value);
+                }
+                $config->updateConfigInDB($setting->section, $setting->key, $value);
+                ++$updates;
+            }
+        }
+        Shop::Container()->getLogService()->info(\sprintf(
+            \__('%d config values were updated after database update.'), $updates)
+        );
     }
 
     /**
@@ -515,6 +583,28 @@ class Updater
             \JTL_MIN_SHOP_UPDATE_VERSION,
             \APPLICATION_VERSION,
             \__('dbupdaterURL')
+        );
+    }
+
+    public function forceMaintenanceMode(): void
+    {
+        if (Shop::getSettingValue(\CONF_GLOBAL, 'wartungsmodus_aktiviert') !== 'Y') {
+            $this->db->update('teinstellungen', 'cName', 'wartungsmodus_aktiviert', (object)['cWert' => 'Y']);
+            Shop::Container()->getCache()->flushTags([\CACHING_GROUP_OPTION]);
+            $_SESSION['maintenance_forced'] = true;
+        }
+    }
+
+    /**
+     * @return int
+     */
+    public function disablePlugins(): int
+    {
+        return $this->db->query(
+            'UPDATE tplugin
+                SET nStatus = 1
+                WHERE nStatus = 2',
+            ReturnType::AFFECTED_ROWS
         );
     }
 }

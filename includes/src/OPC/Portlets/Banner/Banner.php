@@ -16,7 +16,7 @@ class Banner extends Portlet
      * @param int $productID
      * @return Artikel
      */
-    public function getProduct(int $productID)
+    public function getProduct(int $productID): Artikel
     {
         return (new Artikel())->fuelleArtikel($productID, Artikel::getDefaultOptions());
     }
@@ -35,7 +35,7 @@ class Banner extends Portlet
     public function getPropertyDesc(): array
     {
         return [
-            'src' => [
+            'src'   => [
                 'type'  => InputType::IMAGE,
                 'label' => \__('Image'),
                 'thumb' => true,

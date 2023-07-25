@@ -18,7 +18,7 @@ class Overlay
     /**
      * @var array
      */
-    protected static $mapping = [
+    protected static array $mapping = [
         'cURLKlein'           => 'URLKlein',
         'cURLNormal'          => 'URLNormal',
         'cURLGross'           => 'URLGross',
@@ -115,6 +115,12 @@ class Overlay
      */
     private $urlSizes;
 
+    /**
+     * @var stdClass
+     * @since 5.3.0
+     */
+    private $noImageOverlay;
+
     public const IMAGENAME_TEMPLATE = 'overlay';
 
     public const IMAGE_DEFAULT = [
@@ -137,8 +143,7 @@ class Overlay
         $this->setType($type)
             ->setLanguage($language)
             ->setTemplateName($template)
-            ->setPath(\PFAD_TEMPLATES . $this->getTemplateName() . \PFAD_OVERLAY_TEMPLATE)
-            ->setPathSizes();
+            ->setPath(\PFAD_TEMPLATES . $this->getTemplateName() . \PFAD_OVERLAY_TEMPLATE);
     }
 
     /**
@@ -149,10 +154,10 @@ class Overlay
      * @return Overlay
      */
     public static function getInstance(
-        int $type,
-        int $language,
+        int    $type,
+        int    $language,
         string $template = null,
-        bool $setFallbackPath = true
+        bool   $setFallbackPath = true
     ): self {
         return self::$instance ?? (new self($type, $language, $template))->loadFromDB($setFallbackPath);
     }
@@ -166,7 +171,7 @@ class Overlay
         $overlay = $this->getDataForLanguage($this->getLanguage());
         // get overlay data for fallback language
         $overlay = $overlay ?? $this->getDataForLanguage(LanguageHelper::getDefaultLanguage()->kSprache);
-        if (!empty($overlay)) {
+        if ($overlay !== null) {
             $this->setActive((int)$overlay->nAktiv)
                 ->setMargin((int)$overlay->nMargin)
                 ->setPosition((int)$overlay->nPosition)
@@ -355,7 +360,8 @@ class Overlay
     public function setTemplateName(string $template = null): self
     {
         $this->templateName = $template
-            ?: Shop::Container()->getTemplateService()->getActiveTemplate()->getName();
+            ?? $_SESSION['cTemplate']
+            ?? Shop::Container()->getTemplateService()->getActiveTemplate()->getName();
 
         return $this;
     }
@@ -398,6 +404,26 @@ class Overlay
             \IMAGE_SIZE_LG => $default ? \PFAD_SUCHSPECIALOVERLAY_RETINA : $this->getPath() . \IMAGE_SIZE_LG . '/'
         ];
 
+        return $this;
+    }
+
+    /**
+     * @return stdClass|null
+     * @since 5.3.0
+     */
+    public function getCssAndText(): ?stdClass
+    {
+        return $this->noImageOverlay ?? null;
+    }
+
+    /**
+     * @param stdClass|null $data
+     * @return $this
+     * @since 5.3.0
+     */
+    public function setCssAndText(stdClass $data = null): self
+    {
+        $this->noImageOverlay = $data;
         return $this;
     }
 
@@ -595,109 +621,5 @@ class Overlay
     public function getMargin(): int
     {
         return $this->margin;
-    }
-
-    /**
-     * @return string
-     * @deprecated since 5.0.0
-     */
-    public function getURLKlein(): string
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return $this->getURL(\IMAGE_SIZE_XS);
-    }
-
-    /**
-     * @return string
-     * @deprecated since 5.0.0
-     */
-    public function getURLNormal(): string
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return $this->getURL(\IMAGE_SIZE_SM);
-    }
-
-    /**
-     * @return string
-     * @deprecated since 5.0.0
-     */
-    public function getURLGross(): string
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return $this->getURL(\IMAGE_SIZE_MD);
-    }
-
-    /**
-     * @return string
-     * @deprecated since 5.0.0
-     */
-    public function getURLRetina(): string
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return $this->getURL(\IMAGE_SIZE_LG);
-    }
-
-    /**
-     * @param string $path
-     */
-    public function setPathKlein(string $path): void
-    {
-        \trigger_error(__CLASS__ . ': setting pathklein here is not possible anymore.', \E_USER_DEPRECATED);
-    }
-
-    /**
-     * @param string $path
-     */
-    public function setPathNormal(string $path): void
-    {
-        \trigger_error(__CLASS__ . ': setting pathnormal here is not possible anymore.', \E_USER_DEPRECATED);
-    }
-
-    /**
-     * @param string $path
-     */
-    public function setPathGross(string $path): void
-    {
-        \trigger_error(__CLASS__ . ': setting pathgross here is not possible anymore.', \E_USER_DEPRECATED);
-    }
-
-    /**
-     * @param string $path
-     */
-    public function setPathRetina(string $path): void
-    {
-        \trigger_error(__CLASS__ . ': setting pathretina here is not possible anymore.', \E_USER_DEPRECATED);
-    }
-
-    /**
-     * @param string $url
-     */
-    public function setURLKlein(string $url): void
-    {
-        \trigger_error(__CLASS__ . ': setting urlklein here is not possible anymore.', \E_USER_DEPRECATED);
-    }
-
-    /**
-     * @param string $url
-     */
-    public function setURLNormal(string $url): void
-    {
-        \trigger_error(__CLASS__ . ': setting urlnormal here is not possible anymore.', \E_USER_DEPRECATED);
-    }
-
-    /**
-     * @param string $url
-     */
-    public function setURLGross(string $url): void
-    {
-        \trigger_error(__CLASS__ . ': setting urlgross here is not possible anymore.', \E_USER_DEPRECATED);
-    }
-
-    /**
-     * @param string $url
-     */
-    public function setURLRetina(string $url): void
-    {
-        \trigger_error(__CLASS__ . ': setting urlretina here is not possible anymore.', \E_USER_DEPRECATED);
     }
 }

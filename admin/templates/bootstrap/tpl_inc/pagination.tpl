@@ -2,7 +2,7 @@
     {assign var=cParam_arr value=[]}
 {/if}
 
-{assign var=cUrlAppend value=$cParam_arr|http_build_query}
+{assign var=cUrlAppend value=http_build_query($cParam_arr)}
 
 {if isset($cAnchor)}
     {assign var=cUrlAppend value=$cUrlAppend|cat:'#'|cat:$cAnchor}
@@ -10,7 +10,7 @@
 
 {assign var=bItemsAvailable value=$pagination->getItemCount() > 0}
 {assign var=bMultiplePages value=$pagination->getPageCount() > 1}
-{assign var=bSortByOptions value=$pagination->getSortByOptions()|@count > 0}
+{assign var=bSortByOptions value=count($pagination->getSortByOptions()) > 0}
 {assign var=isBottom value=$isBottom|default:false}
 
 {function pageButtons}

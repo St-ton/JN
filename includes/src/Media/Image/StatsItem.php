@@ -14,38 +14,38 @@ class StatsItem implements JsonSerializable
     /**
      * @var int
      */
-    private $total = 0;
+    private int $total = 0;
 
     /**
      * @var int
      */
-    private $totalSize = 0;
+    private int $totalSize = 0;
 
     /**
      * @var int
      */
-    private $corrupted = 0;
+    private int $corrupted = 0;
 
     /**
      * @var array
      */
-    private $generated = [
-        Image::SIZE_XS       => 0,
-        Image::SIZE_SM       => 0,
-        Image::SIZE_MD       => 0,
-        Image::SIZE_LG       => 0,
-        Image::SIZE_XL       => 0,
+    private array $generated = [
+        Image::SIZE_XS => 0,
+        Image::SIZE_SM => 0,
+        Image::SIZE_MD => 0,
+        Image::SIZE_LG => 0,
+        Image::SIZE_XL => 0,
     ];
 
     /**
      * @var array
      */
-    private $generatedSize = [
-        Image::SIZE_XS       => 0,
-        Image::SIZE_SM       => 0,
-        Image::SIZE_MD       => 0,
-        Image::SIZE_LG       => 0,
-        Image::SIZE_XL       => 0,
+    private array $generatedSize = [
+        Image::SIZE_XS => 0,
+        Image::SIZE_SM => 0,
+        Image::SIZE_MD => 0,
+        Image::SIZE_LG => 0,
+        Image::SIZE_XL => 0,
     ];
 
     /**

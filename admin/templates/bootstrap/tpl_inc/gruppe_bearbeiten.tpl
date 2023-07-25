@@ -5,7 +5,7 @@
 
 {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=__('benutzerDesc')}
 <div id="content">
-    <form class="settings navbar-form" action="benutzerverwaltung.php" method="post">
+    <form class="settings navbar-form" action="{$adminURL}{$route}" method="post">
         {$jtl_token}
         <input type="hidden" name="tab" value="group_view" />
         <div class="card">
@@ -48,17 +48,17 @@
                                         {if $group->name !== ''}<div class="subheading2">{$group->name}</div>{/if}
                                         {foreach $group->permissions as $permission}
                                             {if isset($permission->cRecht)}
-                                            <div class="custom-control custom-checkbox">
-                                                <input class="custom-control-input" type="checkbox" name="perm[]" value="{$permission->cRecht}" id="{$permission->cRecht}" {if isset($cAdminGroupPermission_arr) && is_array($cAdminGroupPermission_arr)}{if $permission->cRecht|in_array:$cAdminGroupPermission_arr}checked="checked"{/if}{/if} />
-                                                <label class="custom-control-label" for="{$permission->cRecht}" class="perm">
-                                                    {if isset($bDebug) && $bDebug} - {$permission->cRecht}{/if}
-                                                    {if isset($permission->name)}
-                                                        {$permission->name}
-                                                    {else}
-                                                        {__("permission_{$permission->cRecht}")}
-                                                    {/if}
-                                                </label>
-                                            </div>
+                                                <div class="custom-control custom-checkbox">
+                                                    <input class="custom-control-input" type="checkbox" name="perm[]" value="{$permission->cRecht}" id="{$permission->cRecht}" {if isset($cAdminGroupPermission_arr) && is_array($cAdminGroupPermission_arr)}{if in_array($permission->cRecht, $cAdminGroupPermission_arr)}checked="checked"{/if}{/if} />
+                                                    <label class="custom-control-label" for="{$permission->cRecht}" class="perm">
+                                                        {if isset($bDebug) && $bDebug} - {$permission->cRecht}{/if}
+                                                        {if isset($permission->name)}
+                                                            {$permission->name}
+                                                        {else}
+                                                            {__("permission_{$permission->cRecht}")}
+                                                        {/if}
+                                                    </label>
+                                                </div>
                                             {/if}
                                         {/foreach}
                                     </div>
@@ -88,7 +88,7 @@
                             <input type="hidden" name="kAdminlogingruppe" value="{$oAdminGroup->kAdminlogingruppe}" />
                         {/if}
                         <input type="hidden" name="save" value="1" />
-                        <a class="btn btn-outline-primary btn-block" href="benutzerverwaltung.php?tab=group_view">
+                        <a class="btn btn-outline-primary btn-block" href="{$adminURL}{$route}?tab=group_view">
                             {__('cancelWithIcon')}
                         </a>
                     </div>

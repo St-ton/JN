@@ -14,7 +14,7 @@ class Migration_20210505144200 extends Migration implements IMigration
     protected $description = 'Add filter search lang and setting';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up(): void
     {
@@ -23,7 +23,7 @@ class Migration_20210505144200 extends Migration implements IMigration
 
         $template = Shop::Container()->getTemplateService()->getActiveTemplate(false);
         $config   = new Config($template->getDir(), $this->getDB());
-        $settings = Shop::getSettings([\CONF_TEMPLATE])['template'];
+        $settings = Shop::getSettings([CONF_TEMPLATE])['template'];
         if (!isset($settings['productlist']['filter_search_count'])
             && ($template->getName() === 'NOVA' || $template->getParent() === 'NOVA')
         ) {
@@ -32,7 +32,7 @@ class Migration_20210505144200 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down(): void
     {

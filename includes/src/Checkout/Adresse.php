@@ -2,8 +2,10 @@
 
 namespace JTL\Checkout;
 
+use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Shop;
+use stdClass;
 
 /**
  * Class Adresse
@@ -99,7 +101,7 @@ class Adresse
     /**
      * @var array
      */
-    protected static $encodedProperties = [
+    protected static array $encodedProperties = [
         'cNachname',
         'cFirma',
         'cZusatz',
@@ -139,6 +141,11 @@ class Adresse
         foreach (self::$encodedProperties as $property) {
             if ($this->$property !== null) {
                 $this->$property = \trim($cryptoService->decryptXTEA($this->$property));
+                // Workaround: nur nach Update relevant (SHOP-5956)
+                // verschlüsselte Shop4-Daten sind noch Latin1 kodiert und müssen nach UTF-8 konvertiert werden
+                if (!Text::is_utf8($this->$property)) {
+                    $this->$property = Text::convertUTF8($this->$property);
+                }
             }
         }
 
@@ -154,9 +161,9 @@ class Adresse
     }
 
     /**
-     * @return object
+     * @return stdClass
      */
-    public function toObject()
+    public function toObject(): stdClass
     {
         return (object)$this->toArray();
     }
@@ -191,24 +198,11 @@ class Adresse
      */
     public function mappeAnrede(?string $anrede): string
     {
-        switch (\mb_convert_case($anrede, \MB_CASE_LOWER)) {
-            case 'm':
-                return Shop::Lang()->get('salutationM');
-            case 'w':
-                return Shop::Lang()->get('salutationW');
-            default:
-                return '';
-        }
-    }
-
-    /**
-     * @param string $iso
-     * @return string
-     * @deprecated since 4.06.16 - use static checkISOCountryCode instead
-     */
-    public function pruefeLandISO(string $iso): string
-    {
-        return self::checkISOCountryCode($iso);
+        return match (\mb_convert_case($anrede, \MB_CASE_LOWER)) {
+            'm'     => Shop::Lang()->get('salutationM'),
+            'w'     => Shop::Lang()->get('salutationW'),
+            default => '',
+        };
     }
 
     /**

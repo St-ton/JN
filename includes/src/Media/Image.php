@@ -9,6 +9,7 @@ use Intervention\Image\Image as InImage;
 use Intervention\Image\ImageManager;
 use JTL\Media\Image\AbstractImage;
 use JTL\Shop;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class Image
@@ -44,7 +45,7 @@ class Image
      *
      * @var array
      */
-    private static $sizes = [
+    private static array $sizes = [
         self::SIZE_XS,
         self::SIZE_SM,
         self::SIZE_MD,
@@ -55,14 +56,14 @@ class Image
     /**
      * Image settings
      *
-     * @var array
+     * @var array|null
      */
-    private static $settings;
+    private static ?array $settings = null;
 
     /**
-     * @var bool
+     * @var bool|null
      */
-    private static $webPSupport;
+    private static ?bool $webPSupport = null;
 
     /**
      * @return array
@@ -316,7 +317,7 @@ class Image
         $replace  = ['-', '-', '-', 'ae', 'oe', 'ue', 'ss'];
         $filename = \str_replace($source, $replace, \mb_convert_case($filename, \MB_CASE_LOWER));
 
-        return \preg_replace('/[^' . AbstractImage::REGEX_ALLOWED_CHARS . ']/', '', $filename);
+        return \preg_replace('/[^' . AbstractImage::REGEX_ALLOWED_CHARS . ']/u', '', $filename);
     }
 
     /**
@@ -347,9 +348,11 @@ class Image
     /**
      * @param MediaImageRequest $req
      * @param bool              $streamOutput
+     * @param bool              $sendResponse
+     * @return ResponseInterface|void
      * @throws Exception
      */
-    public static function render(MediaImageRequest $req, bool $streamOutput = false): void
+    public static function render(MediaImageRequest $req, bool $streamOutput = false, bool $sendResponse = false)
     {
         $rawPath = $req->getRaw();
         if ($rawPath === null || !\is_file($rawPath)) {
@@ -360,7 +363,10 @@ class Image
         $manager   = new ImageManager(['driver' => self::getImageDriver()]);
         $img       = $manager->make($rawPath);
         $regExt    = $req->getExt();
-        if (($regExt === 'jpg' || $regExt === 'jpeg') && $settings['container'] === true) {
+        if (($regExt === 'jpg' || $regExt === 'jpeg') && \str_starts_with($settings['background'], 'rgba(')) {
+            $settings['background'] = self::rgba2rgb($settings['background']);
+        }
+        if ($settings['container'] === true) {
             $canvas = $manager->canvas($img->width(), $img->height(), $settings['background']);
             $canvas->insert($img);
             $img = $canvas;
@@ -375,6 +381,9 @@ class Image
             'path'     => $thumbnail
         ]);
         $img->save($thumbnail, $settings['quality'], $regExt);
+        if ($sendResponse === true) {
+            return $img->psrResponse($regExt);
+        }
         if ($streamOutput) {
             $response = $img->response($regExt);
             if (\is_object($response) && \method_exists($response, 'send')) {
@@ -489,9 +498,29 @@ class Image
         if (self::$webPSupport === null) {
             self::$webPSupport = self::getImageDriver() === 'imagick'
                 ? \count(Imagick::queryFormats('WEBP')) > 0
-                : \gd_info()['WebP Support'] ?? false;
+                : (bool)(\gd_info()['WebP Support'] ?? false);
         }
 
         return self::$webPSupport;
+    }
+
+    /**
+     * @param string $color
+     * @return string
+     */
+    public static function rgba2rgb(string $color): string
+    {
+        $background = [255, 255, 255];
+        $rgbaColor  = \explode(',', \rtrim(\substr($color, \strlen('rgba(')), ')'));
+        $red        = \sprintf('%d', $rgbaColor[0]);
+        $green      = \sprintf('%d', $rgbaColor[1]);
+        $blue       = \sprintf('%d', $rgbaColor[2]);
+        $alpha      = \sprintf('%.2f', $rgbaColor[3]);
+
+        $ored   = ((1 - $alpha) * $background[0]) + ($alpha * $red);
+        $ogreen = ((1 - $alpha) * $background[1]) + ($alpha * $green);
+        $oblue  = ((1 - $alpha) * $background[2]) + ($alpha * $blue);
+
+        return 'rgb(' . \sprintf('%d', $ored) . ', ' . \sprintf('%d', $ogreen) . ', ' . \sprintf('%d', $oblue) . ')';
     }
 }

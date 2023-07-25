@@ -15,10 +15,10 @@ use JTL\Update\Migration;
 class Migration_20190129150943 extends Migration implements IMigration
 {
     protected $author      = 'mh';
-    protected $description = 'remove unused lang variables';
+    protected $description = 'Remove unused lang variables';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -32,7 +32,7 @@ class Migration_20190129150943 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

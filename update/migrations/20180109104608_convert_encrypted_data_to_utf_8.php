@@ -23,7 +23,7 @@ class Migration_20180109104608 extends Migration implements IMigration
     /**
      * @var string[][]
      */
-    protected $properties = [
+    protected array $properties = [
         'tkunde'            => ['kKunde', 'cNachname', 'cFirma', 'cZusatz', 'cStrasse'],
         'tzahlungsinfo'     => [
             'kZahlungsInfo',
@@ -41,7 +41,7 @@ class Migration_20180109104608 extends Migration implements IMigration
     ];
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -71,7 +71,7 @@ class Migration_20180109104608 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

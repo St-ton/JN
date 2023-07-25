@@ -4,7 +4,7 @@ namespace JTL\Backend;
 
 use JTL\DB\DbInterface;
 use JTL\Shop;
-use PHPGangsta_GoogleAuthenticator;
+use JTL\TwoFA\GoogleAuthenticator;
 use qrcodegenerator\QRCode\Output\QRString;
 use qrcodegenerator\QRCode\QRCode;
 use stdClass;
@@ -18,42 +18,35 @@ class TwoFA
     /**
      * TwoFactorAuth-object
      *
-     * @var PHPGangsta_GoogleAuthenticator
+     * @var GoogleAuthenticator|null
      */
-    private $authenticator;
+    private ?GoogleAuthenticator $authenticator;
 
     /**
      * user-account data
      *
-     * @var stdClass
+     * @var stdClass|null
      */
-    private $userTuple;
+    private ?stdClass $userTuple;
 
     /**
      * the name of the current shop
      *
      * @var string
      */
-    private $shopName;
-
-    /**
-     * @var DbInterface
-     */
-    protected $db;
+    private string $shopName = '';
 
     /**
      * TwoFA constructor.
      * @param DbInterface $db
      */
-    public function __construct(DbInterface $db)
+    public function __construct(protected DbInterface $db)
     {
-        $this->db                        = $db;
         $this->userTuple                 = new stdClass();
         $this->userTuple->kAdminlogin    = 0;
         $this->userTuple->cLogin         = '';
         $this->userTuple->b2FAauth       = false;
         $this->userTuple->c2FAauthSecret = '';
-        $this->shopName                  = '';
     }
 
     /**
@@ -85,8 +78,7 @@ class TwoFA
     {
         // store a google-authenticator-object instance
         // (only if we want a new secret! (something like lazy loading))
-        $this->authenticator = new PHPGangsta_GoogleAuthenticator();
-
+        $this->authenticator = new GoogleAuthenticator();
         if ($this->userTuple === null) {
             $this->userTuple = new stdClass();
         }
@@ -116,14 +108,13 @@ class TwoFA
     {
         // store a google-authenticator-object instance
         // (only if we check any credential! (something like lazy loading))
-        $this->authenticator = new PHPGangsta_GoogleAuthenticator();
+        $this->authenticator = new GoogleAuthenticator();
         // codes with a length over 6 chars are emergency-codes
         if (6 < \mb_strlen($code)) {
             // try to find this code in the emergency-code-pool
-            $twoFAEmergency = new TwoFAEmergency($this->db);
-
-            return $twoFAEmergency->isValidEmergencyCode($this->userTuple->kAdminlogin, $code);
+            return (new TwoFAEmergency($this->db))->isValidEmergencyCode($this->userTuple->kAdminlogin, $code);
         }
+
         return $this->authenticator->verifyCode($this->userTuple->c2FAauthSecret, $code);
     }
 
@@ -211,12 +202,11 @@ class TwoFA
     {
         if ($this->shopName === '') {
             $result         = $this->db->select('teinstellungen', 'cName', 'global_shopname');
-            $this->shopName = $result->cWert;
+            $this->shopName = $result->cWert ?? '';
         }
 
         return \trim($this->shopName);
     }
-
 
     /**
      * serialize this objects data into a string,
@@ -224,7 +214,7 @@ class TwoFA
      *
      * @return string - object-data
      */
-    public function __toString()
+    public function __toString(): string
     {
         return \print_r($this->userTuple, true);
     }

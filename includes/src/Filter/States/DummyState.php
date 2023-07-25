@@ -26,8 +26,8 @@ class DummyState extends AbstractFilter
     {
         parent::__construct($productFilter);
         $this->setIsCustom(false)
-             ->setUrlParam('ds')
-             ->setUrlParamSEO(null);
+            ->setUrlParam('ds')
+            ->setUrlParamSEO(null);
     }
 
     /**
@@ -61,6 +61,8 @@ class DummyState extends AbstractFilter
      */
     public function init($value): FilterInterface
     {
+        $this->isInitialized = true;
+
         return $this;
     }
 

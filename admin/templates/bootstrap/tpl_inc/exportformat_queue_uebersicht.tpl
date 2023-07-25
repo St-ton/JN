@@ -17,12 +17,12 @@
         </nav>
         <div class="tab-content">
             <div id="aktiv" class="tab-pane fade{if $cTab === '' || $cTab === 'aktiv'} active show{/if}">
-                <form method="post" action="exportformat_queue.php">
+                <form method="post" action="{$adminURL}{$route}">
                     {$jtl_token}
                     <div>
                         <div class="subheading1">{__('exportformatQueue')}</div>
                         <hr class="mb-3">
-                        {if $oExportformatCron_arr && $oExportformatCron_arr|@count > 0}
+                        {if $oExportformatCron_arr && count($oExportformatCron_arr) > 0}
                             <div id="tabellenLivesuche" class="table-responsive">
                                 <table class="table table-striped table-align-top">
                                     <thead>
@@ -50,15 +50,15 @@
                                             <td class="text-left"><label for="kCron-{$oExportformatCron->cronID}">{$oExportformatCron->cName}</label></td>
                                             <td class="text-left">{$oExportformatCron->Sprache->getLocalizedName()}/{$oExportformatCron->Waehrung->cName}/{$oExportformatCron->Kundengruppe->cName}</td>
                                             <td class="text-center">{$oExportformatCron->dStart_de}</td>
-                                            <td class="text-center">{$oExportformatCron->cAlleXStdToDays}</td>
+                                            <td class="text-center">{$oExportformatCron->frequencyLocalized}</td>
                                             <td class="text-center">
-                                                {$oExportformatCron->oJobQueue->tasksExecuted|default:0}/{$oExportformatCron->nAnzahlArtikel->nAnzahl}
+                                                {$oExportformatCron->oJobQueue->tasksExecuted|default:0}/{$oExportformatCron->productCount}
                                             </td>
                                             <td class="text-center">{if $oExportformatCron->dLetzterStart_de === '00.00.0000 00:00'}-{else}{$oExportformatCron->dLetzterStart_de}{/if}</td>
                                             <td class="text-center">{if $oExportformatCron->dNaechsterStart_de === null}{__('immediately')}{else}{$oExportformatCron->dNaechsterStart_de}{/if}</td>
                                             <td class="text-center">
                                                 <div class="btn-group">
-                                                    <a href="exportformat_queue.php?action=editieren&kCron={$oExportformatCron->cronID}&token={$smarty.session.jtl_token}"
+                                                    <a href="{$adminURL}{$route}?action=editieren&kCron={$oExportformatCron->cronID}&token={$smarty.session.jtl_token}"
                                                        class="btn btn-link px-2"
                                                        title="{__('modify')}"
                                                        data-toggle="tooltip">
@@ -126,7 +126,7 @@
             </div>
             <div id="fertig" class="tab-pane fade{if $cTab === 'fertig'} active show{/if}">
                 <div class="toolbar">
-                    <form method="post" action="exportformat_queue.php">
+                    <form method="post" action="{$adminURL}{$route}">
                         {$jtl_token}
                         <div class="form-row">
                             <label class="col-sm-auto col-form-label" for="nStunden">{__('exportformatLastXHourPre')} {__('hours')}:</label>
@@ -145,7 +145,7 @@
                     <div class="subheading1">{__('exportformatTodaysWork')}</div>
                     <hr class="mb-3">
                     <div>
-                    {if $oExportformatQueueBearbeitet_arr && $oExportformatQueueBearbeitet_arr|@count > 0}
+                    {if $oExportformatQueueBearbeitet_arr && count($oExportformatQueueBearbeitet_arr) > 0}
                         <div id="tabellenLivesuche" class="table-responsive">
                             <table class="table table-striped table-align-top">
                                 <thead>

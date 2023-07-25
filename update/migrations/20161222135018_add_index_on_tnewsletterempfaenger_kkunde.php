@@ -18,7 +18,7 @@ class Migration_20161222135018 extends Migration implements IMigration
     protected $description = 'Add index on tnewsletterempfaenger.kKunde';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -26,7 +26,7 @@ class Migration_20161222135018 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Session\Handler;
 
@@ -32,15 +32,15 @@ interface JTLHandlerInterface extends \SessionHandlerInterface
 
     /**
      * @param string $name
-     * @param mixed $value
+     * @param mixed  $value
      * @return mixed
      */
     public function set($name, $value);
 
     /**
-     * @param array $array
+     * @param array  $array
      * @param string $key
-     * @param mixed $value
+     * @param mixed  $value
      * @return mixed
      */
     public static function array_set(&$array, $key, $value);
@@ -48,16 +48,16 @@ interface JTLHandlerInterface extends \SessionHandlerInterface
     /**
      * put a key/value pair or array of key/value pairs in the session.
      *
-     * @param  string|array $key
-     * @param  mixed|null   $value
+     * @param string|array $key
+     * @param mixed|null   $value
      */
     public function put($key, $value = null): void;
 
     /**
      * push a value onto a session array.
      *
-     * @param  string $key
-     * @param  mixed  $value
+     * @param string $key
+     * @param mixed  $value
      * @return void
      */
     public function push($key, $value): void;

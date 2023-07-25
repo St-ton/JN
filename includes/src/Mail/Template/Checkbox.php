@@ -22,9 +22,9 @@ class Checkbox extends AbstractTemplate
             return;
         }
         $smarty->assign('oCheckBox', $data->oCheckBox)
-               ->assign('oKunde', $data->oKunde)
-               ->assign('cAnzeigeOrt', $data->cAnzeigeOrt)
-               ->assign('oSprache', (object)['kSprache' => $this->languageID]);
+            ->assign('oKunde', $data->oKunde)
+            ->assign('cAnzeigeOrt', $data->cAnzeigeOrt)
+            ->assign('oSprache', (object)['kSprache' => $this->languageID]);
         $subjectLineCustomer = empty($data->oKunde->cVorname) && empty($data->oKunde->cNachname)
             ? $data->oKunde->cMail
             : $data->oKunde->cVorname . ' ' . $data->oKunde->cNachname;

@@ -16,7 +16,7 @@ final class Wishlist extends AbstractBox
     /**
      * @var int
      */
-    private $wishListID = 0;
+    private int $wishListID = 0;
 
     /**
      * Wishlist constructor.
@@ -28,8 +28,8 @@ final class Wishlist extends AbstractBox
         $this->addMapping('nBilderAnzeigen', 'ShowImages');
         $this->addMapping('CWunschlistePos_arr', 'Items');
         $this->setShow($config['global']['global_wunschliste_anzeigen'] === 'Y');
-        if (!empty(Frontend::getWishList()->kWunschliste)) {
-            $this->setWishListID(Frontend::getWishList()->kWunschliste);
+        if (!empty(Frontend::getWishList()->getID())) {
+            $this->setWishListID(Frontend::getWishList()->getID());
             $requestURI       = $_SERVER['REQUEST_URI'] ?? $_SERVER['SCRIPT_NAME'] ?? '';
             $additionalParams = [];
             $parsed           = \parse_url($requestURI);
@@ -37,7 +37,7 @@ final class Wishlist extends AbstractBox
             if (isset($parsed['query'])) {
                 \parse_str($parsed['query'], $additionalParams);
             }
-            $wishlistItems = Frontend::getWishList()->CWunschlistePos_arr;
+            $wishlistItems = Frontend::getWishList()->getItems();
             $validPostVars = ['a', 'k', 's', 'h', 'l', 'm', 't', 'hf', 'kf', 'qf', 'show', 'suche'];
             $postMembers   = \array_keys($_REQUEST);
             foreach ($postMembers as $postMember) {
@@ -47,19 +47,23 @@ final class Wishlist extends AbstractBox
             }
             $additionalParams = Text::filterXSS($additionalParams);
             foreach ($wishlistItems as $wishlistItem) {
-                $additionalParams['wlplo'] = $wishlistItem->kWunschlistePos;
-                $wishlistItem->cURL        = $shopURL . \http_build_query($additionalParams);
+                $product = $wishlistItem->getProduct();
+                if ($product === null) {
+                    continue;
+                }
+                $additionalParams['wlplo'] = $wishlistItem->getID();
+                $wishlistItem->setURL($shopURL . \http_build_query($additionalParams));
                 if (Frontend::getCustomerGroup()->isMerchant()) {
-                    $price = isset($wishlistItem->Artikel->Preise->fVKNetto)
-                        ? (int)$wishlistItem->fAnzahl * $wishlistItem->Artikel->Preise->fVKNetto
+                    $price = isset($product->Preise->fVKNetto)
+                        ? (int)$wishlistItem->getQty() * $product->Preise->fVKNetto
                         : 0;
                 } else {
-                    $price = isset($wishlistItem->Artikel->Preise->fVKNetto)
-                        ? (int)$wishlistItem->fAnzahl * ($wishlistItem->Artikel->Preise->fVKNetto *
-                            (100 + $_SESSION['Steuersatz'][$wishlistItem->Artikel->kSteuerklasse]) / 100)
+                    $price = isset($product->Preise->fVKNetto)
+                        ? (int)$wishlistItem->getQty() * ($product->Preise->fVKNetto
+                            * (100 + $_SESSION['Steuersatz'][$product->kSteuerklasse]) / 100)
                         : 0;
                 }
-                $wishlistItem->cPreis = Preise::getLocalizedPriceString($price, Frontend::getCurrency());
+                $wishlistItem->setPrice(Preise::getLocalizedPriceString($price, Frontend::getCurrency()));
             }
             $this->setItemCount((int)$this->config['boxen']['boxen_wunschzettel_anzahl']);
             $this->setItems(\array_reverse($wishlistItems));

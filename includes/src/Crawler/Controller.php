@@ -2,12 +2,14 @@
 
 namespace JTL\Crawler;
 
-use JTL\Alert\Alert;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
+use JTL\Helpers\Text;
+use JTL\Router\Route;
 use JTL\Services\JTL\AlertServiceInterface;
+use JTL\Shop;
 use stdClass;
 
 /**
@@ -17,31 +19,16 @@ use stdClass;
 class Controller
 {
     /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private $cache;
-
-    /**
-     * @var AlertServiceInterface
-     */
-    protected $alertService;
-
-    /**
      * Crawler constructor.
      * @param DbInterface                $db
      * @param JTLCacheInterface          $cache
      * @param AlertServiceInterface|null $alertService
      */
-    public function __construct(DbInterface $db, JTLCacheInterface $cache, AlertServiceInterface $alertService = null)
-    {
-        $this->db           = $db;
-        $this->cache        = $cache;
-        $this->alertService = $alertService;
+    public function __construct(
+        private readonly DbInterface       $db,
+        private readonly JTLCacheInterface $cache,
+        protected ?AlertServiceInterface   $alertService = null
+    ) {
     }
 
     /**
@@ -86,8 +73,8 @@ class Controller
             return false;
         }
         $crawlers = $this->getAllCrawlers();
-        $result   = \array_filter($crawlers, static function ($item) use ($userAgent) {
-            return \mb_stripos($item->cUserAgent, $userAgent) !== false;
+        $result   = \array_filter($crawlers, static function ($item) use ($userAgent): bool {
+            return $item->cUserAgent !== '' && \mb_stripos($userAgent, $item->cUserAgent) !== false;
         });
         $result   = \array_values($result);
 
@@ -133,17 +120,16 @@ class Controller
     }
 
     /**
-     * @return object|mixed
+     * @return Crawler|bool
      */
     public function checkRequest()
     {
-        $crawler = false;
         if (Form::validateToken() === false
             && (Request::postInt('save_crawler') || Request::postInt('delete_crawler'))
         ) {
-            $this->alertService->addAlert(Alert::TYPE_ERROR, \__('errorCSRF'), 'errorCSRF');
+            $this->alertService->addError(\__('errorCSRF'), 'errorCSRF');
 
-            return $crawler;
+            return false;
         }
         if (Request::postInt('delete_crawler') === 1) {
             $selectedCrawler = Request::postVar('selectedCrawler');
@@ -152,23 +138,21 @@ class Controller
         if (Request::postInt('save_crawler') === 1) {
             if (!empty(Request::postVar('useragent')) && !empty(Request::postVar('description'))) {
                 $item                = new stdClass();
-                $item->kBesucherBot  = (int)Request::postInt('id');
-                $item->cUserAgent    = Request::postVar('useragent');
-                $item->cBeschreibung = Request::postVar('description');
+                $item->kBesucherBot  = Request::postInt('id');
+                $item->cUserAgent    = Text::filterXSS(Request::postVar('useragent'));
+                $item->cBeschreibung = Text::filterXSS(Request::postVar('description'));
                 $result              = $this->saveCrawler($item);
                 if ($result === -1) {
-                    $this->alertService->addAlert(
-                        Alert::TYPE_ERROR,
-                        \__('missingCrawlerFields'),
-                        'missingCrawlerFields'
-                    );
+                    $this->alertService->addError(\__('missingCrawlerFields'), 'missingCrawlerFields');
                 } else {
-                    \header('Location: statistik.php?s=3&tab=settings');
+                    \header('Location: ' . Shop::getAdminURL() . '/' . Route::STATS . '/3?tab=settings');
+                    exit;
                 }
             } else {
-                $this->alertService->addAlert(Alert::TYPE_ERROR, \__('missingCrawlerFields'), 'missingCrawlerFields');
+                $this->alertService->addError(\__('missingCrawlerFields'), 'missingCrawlerFields');
             }
         }
+        $crawler = false;
         if (Request::verifyGPCDataInt('edit') === 1 || Request::verifyGPCDataInt('new') === 1) {
             $crawlerId = Request::verifyGPCDataInt('id');
             $crawler   = new Crawler();

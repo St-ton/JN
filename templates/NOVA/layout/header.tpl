@@ -26,12 +26,36 @@
             <meta property="og:description" content="{$meta_description|truncate:1000:"":true}" />
             <meta property="og:url" content="{$cCanonicalURL}"/>
 
-            {if $nSeitenTyp === $smarty.const.PAGE_ARTIKEL && !empty($Artikel->Bilder)}
-                <meta itemprop="image" content="{$Artikel->Bilder[0]->cURLGross}" />
-                <meta property="og:image" content="{$Artikel->Bilder[0]->cURLGross}">
-            {elseif $nSeitenTyp === $smarty.const.PAGE_NEWSDETAIL && !empty($newsItem->getPreviewImage())}
-                <meta itemprop="image" content="{$imageBaseURL}{$newsItem->getPreviewImage()}" />
-                <meta property="og:image" content="{$imageBaseURL}{$newsItem->getPreviewImage()}" />
+            {$showImage = true}
+            {$navData = null}
+            {if !empty($oNavigationsinfo)}
+                {if $oNavigationsinfo->getCategory() !== null}
+                    {$showImage = in_array($Einstellungen['navigationsfilter']['kategorie_bild_anzeigen'], ['B', 'BT'])}
+                    {$navData = $oNavigationsinfo->getCategory()}
+                {elseif $oNavigationsinfo->getManufacturer() !== null}
+                    {$showImage = in_array($Einstellungen['navigationsfilter']['hersteller_bild_anzeigen'], ['B', 'BT'])}
+                    {$navData = $oNavigationsinfo->getManufacturer()}
+                {elseif $oNavigationsinfo->getCharacteristicValue() !== null}
+                    {$showImage = in_array($Einstellungen['navigationsfilter']['merkmalwert_bild_anzeigen'], ['B', 'BT'])}
+                    {$navData = $oNavigationsinfo->getCharacteristicValue()}
+                {/if}
+            {/if}
+
+            {if $nSeitenTyp === $smarty.const.PAGE_ARTIKEL && !empty($Artikel->getImage(JTL\Media\Image::SIZE_LG))}
+                <meta itemprop="image" content="{$Artikel->getImage(JTL\Media\Image::SIZE_LG)}" />
+                <meta property="og:image" content="{$Artikel->getImage(JTL\Media\Image::SIZE_LG)}">
+                <meta property="og:image:width" content="{$Artikel->getImageWidth(JTL\Media\Image::SIZE_LG)}" />
+                <meta property="og:image:height" content="{$Artikel->getImageHeight(JTL\Media\Image::SIZE_LG)}" />
+            {elseif $nSeitenTyp === $smarty.const.PAGE_NEWSDETAIL && !empty($newsItem->getImage(JTL\Media\Image::SIZE_LG))}
+                <meta itemprop="image" content="{$newsItem->getImage(JTL\Media\Image::SIZE_LG)}" />
+                <meta property="og:image" content="{$newsItem->getImage(JTL\Media\Image::SIZE_LG)}" />
+                <meta property="og:image:width" content="{$newsItem->getImageWidth(JTL\Media\Image::SIZE_LG)}" />
+                <meta property="og:image:height" content="{$newsItem->getImageHeight(JTL\Media\Image::SIZE_LG)}" />
+            {elseif !empty($navData) && !empty($navData->getImage(JTL\Media\Image::SIZE_LG))}
+                <meta itemprop="image" content="{$navData->getImage(JTL\Media\Image::SIZE_LG)}" />
+                <meta property="og:image" content="{$navData->getImage(JTL\Media\Image::SIZE_LG)}" />
+                <meta property="og:image:width" content="{$navData->getImageWidth(JTL\Media\Image::SIZE_LG)}" />
+                <meta property="og:image:height" content="{$navData->getImageHeight(JTL\Media\Image::SIZE_LG)}" />
             {else}
                 <meta itemprop="image" content="{$ShopLogoURL}" />
                 <meta property="og:image" content="{$ShopLogoURL}" />
@@ -47,7 +71,7 @@
         {block name='layout-header-head-base'}{/block}
 
         {block name='layout-header-head-icons'}
-            <link type="image/x-icon" href="{$shopFaviconURL}" rel="icon">
+            <link rel="icon" href="{$shopFaviconURL}">
         {/block}
 
         {block name='layout-header-head-resources'}
@@ -56,11 +80,32 @@
             {else}
                 {$templateDir = $parentTemplateDir}
             {/if}
-            <style id="criticalCSS">
-                {block name='layout-header-head-resources-crit'}
-                    {file_get_contents("{$currentThemeDir}{$Einstellungen.template.theme.theme_default}_crit.css")}
-                {/block}
-            </style>
+            {block name='layout-header-head-resources-crit-outer'}
+                <style id="criticalCSS">
+                    {block name='layout-header-head-resources-crit'}
+                        {file_get_contents("{$currentThemeDir}{$Einstellungen.template.theme.theme_default}_crit.css")}
+                    {/block}
+                    {block name='layout-header-menu-single-row-css'}
+                        {if (int)$Einstellungen.template.header.menu_search_width !== 0}
+                            .main-search-wrapper {
+                                max-width: {$Einstellungen.template.header.menu_search_width}px;
+                            }
+                        {/if}
+                        {if (int)$Einstellungen.template.header.menu_logoheight !== 0 && $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}
+                            @media (min-width: 992px) {
+                                header .navbar-brand img {
+                                    height: {$Einstellungen.template.header.menu_logoheight}px;
+                                }
+                                {if $Einstellungen.template.header.menu_single_row !== 'Y'}
+                                    nav.navbar {
+                                        height: calc({$Einstellungen.template.header.menu_logoheight}px + 1.2rem);
+                                    }
+                                {/if}
+                            }
+                        {/if}
+                    {/block}
+                </style>
+            {/block}
             {* css *}
             {if $Einstellungen.template.general.use_minify === 'N'}
                 {foreach $cCSS_arr as $cCSS}
@@ -194,11 +239,17 @@
                       href="{$ShopURL}/rss.xml">
             {/if}
             {* Languages *}
-            {if !empty($smarty.session.Sprachen) && count($smarty.session.Sprachen) > 1}
-                {foreach $smarty.session.Sprachen as $language}
+            {$languages = JTL\Session\Frontend::getLanguages()}
+            {if $languages|count > 1}
+                {foreach $languages as $language}
                     <link rel="alternate"
                           hreflang="{$language->getIso639()}"
                           href="{if $language->getShopDefault() === 'Y' && isset($Link) && $Link->getLinkType() === $smarty.const.LINKTYP_STARTSEITE}{$ShopURL}/{else}{$language->getUrl()}{/if}">
+                    {if $language->getShopDefault() === 'Y'}
+                    <link rel="alternate"
+                        hreflang="x-default"
+                        href="{if isset($Link) && $Link->getLinkType() === $smarty.const.LINKTYP_STARTSEITE}{$ShopURL}/{else}{$language->getUrl()}{/if}">
+                    {/if}
                 {/foreach}
             {/if}
         {/block}
@@ -215,12 +266,7 @@
         {/if}
         {$dbgBarHead}
 
-        <script>
-            window.lazySizesConfig = window.lazySizesConfig || {};
-            window.lazySizesConfig.expand  = 50;
-        </script>
         <script src="{$ShopURL}/{$templateDir}js/jquery-3.5.1.min.js"></script>
-        <script src="{$ShopURL}/{$templateDir}js/lazysizes.min.js"></script>
 
         {if $Einstellungen.template.general.use_minify === 'N'}
             {if isset($cPluginJsHead_arr)}
@@ -278,7 +324,53 @@
         {if $Einstellungen.preisverlauf.preisverlauf_anzeigen === 'Y' && !empty($bPreisverlauf)}
             <script defer src="{$ShopURL}/{$templateDir}js/Chart.bundle.min.js"></script>
         {/if}
+        <script defer src="{$ShopURL}/{$templateDir}js/DataTables/datatables.min.js"></script>
         <script type="module" src="{$ShopURL}/{$templateDir}js/app/app.js"></script>
+        <script>(function(){
+            // back-to-list-link mechanics
+
+            {if $nSeitenTyp !== $smarty.const.PAGE_ARTIKEL}
+                window.sessionStorage.setItem('has_starting_point', 'true');
+                window.sessionStorage.removeItem('cur_product_id');
+                window.sessionStorage.removeItem('product_page_visits');
+                window.should_render_backtolist_link = false;
+            {else}
+                let has_starting_point = window.sessionStorage.getItem('has_starting_point') === 'true';
+                let product_id         = Number(window.sessionStorage.getItem('cur_product_id'));
+                let page_visits        = Number(window.sessionStorage.getItem('product_page_visits'));
+                let no_reload          = performance.getEntriesByType('navigation')[0].type !== 'reload';
+
+                let browseNext         = {if isset($NavigationBlaettern->naechsterArtikel->kArtikel)}
+                        {$NavigationBlaettern->naechsterArtikel->kArtikel}{else}0{/if};
+
+                let browsePrev         = {if isset($NavigationBlaettern->vorherigerArtikel->kArtikel)}
+                        {$NavigationBlaettern->vorherigerArtikel->kArtikel}{else}0{/if};
+
+                let should_render_link = true;
+
+                if (has_starting_point === false) {
+                    should_render_link = false;
+                } else if (product_id === 0) {
+                    product_id  = {$Artikel->kArtikel};
+                    page_visits = 1;
+                } else if (product_id === {$Artikel->kArtikel}) {
+                    if (no_reload) {
+                        page_visits ++;
+                    }
+                } else if (product_id === browseNext || product_id === browsePrev) {
+                    product_id = {$Artikel->kArtikel};
+                    page_visits ++;
+                } else {
+                    has_starting_point = false;
+                    should_render_link = false;
+                }
+
+                window.sessionStorage.setItem('has_starting_point', has_starting_point);
+                window.sessionStorage.setItem('cur_product_id', product_id);
+                window.sessionStorage.setItem('product_page_visits', page_visits);
+                window.should_render_backtolist_link = should_render_link;
+            {/if}
+        })()</script>
     </head>
     {/block}
 
@@ -311,120 +403,73 @@
         {/if}
 
         {block name='layout-header-header'}
-            {block name='layout-header-branding-top-bar'}
-                <div id="header-top-bar" class="d-none topbar-wrapper {if $Einstellungen.template.megamenu.header_full_width === 'Y'}is-fullwidth{/if} {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex{/if}">
-                    <div class="container-fluid {if $Einstellungen.template.megamenu.header_full_width === 'N'}container-fluid-xl{/if} {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex flex-row-reverse{/if}">
-                        {include file='layout/header_top_bar.tpl'}
-                    </div>
-                </div>
-            {/block}
-            <header class="d-print-none {if !$isMobile || $Einstellungen.template.theme.mobile_search_type !== 'fixed'}sticky-top{/if} fixed-navbar" id="jtl-nav-wrapper">
-                {block name='layout-header-container-inner'}
-                    <div class="container-fluid {if $Einstellungen.template.megamenu.header_full_width === 'N'}container-fluid-xl{/if}">
-                    {block name='layout-header-category-nav'}
-                        <div class="toggler-logo-wrapper">
-                            {block name='layout-header-navbar-toggle'}
-                                <button id="burger-menu" class="burger-menu-wrapper navbar-toggler collapsed {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}d-none{/if}" type="button" data-toggle="collapse" data-target="#mainNavigation" aria-controls="mainNavigation" aria-expanded="false" aria-label="Toggle navigation">
-                                    <span class="navbar-toggler-icon"></span>
-                                </button>
-                            {/block}
-
-                            {block name='layout-header-logo'}
-                                <div id="logo" class="logo-wrapper" itemprop="publisher" itemscope itemtype="https://schema.org/Organization">
-                                    <span itemprop="name" class="d-none">{$meta_publisher}</span>
-                                    <meta itemprop="url" content="{$ShopHomeURL}">
-                                    <meta itemprop="logo" content="{$ShopLogoURL}">
-                                    {link class="navbar-brand" href=$ShopHomeURL title=$Einstellungen.global.global_shopname}
-                                    {if isset($ShopLogoURL)}
-                                        {image width=180 height=50 src=$ShopLogoURL
-                                            alt=$Einstellungen.global.global_shopname
-                                            id="shop-logo"
-                                            class="img-aspect-ratio"
-                                        }
-                                    {else}
-                                        <span class="h1">{$Einstellungen.global.global_shopname}</span>
-                                    {/if}
-                                    {/link}
-                                </div>
-                            {/block}
+            {$headerWidth=$Einstellungen.template.header.header_full_width}
+            {if (($Einstellungen.template.header.menu_scroll !== 'menu' && $Einstellungen.template.header.menu_single_row === 'Y')
+                    || $Einstellungen.template.header.menu_single_row === 'N'
+                )
+                && $Einstellungen.template.header.menu_show_topbar === 'Y'
+                && $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}
+                {block name='layout-header-branding-top-bar'}
+                    <div id="header-top-bar" class="d-none topbar-wrapper {if $Einstellungen.template.header.menu_single_row === 'Y'}full-width-mega{/if} {if $Einstellungen.template.header.header_full_width === 'Y'}is-fullwidth{/if} d-lg-flex">
+                        <div class="{if $headerWidth === 'B'}container{else}container-fluid {if $headerWidth === 'N'}container-fluid-xl{/if}{/if} d-lg-flex flex-row-reverse">
+                            {include file='layout/header_top_bar.tpl'}
                         </div>
-                        {navbar toggleable=true fill=true type="expand-lg" class="justify-content-start {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}align-items-center-util{else}align-items-lg-end{/if}"}
-                           {block name='layout-header-search'}
-                                {if $Einstellungen.template.theme.mobile_search_type === 'fixed'}
-                                    <div class="d-lg-none search-form-wrapper-fixed container-fluid container-fluid-xl order-1">
-                                        {include file='snippets/search_form.tpl' id='search-header-mobile-top'}
-                                    </div>
-                                {/if}
-                            {/block}
-
-                            {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}
-                                {block name='layout-header-secure-checkout'}
-                                    <div class="secure-checkout-icon ml-auto-util ml-lg-0">
-                                        {block name='layout-header-secure-checkout-title'}
-                                            <i class="fas fa-lock icon-mr-2"></i>{lang key='secureCheckout' section='checkout'}
-                                        {/block}
-                                    </div>
-                                    <div class="secure-checkout-topbar ml-auto-util d-none d-lg-block">
-                                        {block name='layout-header-secure-include-header-top-bar'}
-                                            {include file='layout/header_top_bar.tpl'}
-                                        {/block}
-                                    </div>
-                                {/block}
-                            {else}
-                                {block name='layout-header-branding-shop-nav'}
-                                    {nav id="shop-nav" right=true class="nav-right order-lg-last nav-icons"}
-                                        {block name='layout-header-branding-shop-nav-include-language-dropdown'}
-                                            {include file='snippets/language_dropdown.tpl' dropdownClass='d-flex d-lg-none'}
-                                        {/block}
-                                        {include file='layout/header_nav_icons.tpl'}
-                                    {/nav}
-                                {/block}
-
-                                {*categories*}
-                                {block name='layout-header-include-categories-mega'}
-                                    <div id="mainNavigation" class="collapse navbar-collapse nav-scrollbar">
-                                        {block name='layout-header-include-include-categories-header'}
-                                            <div class="nav-mobile-header d-lg-none">
-                                                {row class="align-items-center-util"}
-                                                    {col class="nav-mobile-header-toggler"}
-                                                        {block name='layout-header-include-categories-mega-toggler'}
-                                                            <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#mainNavigation" aria-controls="mainNavigation" aria-expanded="false" aria-label="Toggle navigation">
-                                                                <span class="navbar-toggler-icon"></span>
-                                                            </button>
-                                                        {/block}
-                                                    {/col}
-                                                    {col class="col-auto nav-mobile-header-name ml-auto-util"}
-                                                        <span class="nav-offcanvas-title">{lang key='menuName'}</span>
-                                                        {block name='layout-header-include-categories-mega-back'}
-                                                            {link href="#" class="nav-offcanvas-title d-none" data=["menu-back"=>""]}
-                                                                <span class="fas fa-chevron-left icon-mr-2"></span>
-                                                                <span>{lang key='back'}</span>
-                                                            {/link}
-                                                        {/block}
-                                                    {/col}
-                                                {/row}
-                                                <hr class="nav-mobile-header-hr" />
-                                            </div>
-                                        {/block}
-                                        {block name='layout-header-include-include-categories-body'}
-                                            <div class="nav-mobile-body">
-                                                {navbarnav class="nav-scrollbar-inner mr-auto"}
-                                                    {block name='layout-header-include-include-categories-mega'}
-                                                        {include file='snippets/categories_mega.tpl'}
-                                                    {/block}
-                                                {/navbarnav}
-                                            </div>
-                                        {/block}
-                                    </div>
-                                {/block}
-                            {/if}
-                        {/navbar}
-                    {/block}
                     </div>
+                {/block}
+            {/if}
+            <header class="d-print-none {if $Einstellungen.template.header.menu_single_row === 'Y'}full-width-mega{/if}
+                        {if (!$isMobile || $Einstellungen.template.header.mobile_search_type !== 'fixed') && $Einstellungen.template.header.menu_scroll !== 'none'}sticky-top{/if}
+                        fixed-navbar theme-{$Einstellungen.template.theme.theme_default}"
+                    id="jtl-nav-wrapper">
+                {if $Einstellungen.template.header.menu_single_row === 'Y'}
+                    {block name='layout-header-include-header-menu-single-row'}
+                        {include file='layout/header_menu_single_row.tpl'}
+                    {/block}
+                {else}
+                    {block name='layout-header-container-inner'}
+                        <div class="{if $headerWidth === 'B'}container{else}container-fluid {if $headerWidth === 'N'}container-fluid-xl{/if}{/if}">
+                        {block name='layout-header-category-nav'}
+                            {block name='layout-header-category-nav-logo'}
+                                {include file='layout/header_logo.tpl'}
+                            {/block}
+                            {navbar toggleable=true fill=true type="expand-lg" class="justify-content-start {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}align-items-center-util{else}align-items-lg-end{/if}"}
+                                {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}
+                                    {block name='layout-header-secure-checkout'}
+                                        <div class="secure-checkout-icon ml-auto-util ml-lg-0">
+                                            {block name='layout-header-secure-checkout-title'}
+                                                <i class="fas fa-lock icon-mr-2"></i>{lang key='secureCheckout' section='checkout'}
+                                            {/block}
+                                        </div>
+                                        <div class="secure-checkout-topbar ml-auto-util d-none d-lg-block">
+                                            {block name='layout-header-secure-include-header-top-bar'}
+                                                {include file='layout/header_top_bar.tpl'}
+                                            {/block}
+                                        </div>
+                                    {/block}
+                                {else}
+                                    {block name='layout-header-branding-shop-nav'}
+                                        {include file='layout/header_nav_icons.tpl'}
+                                    {/block}
+
+                                    {block name='layout-header-include-categories-mega'}
+                                        {include file='layout/header_categories.tpl' menuMultipleRows=false}
+                                    {/block}
+                                {/if}
+                            {/navbar}
+                        {/block}
+                        </div>
+                    {/block}
+                {/if}
+                {block name='layout-header-search'}
+                    {if $Einstellungen.template.header.mobile_search_type === 'fixed'}
+                        <div class="d-lg-none search-form-wrapper-fixed container-fluid container-fluid-xl order-1">
+                            {include file='snippets/search_form.tpl' id='search-header-mobile-top'}
+                        </div>
+                    {/if}
                 {/block}
             </header>
             {block name='layout-header-search-fixed'}
-                {if $Einstellungen.template.theme.mobile_search_type === 'fixed' && $isMobile}
+                {if $Einstellungen.template.header.mobile_search_type === 'fixed' && $isMobile}
                     <div class="container-fluid container-fluid-xl fixed-search fixed-top smoothscroll-top-search d-lg-none d-none">
                         {include file='snippets/search_form.tpl' id='search-header-mobile-fixed'}
                     </div>
@@ -462,7 +507,12 @@
         {/block}
 
         {block name='layout-header-breadcrumb'}
-            {container fluid=(($Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive) || $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp || (isset($Link) && $Link->getIsFluid())) class="breadcrumb-container"}
+            {container
+                fluid=(($Einstellungen.template.theme.left_sidebar === 'Y' &&
+                    $boxesLeftActive) || $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp ||
+                    (isset($Link) && $Link->getIsFluid()))
+                class="breadcrumb-container"
+            }
                 {include file='layout/breadcrumb.tpl'}
             {/container}
         {/block}
@@ -471,10 +521,10 @@
             <div id="content">
         {/block}
 
-        {if !$bExclusive && !empty($boxes.left|strip_tags|trim) && (($Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive) || $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp)}
+        {if !$bExclusive && $boxes.left !== null && !empty(trim(strip_tags($boxes.left))) && (($Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive) || $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp)}
             {block name='layout-header-content-productlist-starttags'}
-                <div class="row">
-                    <div class="col-lg-8 col-xl-9 ml-auto-util order-lg-1">
+                <div class="row justify-content-lg-end">
+                    <div class="col-lg-8 col-xl-9 ml-auto-util ">
             {/block}
         {/if}
 

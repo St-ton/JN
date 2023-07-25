@@ -8,8 +8,10 @@ use JTL\Cron\Job\GeneralDataProtect;
 use JTL\Cron\Job\ImageCache;
 use JTL\Cron\Job\LicenseCheck;
 use JTL\Cron\Job\Newsletter;
+use JTL\Cron\Job\SendMailQueue;
 use JTL\Cron\Job\Statusmail;
 use JTL\Cron\Job\Store;
+use JTL\Cron\Job\TopSeller;
 use JTL\Cron\Type;
 use JTL\Events\Dispatcher;
 use JTL\Events\Event;
@@ -39,8 +41,12 @@ class JobTypeToJob
                 return GeneralDataProtect::class;
             case Type::STORE:
                 return Store::class;
-            case TYPE::LICENSE_CHECK:
+            case Type::LICENSE_CHECK:
                 return LicenseCheck::class;
+            case Type::TOPSELLER:
+                return TopSeller::class;
+            case Type::MAILQUEUE:
+                return SendMailQueue::class;
             default:
                 $mapping = null;
                 Dispatcher::getInstance()->fire(Event::MAP_CRONJOB_TYPE, ['type' => $type, 'mapping' => &$mapping]);

@@ -16,10 +16,10 @@ use JTL\Update\Migration;
 class Migration_20200107131300 extends Migration implements IMigration
 {
     protected $author      = 'ms';
-    protected $description = 'adds lang var to wishlist section';
+    protected $description = 'Add lang var to wishlist section';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -28,7 +28,7 @@ class Migration_20200107131300 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

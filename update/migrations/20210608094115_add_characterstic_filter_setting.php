@@ -12,14 +12,14 @@ class Migration_20210608094115 extends Migration implements IMigration
     protected $description = 'Add characteristic filter setting';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
         $this->setConfig(
             'merkmalfilter_trefferanzahl_anzeigen',
             'E',
-            \CONF_NAVIGATIONSFILTER,
+            CONF_NAVIGATIONSFILTER,
             'Trefferanzahl bei Merkmalfiltern anzeigen',
             'selectbox',
             183,
@@ -35,7 +35,7 @@ class Migration_20210608094115 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

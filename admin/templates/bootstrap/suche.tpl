@@ -1,12 +1,12 @@
 {if $standalonePage}
     {include file='tpl_inc/header.tpl'}
-    {$cTitel = {__('searchResultsFor')}|sprintf:$query}
+    {$cTitel = sprintf(__('searchResultsFor'), $query)}
     {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel}
     <div class="card">
         <div class="card-body search-page">
 {/if}
 
-{if $adminMenuItems|count}
+{if count($adminMenuItems)}
     <div class="dropdown-header">{__('pagesMenu')}</div>
     <ul class="backend-search-section">
         {foreach $adminMenuItems as $item}
@@ -25,40 +25,37 @@
 {if isset($settings)}
     <div class="dropdown-header">{__('content')}</div>
     <ul>
-        {foreach $settings as $setting}
-            <li>
-                <a class="dropdown-item" href="{$setting->cURL}">
-                    <span class="title">{__($setting->cWertName)}</span>
-                    <span class="path">{$setting->cSektionsPfad}</span>
-                </a>
-                <ul>
-                    {foreach $setting->oEinstellung_arr as $s}
-                        <li tabindex="-1">
-                            <a class="dropdown-item value"
-                               href="
-                               {if $setting->specialSetting === false}einstellungen.php?cSuche={$s->kEinstellungenConf}&einstellungen_suchen=1
-                               {else}
-                               {$setting->cURL}{$setting->settingsAnchor}
-                               {/if}">
-                                <span class="title">{$s->cName}
-                                    {*<small>{$s->cBeschreibung}</small>*}
-                                </span>
-                                <span class="path">{__('settingNumberShort')}: {$s->kEinstellungenConf}</span>
-                            </a>
-                        </li>
-                    {/foreach}
-                </ul>
-            </li>
+        {foreach $settings as $section}
+            {foreach $section->getSubsections() as $sub}
+                {if $sub->show() === true}
+                    <li>
+                        <a class="dropdown-item" href="{$sub->getURL()}">
+                            <span class="title">{__($sub->getName())}</span>
+                            <span class="path">{$sub->getPath()}</span>
+                        </a>
+                        <ul>
+                        {foreach $sub->getItems() as $setting}
+                            <li tabindex="-1">
+                                <a class="dropdown-item value" href="{$setting->getURL()}">
+                                    <span class="title">{$setting->getName()}</span>
+                                    <span class="path">{__('settingNumberShort')}: {$setting->getID()}</span>
+                                </a>
+                            </li>
+                        {/foreach}
+                        </ul>
+                    </li>
+                {/if}
+            {/foreach}
         {/foreach}
     </ul>
 {/if}
 {if isset($shippings)}
     <div class="dropdown-divider dropdown-divider-light"></div>
-    <div class="dropdown-header"><a href="versandarten.php" class="value">{__('shippingTypesOverview')}</a></div>
+    <div class="dropdown-header"><a href="{$adminURL}/shippingmethods" class="value">{__('shippingTypesOverview')}</a></div>
     <ul>
         {foreach $shippings as $shipping}
             <li class="dropdown-item is-form-submit" tabindex="-1">
-                <form method="post" action="versandarten.php">
+                <form method="post" action="{$adminURL}/shippingmethods">
                     {$jtl_token}
                     <input type="hidden" name="edit" value="{$shipping->kVersandart}">
                     <button type="submit" class="btn btn-link p-0">{$shipping->cName}</button>
@@ -69,11 +66,11 @@
 {/if}
 {if isset($paymentMethods)}
     <div class="dropdown-divider dropdown-divider-light"></div>
-    <div class="dropdown-header"><a href="zahlungsarten.php" class="value">{__('paymentTypesOverview')}</a></div>
+    <div class="dropdown-header"><a href="{$adminURL}/paymentmethods" class="value">{__('paymentTypesOverview')}</a></div>
     <ul>
         {foreach $paymentMethods as $paymentMethod}
             <li>
-                <a href="zahlungsarten.php?kZahlungsart={$paymentMethod->kZahlungsart}&token={$smarty.session.jtl_token}" class="dropdown-item value">
+                <a href="{$adminURL}/paymentmethods?kZahlungsart={$paymentMethod->kZahlungsart}&token={$smarty.session.jtl_token}" class="dropdown-item value">
                     {$paymentMethod->cName}
                 </a>
             </li>
@@ -82,11 +79,11 @@
 {/if}
 {if $plugins->isNotEmpty()}
     <div class="dropdown-divider dropdown-divider-light"></div>
-    <div class="dropdown-header"><a href="pluginverwaltung.php" class="value">{__('Plug-in manager')}</a></div>
+    <div class="dropdown-header"><a href="{$adminURL}/pluginmanager" class="value">{__('Plug-in manager')}</a></div>
     <ul>
         {foreach $plugins as $plugin}
             <li>
-                <a href="plugin.php?kPlugin={$plugin->getID()}&token={$smarty.session.jtl_token}" class="dropdown-item value">
+                <a href="{$adminURL}/{JTL\Router\Route::PLUGIN}/{$plugin->getID()}?token={$smarty.session.jtl_token}" class="dropdown-item value">
                     <span class="title">
                         {$plugin->getName()}
                     </span>

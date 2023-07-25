@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Smarty;
 
@@ -11,25 +11,13 @@ use JTL\Language\LanguageHelper;
 class PluginCollection
 {
     /**
-     * @var array
-     */
-    private $config;
-
-    /**
-     * @var LanguageHelper
-     */
-    private $lang;
-
-    /**
      * PluginCollection constructor.
      *
      * @param array          $config
      * @param LanguageHelper $lang
      */
-    public function __construct(array $config, LanguageHelper $lang)
+    public function __construct(private readonly array $config, private readonly LanguageHelper $lang)
     {
-        $this->config = $config;
-        $this->lang   = $lang;
     }
 
     /**
@@ -74,10 +62,10 @@ class PluginCollection
      */
     public function truncate(
         string $string,
-        int $length = 80,
+        int    $length = 80,
         string $etc = '...',
-        bool $break = false,
-        bool $middle = false
+        bool   $break = false,
+        bool   $middle = false
     ): string {
         if ($length === 0) {
             return '';
@@ -99,7 +87,7 @@ class PluginCollection
     /**
      * translation
      *
-     * @param array $params
+     * @param array                     $params
      * @param \Smarty_Internal_Template $template
      * @return void|string
      */
@@ -112,7 +100,7 @@ class PluginCollection
             $res = $this->lang->get($key, $section);
             // Für vsprintf ein String der :: exploded wird
             if (isset($params['printf'])) {
-                $res = \vsprintf($res, \explode(':::', $params['printf']));
+                $res = \vsprintf($res, \explode(':::', (string)$params['printf']));
             }
         }
         if (\SMARTY_SHOW_LANGKEY) {
@@ -162,11 +150,11 @@ class PluginCollection
         if (\DIRECTORY_SEPARATOR === '\\') {
             $_win_from = ['%D', '%h', '%n', '%r', '%R', '%t', '%T'];
             $_win_to   = ['%m/%d/%y', '%b', "\n", '%I:%M:%S %p', '%H:%M', "\t", '%H:%M:%S'];
-            if (\mb_strpos($format, '%e') !== false) {
+            if (\str_contains($format, '%e')) {
                 $_win_from[] = '%e';
                 $_win_to[]   = \sprintf('%\' 2d', \date('j', $timestamp));
             }
-            if (\mb_strpos($format, '%l') !== false) {
+            if (\str_contains($format, '%l')) {
                 $_win_from[] = '%l';
                 $_win_to[]   = \sprintf('%\' 2d', \date('h', $timestamp));
             }

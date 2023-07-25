@@ -577,6 +577,10 @@
             }
         },
 
+        resetForParallax: function() {
+            $(window).trigger('resize').trigger('scroll');
+        },
+
         addCartBtnAnimation: function() {
             var animating = false;
 
@@ -626,7 +630,6 @@
             $('input[name="Versandart"]', '#checkout-shipping-payment').on('change', function() {
                 var id    = parseInt($(this).val());
                 var $form = $(this).closest('form');
-
                 if (isNaN(id)) {
                     return;
                 }
@@ -634,7 +637,14 @@
                 $form.find('fieldset, button[type="submit"]')
                     .attr('disabled', true);
 
-                var url = $('#jtl-io-path').data('path') + '/bestellvorgang.php?kVersandart=' + id;
+                var urlInstance = null;
+                if ($form.length === 1 && $form.attr('action') !== undefined) {
+                    urlInstance = new URL($form.attr('action'));
+                    urlInstance.searchParams.append('kVersandart', '' + id);
+                }
+                var url = urlInstance === null
+                    ? $('#jtl-io-path').data('path') + '/bestellvorgang.php?kVersandart=' + id
+                    : urlInstance.href;
                 $.evo.loadContent(url, function() {
                     $.evo.checkout();
                 }, null, true);
@@ -654,7 +664,7 @@
                         $shippingSwitch.parent().addClass('d-none');
                         if ($shippingSwitch.prop('checked')) {
                             $shippingSwitch.prop('checked', false);
-                            $('#select_shipping_address').collapse('show');
+                            $('#select-shipping-address').collapse('show');
                         }
                     }
                 });
@@ -770,7 +780,7 @@
             $.evo.io().call(
                 'updateWishlistItem',
                 [
-                    $('#' + formID + ' input[name="kWunschliste"]').val(),
+                    parseInt($('#' + formID + ' input[name="kWunschliste"]').val()),
                     $.evo.io().getFormValues(formID)
                 ],
                 $(this) , function(error, data) {
@@ -836,6 +846,10 @@
                 $priceRangeFrom = $("#" + priceRangeID + "-from"),
                 $priceRangeTo = $("#" + priceRangeID + "-to"),
                 $priceSlider = document.getElementById(priceRangeID);
+
+            if($priceSlider === null) {
+                return;
+            }
 
             if (priceRange) {
                 let priceRangeMinMax = priceRange.split('_');
@@ -1010,6 +1024,7 @@
             $searchWrapper.each((i, itemWrapper) => {
                 $(itemWrapper).find(searchInput).on('input', function () {
                     filterSearch($(itemWrapper));
+                    $(itemWrapper).find('.collapse').collapse('show');
                 }).on('keydown', e => {
                     if (e.key === 'Escape') {
                         e.stopPropagation();
@@ -1046,6 +1061,65 @@
             }
         },
 
+        initSliders: function() {
+            let wrapper  = '.js-slider-wrapper',
+                buttonF  = '.js-btn-slider-sf',
+                buttonB  = '.js-btn-slider-sb',
+                items    = '.js-slider-items';
+
+            $(wrapper).each(function (e) {
+                let $buttonF   = $(this).find(buttonF),
+                    $buttonB   = $(this).find(buttonB),
+                    $items     = $(this).find(items);
+
+                $buttonF.on('click', function () {
+                    $items.animate(
+                        { scrollLeft: $items.scrollLeft() + $items.width() },
+                        300,
+                        'swing',
+                        function () {
+                            checkButtonDisable($buttonB, $buttonF, $items);
+                        });
+                });
+                $buttonB.on('click', function () {
+                    $items.animate(
+                        { scrollLeft: $items.scrollLeft() - $items.width() },
+                        300,
+                        'swing',
+                        function () {
+                            checkButtonDisable($buttonB, $buttonF, $items);
+                        });
+                });
+                $items.on('touchend', function (e) {
+                    checkButtonDisable($buttonB, $buttonF, $items);
+                });
+            });
+
+            function checkButtonDisable($buttonB, $buttonF, $items) {
+                let currentScroll = $items.scrollLeft();
+                if (currentScroll <= 1) {
+                    $buttonB.prop('disabled', true);
+                } else {
+                    $buttonB.prop('disabled', false);
+                }
+                if (currentScroll >= $items[0].scrollWidth - $items.width()) {
+                    $buttonF.prop('disabled', true);
+                } else {
+                    $buttonF.prop('disabled', false);
+                }
+            }
+        },
+
+        registerImageHover: function($wrapper) {
+            $(window).on("load resize", function() {
+                let productWrapper = $('.product-wrapper');
+                $.each(productWrapper, function() {
+                    let boxHeight = $(this).height()
+                    $(this).height(boxHeight);
+                })
+            })
+        },
+
         /**
          * $.evo.extended() is deprecated, please use $.evo instead
          */
@@ -1077,6 +1151,8 @@
             this.initPaginationEvents();
             this.initFilterEvents();
             this.initItemSearch('filter');
+            this.initSliders();
+            this.registerImageHover();
         }
     };
 

@@ -51,7 +51,7 @@ class Variation extends AbstractImage
                     ON p.kEigenschaftWert = t.kEigenschaftWert
                 WHERE p.kEigenschaftWert = :vid',
             ['vid' => $req->getID()]
-        )->each(static function ($item, $key) use ($req) {
+        )->each(static function ($item, $key) use ($req): void {
             if ($key === 0 && !empty($item->path)) {
                 $req->setSourcePath($item->path);
             }
@@ -64,10 +64,12 @@ class Variation extends AbstractImage
      */
     public static function getCustomName($mixed): string
     {
-        if (isset($mixed->cPfad)) {
-            $result = \pathinfo($mixed->cPfad)['filename'];
+        if (!empty($mixed->currentImagePath)) {
+            $result = \pathinfo($mixed->currentImagePath, \PATHINFO_FILENAME);
+        } elseif (isset($mixed->cPfad)) {
+            $result = \pathinfo($mixed->cPfad, \PATHINFO_FILENAME);
         } elseif (isset($mixed->path)) {
-            $result = \pathinfo($mixed->path)['filename'];
+            $result = \pathinfo($mixed->path, \PATHINFO_FILENAME);
         } else {
             $result = $mixed->cName;
         }

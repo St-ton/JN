@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Services\JTL;
 
@@ -12,12 +12,12 @@ use JTL\Alert\Alert;
 class AlertService implements AlertServiceInterface
 {
     /**
-    * @var Collection
-    */
-    private $alertList;
+     * @var Collection
+     */
+    private Collection $alertList;
 
     /**
-     * Alertservice constructor.
+     * AlertService constructor.
      */
     public function __construct()
     {
@@ -30,14 +30,10 @@ class AlertService implements AlertServiceInterface
      */
     public function initFromSession(): void
     {
-        $alerts = $_SESSION['alerts'] ?? '';
-
-        if (!empty($alerts)) {
-            foreach ($alerts as $alertSerialized) {
-                $alert = \unserialize($alertSerialized, ['allowed_classes', Alert::class]);
-                if ($alert !== false) {
-                    $this->pushAlert($alert);
-                }
+        foreach ($_SESSION['alerts'] ?? [] as $alertSerialized) {
+            $alert = \unserialize($alertSerialized, ['allowed_classes', Alert::class]);
+            if ($alert !== false) {
+                $this->pushAlert($alert);
             }
         }
     }
@@ -59,9 +55,57 @@ class AlertService implements AlertServiceInterface
     /**
      * @inheritdoc
      */
+    public function addError(string $message, string $key, array $options = null): ?Alert
+    {
+        return $this->addAlert(Alert::TYPE_ERROR, $message, $key, $options);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function addWarning(string $message, string $key, array $options = null): ?Alert
+    {
+        return $this->addAlert(Alert::TYPE_WARNING, $message, $key, $options);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function addInfo(string $message, string $key, array $options = null): ?Alert
+    {
+        return $this->addAlert(Alert::TYPE_INFO, $message, $key, $options);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function addSuccess(string $message, string $key, array $options = null): ?Alert
+    {
+        return $this->addAlert(Alert::TYPE_SUCCESS, $message, $key, $options);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function addDanger(string $message, string $key, array $options = null): ?Alert
+    {
+        return $this->addAlert(Alert::TYPE_DANGER, $message, $key, $options);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function addNotice(string $message, string $key, array $options = null): ?Alert
+    {
+        return $this->addAlert(Alert::TYPE_NOTE, $message, $key, $options);
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getAlert(string $key): ?Alert
     {
-        return $this->getAlertList()->first(static function (Alert $alert) use ($key) {
+        return $this->getAlertList()->first(static function (Alert $alert) use ($key): bool {
             return $alert->getKey() === $key;
         });
     }
@@ -89,7 +133,7 @@ class AlertService implements AlertServiceInterface
      */
     public function alertTypeExists(string $type): bool
     {
-        return \count($this->getAlertList()->filter(static function (Alert $alert) use ($type) {
+        return \count($this->getAlertList()->filter(static function (Alert $alert) use ($type): bool {
             return $alert->getType() === $type;
         })) > 0;
     }
@@ -99,11 +143,11 @@ class AlertService implements AlertServiceInterface
      */
     public function removeAlertByKey(string $key): void
     {
-        $key = $this->getAlertList()->search(static function (Alert $alert) use ($key) {
+        $id = $this->getAlertList()->search(static function (Alert $alert) use ($key): bool {
             return $alert->getKey() === $key;
         });
-        if ($key !== false) {
-            $this->getAlertList()->pull($key);
+        if ($id !== false) {
+            $this->getAlertList()->pull($id);
         }
     }
 

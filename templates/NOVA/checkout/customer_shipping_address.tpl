@@ -34,7 +34,7 @@
                                 "text", "{$prefix}-{$name}-title", "{$prefix}[{$name}][titel]",
                                 {$Lieferadresse->cTitel|default:null},
                                 {lang key='title' section='account data'}, {$Einstellungen.kunden.lieferadresse_abfragen_titel},
-                                null, "shipping honorific-prefix"
+                                null, "shipping honorific-prefix", null, 64
                             ]
                         }
                     {/block}
@@ -80,7 +80,8 @@
                             options=[
                                 "text", "{$prefix}-{$name}-firm", "{$prefix}[{$name}][firma]",
                                 {$Lieferadresse->cFirma|default:null}, {lang key='firm' section='account data'},
-                                $Einstellungen.kunden.lieferadresse_abfragen_firma, null, "shipping organization"
+                                $Einstellungen.kunden.lieferadresse_abfragen_firma, null, "shipping organization",
+                                null, 128
                             ]
                         }
                     {/block}
@@ -93,7 +94,7 @@
                             options=[
                                 "text", "{$prefix}-{$name}-firmext", "{$prefix}[{$name}][firmazusatz]",
                                 {$Lieferadresse->cZusatz|default:null}, {lang key='firmext' section='account data'},
-                                $Einstellungen.kunden.lieferadresse_abfragen_firmazusatz
+                                $Einstellungen.kunden.lieferadresse_abfragen_firmazusatz, null, 60
                             ]
                         }
                     {/block}
@@ -258,8 +259,10 @@
                             data-toggle="postcode"
                             data-city="#{$prefix}-{$name}-city"
                             data-country="#{$prefix}-{$name}-country"
+                            data-chars-left-msg="{lang key='charactersLeft'}"
                             required=true
-                            autocomplete="shipping postal-code"}
+                            autocomplete="shipping postal-code"
+                            maxlength="20"}
                     {/formgroup}
                 {/block}
             {/col}
@@ -292,6 +295,17 @@
                     {/formgroup}
                 {/block}
             {/col}
+        {/block}
+        {block name='checkout-customer-shipping-address-save-preset-wrap'}
+            {if $step == 'Lieferadresse' || $step == 'edit_customer_address'}
+                {col cols=12 md=12}
+                    {block name='checkout-customer-shipping-address-save-preset'}
+                        {checkbox id="checkout_register_save-shipping-address-as-preset" name="{$prefix}[{$name}][saveAsNewShippingAddressPreset]" value="1"}
+                            {lang key='checkoutSaveAsNewShippingAddressPreset' section='account data'}
+                        {/checkbox}
+                    {/block}
+                {/col}
+            {/if}
         {/block}
     {/formrow}
     </fieldset>

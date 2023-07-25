@@ -1,13 +1,14 @@
 {block name='layout-header-shop-nav-compare'}
+    {$productCount = count(JTL\Session\Frontend::getCompareList()->oArtikel_arr)}
     <li id="shop-nav-compare"
         title="{lang key='compare'}"
-        class="nav-item dropdown{if $nSeitenTyp === $smarty.const.PAGE_VERGLEICHSLISTE} active{/if} {if empty($smarty.session.Vergleichsliste->oArtikel_arr)}d-none{/if}">
+        class="nav-item dropdown{if $nSeitenTyp === $smarty.const.PAGE_VERGLEICHSLISTE} active{/if} {if $productCount === 0}d-none{/if}">
         {block name='layout-header-shop-nav-compare-link'}
             {link class='nav-link' data=['toggle'=>'dropdown'] aria=['haspopup'=>'true', 'expanded'=>'false', 'label'=>{lang key='compare'}]}
                 <i class="fas fa-list">
                     <span id="comparelist-badge" class="fa-sup"
-                          title="{if !empty($smarty.session.Vergleichsliste->oArtikel_arr)}{$smarty.session.Vergleichsliste->oArtikel_arr|count}{/if}">
-                        {if !empty($smarty.session.Vergleichsliste->oArtikel_arr)}{$smarty.session.Vergleichsliste->oArtikel_arr|count}{/if}
+                          title="{$productCount}">
+                        {$productCount}
                     </span>
                 </i>
             {/link}

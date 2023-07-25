@@ -12,7 +12,7 @@ class Migration_20210223120600 extends Migration implements IMigration
     protected $description = 'Separate shipping company';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -51,7 +51,7 @@ class Migration_20210223120600 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

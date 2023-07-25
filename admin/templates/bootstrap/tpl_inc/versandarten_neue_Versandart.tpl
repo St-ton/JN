@@ -1,6 +1,6 @@
 <script type="text/javascript">
     {assign var=addOne value=1}
-    var i = {if isset($VersandartStaffeln) && $VersandartStaffeln|@count > 0}Number({$VersandartStaffeln|@count}) + 1{else}2{/if};
+    var i = {if isset($VersandartStaffeln) && count($VersandartStaffeln) > 0}Number({count($VersandartStaffeln)}) + 1{else}2{/if};
     function addInputRow() {ldelim}
         $('#price_range tbody').append('<tr><td><div class="input-group"><span class="input-group-addon"><label>{__('upTo')}</label></span><input type="text" name="bis[]"  id="bis' + i + '" class="form-control kilogram"><span class="input-group-addon"><label>{if isset($einheit)}{$einheit}{/if}</label></span></div></td><td class="text-center"><div class="input-group"><span class="input-group-addon"><label>{__('amount')}</label></span><input type="text" name="preis[]"  id="preis' + i + '" class="form-control price_large"></div></td></tr>');
         i += 1;
@@ -73,13 +73,13 @@
 {assign var=cBeschreibung value=__('createShippingMethodDesc')}
 
 {if isset($Versandart->kVersandart) && $Versandart->kVersandart > 0}
-    {assign var=cTitel value=__('modifyedShippingTypeTitle')|sprintf:$Versandart->cName}
+    {assign var=cTitel value=sprintf(__('modifyedShippingTypeTitle'), $Versandart->cName)}
     {assign var=cBeschreibung value=""}
 {/if}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=$cBeschreibung}
 <div id="content">
-    <form name="versandart_neu" method="post" action="versandarten.php">
+    <form name="versandart_neu" method="post" action="{$adminURL}{$route}">
         {$jtl_token}
         <input type="hidden" name="neueVersandart" value="1" />
         <input type="hidden" name="kVersandberechnung" value="{$versandberechnung->kVersandberechnung}" />
@@ -255,7 +255,7 @@
                                 <table id="price_range" class="table">
                                     <thead></thead>
                                     <tbody>
-                                    {if isset($VersandartStaffeln) && $VersandartStaffeln|@count > 0}
+                                    {if isset($VersandartStaffeln) && count($VersandartStaffeln) > 0}
                                         {foreach $VersandartStaffeln as $oPreisstaffel}
                                             {if $oPreisstaffel->fBis != 999999999}
                                                 <tr>
@@ -391,7 +391,7 @@
                                                     {else}
                                                         {$vkID = '-'|explode:$VK}
                                                         {foreach $versandKlassen as $vclass}
-                                                        <option value="{$vclass->kVersandklasse}"{if $vclass->kVersandklasse|in_array:$vkID} selected{/if}>{$vclass->cName}</option>
+                                                        <option value="{$vclass->kVersandklasse}"{if in_array($vclass->kVersandklasse, $vkID)} selected{/if}>{$vclass->cName}</option>
                                                     {/foreach}
                                                     {/if}
                                                 </select>
@@ -576,9 +576,12 @@
         <div class="save-wrapper">
             <div class="row">
                 <div class="ml-auto col-sm-6 col-lg-auto">
-                    <a href="versandarten.php" title="{__('cancel')}" class="btn btn-outline-primary btn-block">
+                    <a href="{$adminURL}{$route}" title="{__('cancel')}" class="btn btn-outline-primary btn-block">
                         {__('cancelWithIcon')}
                     </a>
+                </div>
+                <div class="col-sm-6 col-lg-auto">
+                    {include file='snippets/buttons/saveAndContinueButton.tpl'}
                 </div>
                 <div class="col-sm-6 col-lg-auto">
                     <button type="submit"

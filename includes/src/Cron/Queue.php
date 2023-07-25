@@ -4,6 +4,7 @@ namespace JTL\Cron;
 
 use DateTime;
 use JTL\DB\DbInterface;
+use JTL\Shop;
 use Psr\Log\LoggerInterface;
 use stdClass;
 
@@ -14,36 +15,23 @@ use stdClass;
 class Queue
 {
     /**
-     * @var QueueEntry[]
-     */
-    private $queueEntries = [];
-
-    /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
-     * @var JobFactory
-     */
-    private $factory;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
      * Queue constructor.
      * @param DbInterface     $db
      * @param LoggerInterface $logger
      * @param JobFactory      $factory
+     * @param int             $timestampCronHasStartedAt
+     * @since 5.3.0
      */
-    public function __construct(DbInterface $db, LoggerInterface $logger, JobFactory $factory)
-    {
-        $this->db      = $db;
-        $this->logger  = $logger;
-        $this->factory = $factory;
+    public function __construct(
+        private readonly DbInterface     $db,
+        private readonly LoggerInterface $logger,
+        private readonly JobFactory      $factory,
+        private int $timestampCronHasStartedAt = 0
+    ) {
+        if ($this->timestampCronHasStartedAt === 0) {
+            $this->timestampCronHasStartedAt = \time();
+        }
+        Shop::Container()->getGetText()->loadAdminLocale('pages/cron');
     }
 
     /**
@@ -51,17 +39,20 @@ class Queue
      */
     public function loadQueueFromDB(): array
     {
-        $this->queueEntries = $this->db->getCollection(
-            'SELECT *
+        $queueEntries = $this->db->getCollection(
+            'SELECT tjobqueue.*, tcron.nextStart, tcron.startTime AS cronStartTime, tcron.frequency, ' .
+                    $this->timestampCronHasStartedAt . ' AS cronHasStartedAt
                 FROM tjobqueue
-                WHERE isRunning = 0
-                    AND startTime <= NOW()'
-        )->map(static function ($e) {
+                JOIN tcron
+                    ON tcron.cronID = tjobqueue.cronID
+                WHERE tjobqueue.isRunning = 0
+                    AND tjobqueue.startTime <= NOW()'
+        )->map(static function ($e): QueueEntry {
             return new QueueEntry($e);
         })->toArray();
-        $this->logger->debug(\sprintf('Loaded %d existing job(s).', \count($this->queueEntries)));
+        $this->logger->debug(\sprintf('Loaded %d existing job(s).', \count($queueEntries)));
 
-        return $this->queueEntries;
+        return $queueEntries;
     }
 
     /**
@@ -75,7 +66,8 @@ class Queue
                 WHERE isRunning = 1
                     AND startTime <= NOW()
                     AND lastStart IS NOT NULL
-                    AND DATE_SUB(CURTIME(), INTERVAL ' . \QUEUE_MAX_STUCK_HOURS . ' Hour) > lastStart'
+                    AND DATE_SUB(CURTIME(), INTERVAL :ntrvl Hour) > lastStart',
+            ['ntrvl' => \QUEUE_MAX_STUCK_HOURS]
         );
     }
 
@@ -118,8 +110,9 @@ class Queue
         if ($affected > 0) {
             $this->logger->debug(\sprintf('Unstuck %d job(s).', $affected));
         }
-        $this->loadQueueFromDB();
-        foreach ($this->queueEntries as $i => $queueEntry) {
+        $queueEntries = $this->loadQueueFromDB();
+        \shuffle($queueEntries);
+        foreach ($queueEntries as $i => $queueEntry) {
             if ($i >= \JOBQUEUE_LIMIT_JOBS) {
                 $this->logger->debug(\sprintf('Job limit reached after %d jobs.', \JOBQUEUE_LIMIT_JOBS));
                 break;
@@ -130,15 +123,30 @@ class Queue
             $queueEntry->isRunning     = 1;
             $this->logger->notice('Got job ' . \get_class($job)
                 . ' (ID = ' . $job->getCronID()
-                . ', type = ' . $job->getType() . ')');
+                . ', type = ' . $job->getType()
+                . ', frequency = ' . $job->getFrequency() . ')');
             $job->start($queueEntry);
+
             $queueEntry->isRunning = 0;
             $queueEntry->lastStart = new DateTime();
+
+            $st        = $queueEntry->cronStartTime;
+            $now       = new DateTime();
+            $nextStart = new DateTime();
+            $nextStart->setTime((int)$st->format('H'), (int)$st->format('i'), (int)$st->format('s'));
+            if ($job->getFrequency() > 0) {
+                while ($nextStart <= $now) {
+                    $nextStart->modify('+' . $job->getFrequency() . ' hours');
+                }
+            }
             $this->db->update(
                 'tcron',
                 'cronID',
                 $job->getCronID(),
-                (object)['lastFinish' => $queueEntry->lastFinish->format('Y-m-d H:i')]
+                (object)[
+                    'nextStart'  => $nextStart->format('Y-m-d H:i:s'),
+                    'lastFinish' => $queueEntry->lastFinish->format('Y-m-d H:i')
+                ]
             );
             \executeHook(\HOOK_JOBQUEUE_INC_BEHIND_SWITCH, [
                 'oJobQueue' => $queueEntry,
@@ -153,6 +161,6 @@ class Queue
         }
         $checker->unlock();
 
-        return \count($this->queueEntries);
+        return \count($queueEntries);
     }
 }

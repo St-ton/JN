@@ -5,6 +5,7 @@ namespace JTL\Console;
 use JTL\Console\Command\Backup\DatabaseCommand;
 use JTL\Console\Command\Backup\FilesCommand;
 use JTL\Console\Command\Cache\ClearObjectCacheCommand;
+use JTL\Console\Command\Cache\CreateImagesCommand;
 use JTL\Console\Command\Cache\DbesTmpCommand;
 use JTL\Console\Command\Cache\DeleteFileCacheCommand;
 use JTL\Console\Command\Cache\DeleteTemplateCacheCommand;
@@ -27,7 +28,10 @@ use JTL\Plugin\Admin\Listing;
 use JTL\Plugin\Admin\ListingItem;
 use JTL\Plugin\Admin\Validation\LegacyPluginValidator;
 use JTL\Plugin\Admin\Validation\PluginValidator;
+use JTL\Router\Router;
+use JTL\Router\State;
 use JTL\Shop;
+use JTL\Shopsetting;
 use JTL\XMLParser;
 use JTLShop\SemVer\Version;
 use RuntimeException;
@@ -48,32 +52,39 @@ use Symfony\Component\Finder\SplFileInfo;
 class Application extends BaseApplication
 {
     /**
-     * @var ConsoleIO
+     * @var ConsoleIO|null
      */
-    protected $io;
+    protected ?ConsoleIO $io = null;
 
     /**
      * @var bool
      */
-    protected $devMode = false;
+    protected bool $devMode = false;
 
     /**
      * @var bool
      */
-    protected $isInstalled = false;
+    protected bool $isInstalled = false;
 
     /**
      * Application constructor.
      */
     public function __construct()
     {
-        $this->devMode     = !empty(\APPLICATION_BUILD_SHA) && \APPLICATION_BUILD_SHA === '#DEV#' ?? false;
+        $this->devMode     = \APPLICATION_BUILD_SHA === '#DEV#' ?? false;
         $this->isInstalled = \defined('BLOWFISH_KEY');
         if ($this->isInstalled) {
             $cache = Shop::Container()->getCache();
             $cache->setJtlCacheConfig(
                 Shop::Container()->getDB()->selectAll('teinstellungen', 'kEinstellungenSektion', \CONF_CACHING)
             );
+            Shop::setRouter(new Router(
+                Shop::Container()->getDB(),
+                $cache,
+                new State(),
+                Shop::Container()->getAlertService(),
+                Shopsetting::getInstance()->getAll()
+            ));
         }
 
         parent::__construct('JTL-Shop', \APPLICATION_VERSION . ' - ' . ($this->devMode ? 'develop' : 'production'));
@@ -92,12 +103,11 @@ class Application extends BaseApplication
         if (Version::parse($version->nVersion ?? '400')->smallerThan(Version::parse('500'))) {
             return;
         }
-        $cache           = Shop::Container()->getCache();
         $parser          = new XMLParser();
         $validator       = new LegacyPluginValidator($db, $parser);
         $modernValidator = new PluginValidator($db, $parser);
-        $listing         = new Listing($db, $cache, $validator, $modernValidator);
-        $compatible      = $listing->getAll()->filter(static function (ListingItem $i) {
+        $listing         = new Listing($db, Shop::Container()->getCache(), $validator, $modernValidator);
+        $compatible      = $listing->getAll()->filter(static function (ListingItem $i): bool {
             return $i->isShop5Compatible();
         });
         /** @var ListingItem $plugin */
@@ -130,9 +140,9 @@ class Application extends BaseApplication
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
-    public function doRun(InputInterface $input, OutputInterface $output)
+    public function doRun(InputInterface $input, OutputInterface $output): int
     {
         $this->io = new ConsoleIO($input, $output, $this->getHelperSet());
 
@@ -148,7 +158,7 @@ class Application extends BaseApplication
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function getDefaultCommands(): array
     {
@@ -165,6 +175,7 @@ class Application extends BaseApplication
             $cmds[] = new DbesTmpCommand();
             $cmds[] = new ClearObjectCacheCommand();
             $cmds[] = new WarmCacheCommand();
+            $cmds[] = new CreateImagesCommand();
             $cmds[] = new CreateModelCommand();
             $cmds[] = new LESSCommand();
             $cmds[] = new SASSCommand();

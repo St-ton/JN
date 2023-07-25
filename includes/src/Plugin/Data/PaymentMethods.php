@@ -16,15 +16,15 @@ class PaymentMethods
     /**
      * @var array
      */
-    private $methods = [];
+    private array $methods = [];
 
     /**
      * @var array
      */
-    private $classes = [];
+    private array $classes = [];
 
     /**
-     * @param array $data
+     * @param array           $data
      * @param PluginInterface $plugin
      * @return PaymentMethods
      */
@@ -96,7 +96,7 @@ class PaymentMethods
      */
     public function getMethodByID(string $id): ?PaymentMethod
     {
-        return first($this->methods, static function (PaymentMethod $method) use ($id) {
+        return first($this->methods, static function (PaymentMethod $method) use ($id): bool {
             return $method->getModuleID() === $id;
         });
     }

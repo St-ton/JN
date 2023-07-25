@@ -32,7 +32,7 @@
             </div>
         </div>
         <div class="row mb-5">
-            {$imgCount = $recommendation->getImages()|count}
+            {$imgCount = count($recommendation->getImages())}
             {foreach $recommendation->getImages() as $image}
                 <div class="col-md{if $imgCount < 5}-3{/if} text-center pr-md-4 pr-0">
                     <img src="{$image}" class="object-fit-cover mb-md-0 mb-2" loading="lazy">

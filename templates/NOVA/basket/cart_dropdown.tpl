@@ -1,14 +1,24 @@
 {block name='basket-cart-dropdown'}
     <div class="cart-dropdown dropdown-menu dropdown-menu-right lg-min-w-lg">
-        {if $smarty.session.Warenkorb->PositionenArr|@count > 0}
+        {$cartPositions = JTL\Session\Frontend::getCart()->PositionenArr}
+        {block name='basket-cart-dropdown-max-cart-positions'}
+            {$maxCartPositions = 15}
+        {/block}
+        {if $cartPositions|count > 0}
             {block name='basket-cart-dropdown-cart-items-content'}
+                {block name='basket-cart-dropdown-cart-items'}
                 <div class="table-responsive max-h-sm lg-max-h">
+                    {block name='basket-cart-dropdown-cart-items-table'}
                     <table class="table dropdown-cart-items">
                         <tbody>
                             {block name='basket-cart-dropdown-cart-item'}
-                                {foreach $smarty.session.Warenkorb->PositionenArr as $oPosition}
+                                {foreach $cartPositions as $oPosition}
+                                    {if $oPosition@iteration > $maxCartPositions}
+                                        {break}
+                                    {/if}
                                     {if !$oPosition->istKonfigKind()}
-                                        {if $oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL || $oPosition->nPosTyp == C_WARENKORBPOS_TYP_GRATISGESCHENK}
+                                        {if $oPosition->nPosTyp == $smarty.const.C_WARENKORBPOS_TYP_ARTIKEL
+                                        || $oPosition->nPosTyp == $smarty.const.C_WARENKORBPOS_TYP_GRATISGESCHENK}
                                             <tr>
                                                 <td>
                                                     {formrow}
@@ -20,7 +30,7 @@
                                                                         item=$oPosition->Artikel
                                                                         square=false
                                                                         srcSize='xs'
-                                                                        sizes='45px'
+                                                                        sizes='50px'
                                                                         class='img-sm'}
                                                                 {/link}
                                                             {/col}
@@ -74,7 +84,19 @@
                             {/block}
                         </tbody>
                     </table>
+                    {/block}
+                    {block name='basket-cart-dropdown-items-item-overflow-notice'}
+                        {if $cartPositions|count > $maxCartPositions}
+                            <hr>
+                            <div class="item-overflow-notice">
+                                {lang key='itemOverflowNotice' section='basket' printf=((int)($cartPositions|count)-$maxCartPositions)|cat:':::'|cat:{get_static_route id='warenkorb.php'}}
+                            </div>
+                            <hr>
+                        {/if}
+                    {/block}
                 </div>
+                {/block}
+                {block name='basket-cart-dropdown-cart-items-body'}
                 <div class="dropdown-body">
                     {block name='basket-cart-dropdown-total'}
                         <ul class="list-unstyled">
@@ -89,7 +111,7 @@
                                     </li>
                                 {/block}
                             {/if}
-                            {if $Einstellungen.global.global_steuerpos_anzeigen !== 'N' && isset($Steuerpositionen) && $Steuerpositionen|@count > 0}
+                            {if $Einstellungen.global.global_steuerpos_anzeigen !== 'N' && isset($Steuerpositionen) && $Steuerpositionen|count > 0}
                                 {block name='basket-cart-dropdown-cart-item-tax'}
                                     {foreach $Steuerpositionen as $Steuerposition}
                                         <li class="cart-dropdown-total-item">
@@ -147,6 +169,7 @@
                         {/block}
                     {/if}
                 </div>
+                {/block}
             {/block}
         {else}
             {block name='basket-cart-dropdown-hint-empty'}

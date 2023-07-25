@@ -15,23 +15,39 @@ use JTL\Update\Migration;
 class Migration_20210219133407 extends Migration implements IMigration
 {
     protected $author = 'je';
-    protected $description = 'change_vorausgewaehltes_land_conf_to_selectbox';
+    protected $description = 'Change default country config to selectbox';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
-        $this->execute("UPDATE teinstellungenconf SET cInputTyp='selectbox' WHERE cWertName = 'kundenregistrierung_standardland'");
-        $this->execute("UPDATE teinstellungenconf SET cInputTyp='selectbox' WHERE cWertName = 'lieferadresse_abfragen_standardland'");
+        $this->execute(
+            "UPDATE teinstellungenconf
+                SET cInputTyp = 'selectbox'
+                WHERE cWertName = 'kundenregistrierung_standardland'
+        ");
+        $this->execute(
+            "UPDATE teinstellungenconf
+                SET cInputTyp = 'selectbox'
+                WHERE cWertName = 'lieferadresse_abfragen_standardland'
+        ");
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {
-        $this->execute("UPDATE teinstellungenconf SET cInputTyp='text' WHERE cWertName = 'kundenregistrierung_standardland'");
-        $this->execute("UPDATE teinstellungenconf SET cInputTyp='text' WHERE cWertName = 'lieferadresse_abfragen_standardland'");
+        $this->execute(
+            "UPDATE teinstellungenconf
+                SET cInputTyp = 'text'
+                WHERE cWertName = 'kundenregistrierung_standardland'
+        ");
+        $this->execute(
+            "UPDATE teinstellungenconf
+                SET cInputTyp = 'text'
+                WHERE cWertName = 'lieferadresse_abfragen_standardland'
+        ");
     }
 }

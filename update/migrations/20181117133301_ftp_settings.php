@@ -15,10 +15,10 @@ use JTL\Update\Migration;
 class Migration_20181117133301 extends Migration implements IMigration
 {
     protected $author      = 'aj';
-    protected $description = 'ftp settings';
+    protected $description = 'FTP settings';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -65,7 +65,7 @@ class Migration_20181117133301 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

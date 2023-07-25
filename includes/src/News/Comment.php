@@ -2,6 +2,7 @@
 
 namespace JTL\News;
 
+use DateTime;
 use JTL\DB\DbInterface;
 use JTL\MagicCompatibilityTrait;
 
@@ -11,13 +12,12 @@ use JTL\MagicCompatibilityTrait;
  */
 class Comment implements CommentInterface
 {
-
     use MagicCompatibilityTrait;
 
     /**
      * @var array
      */
-    protected static $mapping = [
+    protected static array $mapping = [
         'cKommentar'   => 'Text',
         'cName'        => 'Name',
         'dErstellt'    => 'DateCreatedCompat',
@@ -27,67 +27,67 @@ class Comment implements CommentInterface
     /**
      * @var string
      */
-    private $newsTitle = '';
+    private string $newsTitle = '';
 
     /**
      * @var int
      */
-    private $id;
+    private int $id = 0;
 
     /**
      * @var int
      */
-    private $newsID;
+    private int $newsID = 0;
 
     /**
      * @var int
      */
-    private $customerID = 0;
+    private int $customerID = 0;
 
     /**
      * @var bool
      */
-    private $isActive = false;
+    private bool $isActive = false;
 
     /**
      * @var string
      */
-    private $name;
+    private string $name;
 
     /**
      * @var string
      */
-    private $mail;
+    private string $mail;
 
     /**
      * @var string
      */
-    private $text;
+    private string $text;
 
     /**
      * @var int
      */
-    private $isAdmin;
+    private int $isAdmin;
 
     /**
      * @var int
      */
-    private $parentCommentID;
+    private int $parentCommentID;
 
     /**
      * @var array
      */
-    private $childComments = [];
+    private array $childComments = [];
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
-    private $dateCreated;
+    private DateTime $dateCreated;
 
     /**
-     * @var DbInterface
+     * @var DbInterface|null
      */
-    private $db;
+    private ?DbInterface $db;
 
     /**
      * Comment constructor.
@@ -118,7 +118,7 @@ class Comment implements CommentInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function loadByParentCommentID(int $parentID): ?CommentInterface
     {
@@ -285,7 +285,7 @@ class Comment implements CommentInterface
     /**
      * @inheritdoc
      */
-    public function getDateCreated(): \DateTime
+    public function getDateCreated(): DateTime
     {
         return $this->dateCreated;
     }
@@ -323,6 +323,62 @@ class Comment implements CommentInterface
     }
 
     /**
+     * @inheritdoc
+     */
+    public function getIsAdmin(): int
+    {
+        return $this->isAdmin;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setIsAdmin(int $isAdmin): void
+    {
+        $this->isAdmin = $isAdmin;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getParentCommentID(): int
+    {
+        return $this->parentCommentID;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setParentCommentID(int $parentCommentID): void
+    {
+        $this->parentCommentID = $parentCommentID;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getChildComments(): array
+    {
+        return $this->childComments;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setChildComments(array $childComments): void
+    {
+        $this->childComments = $childComments;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setChildComment(Comment $childComment): void
+    {
+        $this->childComments[] = $childComment;
+    }
+
+    /**
      * @return array
      */
     public function __debugInfo()
@@ -331,61 +387,5 @@ class Comment implements CommentInterface
         $res['db'] = '*truncated*';
 
         return $res;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getIsAdmin(): int
-    {
-        return $this->isAdmin;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setIsAdmin(int $isAdmin): void
-    {
-        $this->isAdmin = $isAdmin;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getParentCommentID(): int
-    {
-        return $this->parentCommentID;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setParentCommentID(int $parentCommentID): void
-    {
-        $this->parentCommentID = $parentCommentID;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getChildComments(): array
-    {
-        return $this->childComments;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setChildComments(array $childComments): void
-    {
-        $this->childComments = $childComments;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setChildComment(object $childComment): void
-    {
-        $this->childComments[] = $childComment;
     }
 }

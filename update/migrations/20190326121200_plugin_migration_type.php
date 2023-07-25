@@ -13,10 +13,10 @@ use JTL\Update\Migration;
 class Migration_20190326121200 extends Migration implements IMigration
 {
     protected $author      = 'fm';
-    protected $description = 'change nVersion type';
+    protected $description = 'Change nVersion type';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -24,7 +24,7 @@ class Migration_20190326121200 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

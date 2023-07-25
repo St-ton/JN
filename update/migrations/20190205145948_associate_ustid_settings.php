@@ -15,10 +15,10 @@ use JTL\Update\Migration;
 class Migration_20190205145948 extends Migration implements IMigration
 {
     protected $author      = 'cr';
-    protected $description = 'associate UstId-settings';
+    protected $description = 'Associate UstId-settings';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -26,7 +26,7 @@ class Migration_20190205145948 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

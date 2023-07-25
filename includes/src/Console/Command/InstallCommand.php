@@ -35,7 +35,7 @@ class InstallCommand extends Command
     /**
      * @var array
      */
-    protected static $writeablePaths = [
+    protected static array $writeablePaths = [
         'admin/includes/emailpdfs',
         'admin/templates_c',
         'bilder/brandingbilder',
@@ -86,7 +86,7 @@ class InstallCommand extends Command
     ];
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function configure(): void
     {
@@ -125,9 +125,9 @@ class InstallCommand extends Command
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
-    protected function interact(InputInterface $input, OutputInterface $output)
+    protected function interact(InputInterface $input, OutputInterface $output): void
     {
         $io              = $this->getIO();
         $requiredOptions = [
@@ -162,9 +162,9 @@ class InstallCommand extends Command
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io              = $this->getIO();
         $uri             = $this->getOption('shop-url');
@@ -193,10 +193,10 @@ class InstallCommand extends Command
         if ($uri !== null) {
             if ($scheme = \parse_url($uri, \PHP_URL_SCHEME)) {
                 if (!\in_array($scheme, ['http', 'https'], true)) {
-                    throw new Exception("Invalid Shop url '{$uri}'");
+                    throw new Exception(\sprintf('Invalid Shop URL: "%s"', $uri));
                 }
             } else {
-                throw new Exception("Invalid Shop url '{$uri}'");
+                throw new Exception(\sprintf('Invalid Shop URL: "%s"', $uri));
             }
         }
         $parsedUri = \parse_url($uri);
@@ -236,7 +236,7 @@ class InstallCommand extends Command
             }
             $io->error('Failed');
 
-            return 1;
+            return Command::FAILURE;
         }
         $io->success('All requirements are met');
 
@@ -261,7 +261,7 @@ class InstallCommand extends Command
             $this->printDirCheckTable($dirCheck['testresults'], $localFilesystem);
             $io->error('File permissions are incorrect.');
 
-            return 1;
+            return Command::FAILURE;
         }
 
         $io->setStep($this->currentStep++, $this->steps, 'DB credential check');
@@ -325,7 +325,7 @@ class InstallCommand extends Command
 
         $io->success('Installation completed.');
 
-        return 0;
+        return Command::SUCCESS;
     }
 
     /**

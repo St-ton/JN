@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Campaign;
 use JTL\Helpers\Request;
@@ -42,7 +42,7 @@ if (Request::verifyGPCDataInt('kK') > 0
         if ($id > 0) {
             $campaign = new Campaign($campaignID);
             // Kampagnenbesucher in die Session
-            $_SESSION['Kampagnenbesucher'] = $campaign;
+            $_SESSION['Kampagnenbesucher'][$campaign->kKampagne] = $campaign;
 
             Campaign::setCampaignAction(KAMPAGNE_DEF_NEWSLETTER, $id, 1);
         }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL;
 
@@ -145,7 +145,7 @@ class Staat
         $states = [];
         foreach ($countries as $country) {
             $options = [
-                'Staat'   => $country->kStaat,
+                'Staat'   => (int)$country->kStaat,
                 'LandIso' => $country->cLandIso,
                 'Name'    => $country->cName,
                 'Code'    => $country->cCode,
@@ -162,7 +162,7 @@ class Staat
      * @param string $countryISO
      * @return null|Staat
      */
-    public static function getRegionByIso(string $code, $countryISO = ''): ?Staat
+    public static function getRegionByIso(string $code, string $countryISO = ''): ?Staat
     {
         $key2 = null;
         $val2 = null;
@@ -171,11 +171,11 @@ class Staat
             $val2 = $countryISO;
         }
         $data = Shop::Container()->getDB()->select('tstaat', 'cCode', $code, $key2, $val2);
-        if (($data->kStaat ?? 0) <= 0) {
+        if ($data === null || $data->kStaat <= 0) {
             return null;
         }
         $options = [
-            'Staat'   => $data->kStaat,
+            'Staat'   => (int)$data->kStaat,
             'LandIso' => $data->cLandIso,
             'Name'    => $data->cName,
             'Code'    => $data->cCode,
@@ -191,11 +191,11 @@ class Staat
     public static function getRegionByName(string $name): ?Staat
     {
         $data = Shop::Container()->getDB()->select('tstaat', 'cName', $name);
-        if (($data->kStaat ?? 0) <= 0) {
+        if ($data === null || $data->kStaat <= 0) {
             return null;
         }
         $options = [
-            'Staat'   => $data->kStaat,
+            'Staat'   => (int)$data->kStaat,
             'LandIso' => $data->cLandIso,
             'Name'    => $data->cName,
             'Code'    => $data->cCode,

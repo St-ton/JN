@@ -22,6 +22,8 @@ class OrderConfirmation extends OrderShipped
             return;
         }
         $smarty->assign('Verfuegbarkeit_arr', $data->cVerfuegbarkeit_arr ?? null);
+        $smarty->assign('totalLocalized', $data->totalLocalized ?? null);
+        $smarty->assign('payments', $data->payments ?? null);
         $moduleID = $data->tbestellung->Zahlungsart->cModulId ?? null;
         if (!empty($moduleID)) {
             $paymentConf = $this->db->getSingleObject(

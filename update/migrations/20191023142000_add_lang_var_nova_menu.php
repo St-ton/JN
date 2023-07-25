@@ -16,10 +16,10 @@ use JTL\Update\Migration;
 class Migration_20191023142000 extends Migration implements IMigration
 {
     protected $author      = 'mh';
-    protected $description = 'add lang vars for nova menu';
+    protected $description = 'Add lang vars for nova menu';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -30,7 +30,7 @@ class Migration_20191023142000 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

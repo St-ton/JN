@@ -13,11 +13,11 @@ class Migration_20200421081600 extends Migration implements IMigration
     protected $description = 'Add vimeo consent item';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
-        $id = $this->__execute(
+        $id = $this->getDB()->query(
             "INSERT INTO `tconsent`
                 (`itemID`, `company`, `pluginID`, `active`)
                 VALUES ('vimeo', 'Vimeo', 0, 1)",
@@ -50,7 +50,7 @@ class Migration_20200421081600 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

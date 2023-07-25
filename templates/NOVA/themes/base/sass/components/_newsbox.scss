@@ -40,6 +40,9 @@
 	}
 	.blog-details-content {
 		margin-bottom: map-get($spacers, 4);
+		.img-fluid{
+			height: auto !important;
+		}
 	}
 	.blog-details-save {
 		margin-left: auto;
@@ -95,7 +98,7 @@
 		}
 	}
 	.blog-overview-hr {
-		margin-top: - map-get($spacers, 1);
+		margin-top: -(map-get($spacers, 1));
 		margin-bottom: map-get($spacers, 5);
 	}
 }

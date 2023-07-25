@@ -6,6 +6,7 @@ use Exception;
 use InvalidArgumentException;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
+use JTL\L10n\GetText;
 use JTL\OPC\Portlets\MissingPortlet\MissingPortlet;
 use JTL\Plugin\PluginLoader;
 use JTL\Update\Updater;
@@ -19,33 +20,22 @@ use function Functional\map;
 class DB
 {
     /**
-     * @var DbInterface
-     */
-    protected $shopDB;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    protected $cache;
-
-    /**
      * @var array
      */
-    protected $mapping;
+    protected array $mapping;
 
     /**
      * DB constructor.
      * @param DbInterface       $shopDB
      * @param JTLCacheInterface $cache
+     * @param GetText           $getText
      */
-    public function __construct(DbInterface $shopDB, JTLCacheInterface $cache)
-    {
-        $this->shopDB  = $shopDB;
-        $this->cache   = $cache;
-        $this->mapping = $this->cache->get('jtl_opc_mapping');
-        if ($this->mapping === false) {
-            $this->mapping = [];
-        }
+    public function __construct(
+        protected DbInterface       $shopDB,
+        protected JTLCacheInterface $cache,
+        protected GetText           $getText
+    ) {
+        $this->mapping = ($mapping = $this->cache->get('jtl_opc_mapping')) === false ? [] : $mapping;
     }
 
     /**
@@ -91,11 +81,9 @@ class DB
     public function loadBlueprint(Blueprint $blueprint): void
     {
         $blueprintDB = $this->shopDB->select('topcblueprint', 'kBlueprint', $blueprint->getId());
-
-        if (!\is_object($blueprintDB)) {
+        if ($blueprintDB === null) {
             throw new Exception('The OPC blueprint with the id \'' . $blueprint->getId() . '\' could not be found.');
         }
-
         $content = \json_decode($blueprintDB->cJson, true);
 
         $blueprint->setId((int)$blueprintDB->kBlueprint)
@@ -258,23 +246,22 @@ class DB
 
         if ($installed && $active) {
             $portlet = \class_exists($fullClass)
-                ? new $fullClass($class, $data->kPortlet, $pluginID)
-                : new Portlet($class, $data->kPortlet, $pluginID);
+                ? new $fullClass($class, $data->kPortlet, $this->shopDB, $this->cache, $this->getText, $plugin)
+                : new Portlet($class, $data->kPortlet, $this->shopDB, $this->cache, $this->getText, $plugin);
 
-            return $portlet
-                ->setTitle($data->cTitle)
+            return $portlet->setTitle($data->cTitle)
                 ->setGroup($data->cGroup)
                 ->setActive($data->bActive === 1);
         }
-        $portlet = new MissingPortlet('MissingPortlet', 0, 0);
+        $portlet = new MissingPortlet('MissingPortlet', 0, $this->shopDB, $this->cache, $this->getText);
         $portlet->setMissingClass($class)
-            ->setTitle('Missing Portlet "' . $class . '"')
+            ->setTitle(\__('missingPortlet') . ' "' . $class . '"')
             ->setGroup('hidden')
             ->setActive(false);
 
         if ($fromPlugin) {
             $portlet->setInactivePlugin($plugin)
-                ->setTitle('Missing Portlet "' . $class . '" (' . $pluginID . ')');
+                ->setTitle(\__('missingPortlet') . ' "' . $class . '" (' . $pluginID . ')');
         }
 
         return $portlet;

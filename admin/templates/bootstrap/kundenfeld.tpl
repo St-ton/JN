@@ -112,7 +112,7 @@
 <div id="content">
     <div class="card">
         <div class="card-body">
-            {include file='tpl_inc/language_switcher.tpl' id='kSprache' action='kundenfeld.php'}
+            {include file='tpl_inc/language_switcher.tpl' id='kSprache' action=$adminURL|cat:$route}
         </div>
     </div>
     <div class="tabs">
@@ -132,7 +132,7 @@
         </nav>
         <div class="tab-content">
             <div id="overview" class="tab-pane fade{if $cTab === '' || $cTab === 'uebersicht'} active show{/if}">
-                <form name="kundenfeld" method="post" action="kundenfeld.php">
+                <form name="kundenfeld" method="post" action="{$adminURL}{$route}">
                     {$jtl_token}
                     <input type="hidden" name="kundenfelder" value="1">
                     <input name="tab" type="hidden" value="uebersicht">
@@ -166,10 +166,10 @@
                                     <td><label for="nSort">{__('sorting')}</label></td>
                                     <td>
                                         {if !empty($nHighestSortValue)}
-                                            {assign var=nNextHighestSort value=$nHighestSortValue|intval + $nHighestSortDiff|intval}
-                                            <input id="nSort" name="nSort" type="text" class="{if isset($xPlausiVar_arr.nSort)}fieldfillout{/if} form-control" value="{if isset($xPostVar_arr.nSort)}{$xPostVar_arr.nSort}{elseif isset($oKundenfeld->nSort)}{$oKundenfeld->nSort}{else}{$nNextHighestSort}{/if}"/>
+                                            {assign var=nNextHighestSort value=(intval($nHighestSortValue) + intval($nHighestSortDiff))}
+                                            <input id="nSort" name="nSort" type="number" class="{if isset($xPlausiVar_arr.nSort)}fieldfillout{/if} form-control" value="{if isset($xPostVar_arr.nSort)}{$xPostVar_arr.nSort}{elseif isset($oKundenfeld->nSort)}{$oKundenfeld->nSort}{else}{$nNextHighestSort}{/if}"/>
                                         {else}
-                                            <input id="nSort" name="nSort" type="text" class="{if isset($xPlausiVar_arr.nSort)}fieldfillout{/if} form-control" value="{if isset($xPostVar_arr.nSort)}{$xPostVar_arr.nSort}{elseif isset($oKundenfeld->nSort)}{$oKundenfeld->nSort}{/if}" placeholder="{__('kundenfeldSortDesc')}"/>
+                                            <input id="nSort" name="nSort" type="number" class="{if isset($xPlausiVar_arr.nSort)}fieldfillout{/if} form-control" value="{if isset($xPostVar_arr.nSort)}{$xPostVar_arr.nSort}{elseif isset($oKundenfeld->nSort)}{$oKundenfeld->nSort}{/if}" placeholder="{__('kundenfeldSortDesc')}"/>
                                         {/if}
                                     </td>
                                 </tr>
@@ -218,13 +218,13 @@
                                         </select>
                                         {if (isset($xPostVar_arr.cTyp) && $xPostVar_arr.cTyp === 'auswahl') || (isset($oKundenfeld->cTyp) && $oKundenfeld->cTyp === 'auswahl')}
                                             <div class="kundenfeld_wert">
-                                                <button name="button" type="button" class="btn btn-primary add" value="Wert hinzufügen" onclick="addKundenfeldWert()"><i class="fal fa-plus-square-o"></i> {__('addValue')}</button>
+                                                <button name="button" type="button" class="btn btn-primary add" value="{__('addValue')}" onclick="addKundenfeldWert()"><i class="fal fa-plus-square-o"></i> {__('addValue')}</button>
                                             </div>
                                         {/if}
                                     </td>
                                 </tr>
-                                {if isset($oKundenfeld->oKundenfeldWert_arr) && $oKundenfeld->oKundenfeldWert_arr|@count > 0}
-                                    {foreach name=kundenfeldwerte from=$oKundenfeld->oKundenfeldWert_arr key=key item=oKundenfeldWert}
+                                {if isset($oKundenfeld->oKundenfeldWert_arr) && count($oKundenfeld->oKundenfeldWert_arr) > 0}
+                                    {foreach $oKundenfeld->oKundenfeldWert_arr as $key => $oKundenfeldWert}
                                         {assign var=i value=$key+1}
                                         {assign var=j value=$key+6}
                                         <tr class="kundenfeld_wert">
@@ -245,8 +245,8 @@
                                             </td>
                                         </tr>
                                     {/foreach}
-                                {elseif isset($xPostVar_arr.cfValues) && $xPostVar_arr.cfValues|@count > 0}
-                                    {foreach name=kundenfeldwerte from=$xPostVar_arr.cfValues key=key item=cKundenfeldWert}
+                                {elseif isset($xPostVar_arr.cfValues) && count($xPostVar_arr.cfValues) > 0}
+                                    {foreach $xPostVar_arr.cfValues as $key => $cKundenfeldWert}
                                         {assign var=i value=$key+1}
                                         {assign var=j value=$key+6}
                                         <tr class="kundenfeld_wert">
@@ -286,8 +286,8 @@
                     <div class="subheading1">{__('kundenfeldExistingDesc')}</div>
                     <hr class="mb-3">
                     <div>
-                    {if isset($oKundenfeld_arr) && $oKundenfeld_arr|@count > 0}
-                        <form method="post" action="kundenfeld.php">
+                    {if isset($oKundenfeld_arr) && count($oKundenfeld_arr) > 0}
+                        <form method="post" action="{$adminURL}{$route}">
                             {$jtl_token}
                             <input name="kundenfelder" type="hidden" value="1">
                             <input name="tab" type="hidden" value="uebersicht">
@@ -302,7 +302,7 @@
                                         <th class="text-left">{__('values')}</th>
                                         <th class="th-6 text-center">{__('headingKundenfeldEdit')}</th>
                                         <th class="th-7">{__('sorting')}</th>
-                                        <th class="th-8 min-w-sm"</th>
+                                        <th class="th-8 min-w-sm"></th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -342,7 +342,7 @@
                                             </td>
                                             <td class="text-center">
                                                 <div class="btn-group">
-                                                    <a href="kundenfeld.php?a=edit&kKundenfeld={$oKundenfeld->kKundenfeld}&tab=uebersicht&token={$smarty.session.jtl_token}"
+                                                    <a href="{$adminURL}{$route}?a=edit&kKundenfeld={$oKundenfeld->kKundenfeld}&tab=uebersicht&token={$smarty.session.jtl_token}"
                                                        class="btn btn-link px-2" title="{__('modify')}"
                                                        data-toggle="tooltip">
                                                         <span class="icon-hover">
@@ -382,7 +382,7 @@
                 </div>
             </div>
             <div id="config" class="tab-pane fade{if $cTab === 'einstellungen'} active show{/if}">
-                {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' a='saveSettings' action='kundenfeld.php' buttonCaption=__('save') title=__('settings') tab='einstellungen'}
+                {include file='tpl_inc/config_section.tpl' name='einstellen' a='saveSettings' action=$adminURL|cat:$route buttonCaption=__('save') tab='einstellungen'}
             </div>
         </div>
     </div>

@@ -32,8 +32,8 @@ class FrontendLinks extends AbstractItem
         $oldPluginID = $this->oldPlugin === null ? 0 : $this->oldPlugin->getID();
         foreach ($this->getNode() as $i => $links) {
             $i = (string)$i;
-            \preg_match('/[0-9]+\sattr/', $i, $hits1);
-            \preg_match('/[0-9]+/', $i, $hits2);
+            \preg_match('/\d+\sattr/', $i, $hits1);
+            \preg_match('/\d+/', $i, $hits2);
             if (\mb_strlen($hits2[0]) !== \mb_strlen($i)) {
                 continue;
             }
@@ -74,12 +74,12 @@ class FrontendLinks extends AbstractItem
             }
             foreach ($links['LinkLanguage'] as $l => $localized) {
                 $l = (string)$l;
-                \preg_match('/[0-9]+\sattr/', $l, $hits1);
-                \preg_match('/[0-9]+/', $l, $hits2);
+                \preg_match('/\d+\sattr/', $l, $hits1);
+                \preg_match('/\d+/', $l, $hits2);
                 if (isset($hits1[0]) && \mb_strlen($hits1[0]) === \mb_strlen($l)) {
                     $linkLang->cISOSprache = \mb_convert_case($localized['iso'], \MB_CASE_LOWER);
                 } elseif (\mb_strlen($hits2[0]) === \mb_strlen($l)) {
-                    $linkLang->cSeo             = Seo::checkSeo(Seo::getSeo($localized['Seo']));
+                    $linkLang->cSeo             = Seo::checkSeo(Seo::getSeo($localized['Seo'], true));
                     $linkLang->cName            = $localized['Name'];
                     $linkLang->cTitle           = $localized['Title'];
                     $linkLang->cContent         = '';
@@ -96,12 +96,15 @@ class FrontendLinks extends AbstractItem
                         $this->db->queryPrepared(
                             "DELETE FROM tseo
                                 WHERE cKey = 'kLink'
-                                    AND (kKey = " . $linkID . $or . ')
+                                    AND (kKey = :lnk" . $or . ')
                                     AND kSprache = :lid',
-                            ['lid' => (int)$allLanguages[$linkLang->cISOSprache]->kSprache]
+                            [
+                                'lid' => (int)$allLanguages[$linkLang->cISOSprache]->kSprache,
+                                'lnk' => $linkID
+                            ]
                         );
                         $seo           = new stdClass();
-                        $seo->cSeo     = Seo::checkSeo(Seo::getSeo($localized['Seo']));
+                        $seo->cSeo     = Seo::checkSeo(Seo::getSeo($localized['Seo'], true));
                         $seo->cKey     = 'kLink';
                         $seo->kKey     = $linkID;
                         $seo->kSprache = $allLanguages[$linkLang->cISOSprache]->kSprache;
@@ -126,9 +129,9 @@ class FrontendLinks extends AbstractItem
     /**
      * Sind noch Sprachen im Shop die das Plugin nicht berücksichtigt?
      *
-     * @param array     $languages
+     * @param array    $languages
      * @param stdClass $defaultLang
-     * @param int       $linkID
+     * @param int      $linkID
      */
     private function addMissingTranslations(array $languages, stdClass $defaultLang, int $linkID): void
     {
@@ -142,7 +145,7 @@ class FrontendLinks extends AbstractItem
                 ['kLink', $linkID, (int)$language->kSprache]
             );
             $seo           = new stdClass();
-            $seo->cSeo     = Seo::checkSeo(Seo::getSeo($defaultLang->cSeo));
+            $seo->cSeo     = Seo::checkSeo(Seo::getSeo($defaultLang->cSeo, true));
             $seo->cKey     = 'kLink';
             $seo->kKey     = $linkID;
             $seo->kSprache = $language->kSprache;

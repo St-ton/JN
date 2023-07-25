@@ -1,8 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\dbeS\Sync;
 
 use JTL\Catalog\Currency;
+use JTL\Catalog\Product\Preise;
 use JTL\Checkout\Adresse;
 use JTL\Customer\Customer as CustomerClass;
 use JTL\Customer\CustomerAttribute;
@@ -19,7 +20,6 @@ use JTL\Services\JTL\CryptoServiceInterface;
 use JTL\Shop;
 use JTL\SimpleMail;
 use JTL\XML;
-use Preise;
 use stdClass;
 
 /**
@@ -34,9 +34,9 @@ final class Customer extends AbstractSync
      */
     public function handle(Starter $starter)
     {
-        foreach ($starter->getXML() as $i => $item) {
+        foreach ($starter->getXML() as $item) {
             [$file, $xml] = [\key($item), \reset($item)];
-            $fileName     = \pathinfo($file)['basename'];
+            $fileName     = \pathinfo($file, \PATHINFO_BASENAME);
             // the first 5 cases come from Kunden_xml.php
             if ($fileName === 'del_kunden.xml') {
                 $this->handleDeletes($xml);
@@ -66,17 +66,18 @@ final class Customer extends AbstractSync
             if (!($customerData->kKunde > 0 && $customerData->kKundenGruppe > 0)) {
                 continue;
             }
-            $customerData->kKunde = (int)$customerData->kKunde;
+            $customerData->kKunde        = (int)$customerData->kKunde;
+            $customerData->kKundenGruppe = (int)$customerData->kKundenGruppe;
 
             $customer = new CustomerClass($customerData->kKunde);
             if ($customer->kKunde > 0 && $customer->kKundengruppe !== $customerData->kKundenGruppe) {
                 $this->db->update(
                     'tkunde',
                     'kKunde',
-                    (int)$customerData->kKunde,
-                    (object)['kKundengruppe' => (int)$customerData->kKundenGruppe]
+                    $customerData->kKunde,
+                    (object)['kKundengruppe' => $customerData->kKundenGruppe]
                 );
-                $customer->kKundengruppe = (int)$customerData->kKundenGruppe;
+                $customer->kKundengruppe = $customerData->kKundenGruppe;
                 $obj                     = new stdClass();
                 $obj->tkunde             = $customer;
                 if ($customer->cMail) {
@@ -85,7 +86,7 @@ final class Customer extends AbstractSync
                     $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_KUNDENGRUPPE_ZUWEISEN, $obj));
                 }
             }
-            $this->db->update('tkunde', 'kKunde', (int)$customerData->kKunde, (object)['cAktiv' => 'Y']);
+            $this->db->update('tkunde', 'kKunde', $customerData->kKunde, (object)['cAktiv' => 'Y']);
         }
     }
 
@@ -160,7 +161,7 @@ final class Customer extends AbstractSync
                 continue;
             }
             $exists = $this->db->select('tgutschein', 'kGutschein', (int)$voucher->kGutschein);
-            if (!empty($exists->kGutschein)) {
+            if ($exists !== null && !empty($exists->kGutschein)) {
                 continue;
             }
             $this->db->insert('tgutschein', $voucher);
@@ -209,10 +210,10 @@ final class Customer extends AbstractSync
         $customerAttributes = $this->getCustomerAttributes($source);
         $customer->cAnrede  = $this->mapSalutation($customer->cAnrede);
 
-        $lang = $this->db->select('tsprache', 'kSprache', (int)$customer->kSprache);
-        if (empty($lang->kSprache)) {
+        $lang = $this->db->select('tsprache', 'kSprache', $customer->kSprache);
+        if ($lang === null || empty($lang->kSprache)) {
             $lang               = $this->db->select('tsprache', 'cShopStandard', 'Y');
-            $customer->kSprache = $lang->kSprache;
+            $customer->kSprache = (int)$lang->kSprache;
         }
         $kInetKunde  = (int)($xml['tkunde attr']['kKunde'] ?? 0);
         $oldCustomer = new CustomerClass($kInetKunde);
@@ -287,7 +288,8 @@ final class Customer extends AbstractSync
                     cHerkunft, dErstellt, dVeraendert, cAktiv, cAbgeholt,
                     date_format(dGeburtstag, '%d.%m.%Y') AS dGeburtstag_formatted, nRegistriert
                 FROM tkunde
-                WHERE kKunde = " . (int)$oldCustomer->kKunde
+                WHERE kKunde = :cid",
+            ['cid' => (int)$oldCustomer->kKunde]
         );
         $crypto = Shop::Container()->getCryptoService();
 
@@ -295,7 +297,7 @@ final class Customer extends AbstractSync
         $cstmr[0]['cFirma']    = \trim($crypto->decryptXTEA($cstmr[0]['cFirma']));
         $cstmr[0]['cZusatz']   = \trim($crypto->decryptXTEA($cstmr[0]['cZusatz']));
         $cstmr[0]['cStrasse']  = \trim($crypto->decryptXTEA($cstmr[0]['cStrasse']));
-        $cstmr[0]['cAnrede']   = CustomerClass::mapSalutation($cstmr[0]['cAnrede'], $cstmr[0]['kSprache']);
+        $cstmr[0]['cAnrede']   = CustomerClass::mapSalutation($cstmr[0]['cAnrede'], (int)$cstmr[0]['kSprache']);
         // Strasse und Hausnummer zusammenführen
         $cstmr[0]['cStrasse'] .= ' ' . $cstmr[0]['cHausnummer'];
         unset($cstmr[0]['cHausnummer']);
@@ -306,7 +308,8 @@ final class Customer extends AbstractSync
         $cstmr[0]['tkundenattribut'] = $this->db->getArrays(
             'SELECT *
                 FROM tkundenattribut
-                 WHERE kKunde = ' . (int)$cstmr['0 attr']['kKunde']
+                 WHERE kKunde = :cid',
+            ['cid' => (int)$cstmr['0 attr']['kKunde']]
         );
         foreach ($cstmr[0]['tkundenattribut'] as $o => $attr) {
             $cstmr[0]['tkundenattribut'][$o . ' attr'] = $this->buildAttributes($attr);
@@ -328,7 +331,7 @@ final class Customer extends AbstractSync
         $customerAttributes = [];
         if (GeneralObject::hasCount('tkundenattribut', $source)) {
             $members = \array_keys($source['tkundenattribut']);
-            if ($members[0] == '0') {
+            if ($members[0] === 0) {
                 foreach ($source['tkundenattribut'] as $data) {
                     $customerAttribute        = new stdClass();
                     $customerAttribute->cName = $data['cName'];
@@ -361,6 +364,7 @@ final class Customer extends AbstractSync
         $customer->cAbgeholt         = 'Y';
         $customer->cAktiv            = 'Y';
         $customer->cSperre           = 'N';
+        $this->extractStreet($customer);
         // mail an Kunden mit Accounterstellung durch Shopbetreiber
         $obj         = new stdClass();
         $obj->tkunde = $customer;
@@ -381,17 +385,17 @@ final class Customer extends AbstractSync
     /**
      * @param CustomerClass $customer
      * @param CustomerClass $oldCustomer
-     * @param int      $kInetKunde
-     * @param array    $customerAttributes
-     * @param array    $res
+     * @param int           $kInetKunde
+     * @param array         $customerAttributes
+     * @param array         $res
      * @return array
      */
     private function merge(
         CustomerClass $customer,
         CustomerClass $oldCustomer,
-        int $kInetKunde,
-        array $customerAttributes,
-        array $res
+        int           $kInetKunde,
+        array         $customerAttributes,
+        array         $res
     ): array {
         // Angaben vom alten Kunden übernehmen
         $customer->kKunde      = $kInetKunde;
@@ -524,11 +528,11 @@ final class Customer extends AbstractSync
     }
 
     /**
-     * @param object                 $address
+     * @param stdClass               $address
      * @param CryptoServiceInterface $crypto
      * @return object
      */
-    private function getDeliveryAddress($address, CryptoServiceInterface $crypto)
+    private function getDeliveryAddress(stdClass $address, CryptoServiceInterface $crypto)
     {
         $this->extractStreet($address);
         $address->cNachname = $crypto->encryptXTEA(\trim($address->cNachname));
@@ -547,9 +551,9 @@ final class Customer extends AbstractSync
      * @param int   $languageID
      * @param array $attributes
      */
-    private function saveAttribute(int $customerID, int $languageID, $attributes): void
+    private function saveAttribute(int $customerID, int $languageID, array $attributes): void
     {
-        if ($customerID <= 0 || $languageID <= 0 || !\is_array($attributes) || \count($attributes) === 0) {
+        if ($customerID <= 0 || $languageID <= 0) {
             return;
         }
         foreach ($attributes as $attribute) {

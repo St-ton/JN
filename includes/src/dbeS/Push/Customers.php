@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\dbeS\Push;
 
@@ -27,7 +27,8 @@ final class Customers extends AbstractPush
             date_format(dGeburtstag, '%d.%m.%Y') AS dGeburtstag_formatted, nRegistriert, cZusatz
                 FROM tkunde
                     WHERE cAbgeholt = 'N'
-                    ORDER BY kKunde LIMIT " . self::LIMIT_CUSTOMERS
+                    ORDER BY kKunde LIMIT :lmt",
+            ['lmt' => self::LIMIT_CUSTOMERS]
         );
         $customerCount = \count($customers);
         if ($customerCount === 0) {
@@ -36,21 +37,22 @@ final class Customers extends AbstractPush
         $crypto     = Shop::Container()->getCryptoService();
         $attributes = [];
         foreach ($customers as &$customer) {
-            $customer['cAnrede']   = Customer::mapSalutation($customer['cAnrede'], (int)$customer['kSprache']);
-            $customer['cNachname'] = \trim($crypto->decryptXTEA($customer['cNachname']));
-            $customer['cFirma']    = \trim($crypto->decryptXTEA($customer['cFirma']));
-            $customer['cStrasse']  = \trim($crypto->decryptXTEA($customer['cStrasse']));
+            $customer['cAnrede']   = Customer::mapSalutation($customer['cAnrede'] ?? '', (int)$customer['kSprache']);
+            $customer['cNachname'] = \trim($crypto->decryptXTEA($customer['cNachname'] ?? ''));
+            $customer['cFirma']    = \trim($crypto->decryptXTEA($customer['cFirma'] ?? ''));
+            $customer['cStrasse']  = \trim($crypto->decryptXTEA($customer['cStrasse'] ?? ''));
             // Strasse und Hausnummer zusammenfuehren
             $customer['cStrasse'] .= ' ' . \trim($customer['cHausnummer']);
             unset($customer['cHausnummer'], $customer['cPasswort']);
             $attribute  = $this->buildAttributes($customer);
             $additional = $customer['cZusatz'];
             unset($customer['cZusatz']);
-            $customer['cZusatz']         = \trim($crypto->decryptXTEA($additional));
+            $customer['cZusatz']         = \trim($crypto->decryptXTEA($additional ?? ''));
             $customer['tkundenattribut'] = $this->db->getArrays(
                 'SELECT * 
                     FROM tkundenattribut 
-                    WHERE kKunde = ' . (int)$attribute['kKunde']
+                    WHERE kKunde = :cid',
+                ['cid' => (int)$attribute['kKunde']]
             );
             foreach ($customer['tkundenattribut'] as $o => $attr) {
                 $customer['tkundenattribut'][$o . ' attr'] = $this->buildAttributes($attr);

@@ -15,23 +15,18 @@ class CacheFile implements ICachingMethod
     use JTLCacheTrait;
 
     /**
-     * @var CacheFile
-     */
-    public static $instance;
-
-    /**
      * @param array $options
      */
-    public function __construct($options)
+    public function __construct(array $options)
     {
-        $this->journalID     = 'file_journal';
-        $this->options       = $options;
-        $this->isInitialized = true;
-        self::$instance      = $this;
+        $this->setIsInitialized(true);
+        $this->setJournalID('file_journal');
+        $this->setOptions($options);
+        self::$instance = $this;
     }
 
     /**
-     * @param string $cacheID
+     * @param string|mixed $cacheID
      * @return bool|string
      */
     private function getFileName($cacheID)
@@ -44,15 +39,15 @@ class CacheFile implements ICachingMethod
     /**
      * @inheritdoc
      */
-    public function store($cacheID, $content, $expiration = null): bool
+    public function store($cacheID, $content, int $expiration = null): bool
     {
         $dir = $this->options['cache_dir'];
         if (!\is_dir($dir) && \mkdir($dir) === false && !\is_dir($dir)) {
             return false;
         }
         $fileName = $this->getFileName($cacheID);
-        $info     = \pathinfo($fileName);
-        if ($fileName === false || \mb_strpos(\realpath($info['dirname']), \realpath($dir)) !== 0) {
+        $info     = \pathinfo($fileName, \PATHINFO_DIRNAME);
+        if ($fileName === false || !\str_starts_with(\realpath($info), \realpath($dir))) {
             return false;
         }
 
@@ -68,7 +63,7 @@ class CacheFile implements ICachingMethod
     /**
      * @inheritdoc
      */
-    public function storeMulti($idContent, $expiration = null): bool
+    public function storeMulti(array $idContent, int $expiration = null): bool
     {
         foreach ($idContent as $_key => $_value) {
             $this->store($_key, $_value, $expiration);
@@ -128,8 +123,7 @@ class CacheFile implements ICachingMethod
             return \unlink($str);
         }
         if (\is_dir($str)) {
-            $scan = \glob(\rtrim($str, '/') . '/*');
-            foreach ($scan as $index => $path) {
+            foreach (\glob(\rtrim($str, '/') . '/*') as $path) {
                 $this->recursiveDelete($path);
             }
 

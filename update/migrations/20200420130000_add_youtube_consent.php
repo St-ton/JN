@@ -19,11 +19,11 @@ class Migration_20200420130000 extends Migration implements IMigration
     protected $description = 'Add youtube consent item';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
-        $id = $this->__execute(
+        $id = $this->getDB()->query(
             "INSERT INTO `tconsent`
                 (`itemID`, `company`, `pluginID`, `active`)
                 VALUES ('youtube', 'Google Inc.', 0, 1)",
@@ -57,7 +57,7 @@ class Migration_20200420130000 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

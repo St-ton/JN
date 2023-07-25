@@ -13,52 +13,57 @@ class OptinRefData implements \Serializable
     /**
      * @var string
      */
-    private $optinClass;
+    private string $optinClass;
 
     /**
      * @var int
      */
-    private $languageID;
+    private int $languageID;
 
     /**
-     * @var int
+     * @var int|null
      */
-    private $customerID;
+    private ?int $customerID = null;
 
     /**
-     * @var string
+     * @var int|null
      */
-    private $salutation = '';
-
-    /**
-     * @var string
-     */
-    private $firstName = '';
+    private ?int $customerGroupID = null;
 
     /**
      * @var string
      */
-    private $lastName = '';
+    private string $salutation = '';
 
     /**
      * @var string
      */
-    private $email = '';
+    private string $firstName = '';
 
     /**
      * @var string
      */
-    private $realIP = '';
+    private string $lastName = '';
 
     /**
-     * @var int
+     * @var string
      */
-    private $productID;
+    private string $email = '';
 
     /**
-     * @return string
+     * @var string
      */
-    public function serialize(): string
+    private string $realIP = '';
+
+    /**
+     * @var int|null
+     */
+    private ?int $productID = null;
+
+    /**
+     * @inheritdoc
+     */
+    public function serialize()
     {
         return \serialize([
             $this->optinClass,
@@ -69,15 +74,17 @@ class OptinRefData implements \Serializable
             $this->lastName,
             $this->email,
             $this->realIP,
-            $this->productID
+            $this->productID,
+            $this->customerGroupID
         ]);
     }
 
     /**
-     * @param string $serialized
+     * @inheritdoc
      */
-    public function unserialize($serialized): void
+    public function unserialize(string $data)
     {
+        $unser = \unserialize($data, ['OptinRefData']);
         [
             $this->optinClass,
             $this->languageID,
@@ -88,7 +95,45 @@ class OptinRefData implements \Serializable
             $this->email,
             $this->realIP,
             $this->productID
-        ] = \unserialize($serialized, ['OptinRefData']);
+        ]      = $unser;
+        // items pre 5.3.0 will not have a serialized customer group id
+        $this->customerGroupID = 0;
+        if (\count($unser) === 10) {
+            $this->customerGroupID = $unser[9];
+        }
+    }
+
+    /**
+     * @return array
+     */
+    public function __serialize(): array
+    {
+        return [
+            'optinClass'      => $this->optinClass,
+            'languageID'      => $this->languageID,
+            'customerID'      => $this->customerID,
+            'salutation'      => $this->salutation,
+            'firstName'       => $this->firstName,
+            'lastName'        => $this->lastName,
+            'email'           => $this->email,
+            'realIP'          => $this->realIP,
+            'productID'       => $this->productID,
+            'customerGroupID' => $this->customerGroupID
+        ];
+    }
+
+    /**
+     * @param array $data
+     */
+    public function __unserialize(array $data): void
+    {
+        foreach ($data as $key => $value) {
+            $this->$key = $value;
+        }
+        // items pre 5.3.0 will not have a serialized customer group id
+        if ($this->customerGroupID === null) {
+            $this->customerGroupID = 0;
+        }
     }
 
     /**
@@ -263,6 +308,25 @@ class OptinRefData implements \Serializable
     }
 
     /**
+     * @return int|null
+     */
+    public function getCustomerGroupID(): ?int
+    {
+        return $this->customerGroupID;
+    }
+
+    /**
+     * @param int|null $customerGroupID
+     * @return $this
+     */
+    public function setCustomerGroupID(?int $customerGroupID): self
+    {
+        $this->customerGroupID = $customerGroupID;
+
+        return $this;
+    }
+
+    /**
      * @return $this
      */
     public function anonymized(): self
@@ -276,10 +340,21 @@ class OptinRefData implements \Serializable
     }
 
     /**
-     * @return false|mixed|string
+     * @return string
      */
     public function __toString()
     {
-        return $this->serialize();
+        return \serialize([
+            $this->optinClass,
+            $this->languageID,
+            $this->customerID,
+            $this->salutation,
+            $this->firstName,
+            $this->lastName,
+            $this->email,
+            $this->realIP,
+            $this->productID,
+            $this->customerGroupID
+        ]);
     }
 }

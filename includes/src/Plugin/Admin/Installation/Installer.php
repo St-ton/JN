@@ -6,6 +6,7 @@ use Exception;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Exceptions\CircularReferenceException;
+use JTL\Exceptions\InvalidNamespaceException;
 use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Helpers\Text;
 use JTL\Plugin\Admin\Validation\ValidatorInterface;
@@ -30,39 +31,14 @@ use function Functional\select;
 final class Installer
 {
     /**
-     * @var DbInterface
+     * @var string|null
      */
-    private $db;
-
-    /**
-     * @var string
-     */
-    private $dir;
-
-    /**
-     * @var Uninstaller
-     */
-    private $uninstaller;
-
-    /**
-     * @var ValidatorInterface
-     */
-    private $legacyValidator;
-
-    /**
-     * @var ValidatorInterface
-     */
-    private $pluginValidator;
+    private ?string $dir = null;
 
     /**
      * @var PluginInterface|null
      */
-    private $plugin;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private $cache;
+    private ?PluginInterface $plugin = null;
 
     /**
      * Installer constructor.
@@ -73,17 +49,13 @@ final class Installer
      * @param JTLCacheInterface|null $cache
      */
     public function __construct(
-        DbInterface $db,
-        Uninstaller $uninstaller,
-        ValidatorInterface $legacyValidator,
-        ValidatorInterface $pluginValidator,
-        ?JTLCacheInterface $cache = null
+        private readonly DbInterface        $db,
+        private readonly Uninstaller        $uninstaller,
+        private readonly ValidatorInterface $legacyValidator,
+        private readonly ValidatorInterface $pluginValidator,
+        private ?JTLCacheInterface          $cache = null
     ) {
-        $this->db              = $db;
-        $this->uninstaller     = $uninstaller;
-        $this->legacyValidator = $legacyValidator;
-        $this->pluginValidator = $pluginValidator;
-        $this->cache           = $cache ?? Shop::Container()->getCache();
+        $this->cache = $cache ?? Shop::Container()->getCache();
     }
 
     /**
@@ -226,7 +198,7 @@ final class Installer
             $plugin->kPlugin = 0;
             $loader          = new PluginLoader($this->db, $this->cache);
             if (($languageID = Shop::getLanguageID()) === 0) {
-                $languageID = Shop::Lang()->getDefaultLanguage()->kSprache;
+                $languageID = Shop::Lang()->getDefaultLanguage()->getId();
             }
             $languageCode = Shop::Lang()->getIsoFromLangID($languageID)->cISO;
             $instance     = $loader->loadFromObject($plugin, $languageCode);
@@ -260,7 +232,8 @@ final class Installer
             \CACHING_GROUP_CORE,
             \CACHING_GROUP_LICENSES,
             \CACHING_GROUP_LANGUAGE,
-            \CACHING_GROUP_PLUGIN
+            \CACHING_GROUP_PLUGIN,
+            \CACHING_GROUP_OPC
         ]);
 
         return $res;
@@ -289,7 +262,7 @@ final class Installer
                 continue;
             }
             $i = (string)$i;
-            \preg_match('/[0-9]+\sattr/', $i, $hits1);
+            \preg_match('/\d+\sattr/', $i, $hits1);
 
             if (!isset($hits1[0]) || \mb_strlen($hits1[0]) !== \mb_strlen($i)) {
                 continue;
@@ -308,14 +281,23 @@ final class Installer
         if ($plugin->bExtension === 1) {
             try {
                 $this->updateByMigration($plugin, $versionedDir, Version::parse($version));
+            } catch (InvalidNamespaceException $e) {
+                Shop::Container()->getLogService()->error($e->getMessage());
+                $code        = InstallCode::INVALID_MIGRATION;
+                $hasSQLError = true;
             } catch (Exception $e) {
                 $hasSQLError = true;
                 $code        = InstallCode::SQL_ERROR;
+                Shop::Container()->getLogService()->error($e->getMessage());
             }
         }
         // Ist ein SQL Fehler aufgetreten? Wenn ja, deinstalliere wieder alles
         if ($hasSQLError) {
-            $this->uninstaller->uninstall($plugin->kPlugin);
+            try {
+                $this->uninstaller->uninstall($plugin->kPlugin);
+            } catch (Exception $e) {
+                Shop::Container()->getLogService()->error($e->getMessage());
+            }
         }
         if ($code === InstallCode::OK
             && $this->plugin === null
@@ -363,7 +345,7 @@ final class Installer
         $tags        = empty($baseNode['Install'][0]['FlushTags'])
             ? []
             : \explode(',', $baseNode['Install'][0]['FlushTags']);
-        $tagsToFlush = map(select($tags, static function ($e) {
+        $tagsToFlush = map(select($tags, static function ($e): bool {
             return \defined(\trim($e));
         }), static function ($e) {
             return \constant(\trim($e));
@@ -425,15 +407,15 @@ final class Installer
         if (!\file_exists($file)) {
             return [];// SQL Datei existiert nicht
         }
-        $handle   = \fopen($file, 'r');
+        $handle   = \fopen($file, 'rb');
         $sqlLines = [];
         $line     = '';
         while (($data = \fgets($handle)) !== false) {
             $data = \trim($data);
-            if ($data !== '' && \mb_strpos($data, '--') !== 0) {
-                if (\mb_strpos($data, 'CREATE TABLE') !== false) {
+            if ($data !== '' && !\str_starts_with($data, '--')) {
+                if (\str_contains($data, 'CREATE TABLE')) {
                     $line .= \trim($data);
-                } elseif (\mb_strpos($data, 'INSERT') !== false) {
+                } elseif (\str_contains($data, 'INSERT')) {
                     $line .= \trim($data);
                 } else {
                     $line .= \trim($data);
@@ -531,11 +513,10 @@ final class Installer
      */
     private function getTableName(string $sql, string $action = 'create table( if not exists)')
     {
-        \preg_match('/' . $action . "? ([`']?)([a-z0-9_]+)\\2/i", $sql, $matches);
+        \preg_match('/' . $action . "? ([`']?)([a-z\d_]+)\\2/i", $sql, $matches);
 
         return \end($matches);
     }
-
 
     /**
      * Wenn ein Update erfolgreich mit neuer kPlugin in der Datenbank ist
@@ -606,7 +587,7 @@ final class Installer
     {
         foreach ($cronJobs as $cronJob) {
             $match = $this->db->select('texportformat', ['kPlugin', 'cName'], [$pluginID, $cronJob->cName]);
-            if (isset($match->kExportformat)) {
+            if ($match !== null && isset($match->kExportformat)) {
                 $update               = new stdClass();
                 $update->foreignKeyID = $match->kExportformat;
                 $this->db->update('tcron', 'cronID', $cronJob->cronID, $update);
@@ -790,7 +771,10 @@ final class Installer
         $this->db->update('temailvorlage', 'kPlugin', $pluginID, (object)['kPlugin' => $oldPluginID]);
         $oldMailTpl = $this->db->select('temailvorlage', 'kPlugin', $oldPluginID);
         $newMailTpl = $this->db->select('temailvorlage', 'kPlugin', $pluginID);
-        if (isset($newMailTpl->kEmailvorlage, $oldMailTpl->kEmailvorlage)) {
+        if ($newMailTpl !== null
+            && $oldMailTpl !== null
+            && isset($newMailTpl->kEmailvorlage, $oldMailTpl->kEmailvorlage)
+        ) {
             $this->db->update(
                 'tpluginemailvorlageeinstellungen',
                 'kEmailvorlage',
@@ -810,7 +794,7 @@ final class Installer
                 false,
                 'kEmailvorlage'
             );
-            if (isset($newTpl->kEmailvorlage) && $newTpl->kEmailvorlage > 0) {
+            if ($newTpl !== null && $newTpl->kEmailvorlage > 0) {
                 $newTplID = (int)$newTpl->kEmailvorlage;
                 $oldTplID = (int)$oldTpl->kEmailvorlage;
                 $this->db->delete('temailvorlagesprache', 'kEmailvorlage', $newTplID);
@@ -908,14 +892,14 @@ final class Installer
                 );
                 $upd = (object)[
                     'cBild'               => $method->cBild,
-                    'nSort'               => $method->nSort,
-                    'nMailSenden'         => $method->nMailSenden,
-                    'nWaehrendBestellung' => $method->nWaehrendBestellung,
+                    'nSort'               => (int)$method->nSort,
+                    'nMailSenden'         => (int)$method->nMailSenden,
+                    'nWaehrendBestellung' => (int)$method->nWaehrendBestellung,
                 ];
                 $this->db->update('tzahlungsart', 'kZahlungsart', $newPaymentMethod->kZahlungsart, $upd);
-                $upd = (object)['kZahlungsart' => $method->kZahlungsart];
+                $upd = (object)['kZahlungsart' => (int)$method->kZahlungsart];
                 $this->db->update('tzahlungsartsprache', 'kZahlungsart', $newPaymentMethod->kZahlungsart, $upd);
-                $setSQL = ' , kZahlungsart = ' . $method->kZahlungsart;
+                $setSQL = ' , kZahlungsart = ' . (int)$method->kZahlungsart;
             }
             $this->db->queryPrepared(
                 'UPDATE tzahlungsart

@@ -8,7 +8,7 @@ use JTL\Shop;
 
 /**
  * Class Eigenschaft
- * @package JTL
+ * @package JTL\Checkout
  */
 class Eigenschaft
 {
@@ -66,7 +66,7 @@ class Eigenschaft
      */
     public function loadFromDB(int $id): self
     {
-        $obj = Shop::Container()->getDB()->select('teigenschaft', 'kEigenschaft', $id);
+        $obj = Shop::Container()->getDB()->select('teigenschaft', 'kEigenschaft', $id) ?? new \stdClass();
         foreach (\get_object_vars($obj) as $k => $v) {
             $this->$k = $v;
         }
@@ -97,14 +97,5 @@ class Eigenschaft
         $obj = GeneralObject::copyMembers($this);
 
         return Shop::Container()->getDB()->update('teigenschaft', 'kEigenschaft', $obj->kEigenschaft, $obj);
-    }
-
-    /**
-     * @return bool
-     * @deprecated since 5.0.0
-     */
-    public function setzePostDaten(): bool
-    {
-        return false;
     }
 }

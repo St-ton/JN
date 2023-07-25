@@ -12,9 +12,9 @@
             {/block}
             {*Prio: -> Funktionsattribut -> Benutzereingabe -> Standarddarstellung*}
             {block name='productlist-index-include-productlist-header-grid'}
-                {if (!empty($AktuelleKategorie->categoryFunctionAttributes['darstellung'])
-                    && $AktuelleKategorie->categoryFunctionAttributes['darstellung'] == 1)
-                    || (empty($AktuelleKategorie->categoryFunctionAttributes['darstellung'])
+                {if (!empty($AktuelleKategorie->getCategoryFunctionAttribute('darstellung'))
+                    && $AktuelleKategorie->getCategoryFunctionAttribute('darstellung') == 1)
+                    || (empty($AktuelleKategorie->getCategoryFunctionAttribute('darstellung'))
                         && ((!empty($oErweiterteDarstellung->nDarstellung) && $oErweiterteDarstellung->nDarstellung == 1)
                             || (empty($oErweiterteDarstellung->nDarstellung)
                                 && isset($Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung_stdansicht)
@@ -48,7 +48,7 @@
                     {alert variant="danger"}{$Suchergebnisse->getError()}{/alert}
                 {/block}
             {/if}
-            {if isset($oBestseller_arr) && $oBestseller_arr|@count > 0}
+            {if isset($oBestseller_arr) && $oBestseller_arr|count > 0}
                 {block name='productlist-index-include-product-slider'}
                     {opcMountPoint id='opc_before_bestseller'}
                     {lang key='bestseller' section='global' assign='slidertitle'}
@@ -57,9 +57,9 @@
             {/if}
 
             {block name='productlist-index-products'}
-                {if $Suchergebnisse->getProducts()|@count > 0}
+                {if $Suchergebnisse->getProducts()|count > 0}
                 {opcMountPoint id='opc_before_products'}
-                {row class="product-list layout-{$style}" id="product-list" itemprop="mainEntity" itemscope=true itemtype="https://schema.org/ItemList"}
+                {row class="product-list layout-{if $style === 'list' && (!$isMobile || $isTablet)}list{else}$style{/if}" id="product-list" itemprop="mainEntity" itemscope=true itemtype="https://schema.org/ItemList"}
                     {foreach $Suchergebnisse->getProducts() as $Artikel}
                         {col cols={$grid} md="{if isset($gridmd)}{$gridmd}{/if}"
                              sm="{if isset($gridsm)}{$gridsm}{/if}" xl="{if isset($gridxl)}{$gridxl}{/if}"

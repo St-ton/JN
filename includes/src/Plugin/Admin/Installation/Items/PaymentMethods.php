@@ -43,8 +43,8 @@ class PaymentMethods extends AbstractItem
         $pluginID = $this->plugin->kPlugin;
         foreach ($this->getNode() as $i => $data) {
             $i = (string)$i;
-            \preg_match('/[0-9]+\sattr/', $i, $hits1);
-            \preg_match('/[0-9]+/', $i, $hits2);
+            \preg_match('/\d+\sattr/', $i, $hits1);
+            \preg_match('/\d+/', $i, $hits2);
             if (\mb_strlen($hits2[0]) !== \mb_strlen($i)) {
                 continue;
             }
@@ -95,8 +95,8 @@ class PaymentMethods extends AbstractItem
             $localized    = new stdClass();
             foreach ($data['MethodLanguage'] as $l => $loc) {
                 $l = (string)$l;
-                \preg_match('/[0-9]+\sattr/', $l, $hits1);
-                \preg_match('/[0-9]+/', $l, $hits2);
+                \preg_match('/\d+\sattr/', $l, $hits1);
+                \preg_match('/\d+/', $l, $hits2);
                 if (isset($hits1[0]) && \mb_strlen($hits1[0]) === \mb_strlen($l)) {
                     $iso = \mb_convert_case($loc['iso'], \MB_CASE_LOWER);
                 } elseif (\mb_strlen($hits2[0]) === \mb_strlen($l)) {
@@ -134,6 +134,7 @@ class PaymentMethods extends AbstractItem
             }
             $names        = ['Anzahl Bestellungen nötig', 'Mindestbestellwert', 'Maximaler Bestellwert'];
             $valueNames   = ['min_bestellungen', 'min', 'max'];
+            $valueTypes   = ['zahl', 'kommazahl', 'kommazahl'];
             $descriptions = [
                 'Nur Kunden, die min. soviele Bestellungen bereits durchgeführt haben, ' .
                 'können diese Zahlungsart nutzen.',
@@ -153,7 +154,7 @@ class PaymentMethods extends AbstractItem
                 $plgnConf->cName            = $names[$z];
                 $plgnConf->cBeschreibung    = $descriptions[$z];
                 $plgnConf->cWertName        = $moduleID . '_' . $valueNames[$z];
-                $plgnConf->cInputTyp        = 'zahl';
+                $plgnConf->cInputTyp        = $valueTypes[$z];
                 $plgnConf->nSort            = $sorting[$z];
                 $plgnConf->cConf            = 'Y';
 
@@ -186,8 +187,8 @@ class PaymentMethods extends AbstractItem
         $multiple     = false;
         foreach ($data['Setting'] as $j => $config) {
             $j = (string)$j;
-            \preg_match('/[0-9]+\sattr/', $j, $hits3);
-            \preg_match('/[0-9]+/', $j, $hits4);
+            \preg_match('/\d+\sattr/', $j, $hits3);
+            \preg_match('/\d+/', $j, $hits4);
             if (isset($hits3[0]) && \mb_strlen($hits3[0]) === \mb_strlen($j)) {
                 $type         = $config['type'];
                 $multiple     = (isset($config['multiple'])
@@ -257,7 +258,7 @@ class PaymentMethods extends AbstractItem
                     } elseif (\count($config['SelectboxOptions'][0]) === 1) {
                         foreach ($config['SelectboxOptions'][0]['Option'] as $y => $option) {
                             $y = (string)$y;
-                            \preg_match('/[0-9]+\sattr/', $y, $hits6);
+                            \preg_match('/\d+\sattr/', $y, $hits6);
                             if (isset($hits6[0]) && \mb_strlen($hits6[0]) === \mb_strlen($y)) {
                                 $value = $option['value'];
                                 $sort  = $option['sort'];
@@ -291,7 +292,7 @@ class PaymentMethods extends AbstractItem
                         //do nothing for now
                     } elseif (\count($config['RadioOptions'][0]) === 1) { // Es gibt mehr als eine Option
                         foreach ($config['RadioOptions'][0]['Option'] as $y => $option) {
-                            \preg_match('/[0-9]+\sattr/', $y, $hits6);
+                            \preg_match('/\d+\sattr/', $y, $hits6);
                             if (\mb_strlen($hits6[0]) === \mb_strlen($y)) {
                                 $value = $option['value'];
                                 $sort  = $option['sort'];

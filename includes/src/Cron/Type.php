@@ -29,4 +29,8 @@ class Type extends Enum
     public const STORE = 'store';
 
     public const LICENSE_CHECK = 'licensecheck';
+
+    public const TOPSELLER = 'topsellerupdate';
+
+    public const MAILQUEUE = 'sendMailQueue';
 }

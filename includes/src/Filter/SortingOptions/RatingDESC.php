@@ -20,9 +20,9 @@ class RatingDESC extends AbstractSortingOption
         parent::__construct($productFilter);
         $this->setOrderBy('tartikelext.fDurchschnittsBewertung DESC, tartikel.cName');
         $this->join->setComment('join from sort by rating')
-                   ->setType('LEFT JOIN')
-                   ->setTable('tartikelext')
-                   ->setOn('tartikelext.kArtikel = tartikel.kArtikel');
+            ->setType('LEFT JOIN')
+            ->setTable('tartikelext')
+            ->setOn('tartikelext.kArtikel = tartikel.kArtikel');
         $this->setName(Shop::Lang()->get('rating'));
         $this->setPriority($this->getConfig('artikeluebersicht')['suche_sortierprio_bewertung']);
         $this->setValue(\SEARCH_SORT_RATING);

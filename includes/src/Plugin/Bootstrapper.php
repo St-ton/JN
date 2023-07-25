@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Plugin;
 
@@ -24,27 +24,12 @@ abstract class Bootstrapper implements BootstrapperInterface
     /**
      * @var string
      */
-    private $pluginId;
+    private string $pluginID;
 
     /**
      * @var array
      */
-    private $notifications = [];
-
-    /**
-     * @var PluginInterface
-     */
-    private $plugin;
-
-    /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private $cache;
+    private array $notifications = [];
 
     /**
      * Bootstrapper constructor.
@@ -52,12 +37,12 @@ abstract class Bootstrapper implements BootstrapperInterface
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */
-    final public function __construct(PluginInterface $plugin, DbInterface $db, JTLCacheInterface $cache)
-    {
-        $this->plugin   = $plugin;
-        $this->pluginId = $plugin->getPluginID();
-        $this->db       = $db;
-        $this->cache    = $cache;
+    final public function __construct(
+        private PluginInterface   $plugin,
+        private DbInterface       $db,
+        private JTLCacheInterface $cache
+    ) {
+        $this->pluginID = $plugin->getPluginID();
     }
 
     /**
@@ -78,7 +63,7 @@ abstract class Bootstrapper implements BootstrapperInterface
      */
     final public function addNotify($type, $title, $description = null): void
     {
-        $this->notifications[] = (new NotificationEntry($type, $title, $description))->setPluginId($this->pluginId);
+        $this->notifications[] = (new NotificationEntry($type, $title, $description))->setPluginId($this->pluginID);
     }
 
     /**
@@ -205,7 +190,7 @@ abstract class Bootstrapper implements BootstrapperInterface
      */
     public function loaded(): int
     {
-        if (\PLUGIN_DEV_MODE !== true || $this->plugin === null) {
+        if (\PLUGIN_DEV_MODE !== true) {
             return -1;
         }
         $parser       = new XMLParser();
@@ -220,7 +205,7 @@ abstract class Bootstrapper implements BootstrapperInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function licenseExpired(ExsLicense $license): void
     {

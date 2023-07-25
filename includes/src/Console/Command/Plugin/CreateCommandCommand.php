@@ -20,7 +20,7 @@ use Throwable;
 class CreateCommandCommand extends Command
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function configure(): void
     {
@@ -32,7 +32,7 @@ class CreateCommandCommand extends Command
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function interact(InputInterface $input, OutputInterface $output): void
     {
@@ -54,9 +54,9 @@ class CreateCommandCommand extends Command
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $pluginID    = \trim($input->getArgument('plugin-id') ?? '');
         $commandName = \trim($input->getArgument('command-name') ?? '');
@@ -65,11 +65,11 @@ class CreateCommandCommand extends Command
             $commandPath = $this->createFile($pluginID, $commandName, $author);
             $output->writeln("<info>Created command:</info> <comment>'" . $commandPath . "'</comment>");
 
-            return 0;
+            return Command::SUCCESS;
         } catch (Exception $e) {
             $this->getIO()->error($e->getMessage());
 
-            return 1;
+            return Command::FAILURE;
         }
     }
 
@@ -93,7 +93,7 @@ class CreateCommandCommand extends Command
         $fileSystem    = Shop::Container()->get(LocalFilesystem::class);
         try {
             $fileSystem->createDirectory($relPath);
-        } catch (Throwable $e) {
+        } catch (Throwable) {
             throw new Exception('Cannot create dir ' . $relPath);
         }
         $content = Shop::Smarty()

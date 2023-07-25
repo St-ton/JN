@@ -2,6 +2,7 @@
 
 namespace JTL\Widgets;
 
+use JTL\Helpers\Date;
 use JTL\Statistik;
 
 /**
@@ -13,12 +14,12 @@ class Bots extends AbstractWidget
     /**
      * @var array
      */
-    public $bots;
+    public array $bots;
 
     /**
      *
      */
-    public function init()
+    public function init(): void
     {
         $this->bots = $this->getBotsOfMonth((int)\date('Y'), (int)\date('m'));
         $this->setPermission('STATS_CRAWLER_VIEW');
@@ -30,15 +31,15 @@ class Bots extends AbstractWidget
      * @param int $limit
      * @return array
      */
-    public function getBotsOfMonth(int $year, int $month, int $limit = 10)
+    public function getBotsOfMonth(int $year, int $month, int $limit = 10): array
     {
-        return (new Statistik(\firstDayOfMonth($month, $year), \time()))->holeBotStats($limit);
+        return (new Statistik(Date::getFirstDayOfMonth($month, $year), \time()))->holeBotStats($limit);
     }
 
     /**
      * @return string
      */
-    public function getContent()
+    public function getContent(): string
     {
         return $this->oSmarty->assign('oBots_arr', $this->bots)->fetch('tpl_inc/widgets/bots.tpl');
     }

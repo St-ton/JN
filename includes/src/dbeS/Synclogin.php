@@ -13,19 +13,24 @@ use Psr\Log\LoggerInterface;
 class Synclogin
 {
     /**
-     * @var string
+     * @var string|null
      */
-    public $cMail;
+    public ?string $cMail = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cName;
+    public ?string $cName = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cPass;
+    public ?string $cPass = null;
+
+    /**
+     * @var int|null
+     */
+    public ?int $kSynclogin = null;
 
     /**
      * Synclogin constructor.
@@ -36,9 +41,10 @@ class Synclogin
     {
         $obj = $db->select('tsynclogin', 'kSynclogin', 1);
         if ($obj !== null) {
-            foreach (\array_keys(\get_object_vars($obj)) as $member) {
-                $this->$member = $obj->$member;
-            }
+            $this->cMail      = $obj->cMail;
+            $this->cName      = $obj->cName;
+            $this->cPass      = $obj->cPass;
+            $this->kSynclogin = (int)$obj->kSynclogin;
         } else {
             $logger->error('Kein Sync-Login gefunden.');
         }
@@ -50,7 +56,7 @@ class Synclogin
      * @return bool
      * @throws \Exception
      */
-    public function checkLogin($user, $pass): bool
+    public function checkLogin(string $user, string $pass): bool
     {
         return $this->cName !== null
             && $this->cPass !== null

@@ -19,7 +19,7 @@ class Migration_20190904175800 extends Migration implements IMigration
     /**
      * @var array
      */
-    private static $types = [
+    private static array $types = [
         'Artikel'      => Image::TYPE_PRODUCT,
         'Kategorie'    => Image::TYPE_CATEGORY,
         'Variationen'  => Image::TYPE_VARIATION,
@@ -31,7 +31,7 @@ class Migration_20190904175800 extends Migration implements IMigration
     /**
      * @var array
      */
-    private static $positions = [
+    private static array $positions = [
         'oben'         => 'top',
         'oben-rechts'  => 'top-right',
         'rechts'       => 'right',

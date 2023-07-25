@@ -5,7 +5,12 @@ build_create()
     # $1 repository dir
     export REPOSITORY_DIR=$1;
     # $2 target build version
-    export APPLICATION_VERSION=$2;
+    export APPLICATION_VERSION_BASE=$2;
+    if [[ $2 =~ (release)?\/?v?(.*) ]]; then
+      export APPLICATION_VERSION="v${BASH_REMATCH[2]}";
+    else
+      export APPLICATION_VERSION=$2;
+    fi
     # $3 last commit sha
     local APPLICATION_BUILD_SHA=$3;
     # $4 database host
@@ -30,7 +35,7 @@ build_create()
 
 	# extract version from defines_inc.php -> APPLICATION_VERSION
 	definesInc=`cat ${REPOSITORY_DIR}/includes/defines_inc.php`;
-	pattern=".*define\('APPLICATION_VERSION', '([0-9]\.[0-9].[0-9])(-(alpha|beta|rc)(\\.([0-9]{1,}))?)?'\);";
+	pattern="const[[:blank:]]APPLICATION_VERSION[[:blank:]]*=[[:blank:]]*'([0-9]\.[0-9].[0-9])(-(alpha|beta|rc)(\\.([0-9]{1,}))?)?';"
 
 	if [[ $definesInc =~ $pattern ]];then
 		if [[ ! -z "${BASH_REMATCH[2]}" ]]; then
@@ -55,19 +60,13 @@ build_create()
     fi
 
 	# insert git sha hash into defines_inc.php -> APPLICATION_BUILD_SHA
-    sed -i "s/'APPLICATION_BUILD_SHA', '#DEV#'/'APPLICATION_BUILD_SHA', '${APPLICATION_BUILD_SHA}'/g" ${REPOSITORY_DIR}/includes/defines_inc.php
+    sed -ri "s/const APPLICATION_BUILD_SHA( *)= '#DEV#'/const APPLICATION_BUILD_SHA\1= '${APPLICATION_BUILD_SHA}'/g" ${REPOSITORY_DIR}/includes/defines_inc.php
 
     echo "Executing composer";
     build_composer_execute;
 
     echo "Create delete files csv";
     build_create_deleted_files_csv;
-
-    echo "Move class files";
-    build_move_class_files;
-
-    echo "Set classes path";
-    build_set_classes_path;
 
     echo "Add old files";
     build_add_old_files;
@@ -90,7 +89,7 @@ build_create()
     echo "Create templates md5 csv files";
     create_tpl_md5_hashfile "${REPOSITORY_DIR}/templates/Evo";
     create_tpl_md5_hashfile "${REPOSITORY_DIR}/templates/NOVA";
-	
+
     echo "Executing migrations";
     build_migrate;
 
@@ -128,7 +127,7 @@ build_create_deleted_files_csv()
     local BRANCH_REGEX="(master|release\\/([0-9]{1,})\\.([0-9]{1,}))";
     local REMOTE_STR="";
 
-    if [[ ${APPLICATION_VERSION} =~ ${BRANCH_REGEX} ]]; then
+    if [[ ${APPLICATION_VERSION_BASE} =~ ${BRANCH_REGEX} ]]; then
         REMOTE_STR="origin/";
     else
         REMOTE_STR="tags/";
@@ -136,28 +135,9 @@ build_create_deleted_files_csv()
 
     cd ${REPOSITORY_DIR};
     git pull >/dev/null 2>&1;
-    git diff --name-only --diff-filter D tags/v4.03.0 ${REMOTE_STR}${APPLICATION_VERSION} -- ${REPOSITORY_DIR} ':!admin/classes' ':!classes' ':!includes/ext' ':!includes/plugins' ':!templates/Evo' > ${DELETE_FILES_CSV_FILENAME};
+    git diff --name-only --diff-filter D tags/v4.03.0 ${REMOTE_STR}${APPLICATION_VERSION_BASE} -- ${REPOSITORY_DIR} ':!includes/ext' ':!includes/plugins' ':!templates/Evo' > ${DELETE_FILES_CSV_FILENAME};
 
     echo "  Deleted files schema admin/includes/shopmd5files/deleted_files_${VERSION}.csv";
-}
-
-build_move_class_files()
-{
-    # Move admin old classes
-    if [[ -d "${REPOSITORY_DIR}/admin/classes/old/" ]]; then
-        cp -a ${REPOSITORY_DIR}/admin/classes/old/. ${REPOSITORY_DIR}/admin/classes;
-        rm -R ${REPOSITORY_DIR}/admin/classes/old;
-    fi
-    # Move old classes
-    if [[ -d "${REPOSITORY_DIR}/classes/old/" ]]; then
-        cp -a ${REPOSITORY_DIR}/classes/old/. ${REPOSITORY_DIR}/classes;
-        rm -R ${REPOSITORY_DIR}/classes/old;
-    fi
-}
-
-build_set_classes_path()
-{
-    sed -i "s/'PFAD_CLASSES', '.*'/'PFAD_CLASSES', 'classes\/'/g" ${REPOSITORY_DIR}/includes/defines.php
 }
 
 build_add_old_files()
@@ -170,7 +150,7 @@ build_add_old_files()
 }
 
 build_create_shop_installer() {
-    composer install --no-dev -o -q -d ${REPOSITORY_DIR}/build/components/vue-installer;
+    npm --prefix ${REPOSITORY_DIR}/build/components/vue-installer install && npm --prefix ${REPOSITORY_DIR}/build/components/vue-installer run build;
 }
 
 build_create_md5_hashfile()
@@ -181,8 +161,26 @@ build_create_md5_hashfile()
     local MD5_HASH_FILENAME="${REPOSITORY_DIR}/admin/includes/shopmd5files/${VERSION}.csv";
 
     cd ${REPOSITORY_DIR};
-    find -type f ! \( -name ".asset_cs" -or -name ".git*" -or -name ".idea*" -or -name ".htaccess" -or -name ".php_cs" -or -name ".travis.yml" -or -name "${VERSION}.csv" -or -name "composer.lock" -or -name "config.JTL-Shop.ini.initial.php" -or -name "phpunit.xml" -or -name "robots.txt" -or -name "rss.xml" -or -name "shopinfo.xml" -or -name "sitemap_index.xml" -or -name "*.md" \) -printf "'%P'\n" | grep -v -f "${REPOSITORY_DIR}/build/scripts/md5_excludes.lst" | xargs md5sum | awk '{ print $1";"$2; }' | sort --field-separator=';' -k2 -k1 > ${MD5_HASH_FILENAME};
-    cd ${CUR_PWD};
+    find -type f -not \( -name ".asset_cs" \
+      -or -name ".git*" -or -name ".idea*" \
+      -or -name ".php_cs" -or -name ".travis.yml" \
+      -or -name ".htaccess" \
+      -or -name "${VERSION}.csv" -or -name "composer.lock" \
+      -or -name "config.JTL-Shop.ini.initial.php" \
+      -or -name "phpunit.xml" -or -name "robots.txt" \
+      -or -name "rss.xml" -or -name "shopinfo.xml" \
+      -or -name "sitemap_index.xml" -or -name "*.md" \) -printf "'%P'\n" \
+    | grep -v -f "${REPOSITORY_DIR}/build/scripts/md5_excludes.lst" \
+    | xargs md5sum | awk '{ print $1";"$2; }' \
+    | sort --field-separator=';' -k2 -k1 > ${MD5_HASH_FILENAME};
+
+    find -type f -name '.htaccess' \
+	  -and \( \
+		-not -regex './.htaccess' \
+		-not -regex './build/.*' \
+		-not -regex './install/.*' \)  -printf "'%P'\n" \
+    | xargs md5sum | awk '{ print $1";"$2; }' \
+    | sort --field-separator=';' -k2 -k1 >> ${MD5_HASH_FILENAME};
 
     echo "  File checksums admin/includes/shopmd5files/${VERSION}.csv";
 }
@@ -361,8 +359,6 @@ build_add_files_to_patch_dir()
     rsync -R admin/includes/shopmd5files/dbstruct_${VERSION}.json ${PATCH_DIR};
     rsync -R admin/includes/shopmd5files/deleted_files_${VERSION}.csv ${PATCH_DIR};
     rsync -R includes/defines_inc.php ${PATCH_DIR};
-    rsync -rR admin/classes/ ${PATCH_DIR};
-    rsync -rR classes/ ${PATCH_DIR};
     rsync -rR includes/ext/ ${PATCH_DIR};
     rsync -rR includes/vendor/ ${PATCH_DIR};
     rsync -rR templates/NOVA/checksums.csv ${PATCH_DIR};

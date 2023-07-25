@@ -14,7 +14,7 @@ final class Manufacturer extends AbstractBox
     /**
      * @var array
      */
-    private $manufacturerList;
+    private array $manufacturerList;
 
     /**
      * Manufacturer constructor.

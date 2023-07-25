@@ -1,9 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\dbeS\Sync;
 
 use JTL\dbeS\Starter;
 use JTL\Extensions\Download\Download;
+use stdClass;
 
 /**
  * Class Downloads
@@ -17,9 +18,9 @@ final class Downloads extends AbstractSync
      */
     public function handle(Starter $starter)
     {
-        foreach ($starter->getXML() as $i => $item) {
+        foreach ($starter->getXML() as $item) {
             [$file, $xml] = [\key($item), \reset($item)];
-            if (\strpos($file, 'del_download.xml') !== false) {
+            if (\str_contains($file, 'del_download.xml')) {
                 $this->handleDeletes($xml);
             } else {
                 $this->handleInserts($xml);
@@ -66,10 +67,10 @@ final class Downloads extends AbstractSync
     }
 
     /**
-     * @param array  $xml
-     * @param object $download
+     * @param array    $xml
+     * @param stdClass $download
      */
-    private function handleDownload(array $xml, $download): void
+    private function handleDownload(array $xml, stdClass $download): void
     {
         $localized = $this->mapper->mapArray($xml, 'tDownloadSprache', 'mDownloadSprache');
         if (\count($localized) > 0) {

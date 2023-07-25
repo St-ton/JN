@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Catalog;
 
@@ -485,13 +485,13 @@ class Warehouse extends MainModel
             $data->$cMember = $this->$cMember;
         }
         if ($this->getWarenlager() === null) {
-            $kPrim = Shop::Container()->getDB()->insert('twarenlager', $data);
-            if ($kPrim > 0) {
-                return $primary ? $kPrim : true;
+            $key = Shop::Container()->getDB()->insert('twarenlager', $data);
+            if ($key > 0) {
+                return $primary ? $key : true;
             }
         } else {
-            $xResult = $this->update();
-            if ($xResult) {
+            $result = $this->update();
+            if ($result) {
                 return $primary ? -1 : true;
             }
         }
@@ -505,28 +505,20 @@ class Warehouse extends MainModel
      */
     public function update(): int
     {
-        $db      = Shop::Container()->getDB();
-        $sql     = 'UPDATE twarenlager SET ';
-        $set     = [];
         $members = \array_keys(\get_object_vars($this));
-        if (\is_array($members) && \count($members) > 0) {
-            foreach ($members as $cMember) {
-                $cMethod = 'get' . \mb_substr($cMember, 1);
-                if (\method_exists($this, $cMethod)) {
-                    $val    = $this->$cMethod();
-                    $mValue = $val === null
-                        ? 'NULL'
-                        : ("'" . $db->escape($val) . "'");
-                    $set[]  = "{$cMember} = {$mValue}";
-                }
-            }
-
-            $sql .= \implode(', ', $set);
-            $sql .= ' WHERE kWarenlager = ' . $this->kWarenlager;
-
-            return $db->getAffectedRows($sql);
+        if (!\is_array($members) || \count($members) === 0) {
+            throw new Exception('ERROR: Object has no members!');
         }
-        throw new Exception('ERROR: Object has no members!');
+        $upd = new stdClass();
+        foreach ($members as $member) {
+            $method = 'get' . \mb_substr($member, 1);
+            if (\method_exists($this, $method)) {
+                $upd->$member = $this->$method() ?? '_DBNULL_';
+            }
+        }
+        unset($upd->oLageranzeige);
+
+        return Shop::Container()->getDB()->update('twarenlager', 'kWarenlager', $this->kWarenlager, $upd);
     }
 
     /**
@@ -592,8 +584,8 @@ class Warehouse extends MainModel
      * @return array
      */
     public static function getByProduct(
-        int $productID,
-        int $langID = null,
+        int  $productID,
+        int  $langID = null,
         $config = null,
         bool $active = true
     ): array {
@@ -616,7 +608,7 @@ class Warehouse extends MainModel
                 if ($warehouse->dZulaufDatum !== null && \mb_strlen($warehouse->dZulaufDatum) > 1) {
                     try {
                         $warehouse->dZulaufDatum_de = (new DateTime($item->dZulaufDatum))->format('d.m.Y');
-                    } catch (Exception $exc) {
+                    } catch (Exception) {
                         $warehouse->dZulaufDatum_de = '00.00.0000';
                     }
                 }
@@ -699,7 +691,7 @@ class Warehouse extends MainModel
      * @param Artikel $item
      * @return string
      */
-    public function getBackorderString(Artikel $item):string
+    public function getBackorderString(Artikel $item): string
     {
         $backorder = '';
         if ($item->cLagerBeachten === 'Y'

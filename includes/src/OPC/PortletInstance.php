@@ -2,11 +2,12 @@
 
 namespace JTL\OPC;
 
+use JTL\Events\Dispatcher;
+use JTL\Events\Event;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Text;
 use JTL\Media\Image;
 use JTL\Media\MultiSizeImage;
-use JTL\Shop;
 
 /**
  * Class PortletInstance
@@ -17,34 +18,29 @@ class PortletInstance implements \JsonSerializable
     use MultiSizeImage;
 
     /**
-     * @var Portlet
+     * @var array
      */
-    protected $portlet;
+    protected array $properties = [];
 
     /**
      * @var array
      */
-    protected $properties = [];
+    protected array $attributes = [];
 
     /**
      * @var array
      */
-    protected $attributes = [];
+    protected array $styles = [];
 
     /**
      * @var array
      */
-    protected $styles = [];
+    protected array $animations = [];
 
     /**
      * @var array
      */
-    protected $animations = [];
-
-    /**
-     * @var array
-     */
-    protected $widthHeuristics = [
+    protected array $widthHeuristics = [
         'xs' => 1,
         'sm' => 1,
         'md' => 1,
@@ -54,21 +50,20 @@ class PortletInstance implements \JsonSerializable
     /**
      * @var string
      */
-    protected $uid;
+    protected string $uid;
 
     /**
      * @var AreaList mapping area ids to subareas
      */
-    protected $subareaList;
+    protected AreaList $subareaList;
 
     /**
      * PortletInstance constructor.
      * @param Portlet $portlet
      */
-    public function __construct(Portlet $portlet)
+    public function __construct(protected Portlet $portlet)
     {
         $this->setImageType(Image::TYPE_OPC);
-        $this->portlet     = $portlet;
         $this->properties  = $portlet->getDefaultProps();
         $this->subareaList = new AreaList();
         $this->uid         = 'uid_' . \uniqid('', false);
@@ -95,11 +90,24 @@ class PortletInstance implements \JsonSerializable
         $dom->loadHTML('<?xml encoding="utf-8" ?>' . $result);
         \libxml_clear_errors();
         /** @var \DOMElement $root */
-        $root = $dom->getElementsByTagName('body')[0]->firstChild;
-        $root->setAttribute('data-portlet', \json_encode($this->getData()));
-        $result = $dom->saveHTML($root);
+        $body = $dom->getElementsByTagName('body')[0];
 
-        Shop::fire('shop.OPC.PortletInstance.getPreviewHtml', [
+        if ($body !== null) {
+            $root = $dom->getElementsByTagName('body')[0]->firstChild;
+            $root->setAttribute('data-portlet', \json_encode($this->getData()));
+            $result = $dom->saveHTML($root);
+        } else {
+            $result = '
+                <div data-portlet="' . \htmlspecialchars(\json_encode($this->getData()), \ENT_QUOTES) . '"
+                    style="text-align:center;height:4em;line-height:4em;'
+                    . 'background-color:#ffe1dd;color:red;border:1px dashed red;">
+                        <i class="fas fa-exclamation-circle"></i> '
+                    . \__('missingPortletHTML') . '
+                </div>
+            ';
+        }
+
+        Dispatcher::getInstance()->fire(Event::OPC_PORTLET_RENDERMOUNTPOINT, [
             'portletInstance' => $this,
             'result'          => &$result
         ]);
@@ -116,7 +124,7 @@ class PortletInstance implements \JsonSerializable
     {
         $result = $this->portlet->getFinalHtml($this, $inContainer);
 
-        Shop::fire('shop.OPC.PortletInstance.getFinalHtml', [
+        Dispatcher::getInstance()->fire(Event::OPC_PORTLET_GETFINALHTML, [
             'portletInstance' => $this,
             'result'          => &$result
         ]);
@@ -140,21 +148,18 @@ class PortletInstance implements \JsonSerializable
      */
     public function getSubareaPreviewHtml(string $id): string
     {
-        return $this->hasSubarea($id)
-            ? $this->getSubarea($id)->getPreviewHtml()
-            : '';
+        return $this->getSubarea($id)?->getPreviewHtml() ?? '';
     }
 
     /**
      * @param string $id
+     * @param bool   $inContainer
      * @return string
      * @throws \Exception
      */
-    public function getSubareaFinalHtml(string $id): string
+    public function getSubareaFinalHtml(string $id, bool $inContainer = true): string
     {
-        return $this->hasSubarea($id)
-            ? $this->getSubarea($id)->getFinalHtml()
-            : '';
+        return $this->getSubarea($id)?->getFinalHtml($inContainer) ?? '';
     }
 
     /**
@@ -197,9 +202,9 @@ class PortletInstance implements \JsonSerializable
 
     /**
      * @param string $id
-     * @return Area
+     * @return Area|null
      */
-    public function getSubarea(string $id): Area
+    public function getSubarea(string $id): ?Area
     {
         return $this->subareaList->getArea($id);
     }
@@ -402,15 +407,14 @@ class PortletInstance implements \JsonSerializable
         $data = [];
 
         foreach ($this->portlet->getAnimationsPropertyDesc() as $propname => $propdesc) {
-            if ($this->hasProperty($propname) && \strpos($propname, 'wow-') === 0 &&
-                !empty($this->getProperty($propname))
+            if ($this->hasProperty($propname)
+                && \str_starts_with($propname, 'wow-')
+                && !empty($this->getProperty($propname))
             ) {
                 $value = $this->getProperty($propname);
-
                 if (\is_string($value)) {
                     $value = \htmlspecialchars($value);
                 }
-
                 $data[$propname] = $value;
             }
         }
@@ -424,7 +428,6 @@ class PortletInstance implements \JsonSerializable
     public function getAnimationDataAttributeString(): string
     {
         $res = '';
-
         foreach ($this->getAnimationData() as $key => $val) {
             $res .= ' data-' . $key . '="' . $val . '"';
         }
@@ -438,7 +441,6 @@ class PortletInstance implements \JsonSerializable
     public function updateAttributes(): self
     {
         $this->setAttribute('style', $this->getStyleString());
-
         foreach ($this->getAnimations() as $aniName => $aniValue) {
             if ($aniName === 'animation-style' && !empty($aniValue)) {
                 $this->addClass('wow ' . $aniValue);
@@ -466,7 +468,6 @@ class PortletInstance implements \JsonSerializable
     public function getAttributeString(): string
     {
         $result = '';
-
         foreach ($this->getAttributes() as $name => $value) {
             $result .= ' ' . $name . '="' . $value . '"';
         }
@@ -487,7 +488,7 @@ class PortletInstance implements \JsonSerializable
      */
     public function getDataAttribute(): string
     {
-        return \htmlspecialchars(\json_encode($this->getData()), \ENT_QUOTES);
+        return \htmlspecialchars(\json_encode($this->getData(), \JSON_THROW_ON_ERROR), \ENT_QUOTES);
     }
 
     /**
@@ -594,7 +595,7 @@ class PortletInstance implements \JsonSerializable
         return [
             'srcset'     => $srcset,
             'srcsizes'   => $srcsizes,
-            'src'        => \str_replace(' ', '%20', $this->getImage(Image::SIZE_LG)),
+            'src'        => \str_replace(' ', '%20', $this->getImage(Image::SIZE_XL)),
             'alt'        => $alt,
             'title'      => $title,
             'realWidth'  => $realWidth,
@@ -649,14 +650,13 @@ class PortletInstance implements \JsonSerializable
      * @return $this
      * @throws \Exception
      */
-    public function deserialize($data)
+    public function deserialize($data): self
     {
         if (GeneralObject::isCountable('properties', $data)) {
             foreach ($data['properties'] as $name => $value) {
                 $this->setProperty($name, $value);
             }
         }
-
         if (GeneralObject::isCountable('subareas', $data)) {
             foreach ($data['subareas'] as $areaData) {
                 $area = new Area();
@@ -675,7 +675,7 @@ class PortletInstance implements \JsonSerializable
     /**
      * @return array
      */
-    public function jsonSerializeShort()
+    public function jsonSerializeShort(): array
     {
         return [
             'id'              => $this->portlet->getId(),
@@ -689,7 +689,7 @@ class PortletInstance implements \JsonSerializable
     /**
      * @return array
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         $result             = $this->jsonSerializeShort();
         $result['subareas'] = $this->subareaList->jsonSerialize();

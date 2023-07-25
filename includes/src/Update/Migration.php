@@ -12,8 +12,8 @@ use JTL\DB\DbInterface;
  */
 class Migration implements JsonSerializable
 {
-    use MigrationTrait,
-        MigrationTableTrait;
+    use MigrationTableTrait;
+    use MigrationTrait;
 
     /**
      * @var string
@@ -38,24 +38,24 @@ class Migration implements JsonSerializable
     /**
      * @var bool
      */
-    protected $deleteData = true;
+    protected bool $deleteData = true;
 
     /**
      * Migration constructor.
      *
-     * @param DbInterface $db
+     * @param DbInterface   $db
      * @param null|string   $info
      * @param DateTime|null $executed
      */
     public function __construct(DbInterface $db, $info = null, DateTime $executed = null)
     {
         $this->setDB($db);
-        $this->info     = \ucfirst(\strtolower($info));
+        $this->info     = \ucfirst(\strtolower($info ?? ''));
         $this->executed = $executed;
     }
 
     /**
-     * @return string|null
+     * @return string|int|null
      */
     public function getId()
     {
@@ -123,7 +123,7 @@ class Migration implements JsonSerializable
      *
      * @return array
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'id'          => $this->getId(),

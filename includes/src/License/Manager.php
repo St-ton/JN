@@ -5,10 +5,13 @@ namespace JTL\License;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
+use JsonException;
 use JTL\Backend\AuthToken;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
+use JTL\License\Exception\AuthException;
 use JTL\License\Struct\ExsLicense;
+use JTL\Router\Route;
 use JTL\Shop;
 use stdClass;
 
@@ -31,34 +34,28 @@ class Manager
     /**
      * @var string
      */
-    private $domain;
-
-    /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private $cache;
+    private string $domain;
 
     /**
      * @var Client
      */
-    private $client;
+    private Client $client;
+
+    /**
+     * @var string
+     */
+    private string $token;
 
     /**
      * Manager constructor.
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */
-    public function __construct(DbInterface $db, JTLCacheInterface $cache)
+    public function __construct(private DbInterface $db, private JTLCacheInterface $cache)
     {
-        $this->db     = $db;
-        $this->cache  = $cache;
         $this->client = new Client();
-        $this->domain = \parse_url(\URL_SHOP)['host'];
+        $this->domain = \parse_url(\URL_SHOP, \PHP_URL_HOST);
+        $this->token  = AuthToken::getInstance($this->db)->get();
     }
 
     /**
@@ -71,24 +68,42 @@ class Manager
     }
 
     /**
+     * @return string[]
+     */
+    private function getHeaders(): array
+    {
+        return [
+            'Accept'        => 'application/json',
+            'Content-Type'  => 'application/json',
+            'User-Agent'    => 'JTL-Shop/' . \APPLICATION_VERSION . '-' . $this->domain,
+            'Authorization' => 'Bearer ' . $this->token
+        ];
+    }
+
+    /**
      * @param string $url
      * @return string
      * @throws GuzzleException
      * @throws ClientException
+     * @throws AuthException
      */
     public function setBinding(string $url): string
     {
+        if ($this->token === '') {
+            throw new AuthException(\__('Invalid token.'));
+        }
+        try {
+            $body = \json_encode((object)['domain' => $this->domain], \JSON_THROW_ON_ERROR);
+        } catch (JsonException) {
+            return '';
+        }
         $res = $this->client->request(
             'POST',
             $url,
             [
-                'headers' => [
-                    'Accept'        => 'application/json',
-                    'Content-Type'  => 'application/json',
-                    'Authorization' => 'Bearer ' . AuthToken::getInstance($this->db)->get()
-                ],
+                'headers' => $this->getHeaders(),
                 'verify'  => true,
-                'body'    => \json_encode((object)['domain' => $this->domain])
+                'body'    => $body
             ]
         );
 
@@ -100,20 +115,25 @@ class Manager
      * @return string
      * @throws GuzzleException
      * @throws ClientException
+     * @throws AuthException
      */
     public function createLicense(string $url): string
     {
+        if ($this->token === '') {
+            throw new AuthException(\__('Invalid token.'));
+        }
+        try {
+            $body = \json_encode((object)['domain' => $this->domain], \JSON_THROW_ON_ERROR);
+        } catch (JsonException) {
+            return '';
+        }
         $res = $this->client->request(
             'POST',
             $url,
             [
-                'headers' => [
-                    'Accept'        => 'application/json',
-                    'Content-Type'  => 'application/json',
-                    'Authorization' => 'Bearer ' . AuthToken::getInstance($this->db)->get()
-                ],
+                'headers' => $this->getHeaders(),
                 'verify'  => true,
-                'body'    => \json_encode((object)['domain' => $this->domain])
+                'body'    => $body
             ]
         );
 
@@ -125,20 +145,25 @@ class Manager
      * @return string
      * @throws GuzzleException
      * @throws ClientException
+     * @throws AuthException
      */
     public function clearBinding(string $url): string
     {
+        if ($this->token === '') {
+            throw new AuthException(\__('Invalid token.'));
+        }
+        try {
+            $body = \json_encode((object)['domain' => $this->domain], \JSON_THROW_ON_ERROR);
+        } catch (JsonException) {
+            return '';
+        }
         $res = $this->client->request(
             'GET',
             $url,
             [
-                'headers' => [
-                    'Accept'        => 'application/json',
-                    'Content-Type'  => 'application/json',
-                    'Authorization' => 'Bearer ' . AuthToken::getInstance($this->db)->get()
-                ],
+                'headers' => $this->getHeaders(),
                 'verify'  => true,
-                'body'    => \json_encode((object)['domain' => $this->domain])
+                'body'    => $body
             ]
         );
 
@@ -152,30 +177,35 @@ class Manager
      * @return string
      * @throws GuzzleException
      * @throws ClientException
+     * @throws AuthException
      */
     public function extendUpgrade(string $url, string $exsID, string $key): string
     {
+        if ($this->token === '') {
+            throw new AuthException(\__('Invalid token.'));
+        }
+        try {
+            $body = \json_encode((object)[
+                'exsid'         => $exsID,
+                'reference'     => (object)[
+                    'license' => $key,
+                    'domain'  => $this->domain
+                ],
+                'redirect_urls' => (object)[
+                    'return_url' => Shop::getAdminURL() . '/' . Route::LICENSE . '?extend=success',
+                    'cancel_url' => Shop::getAdminURL() . '/' . Route::LICENSE . '?extend=fail'
+                ],
+            ], \JSON_THROW_ON_ERROR);
+        } catch (JsonException) {
+            return '';
+        }
         $res = $this->client->request(
             'POST',
             $url,
             [
-                'headers' => [
-                    'Accept'        => 'application/json',
-                    'Content-Type'  => 'application/json',
-                    'Authorization' => 'Bearer ' . AuthToken::getInstance($this->db)->get()
-                ],
+                'headers' => $this->getHeaders(),
                 'verify'  => true,
-                'body'    => \json_encode((object)[
-                    'exsid'         => $exsID,
-                    'reference'     => (object)[
-                        'license' => $key,
-                        'domain'  => $this->domain
-                    ],
-                    'redirect_urls' => (object)[
-                        'return_url' => Shop::getAdminURL() . '/licenses.php?extend=success',
-                        'cancel_url' => Shop::getAdminURL() . '/licenses.php?extend=fail'
-                    ],
-                ])
+                'body'    => $body
             ]
         );
 
@@ -187,39 +217,46 @@ class Manager
      * @param array $installedExtensions
      * @return int
      * @throws GuzzleException
+     * @throws AuthException
      */
     public function update(bool $force = false, array $installedExtensions = []): int
     {
         if (!$force && !$this->checkUpdate()) {
             return 0;
         }
+        if ($this->token === '') {
+            throw new AuthException(\__('Invalid token.'));
+        }
+        try {
+            $body = \json_encode((object)['shop' => [
+                'domain'  => $this->domain,
+                'version' => \APPLICATION_VERSION,
+            ], 'extensions'                      => $installedExtensions], \JSON_THROW_ON_ERROR);
+        } catch (JsonException) {
+            return 0;
+        }
         $res = $this->client->request(
             'POST',
             \EXS_LIVE === true ? self::API_LIVE_URL : self::API_DEV_URL,
             [
-                'headers' => [
-                    'Accept'        => 'application/json',
-                    'Content-Type'  => 'application/json',
-                    'Authorization' => 'Bearer ' . AuthToken::getInstance($this->db)->get()
-                ],
+                'headers' => $this->getHeaders(),
                 'verify'  => true,
-                'body'    => \json_encode((object)['shop' => [
-                    'domain'    => $this->domain,
-                    'version'   => \APPLICATION_VERSION,
-                ], 'extensions' => $installedExtensions])
+                'body'    => $body
             ]
         );
         $this->housekeeping();
         $this->cache->flushTags([\CACHING_GROUP_LICENSES]);
 
-        $owner       = $this->getTokenOwner();
-        $data        = \json_decode((string)$res->getBody());
-        $data->owner = isset($owner->given_name, $owner->family_name) ? $owner : null;
+        $owner = $this->getTokenOwner();
+        try {
+            $data        = \json_decode((string)$res->getBody(), false, 512, \JSON_THROW_ON_ERROR);
+            $data->owner = isset($owner->given_name, $owner->family_name) ? $owner : null;
+            $data        = \json_encode($data, \JSON_THROW_ON_ERROR);
+        } catch (JsonException) {
+            $data = '';
+        }
 
-        return $this->db->insert(
-            'licenses',
-            (object)['data' => \json_encode($data), 'returnCode' => $res->getStatusCode()]
-        );
+        return $this->db->insert('licenses', (object)['data' => $data, 'returnCode' => $res->getStatusCode()]);
     }
 
     /**
@@ -228,20 +265,23 @@ class Manager
      */
     private function getTokenOwner(): stdClass
     {
+        if ($this->token === '') {
+            throw new AuthException(\__('Invalid token.'));
+        }
         $res = $this->client->request(
             'GET',
             self::USER_API_URL,
             [
-                'headers' => [
-                    'Accept'        => 'application/json',
-                    'Content-Type'  => 'application/json',
-                    'Authorization' => 'Bearer ' . AuthToken::getInstance($this->db)->get()
-                ],
+                'headers' => $this->getHeaders(),
                 'verify'  => true
             ]
         );
 
-        return \json_decode($res->getBody()->getContents());
+        try {
+            return \json_decode($res->getBody()->getContents(), false, 512, \JSON_THROW_ON_ERROR);
+        } catch (JsonException) {
+            return new stdClass();
+        }
     }
 
     /**
@@ -258,9 +298,13 @@ class Manager
         if ($data === null) {
             return null;
         }
-        $obj             = \json_decode($data->data, false);
-        $obj->timestamp  = $data->timestamp;
-        $obj->returnCode = $data->returnCode;
+        try {
+            $obj             = \json_decode($data->data ?? '', false, 512, \JSON_THROW_ON_ERROR);
+            $obj->timestamp  = $data->timestamp;
+            $obj->returnCode = $data->returnCode;
+        } catch (JsonException) {
+            $obj = null;
+        }
 
         return $obj === null || !isset($obj->extensions) ? null : $obj;
     }

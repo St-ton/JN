@@ -1,6 +1,6 @@
 {$src = $instance->getProperty($propdesc.srcProp)}
 
-<input type="hidden" id="config-{$propname}" name="{$propname}" value="{$propval|json_encode|htmlentities}"
+<input type="hidden" id="config-{$propname}" name="{$propname}" value="{htmlentities(json_encode($propval))}"
        data-prop-type="json">
 
 {if empty($src)}
@@ -14,7 +14,7 @@
         <label for="config-{$propname}">{$propdesc.label}</label>
         <div style="position: relative">
             <img src="{$imgsrc}" alt="Banner Zones"
-                 id="banner-image-{$propname}" class="img-fluid">
+                 id="banner-image-{$propname}" class="img-fluid w-100">
             <div id="banner-zones-{$propname}" class="banner-zones"></div>
         </div>
     </div>

@@ -1,7 +1,7 @@
 {block name='productdetails-bundle'}
     {if !empty($Products)}
         {block name='productdetails-bundle-form'}
-            {form action="{if !empty($ProductMain->cURLFull)}{$ProductMain->cURLFull}{else}{get_static_route id='index.php'}{/if}" method="post" id="form_bundles" class="bundle-form jtl-validate"}
+            {form action="{if !empty($ProductMain->cURLFull)}{$ProductMain->cURLFull}{else}{$ShopURL}/{/if}" method="post" id="form_bundles" class="bundle-form jtl-validate"}
             {block name='productdetails-bundle-hidden-inputs'}
                 {input type="hidden" name="a" value=$ProductMain->kArtikel}
                 {input type="hidden" name="addproductbundle" value="1"}
@@ -10,7 +10,7 @@
             {block name='productdetails-bundle-include-product-slider'}
                 {include file='snippets/product_slider.tpl' id='slider-partslist' productlist=$ProductMain->oStueckliste_arr title="{lang key='buyProductBundle' section='productDetails'}" showPartsList=true}
             {/block}
-            {if $smarty.session.Kundengruppe->mayViewPrices()}
+            {if JTL\Session\Frontend::getCustomerGroup()->mayViewPrices()}
                 {block name='productdetails-bundle-form-price'}
                     {row}
                         {col cols=12 md='auto' class='bundle-price'}

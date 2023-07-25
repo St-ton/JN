@@ -15,10 +15,10 @@ use JTL\Update\Migration;
 class Migration_20170201153618 extends Migration implements IMigration
 {
     protected $author      = 'msc';
-    protected $description = 'add lang key redeemed coupons';
+    protected $description = 'Add lang key redeemed coupons';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -29,7 +29,7 @@ class Migration_20170201153618 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

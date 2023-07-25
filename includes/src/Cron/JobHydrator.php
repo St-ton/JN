@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Cron;
 
@@ -11,7 +11,7 @@ final class JobHydrator
     /**
      * @var string[]
      */
-    private static $mapping = [
+    private static array $mapping = [
         'cronID'        => 'CronID',
         'jobType'       => 'Type',
         'taskLimit'     => 'Limit',
@@ -24,7 +24,8 @@ final class JobHydrator
         'startTime'     => 'StartTime',
         'frequency'     => 'Frequency',
         'isRunning'     => 'Running',
-        'lastFinish'    => 'DateLastFinished'
+        'lastFinish'    => 'DateLastFinished',
+        'nextStart'     => 'NextStartDate'
     ];
 
     /**
@@ -37,17 +38,18 @@ final class JobHydrator
     }
 
     /**
-     * @param object $class
-     * @param object $data
+     * @param JobInterface $class
+     * @param object       $data
      * @return object
      */
-    public function hydrate($class, $data)
+    public function hydrate(JobInterface $class, object $data)
     {
         foreach (\get_object_vars($data) as $key => $value) {
-            if (($mapping = $this->getMapping($key)) !== null) {
-                $method = 'set' . $mapping;
-                $class->$method($value);
+            if (($mapping = $this->getMapping($key)) === null) {
+                continue;
             }
+            $method = 'set' . $mapping;
+            $class->$method($value);
         }
 
         return $class;

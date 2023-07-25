@@ -11,12 +11,12 @@ interface ICachingMethod
     /**
      * store value to cache
      *
-     * @param string   $cacheID - key to identify the value
-     * @param mixed    $content - the content to save
-     * @param int|null $expiration - expiration time in seconds
+     * @param string|int $cacheID - key to identify the value
+     * @param mixed      $content - the content to save
+     * @param int|null   $expiration - expiration time in seconds
      * @return bool - success
      */
-    public function store($cacheID, $content, $expiration): bool;
+    public function store($cacheID, $content, int $expiration = null): bool;
 
     /**
      * store multiple values to multiple keys at once to cache
@@ -25,12 +25,12 @@ interface ICachingMethod
      * @param int|null $expiration - expiration time in seconds
      * @return bool
      */
-    public function storeMulti($idContent, $expiration): bool;
+    public function storeMulti(array $idContent, int $expiration = null): bool;
 
     /**
      * get value from cache
      *
-     * @param string $cacheID
+     * @param string|int $cacheID
      * @return mixed|bool - the loaded data or false if not found
      */
     public function load($cacheID);
@@ -38,7 +38,7 @@ interface ICachingMethod
     /**
      * check if key exists
      *
-     * @param string $key
+     * @param string|int $key
      * @return bool
      */
     public function keyExists($key): bool;
@@ -55,7 +55,7 @@ interface ICachingMethod
      * add cache tags to cached value
      *
      * @param string|array $tags
-     * @param string       $cacheID
+     * @param string|int   $cacheID
      * @return bool
      */
     public function setCacheTag($tags, $cacheID): bool;
@@ -89,7 +89,7 @@ interface ICachingMethod
      * @param array $options
      * @return mixed
      */
-    public static function getInstance($options);
+    public static function getInstance(array $options);
 
     /**
      * check if php functions for using the selected caching method exist
@@ -142,7 +142,7 @@ interface ICachingMethod
     /**
      * @param string $id
      */
-    public function setJournalID($id): void;
+    public function setJournalID(string $id): void;
 
     /**
      * @return string
@@ -151,7 +151,6 @@ interface ICachingMethod
 
     /**
      * @param string $error
-     * @return JTLCacheInterface
      */
-    public function setError(string $error);
+    public function setError(string $error): void;
 }

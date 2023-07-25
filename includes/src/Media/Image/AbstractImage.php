@@ -33,17 +33,17 @@ abstract class AbstractImage implements IMedia
     /**
      * @var string
      */
-    public const REGEX_ALLOWED_CHARS = 'a-zA-Z0-9 äööüÄÖÜß\$\-\_\.\+\!\*\\\'\(\)\,';
+    public const REGEX_ALLOWED_CHARS = 'a-zA-Z0-9 äööüÄÖÜß\@\$\-\_\.\+\!\*\\\'\(\)\,%';
 
     /**
      * @var array
      */
-    protected static $imageExtensions = ['jpg', 'jpeg', 'webp', 'gif', 'png', 'bmp'];
+    protected static array $imageExtensions = ['jpg', 'jpeg', 'webp', 'gif', 'png', 'bmp'];
 
     /**
      * @var DbInterface
      */
-    protected $db;
+    protected DbInterface $db;
 
     /**
      * AbstractImage constructor.
@@ -55,7 +55,7 @@ abstract class AbstractImage implements IMedia
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getDB(): DbInterface
     {
@@ -63,7 +63,7 @@ abstract class AbstractImage implements IMedia
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setDB(DbInterface $db): void
     {
@@ -77,6 +77,7 @@ abstract class AbstractImage implements IMedia
     {
         try {
             $request      = '/' . \ltrim($request, '/');
+            $request      = \urldecode($request);
             $mediaReq     = $this->create($request);
             $allowedNames = $this->getImageNames($mediaReq);
             if (\count($allowedNames) === 0) {
@@ -149,7 +150,7 @@ abstract class AbstractImage implements IMedia
         $id,
         $mixed,
         string $size,
-        int $number = 1,
+        int    $number = 1,
         string $sourcePath = null
     ): MediaImageRequest {
         return MediaImageRequest::create([
@@ -181,9 +182,7 @@ abstract class AbstractImage implements IMedia
     }
 
     /**
-     * @param string $type
-     * @param int    $id
-     * @return stdClass|null
+     * @inheritdoc
      */
     public static function getImageStmt(string $type, int $id): ?stdClass
     {
@@ -303,13 +302,13 @@ abstract class AbstractImage implements IMedia
      */
     public function getUncachedImageCount(): int
     {
-        return \count(select($this->getAllImages(), function (MediaImageRequest $e) {
+        return \count(select($this->getAllImages(), function (MediaImageRequest $e): bool {
             return !$this->isCached($e) && ($file = $e->getRaw()) !== null && \file_exists($file);
         }));
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function cacheImage(MediaImageRequest $req, bool $overwrite = false): array
     {
@@ -365,23 +364,35 @@ abstract class AbstractImage implements IMedia
             map($ids, static function ($e) use ($baseDir) {
                 return $e === null ? $baseDir : \realpath($baseDir . '/' . $e);
             }),
-            static function ($e) use ($baseDir) {
-                return $e !== false && \strpos($e, $baseDir) === 0;
+            static function ($e) use ($baseDir): bool {
+                return $e !== false && \str_starts_with($e, $baseDir);
             }
         );
         try {
             $res    = true;
+            $logger = Shop::Container()->getLogService();
             $finder = new Finder();
             $finder->ignoreUnreadableDirs()->in($directories);
             foreach ($finder->files() as $file) {
                 /** @var SplFileInfo $file */
-                $loop = \unlink($file->getRealPath());
+                $real = $file->getRealPath();
+                $loop = $real !== false && \unlink($real);
                 $res  = $res && $loop;
+                if ($real === false) {
+                    $logger->warning('Cannot delete file {file} - invalid realpath?', ['file' => $file->getPathname()]);
+                }
             }
             foreach (\array_reverse(\iterator_to_array($finder->directories(), true)) as $directory) {
                 /** @var SplFileInfo $directory */
-                $loop = \rmdir($directory->getRealPath());
+                $real = $directory->getRealPath();
+                $loop = $real !== false && \rmdir($real);
                 $res  = $res && $loop;
+                if ($real === false) {
+                    $logger->warning(
+                        'Cannot delete directory {dir} - invalid realpath?',
+                        ['dir' => $directory->getPathname()]
+                    );
+                }
             }
             foreach ($directories as $directory) {
                 /** @var string $directory */
@@ -390,7 +401,7 @@ abstract class AbstractImage implements IMedia
                     $res  = $res && $loop;
                 }
             }
-        } catch (Exception $e) {
+        } catch (Exception) {
             $res = false;
         }
 
@@ -419,7 +430,7 @@ abstract class AbstractImage implements IMedia
      */
     protected function isCached(MediaImageRequest $req): bool
     {
-        return every(Image::getAllSizes(), static function ($e) use ($req) {
+        return every(Image::getAllSizes(), static function ($e) use ($req): bool {
             return \file_exists($req->getThumb($e, true));
         });
     }
@@ -446,7 +457,7 @@ abstract class AbstractImage implements IMedia
         if (!\is_string($request) || \mb_strlen($request) === 0) {
             return null;
         }
-        if (\mb_strpos($request, '/') === 0) {
+        if (\str_starts_with($request, '/')) {
             $request = \mb_substr($request, 1);
         }
 

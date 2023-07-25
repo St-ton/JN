@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Services\JTL;
 
@@ -38,6 +38,13 @@ interface LinkServiceInterface
      *
      */
     public function reset(): void;
+
+    /**
+     * @param int    $languageID
+     * @param string $locale
+     * @return void
+     */
+    public function updateDefaultLanguageData(int $languageID, string $locale): void;
 
     /**
      * @param int $id
@@ -85,13 +92,13 @@ interface LinkServiceInterface
     /**
      * @former gibLinkKeySpecialSeite()
      * @param int $linkType
-     * @return LinkInterface|null
+     * @return LinkInterface
      */
-    public function getSpecialPage(int $linkType): ?LinkInterface;
+    public function getSpecialPage(int $linkType): LinkInterface;
 
     /**
      * @former gibLinkKeySpecialSeite()
-     * @param int $linkType
+     * @param int  $linkType
      * @param bool $fallback
      * @return int|bool
      */
@@ -126,7 +133,12 @@ interface LinkServiceInterface
      * @param string|null $langISO
      * @return string
      */
-    public function getStaticRoute($id = 'kontakt.php', $full = true, $secure = false, $langISO = null): string;
+    public function getStaticRoute(
+        string $id = 'kontakt.php',
+        bool   $full = true,
+        bool   $secure = false,
+        string $langISO = null
+    ): string;
 
     /**
      * careful: this works compatible to gibSpezialSeiten() -

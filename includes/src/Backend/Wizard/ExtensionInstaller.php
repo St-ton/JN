@@ -6,10 +6,12 @@ use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
+use JsonException;
 use JTL\DB\DbInterface;
 use JTL\Helpers\Text;
 use JTL\License\AjaxResponse;
 use JTL\License\Exception\ApiResultCodeException;
+use JTL\License\Exception\AuthException;
 use JTL\License\Exception\ChecksumValidationException;
 use JTL\License\Exception\DownloadValidationException;
 use JTL\License\Exception\FilePermissionException;
@@ -29,17 +31,17 @@ class ExtensionInstaller
     /**
      * @var Helper
      */
-    private $helper;
+    private Helper $helper;
 
     /**
      * @var Collection
      */
-    private $recommendations;
+    private Collection $recommendations;
 
     /**
      * @var LicenseManager
      */
-    private $manager;
+    private LicenseManager $manager;
 
     /**
      * ExtensionInstaller constructor.
@@ -59,7 +61,7 @@ class ExtensionInstaller
      */
     private function getRecommendationByID(string $id): ?Recommendation
     {
-        return $this->recommendations->first(static function (Recommendation $rec) use ($id) {
+        return $this->recommendations->first(static function (Recommendation $rec) use ($id): bool {
             return $rec->getId() === $id;
         });
     }
@@ -101,8 +103,12 @@ class ExtensionInstaller
             foreach ($recom->getLinks() as $link) {
                 if ($link->getRel() === 'createLicense') {
                     try {
-                        $res  = $this->manager->createLicense($link->getHref());
-                        $data = \json_decode($res);
+                        $res = $this->manager->createLicense($link->getHref());
+                        try {
+                            $data = \json_decode($res, false, 512, \JSON_THROW_ON_ERROR);
+                        } catch (JsonException) {
+                            $data = null;
+                        }
                         if (isset($data->meta)) {
                             $createdLicenseKeys[] = $data->meta->exs_key;
                         }
@@ -118,22 +124,24 @@ class ExtensionInstaller
                                 Text::htmlentities($e->getMessage())
                             );
                         }
+                    } catch (AuthException $e) {
+                        $errorMsg .= $e->getMessage();
                     }
                 }
             }
         }
         if (!empty($createdLicenseKeys)) {
             $this->manager->update(true);
-
             foreach ($createdLicenseKeys as $key) {
                 $ajaxResponse = new AjaxResponse();
                 $license      = $this->manager->getLicenseByLicenseKey($key);
                 if ($license === null) {
                     continue;
                 }
-                $itemID    = $license->getID();
-                $installer = $this->helper->getInstaller($itemID);
+                $itemID = $license->getID();
                 try {
+                    $this->helper->validatePrerequisites($itemID);
+                    $installer   = $this->helper->getInstaller($itemID);
                     $download    = $this->helper->getDownload($itemID);
                     $installCode = $installer->install($itemID, $download, $ajaxResponse);
                     if ($installCode === InstallCode::DUPLICATE_PLUGIN_ID) {
@@ -141,7 +149,7 @@ class ExtensionInstaller
                         $installCode = $installer->forceUpdate($download, $ajaxResponse);
                     }
                 } catch (InvalidArgumentException $e) {
-                    $errorMsg .= \sprintf('%s: %s <br>', $license->getName(), $e->getMessage());
+                    $errorMsg .= \sprintf('%s: %s <br>', $license->getName(), \__($e->getMessage()));
                 }
                 if (isset($installCode) && $installCode !== InstallCode::OK) {
                     $mapper    = new PluginValidation();

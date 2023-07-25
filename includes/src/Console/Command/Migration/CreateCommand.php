@@ -15,7 +15,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class CreateCommand extends Command
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function configure(): void
     {
@@ -26,7 +26,7 @@ class CreateCommand extends Command
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function interact(InputInterface $input, OutputInterface $output): void
     {
@@ -43,9 +43,9 @@ class CreateCommand extends Command
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $description   = \trim($input->getArgument('description') ?? '');
         $author        = \trim($input->getArgument('author') ?? '');
@@ -53,6 +53,6 @@ class CreateCommand extends Command
 
         $output->writeln("<info>Created Migration:</info> <comment>'" . $migrationPath . "'</comment>");
 
-        return 0;
+        return Command::SUCCESS;
     }
 }

@@ -11,7 +11,7 @@ use JTL\Plugin\InstallCode;
 class PluginValidation
 {
     /**
-     * @param int     $code
+     * @param int         $code
      * @param string|null $pluginID
      * @return string
      */
@@ -20,547 +20,195 @@ class PluginValidation
         if ($code === 0) {
             return '';
         }
-        switch ($code) {
-            case InstallCode::WRONG_PARAM:
-                $return = \__('WRONG_PARAM');
-                break;
-            case InstallCode::DIR_DOES_NOT_EXIST:
-                $return = \__('DIR_DOES_NOT_EXIST');
-                break;
-            case InstallCode::INFO_XML_MISSING:
-                $return = \__('INFO_XML_MISSING');
-                break;
-            case InstallCode::NO_PLUGIN_FOUND:
-                $return = \__('NO_PLUGIN_FOUND');
-                break;
-            case InstallCode::INVALID_NAME:
-                $return = \__('INVALID_NAME');
-                break;
-            case InstallCode::INVALID_PLUGIN_ID:
-                $return = \__('INVALID_PLUGIN_ID');
-                break;
-            case InstallCode::INSTALL_NODE_MISSING:
-                $return = \__('INSTALL_NODE_MISSING');
-                break;
-            case InstallCode::INVALID_XML_VERSION_NUMBER:
-                $return = \__('INVALID_XML_VERSION_NUMBER');
-                break;
-            case InstallCode::INVALID_VERSION_NUMBER:
-                $return = \__('INVALID_VERSION_NUMBER');
-                break;
-            case InstallCode::INVALID_DATE:
-                $return = \__('INVALID_DATE');
-                break;
-            case InstallCode::MISSING_SQL_FILE:
-                $return = \__('MISSING_SQL_FILE');
-                break;
-            case InstallCode::MISSING_HOOKS:
-                $return = \__('MISSING_HOOKS');
-                break;
-            case InstallCode::INVALID_HOOK:
-                $return = \__('INVALID_HOOK');
-                break;
-            case InstallCode::INVALID_CUSTOM_LINK_NAME:
-                $return = \__('INVALID_CUSTOM_LINK_NAME');
-                break;
-            case InstallCode::INVALID_CUSTOM_LINK_FILE_NAME:
-                $return = \__('INVALID_CUSTOM_LINK_FILE_NAME');
-                break;
-            case InstallCode::MISSING_CUSTOM_LINK_FILE:
-                $return = \__('MISSING_CUSTOM_LINK_FILE');
-                break;
-            case InstallCode::INVALID_CONFIG_LINK_NAME:
-                $return = \__('INVALID_CONFIG_LINK_NAME');
-                break;
-            case InstallCode::MISSING_CONFIG:
-                $return = \__('MISSING_CONFIG');
-                break;
-            case InstallCode::INVALID_CONFIG_TYPE:
-                $return = \__('INVALID_CONFIG_TYPE');
-                break;
-            case InstallCode::INVALID_CONFIG_INITIAL_VALUE:
-                $return = \__('INVALID_CONFIG_INITIAL_VALUE');
-                break;
-            case InstallCode::INVALID_CONFIG_SORT_VALUE:
-                $return = \__('INVALID_CONFIG_SORT_VALUE');
-                break;
-            case InstallCode::INVALID_CONFIG_NAME:
-                $return = \__('INVALID_CONFIG_NAME');
-                break;
-            case InstallCode::MISSING_CONFIG_SELECTBOX_OPTIONS:
-            case InstallCode::MISSING_PAYMENT_METHOD_SELECTBOX_OPTIONS:
-                $return = \__('MISSING_CONFIG_SELECTBOX_OPTIONS');
-                break;
-            case InstallCode::INVALID_CONFIG_OPTION:
-            case InstallCode::INVALID_PAYMENT_METHOD_OPTION:
-                $return = \__('INVALID_CONFIG_OPTION');
-                break;
-            case InstallCode::MISSING_LANG_VARS:
-                $return = \__('MISSING_LANG_VARS');
-                break;
-            case InstallCode::INVALID_LANG_VAR_NAME:
-                $return = \__('INVALID_LANG_VAR_NAME');
-                break;
-            case InstallCode::MISSING_LOCALIZED_LANG_VAR:
-                $return = \__('MISSING_LOCALIZED_LANG_VAR');
-                break;
-            case InstallCode::INVALID_LANG_VAR_ISO:
-                $return = \__('INVALID_LANG_VAR_ISO');
-                break;
-            case InstallCode::INVALID_LOCALIZED_LANG_VAR_NAME:
-                $return = \__('INVALID_LOCALIZED_LANG_VAR_NAME');
-                break;
-            case InstallCode::MISSING_HOOK_FILE:
-                $return = \__('MISSING_HOOK_FILE');
-                break;
-            case InstallCode::MISSING_VERSION_DIR:
-                $return = \__('MISSING_VERSION_DIR');
-                break;
-            case InstallCode::INVALID_CONF:
-                $return = \__('INVALID_CONF');
-                break;
-            case InstallCode::INVALID_CONF_VALUE_NAME:
-                $return = \__('INVALID_CONF_VALUE_NAME');
-                break;
-            case InstallCode::INVALID_XML_VERSION:
-                $return = \__('INVALID_XML_VERSION');
-                break;
-            case InstallCode::INVALID_SHOP_VERSION:
-                $return = \__('INVALID_SHOP_VERSION');
-                break;
-            case InstallCode::SHOP_VERSION_COMPATIBILITY:
-                $return = \__('SHOP_VERSION_COMPATIBILITY');
-                break;
-            case InstallCode::MISSING_FRONTEND_LINKS:
-                $return = \__('MISSING_FRONTEND_LINKS');
-                break;
-            case InstallCode::INVALID_FRONTEND_LINK_FILENAME:
-                $return = \__('INVALID_FRONTEND_LINK_FILENAME');
-                break;
-            case InstallCode::INVALID_FRONTEND_LINK_NAME:
-                $return = \__('INVALID_FRONTEND_LINK_NAME');
-                break;
-            case InstallCode::INVALID_FRONEND_LINK_VISIBILITY:
-                $return = \__('INVALID_FRONEND_LINK_VISIBILITY');
-                break;
-            case InstallCode::INVALID_FRONEND_LINK_PRINT:
-                $return = \__('INVALID_FRONEND_LINK_PRINT');
-                break;
-            case InstallCode::INVALID_FRONEND_LINK_ISO:
-                $return = \__('INVALID_FRONEND_LINK_ISO');
-                break;
-            case InstallCode::INVALID_FRONEND_LINK_SEO:
-                $return = \__('INVALID_FRONEND_LINK_SEO');
-                break;
-            case InstallCode::INVALID_FRONEND_LINK_NAME:
-                $return = \__('INVALID_FRONEND_LINK_NAME');
-                break;
-            case InstallCode::INVALID_FRONEND_LINK_TITLE:
-                $return = \__('INVALID_FRONEND_LINK_TITLE');
-                break;
-            case InstallCode::INVALID_FRONEND_LINK_META_TITLE:
-                $return = \__('INVALID_FRONEND_LINK_META_TITLE');
-                break;
-            case InstallCode::INVALID_FRONEND_LINK_META_KEYWORDS:
-                $return = \__('INVALID_FRONEND_LINK_META_KEYWORDS');
-                break;
-            case InstallCode::INVALID_FRONEND_LINK_META_DESCRIPTION:
-                $return = \__('INVALID_FRONEND_LINK_META_DESCRIPTION');
-                break;
-            case InstallCode::INVALID_PAYMENT_METHOD_NAME:
-                $return = \__('INVALID_PAYMENT_METHOD_NAME');
-                break;
-            case InstallCode::INVALID_PAYMENT_METHOD_MAIL:
-                $return = \__('INVALID_PAYMENT_METHOD_MAIL');
-                break;
-            case InstallCode::INVALID_PAYMENT_METHOD_TSCODE:
-                $return = \__('INVALID_PAYMENT_METHOD_TSCODE');
-                break;
-            case InstallCode::INVALID_PAYMENT_METHOD_PRE_ORDER:
-                $return = \__('INVALID_PAYMENT_METHOD_PRE_ORDER');
-                break;
-            case InstallCode::INVALID_PAYMENT_METHOD_CLASS_FILE:
-                $return = \__('INVALID_PAYMENT_METHOD_CLASS_FILE');
-                break;
-            case InstallCode::MISSING_PAYMENT_METHOD_FILE:
-                $return = \__('MISSING_PAYMENT_METHOD_FILE');
-                break;
-            case InstallCode::INVALID_PAYMENT_METHOD_TEMPLATE:
-                $return = \__('INVALID_PAYMENT_METHOD_TEMPLATE');
-                break;
-            case InstallCode::MISSING_PAYMENT_METHOD_TEMPLATE:
-                $return = \__('MISSING_PAYMENT_METHOD_TEMPLATE');
-                break;
-            case InstallCode::MISSING_PAYMENT_METHOD_LANGUAGES:
-                $return = \__('MISSING_PAYMENT_METHOD_LANGUAGES');
-                break;
-            case InstallCode::INVALID_PAYMENT_METHOD_LANGUAGE_ISO:
-                $return = \__('INVALID_PAYMENT_METHOD_LANGUAGE_ISO');
-                break;
-            case InstallCode::INVALID_PAYMENT_METHOD_NAME_LOCALIZED:
-                $return = \__('INVALID_PAYMENT_METHOD_NAME_LOCALIZED');
-                break;
-            case InstallCode::INVALID_PAYMENT_METHOD_CHARGE_NAME:
-                $return = \__('INVALID_PAYMENT_METHOD_CHARGE_NAME');
-                break;
-            case InstallCode::INVALID_PAYMENT_METHOD_INFO_TEXT:
-                $return = \__('INVALID_PAYMENT_METHOD_INFO_TEXT');
-                break;
-            case InstallCode::INVALID_PAYMENT_METHOD_CONFIG_TYPE:
-                $return = \__('INVALID_PAYMENT_METHOD_CONFIG_TYPE');
-                break;
-            case InstallCode::INVALID_PAYMENT_METHOD_CONFIG_INITITAL_VALUE:
-                $return = \__('INVALID_PAYMENT_METHOD_CONFIG_INITITAL_VALUE');
-                break;
-            case InstallCode::INVALID_PAYMENT_METHOD_CONFIG_SORT:
-                $return = \__('INVALID_PAYMENT_METHOD_CONFIG_SORT');
-                break;
-            case InstallCode::INVALID_PAYMENT_METHOD_CONFIG_CONF:
-                $return = \__('INVALID_PAYMENT_METHOD_CONFIG_CONF');
-                break;
-            case InstallCode::INVALID_PAYMENT_METHOD_CONFIG_NAME:
-                $return = \__('INVALID_PAYMENT_METHOD_CONFIG_NAME');
-                break;
-            case InstallCode::INVALID_PAYMENT_METHOD_VALUE_NAME:
-                $return = \__('INVALID_PAYMENT_METHOD_VALUE_NAME');
-                break;
-            case InstallCode::INVALID_PAYMENT_METHOD_SORT:
-                $return = \__('INVALID_PAYMENT_METHOD_SORT');
-                break;
-            case InstallCode::INVALID_PAYMENT_METHOD_SOAP:
-                $return = \__('INVALID_PAYMENT_METHOD_SOAP');
-                break;
-            case InstallCode::INVALID_PAYMENT_METHOD_CURL:
-                $return = \__('INVALID_PAYMENT_METHOD_CURL');
-                break;
-            case InstallCode::INVALID_PAYMENT_METHOD_SOCKETS:
-                $return = \__('INVALID_PAYMENT_METHOD_SOCKETS');
-                break;
-            case InstallCode::INVALID_PAYMENT_METHOD_CLASS_NAME:
-                $return = \__('INVALID_PAYMENT_METHOD_CLASS_NAME');
-                break;
-            case InstallCode::INVALID_FULLSCREEN_TEMPLATE:
-                $return = \__('INVALID_FULLSCREEN_TEMPLATE');
-                break;
-            case InstallCode::MISSING_FRONTEND_LINK_TEMPLATE:
-                $return = \__('MISSING_FRONTEND_LINK_TEMPLATE');
-                break;
-            case InstallCode::TOO_MANY_FULLSCREEN_TEMPLATE_NAMES:
-                $return = \__('TOO_MANY_FULLSCREEN_TEMPLATE_NAMES');
-                break;
-            case InstallCode::INVALID_FULLSCREEN_TEMPLATE_NAME:
-                $return = \__('INVALID_FULLSCREEN_TEMPLATE_NAME');
-                break;
-            case InstallCode::MISSING_FULLSCREEN_TEMPLATE_FILE:
-                $return = \__('MISSING_FULLSCREEN_TEMPLATE_FILE');
-                break;
-            case InstallCode::INVALID_FRONTEND_LINK_TEMPLATE_FULLSCREEN_TEMPLATE:
-                $return = \__('INVALID_FRONTEND_LINK_TEMPLATE_FULLSCREEN_TEMPLATE');
-                break;
-            case InstallCode::MISSING_BOX:
-                $return = \__('MISSING_BOX');
-                break;
-            case InstallCode::INVALID_BOX_NAME:
-                $return = \__('INVALID_BOX_NAME');
-                break;
-            case InstallCode::INVALID_BOX_TEMPLATE:
-                $return = \__('INVALID_BOX_TEMPLATE');
-                break;
-            case InstallCode::MISSING_BOX_TEMPLATE_FILE:
-                $return = \__('MISSING_BOX_TEMPLATE_FILE');
-                break;
-            case InstallCode::MISSING_LICENCE_FILE:
-                $return = \__('MISSING_LICENCE_FILE');
-                break;
-            case InstallCode::INVALID_LICENCE_FILE_NAME:
-                $return = \__('INVALID_LICENCE_FILE_NAME');
-                break;
-            case InstallCode::MISSING_LICENCE:
-                $return = \__('MISSING_LICENCE');
-                break;
-            case InstallCode::MISSING_LICENCE_CHECKLICENCE_METHOD:
-                $return = \__('MISSING_LICENCE_CHECKLICENCE_METHOD');
-                break;
-            case InstallCode::DUPLICATE_PLUGIN_ID:
-                $return = \__('DUPLICATE_PLUGIN_ID');
-                break;
-            case InstallCode::MISSING_EMAIL_TEMPLATES:
-                $return = \__('MISSING_EMAIL_TEMPLATES');
-                break;
-            case InstallCode::INVALID_TEMPLATE_NAME:
-                $return = \__('INVALID_TEMPLATE_NAME');
-                break;
-            case InstallCode::INVALID_TEMPLATE_TYPE:
-                $return = \__('INVALID_TEMPLATE_TYPE');
-                break;
-            case InstallCode::INVALID_TEMPLATE_MODULE_ID:
-                $return = \__('INVALID_TEMPLATE_MODULE_ID');
-                break;
-            case InstallCode::INVALID_TEMPLATE_ACTIVE:
-                $return = \__('INVALID_TEMPLATE_ACTIVE');
-                break;
-            case InstallCode::INVALID_TEMPLATE_AKZ:
-                $return = \__('INVALID_TEMPLATE_AKZ');
-                break;
-            case InstallCode::INVALID_TEMPLATE_AGB:
-                $return = \__('INVALID_TEMPLATE_AGB');
-                break;
-            case InstallCode::INVALID_TEMPLATE_WRB:
-                $return = \__('INVALID_TEMPLATE_WRB');
-                break;
-            case InstallCode::INVALID_EMAIL_TEMPLATE_ISO:
-                $return = \__('INVALID_EMAIL_TEMPLATE_ISO');
-                break;
-            case InstallCode::INVALID_EMAIL_TEMPLATE_SUBJECT:
-                $return = \__('INVALID_EMAIL_TEMPLATE_SUBJECT');
-                break;
-            case InstallCode::MISSING_EMAIL_TEMPLATE_LANGUAGE:
-                $return = \__('MISSING_EMAIL_TEMPLATE_LANGUAGE');
-                break;
-            case InstallCode::INVALID_CHECKBOX_FUNCTION_NAME:
-                $return = \__('INVALID_CHECKBOX_FUNCTION_NAME');
-                break;
-            case InstallCode::INVALID_CHECKBOX_FUNCTION_ID:
-                $return = \__('INVALID_CHECKBOX_FUNCTION_ID');
-                break;
-            case InstallCode::INVALID_FRONTEND_LINK_NO_FOLLOW:
-                $return = \__('INVALID_FRONTEND_LINK_NO_FOLLOW');
-                break;
-            case InstallCode::MISSING_WIDGETS:
-                $return = \__('MISSING_WIDGETS');
-                break;
-            case InstallCode::INVALID_WIDGET_TITLE:
-                $return = \__('INVALID_WIDGET_TITLE');
-                break;
-            case InstallCode::INVALID_WIDGET_CLASS:
-                $return = \__('INVALID_WIDGET_CLASS');
-                break;
-            case InstallCode::MISSING_WIDGET_CLASS_FILE:
-                $return = \__('MISSING_WIDGET_CLASS_FILE');
-                break;
-            case InstallCode::INVALID_WIDGET_CONTAINER:
-                $return = \__('INVALID_WIDGET_CONTAINER');
-                break;
-            case InstallCode::INVALID_WIDGET_POS:
-                $return = \__('INVALID_WIDGET_POS');
-                break;
-            case InstallCode::INVALID_WIDGET_EXPANDED:
-                $return = \__('INVALID_WIDGET_EXPANDED');
-                break;
-            case InstallCode::INVALID_WIDGET_ACTIVE:
-                $return = \__('INVALID_WIDGET_ACTIVE');
-                break;
-            case InstallCode::INVALID_PAYMENT_METHOD_ADDITIONAL_STEP_TEMPLATE_FILE:
-                $return = \__('INVALID_PAYMENT_METHOD_ADDITIONAL_STEP_TEMPLATE_FILE');
-                break;
-            case InstallCode::MISSING_PAYMENT_METHOD_ADDITIONAL_STEP_FILE:
-                $return = \__('MISSING_PAYMENT_METHOD_ADDITIONAL_STEP_FILE');
-                break;
-            case InstallCode::MISSING_FORMATS:
-                $return = \__('MISSING_FORMATS');
-                break;
-            case InstallCode::INVALID_FORMAT_NAME:
-                $return = \__('INVALID_FORMAT_NAME');
-                break;
-            case InstallCode::INVALID_FORMAT_FILE_NAME:
-                $return = \__('INVALID_FORMAT_FILE_NAME');
-                break;
-            case InstallCode::MISSING_FORMAT_CONTENT:
-                $return = \__('MISSING_FORMAT_CONTENT');
-                break;
-            case InstallCode::INVALID_FORMAT_ENCODING:
-                $return = \__('INVALID_FORMAT_ENCODING');
-                break;
-            case InstallCode::INVALID_FORMAT_SHIPPING_COSTS_DELIVERY_COUNTRY:
-                $return = \__('INVALID_FORMAT_SHIPPING_COSTS_DELIVERY_COUNTRY');
-                break;
-            case InstallCode::INVALID_FORMAT_CONTENT_FILE:
-                $return = \__('INVALID_FORMAT_CONTENT_FILE');
-                break;
-            case InstallCode::MISSING_EXTENDED_TEMPLATE:
-                $return = \__('MISSING_EXTENDED_TEMPLATE');
-                break;
-            case InstallCode::INVALID_EXTENDED_TEMPLATE_FILE_NAME:
-                $return = \__('INVALID_EXTENDED_TEMPLATE_FILE_NAME');
-                break;
-            case InstallCode::MISSING_EXTENDED_TEMPLATE_FILE:
-                $return = \__('MISSING_EXTENDED_TEMPLATE_FILE');
-                break;
-            case InstallCode::MISSING_UNINSTALL_FILE:
-                $return = \__('MISSING_UNINSTALL_FILE');
-                break;
-            case InstallCode::IONCUBE_REQUIRED:
-                $return = \__('IONCUBE_REQUIRED');
-                break;
-            case InstallCode::INVALID_OPTIONS_SOURE_FILE:
-                $return = \__('INVALID_OPTIONS_SOURE_FILE');
-                break;
-            case InstallCode::MISSING_OPTIONS_SOURE_FILE:
-                $return = \__('MISSING_OPTIONS_SOURE_FILE');
-                break;
-            case InstallCode::MISSING_BOOTSTRAP_CLASS:
-                $return = \__('MISSING_BOOTSTRAP_CLASS');
-                break;
-            case InstallCode::INVALID_BOOTSTRAP_IMPLEMENTATION:
-                $return = \__('INVALID_BOOTSTRAP_IMPLEMENTATION');
-                break;
-            case InstallCode::INVALID_AUTHOR:
-                $return = \__('INVALID_AUTHOR');
-                break;
-            case InstallCode::MISSING_PORTLETS:
-                $return = \__('MISSING_PORTLETS');
-                break;
-            case InstallCode::INVALID_PORTLET_TITLE:
-                $return = \__('INVALID_PORTLET_TITLE');
-                break;
-            case InstallCode::INVALID_PORTLET_CLASS:
-                $return = \__('INVALID_PORTLET_CLASS');
-                break;
-            case InstallCode::INVALID_PORTLET_CLASS_FILE:
-                $return = \__('INVALID_PORTLET_CLASS_FILE');
-                break;
-            case InstallCode::INVALID_PORTLET_GROUP:
-                $return = \__('INVALID_PORTLET_GROUP');
-                break;
-            case InstallCode::INVALID_PORTLET_ACTIVE:
-                $return = \__('INVALID_PORTLET_ACTIVE');
-                break;
-            case InstallCode::MISSING_BLUEPRINTS:
-                $return = \__('MISSING_BLUEPRINTS');
-                break;
-            case InstallCode::INVALID_BLUEPRINT_NAME:
-                $return = \__('INVALID_BLUEPRINT_NAME');
-                break;
-            case InstallCode::INVALID_BLUEPRINT_FILE:
-                $return = \__('INVALID_BLUEPRINT_FILE');
-                break;
-            case InstallCode::EXT_MUST_NOT_HAVE_UNINSTALLER:
-                $return = \__('EXT_MUST_NOT_HAVE_UNINSTALLER');
-                break;
-            case InstallCode::WRONG_EXT_DIR:
-                $return = \__('WRONG_EXT_DIR');
-                break;
-            case InstallCode::MISSING_PLUGIN_NODE:
-                $return = \__('MISSING_PLUGIN_NODE');
-                break;
-            case InstallCode::OK_LEGACY:
-                $return = \__('OK_LEGACY');
-                break;
-            case InstallCode::SQL_MISSING_DATA:
-                $return = \__('SQL_MISSING_DATA');
-                break;
-            case InstallCode::SQL_ERROR:
-                $return = \__('SQL_ERROR');
-                break;
-            case InstallCode::SQL_WRONG_TABLE_NAME_DELETE:
-                $return = \__('SQL_WRONG_TABLE_NAME_DELETE');
-                break;
-            case InstallCode::SQL_WRONG_TABLE_NAME_CREATE:
-                $return = \__('SQL_WRONG_TABLE_NAME_CREATE');
-                break;
-            case InstallCode::SQL_INVALID_FILE_CONTENT:
-                $return = \__('SQL_INVALID_FILE_CONTENT');
-                break;
-            case InstallCode::SQL_CANNOT_SAVE_HOOK:
-                $return = \__('SQL_CANNOT_SAVE_HOOK');
-                break;
-            case InstallCode::SQL_CANNOT_SAVE_UNINSTALL:
-                $return = \__('SQL_CANNOT_SAVE_UNINSTALL');
-                break;
-            case InstallCode::SQL_CANNOT_SAVE_ADMIN_MENU_ITEM:
-                $return = \__('SQL_CANNOT_SAVE_ADMIN_MENU_ITEM');
-                break;
-            case InstallCode::SQL_CANNOT_SAVE_SETTINGS_ITEM:
-                $return = \__('SQL_CANNOT_SAVE_SETTINGS_ITEM');
-                break;
-            case InstallCode::SQL_CANNOT_SAVE_SETTING:
-                $return = \__('SQL_CANNOT_SAVE_SETTING');
-                break;
-            case InstallCode::SQL_CANNOT_FIND_LINK_GROUP:
-                $return = \__('SQL_CANNOT_FIND_LINK_GROUP');
-                break;
-            case InstallCode::SQL_CANNOT_SAVE_LINK:
-                $return = \__('SQL_CANNOT_SAVE_LINK');
-                break;
-            case InstallCode::SQL_CANNOT_SAVE_PAYMENT_METHOD:
-                $return = \__('SQL_CANNOT_SAVE_PAYMENT_METHOD');
-                break;
-            case InstallCode::SQL_CANNOT_SAVE_PAYMENT_METHOD_LOCALIZATION:
-                $return = \__('SQL_CANNOT_SAVE_PAYMENT_METHOD_LOCALIZATION');
-                break;
-            case InstallCode::SQL_CANNOT_SAVE_PAYMENT_METHOD_LANGUAGE:
-                $return = \__('SQL_CANNOT_SAVE_PAYMENT_METHOD_LANGUAGE');
-                break;
-            case InstallCode::SQL_CANNOT_SAVE_PAYMENT_METHOD_SETTING:
-                $return = \__('SQL_CANNOT_SAVE_PAYMENT_METHOD_SETTING');
-                break;
-            case InstallCode::SQL_CANNOT_SAVE_BOX_TEMPLATE:
-                $return = \__('SQL_CANNOT_SAVE_BOX_TEMPLATE');
-                break;
-            case InstallCode::SQL_CANNOT_SAVE_TEMPLATE:
-                $return = \__('SQL_CANNOT_SAVE_TEMPLATE');
-                break;
-            case InstallCode::SQL_CANNOT_SAVE_EMAIL_TEMPLATE:
-                $return = \__('SQL_CANNOT_SAVE_EMAIL_TEMPLATE');
-                break;
-            case InstallCode::SQL_CANNOT_SAVE_LANG_VAR:
-                $return = \__('SQL_CANNOT_SAVE_LANG_VAR');
-                break;
-            case InstallCode::SQL_CANNOT_SAVE_LANG_VAR_LOCALIZATION:
-                $return = \__('SQL_CANNOT_SAVE_LANG_VAR_LOCALIZATION');
-                break;
-            case InstallCode::SQL_CANNOT_SAVE_WIDGET:
-                $return = \__('SQL_CANNOT_SAVE_WIDGET');
-                break;
-            case InstallCode::SQL_CANNOT_SAVE_PORTLET:
-                $return = \__('SQL_CANNOT_SAVE_PORTLET');
-                break;
-            case InstallCode::SQL_CANNOT_SAVE_BLUEPRINT:
-                $return = \__('SQL_CANNOT_SAVE_BLUEPRINT');
-                break;
-            case InstallCode::SQL_CANNOT_SAVE_EXPORT:
-                $return = \__('SQL_CANNOT_SAVE_EXPORT');
-                break;
-            case InstallCode::INVALID_STORE_ID:
-                $return = \__('INVALID_STORE_ID');
-                break;
-            case InstallCode::SQL_CANNOT_SAVE_VENDOR:
-                $return = \__('SQL_CANNOT_SAVE_VENDOR');
-                break;
-            case InstallCode::MISSING_CONSENT_VENDOR:
-                $return = \__('MISSING_CONSENT_VENDOR');
-                break;
-            case InstallCode::INVALID_CONSENT_VENDOR_NAME:
-                $return = \__('INVALID_CONSENT_VENDOR_NAME');
-                break;
-            case InstallCode::INVALID_CONSENT_VENDOR_PURPOSE:
-                $return = \__('INVALID_CONSENT_VENDOR_PURPOSE');
-                break;
-            case InstallCode::INVALID_CONSENT_VENDOR_LOCALIZATION:
-                $return = \__('INVALID_CONSENT_VENDOR_LOCALIZATION');
-                break;
-            case InstallCode::INVALID_CONSENT_VENDOR_LOCALIZATION_ISO:
-                $return = \__('INVALID_CONSENT_VENDOR_LOCALIZATION_ISO');
-                break;
-            case InstallCode::INVALID_CONSENT_VENDOR_DESCRIPTION:
-                $return = \__('INVALID_CONSENT_VENDOR_DESCRIPTION');
-                break;
-            case InstallCode::INVALID_CONSENT_VENDOR_PRIV_POL:
-                $return = \__('INVALID_CONSENT_VENDOR_PRIV_POL');
-                break;
-            case InstallCode::INVALID_CONSENT_VENDOR_ID:
-                $return = \__('INVALID_CONSENT_VENDOR_ID');
-                break;
-            case InstallCode::INVALID_CONSENT_VENDOR_COMPANY:
-                $return = \__('INVALID_CONSENT_VENDOR_COMPANY');
-                break;
-            case InstallCode::INVALID_LINK_IDENTIFIER:
-                $return = \__('INVALID_LINK_IDENTIFIER');
-                break;
-            default:
-                $return = \__('unknownError');
-                break;
-        }
+        $return = match ($code) {
+            InstallCode::WRONG_PARAM => \__('WRONG_PARAM'),
+            InstallCode::DIR_DOES_NOT_EXIST => \__('DIR_DOES_NOT_EXIST'),
+            InstallCode::INFO_XML_MISSING => \__('INFO_XML_MISSING'),
+            InstallCode::NO_PLUGIN_FOUND => \__('NO_PLUGIN_FOUND'),
+            InstallCode::INVALID_NAME => \__('INVALID_NAME'),
+            InstallCode::INVALID_PLUGIN_ID => \__('INVALID_PLUGIN_ID'),
+            InstallCode::INSTALL_NODE_MISSING => \__('INSTALL_NODE_MISSING'),
+            InstallCode::INVALID_XML_VERSION_NUMBER => \__('INVALID_XML_VERSION_NUMBER'),
+            InstallCode::INVALID_VERSION_NUMBER => \__('INVALID_VERSION_NUMBER'),
+            InstallCode::INVALID_DATE => \__('INVALID_DATE'),
+            InstallCode::MISSING_SQL_FILE => \__('MISSING_SQL_FILE'),
+            InstallCode::MISSING_HOOKS => \__('MISSING_HOOKS'),
+            InstallCode::INVALID_HOOK => \__('INVALID_HOOK'),
+            InstallCode::INVALID_CUSTOM_LINK_NAME => \__('INVALID_CUSTOM_LINK_NAME'),
+            InstallCode::INVALID_CUSTOM_LINK_FILE_NAME => \__('INVALID_CUSTOM_LINK_FILE_NAME'),
+            InstallCode::MISSING_CUSTOM_LINK_FILE => \__('MISSING_CUSTOM_LINK_FILE'),
+            InstallCode::INVALID_CONFIG_LINK_NAME => \__('INVALID_CONFIG_LINK_NAME'),
+            InstallCode::MISSING_CONFIG => \__('MISSING_CONFIG'),
+            InstallCode::INVALID_CONFIG_TYPE => \__('INVALID_CONFIG_TYPE'),
+            InstallCode::INVALID_CONFIG_INITIAL_VALUE => \__('INVALID_CONFIG_INITIAL_VALUE'),
+            InstallCode::INVALID_CONFIG_SORT_VALUE => \__('INVALID_CONFIG_SORT_VALUE'),
+            InstallCode::INVALID_CONFIG_NAME => \__('INVALID_CONFIG_NAME'),
+            InstallCode::MISSING_CONFIG_SELECTBOX_OPTIONS,
+            InstallCode::MISSING_PAYMENT_METHOD_SELECTBOX_OPTIONS => \__('MISSING_CONFIG_SELECTBOX_OPTIONS'),
+            InstallCode::INVALID_CONFIG_OPTION,
+            InstallCode::INVALID_PAYMENT_METHOD_OPTION => \__('INVALID_CONFIG_OPTION'),
+            InstallCode::MISSING_LANG_VARS => \__('MISSING_LANG_VARS'),
+            InstallCode::INVALID_LANG_VAR_NAME => \__('INVALID_LANG_VAR_NAME'),
+            InstallCode::MISSING_LOCALIZED_LANG_VAR => \__('MISSING_LOCALIZED_LANG_VAR'),
+            InstallCode::INVALID_LANG_VAR_ISO => \__('INVALID_LANG_VAR_ISO'),
+            InstallCode::INVALID_LOCALIZED_LANG_VAR_NAME => \__('INVALID_LOCALIZED_LANG_VAR_NAME'),
+            InstallCode::MISSING_HOOK_FILE => \__('MISSING_HOOK_FILE'),
+            InstallCode::MISSING_VERSION_DIR => \__('MISSING_VERSION_DIR'),
+            InstallCode::INVALID_CONF => \__('INVALID_CONF'),
+            InstallCode::INVALID_CONF_VALUE_NAME => \__('INVALID_CONF_VALUE_NAME'),
+            InstallCode::INVALID_XML_VERSION => \__('INVALID_XML_VERSION'),
+            InstallCode::INVALID_SHOP_VERSION => \__('INVALID_SHOP_VERSION'),
+            InstallCode::SHOP_VERSION_COMPATIBILITY => \__('SHOP_VERSION_COMPATIBILITY'),
+            InstallCode::MISSING_FRONTEND_LINKS => \__('MISSING_FRONTEND_LINKS'),
+            InstallCode::INVALID_FRONTEND_LINK_FILENAME => \__('INVALID_FRONTEND_LINK_FILENAME'),
+            InstallCode::INVALID_FRONTEND_LINK_NAME => \__('INVALID_FRONTEND_LINK_NAME'),
+            InstallCode::INVALID_FRONEND_LINK_VISIBILITY => \__('INVALID_FRONEND_LINK_VISIBILITY'),
+            InstallCode::INVALID_FRONEND_LINK_PRINT => \__('INVALID_FRONEND_LINK_PRINT'),
+            InstallCode::INVALID_FRONEND_LINK_ISO => \__('INVALID_FRONEND_LINK_ISO'),
+            InstallCode::INVALID_FRONEND_LINK_SEO => \__('INVALID_FRONEND_LINK_SEO'),
+            InstallCode::INVALID_FRONEND_LINK_NAME => \__('INVALID_FRONEND_LINK_NAME'),
+            InstallCode::INVALID_FRONEND_LINK_TITLE => \__('INVALID_FRONEND_LINK_TITLE'),
+            InstallCode::INVALID_FRONEND_LINK_META_TITLE => \__('INVALID_FRONEND_LINK_META_TITLE'),
+            InstallCode::INVALID_FRONEND_LINK_META_KEYWORDS => \__('INVALID_FRONEND_LINK_META_KEYWORDS'),
+            InstallCode::INVALID_FRONEND_LINK_META_DESCRIPTION => \__('INVALID_FRONEND_LINK_META_DESCRIPTION'),
+            InstallCode::INVALID_PAYMENT_METHOD_NAME => \__('INVALID_PAYMENT_METHOD_NAME'),
+            InstallCode::INVALID_PAYMENT_METHOD_MAIL => \__('INVALID_PAYMENT_METHOD_MAIL'),
+            InstallCode::INVALID_PAYMENT_METHOD_TSCODE => \__('INVALID_PAYMENT_METHOD_TSCODE'),
+            InstallCode::INVALID_PAYMENT_METHOD_PRE_ORDER => \__('INVALID_PAYMENT_METHOD_PRE_ORDER'),
+            InstallCode::INVALID_PAYMENT_METHOD_CLASS_FILE => \__('INVALID_PAYMENT_METHOD_CLASS_FILE'),
+            InstallCode::MISSING_PAYMENT_METHOD_FILE => \__('MISSING_PAYMENT_METHOD_FILE'),
+            InstallCode::INVALID_PAYMENT_METHOD_TEMPLATE => \__('INVALID_PAYMENT_METHOD_TEMPLATE'),
+            InstallCode::MISSING_PAYMENT_METHOD_TEMPLATE => \__('MISSING_PAYMENT_METHOD_TEMPLATE'),
+            InstallCode::MISSING_PAYMENT_METHOD_LANGUAGES => \__('MISSING_PAYMENT_METHOD_LANGUAGES'),
+            InstallCode::INVALID_PAYMENT_METHOD_LANGUAGE_ISO => \__('INVALID_PAYMENT_METHOD_LANGUAGE_ISO'),
+            InstallCode::INVALID_PAYMENT_METHOD_NAME_LOCALIZED => \__('INVALID_PAYMENT_METHOD_NAME_LOCALIZED'),
+            InstallCode::INVALID_PAYMENT_METHOD_CHARGE_NAME => \__('INVALID_PAYMENT_METHOD_CHARGE_NAME'),
+            InstallCode::INVALID_PAYMENT_METHOD_INFO_TEXT => \__('INVALID_PAYMENT_METHOD_INFO_TEXT'),
+            InstallCode::INVALID_PAYMENT_METHOD_CONFIG_TYPE => \__('INVALID_PAYMENT_METHOD_CONFIG_TYPE'),
+            InstallCode::INVALID_PAYMENT_METHOD_CONFIG_INITITAL_VALUE
+            => \__('INVALID_PAYMENT_METHOD_CONFIG_INITITAL_VALUE'),
+            InstallCode::INVALID_PAYMENT_METHOD_CONFIG_SORT => \__('INVALID_PAYMENT_METHOD_CONFIG_SORT'),
+            InstallCode::INVALID_PAYMENT_METHOD_CONFIG_CONF => \__('INVALID_PAYMENT_METHOD_CONFIG_CONF'),
+            InstallCode::INVALID_PAYMENT_METHOD_CONFIG_NAME => \__('INVALID_PAYMENT_METHOD_CONFIG_NAME'),
+            InstallCode::INVALID_PAYMENT_METHOD_VALUE_NAME => \__('INVALID_PAYMENT_METHOD_VALUE_NAME'),
+            InstallCode::INVALID_PAYMENT_METHOD_SORT => \__('INVALID_PAYMENT_METHOD_SORT'),
+            InstallCode::INVALID_PAYMENT_METHOD_SOAP => \__('INVALID_PAYMENT_METHOD_SOAP'),
+            InstallCode::INVALID_PAYMENT_METHOD_CURL => \__('INVALID_PAYMENT_METHOD_CURL'),
+            InstallCode::INVALID_PAYMENT_METHOD_SOCKETS => \__('INVALID_PAYMENT_METHOD_SOCKETS'),
+            InstallCode::INVALID_PAYMENT_METHOD_CLASS_NAME => \__('INVALID_PAYMENT_METHOD_CLASS_NAME'),
+            InstallCode::INVALID_FULLSCREEN_TEMPLATE => \__('INVALID_FULLSCREEN_TEMPLATE'),
+            InstallCode::MISSING_FRONTEND_LINK_TEMPLATE => \__('MISSING_FRONTEND_LINK_TEMPLATE'),
+            InstallCode::TOO_MANY_FULLSCREEN_TEMPLATE_NAMES => \__('TOO_MANY_FULLSCREEN_TEMPLATE_NAMES'),
+            InstallCode::INVALID_FULLSCREEN_TEMPLATE_NAME => \__('INVALID_FULLSCREEN_TEMPLATE_NAME'),
+            InstallCode::MISSING_FULLSCREEN_TEMPLATE_FILE => \__('MISSING_FULLSCREEN_TEMPLATE_FILE'),
+            InstallCode::INVALID_FRONTEND_LINK_TEMPLATE_FULLSCREEN_TEMPLATE
+            => \__('INVALID_FRONTEND_LINK_TEMPLATE_FULLSCREEN_TEMPLATE'),
+            InstallCode::MISSING_BOX => \__('MISSING_BOX'),
+            InstallCode::INVALID_BOX_NAME => \__('INVALID_BOX_NAME'),
+            InstallCode::INVALID_BOX_TEMPLATE => \__('INVALID_BOX_TEMPLATE'),
+            InstallCode::MISSING_BOX_TEMPLATE_FILE => \__('MISSING_BOX_TEMPLATE_FILE'),
+            InstallCode::MISSING_LICENCE_FILE => \__('MISSING_LICENCE_FILE'),
+            InstallCode::INVALID_LICENCE_FILE_NAME => \__('INVALID_LICENCE_FILE_NAME'),
+            InstallCode::MISSING_LICENCE => \__('MISSING_LICENCE'),
+            InstallCode::MISSING_LICENCE_CHECKLICENCE_METHOD => \__('MISSING_LICENCE_CHECKLICENCE_METHOD'),
+            InstallCode::DUPLICATE_PLUGIN_ID => \__('DUPLICATE_PLUGIN_ID'),
+            InstallCode::MISSING_EMAIL_TEMPLATES => \__('MISSING_EMAIL_TEMPLATES'),
+            InstallCode::INVALID_TEMPLATE_NAME => \__('INVALID_TEMPLATE_NAME'),
+            InstallCode::INVALID_TEMPLATE_TYPE => \__('INVALID_TEMPLATE_TYPE'),
+            InstallCode::INVALID_TEMPLATE_MODULE_ID => \__('INVALID_TEMPLATE_MODULE_ID'),
+            InstallCode::INVALID_TEMPLATE_ACTIVE => \__('INVALID_TEMPLATE_ACTIVE'),
+            InstallCode::INVALID_TEMPLATE_AKZ => \__('INVALID_TEMPLATE_AKZ'),
+            InstallCode::INVALID_TEMPLATE_AGB => \__('INVALID_TEMPLATE_AGB'),
+            InstallCode::INVALID_TEMPLATE_WRB => \__('INVALID_TEMPLATE_WRB'),
+            InstallCode::INVALID_EMAIL_TEMPLATE_ISO => \__('INVALID_EMAIL_TEMPLATE_ISO'),
+            InstallCode::INVALID_EMAIL_TEMPLATE_SUBJECT => \__('INVALID_EMAIL_TEMPLATE_SUBJECT'),
+            InstallCode::MISSING_EMAIL_TEMPLATE_LANGUAGE => \__('MISSING_EMAIL_TEMPLATE_LANGUAGE'),
+            InstallCode::INVALID_CHECKBOX_FUNCTION_NAME => \__('INVALID_CHECKBOX_FUNCTION_NAME'),
+            InstallCode::INVALID_CHECKBOX_FUNCTION_ID => \__('INVALID_CHECKBOX_FUNCTION_ID'),
+            InstallCode::INVALID_FRONTEND_LINK_NO_FOLLOW => \__('INVALID_FRONTEND_LINK_NO_FOLLOW'),
+            InstallCode::MISSING_WIDGETS => \__('MISSING_WIDGETS'),
+            InstallCode::INVALID_WIDGET_TITLE => \__('INVALID_WIDGET_TITLE'),
+            InstallCode::INVALID_WIDGET_CLASS => \__('INVALID_WIDGET_CLASS'),
+            InstallCode::MISSING_WIDGET_CLASS_FILE => \__('MISSING_WIDGET_CLASS_FILE'),
+            InstallCode::INVALID_WIDGET_CONTAINER => \__('INVALID_WIDGET_CONTAINER'),
+            InstallCode::INVALID_WIDGET_POS => \__('INVALID_WIDGET_POS'),
+            InstallCode::INVALID_WIDGET_EXPANDED => \__('INVALID_WIDGET_EXPANDED'),
+            InstallCode::INVALID_WIDGET_ACTIVE => \__('INVALID_WIDGET_ACTIVE'),
+            InstallCode::INVALID_PAYMENT_METHOD_ADDITIONAL_STEP_TEMPLATE_FILE
+            => \__('INVALID_PAYMENT_METHOD_ADDITIONAL_STEP_TEMPLATE_FILE'),
+            InstallCode::MISSING_PAYMENT_METHOD_ADDITIONAL_STEP_FILE
+            => \__('MISSING_PAYMENT_METHOD_ADDITIONAL_STEP_FILE'),
+            InstallCode::MISSING_FORMATS => \__('MISSING_FORMATS'),
+            InstallCode::INVALID_FORMAT_NAME => \__('INVALID_FORMAT_NAME'),
+            InstallCode::INVALID_FORMAT_FILE_NAME => \__('INVALID_FORMAT_FILE_NAME'),
+            InstallCode::MISSING_FORMAT_CONTENT => \__('MISSING_FORMAT_CONTENT'),
+            InstallCode::INVALID_FORMAT_ENCODING => \__('INVALID_FORMAT_ENCODING'),
+            InstallCode::INVALID_FORMAT_SHIPPING_COSTS_DELIVERY_COUNTRY
+            => \__('INVALID_FORMAT_SHIPPING_COSTS_DELIVERY_COUNTRY'),
+            InstallCode::INVALID_FORMAT_CONTENT_FILE => \__('INVALID_FORMAT_CONTENT_FILE'),
+            InstallCode::MISSING_EXTENDED_TEMPLATE => \__('MISSING_EXTENDED_TEMPLATE'),
+            InstallCode::INVALID_EXTENDED_TEMPLATE_FILE_NAME => \__('INVALID_EXTENDED_TEMPLATE_FILE_NAME'),
+            InstallCode::MISSING_EXTENDED_TEMPLATE_FILE => \__('MISSING_EXTENDED_TEMPLATE_FILE'),
+            InstallCode::MISSING_UNINSTALL_FILE => \__('MISSING_UNINSTALL_FILE'),
+            InstallCode::IONCUBE_REQUIRED => \__('IONCUBE_REQUIRED'),
+            InstallCode::INVALID_OPTIONS_SOURE_FILE => \__('INVALID_OPTIONS_SOURE_FILE'),
+            InstallCode::MISSING_OPTIONS_SOURE_FILE => \__('MISSING_OPTIONS_SOURE_FILE'),
+            InstallCode::MISSING_BOOTSTRAP_CLASS => \__('MISSING_BOOTSTRAP_CLASS'),
+            InstallCode::INVALID_BOOTSTRAP_IMPLEMENTATION => \__('INVALID_BOOTSTRAP_IMPLEMENTATION'),
+            InstallCode::INVALID_AUTHOR => \__('INVALID_AUTHOR'),
+            InstallCode::MISSING_PORTLETS => \__('MISSING_PORTLETS'),
+            InstallCode::INVALID_PORTLET_TITLE => \__('INVALID_PORTLET_TITLE'),
+            InstallCode::INVALID_PORTLET_CLASS => \__('INVALID_PORTLET_CLASS'),
+            InstallCode::INVALID_PORTLET_CLASS_FILE => \__('INVALID_PORTLET_CLASS_FILE'),
+            InstallCode::INVALID_PORTLET_GROUP => \__('INVALID_PORTLET_GROUP'),
+            InstallCode::INVALID_PORTLET_ACTIVE => \__('INVALID_PORTLET_ACTIVE'),
+            InstallCode::MISSING_BLUEPRINTS => \__('MISSING_BLUEPRINTS'),
+            InstallCode::INVALID_BLUEPRINT_NAME => \__('INVALID_BLUEPRINT_NAME'),
+            InstallCode::INVALID_BLUEPRINT_FILE => \__('INVALID_BLUEPRINT_FILE'),
+            InstallCode::EXT_MUST_NOT_HAVE_UNINSTALLER => \__('EXT_MUST_NOT_HAVE_UNINSTALLER'),
+            InstallCode::WRONG_EXT_DIR => \__('WRONG_EXT_DIR'),
+            InstallCode::MISSING_PLUGIN_NODE => \__('MISSING_PLUGIN_NODE'),
+            InstallCode::OK_LEGACY => \__('OK_LEGACY'),
+            InstallCode::SQL_MISSING_DATA => \__('SQL_MISSING_DATA'),
+            InstallCode::SQL_ERROR => \__('SQL_ERROR'),
+            InstallCode::SQL_WRONG_TABLE_NAME_DELETE => \__('SQL_WRONG_TABLE_NAME_DELETE'),
+            InstallCode::SQL_WRONG_TABLE_NAME_CREATE => \__('SQL_WRONG_TABLE_NAME_CREATE'),
+            InstallCode::SQL_INVALID_FILE_CONTENT => \__('SQL_INVALID_FILE_CONTENT'),
+            InstallCode::SQL_CANNOT_SAVE_HOOK => \__('SQL_CANNOT_SAVE_HOOK'),
+            InstallCode::SQL_CANNOT_SAVE_UNINSTALL => \__('SQL_CANNOT_SAVE_UNINSTALL'),
+            InstallCode::SQL_CANNOT_SAVE_ADMIN_MENU_ITEM => \__('SQL_CANNOT_SAVE_ADMIN_MENU_ITEM'),
+            InstallCode::SQL_CANNOT_SAVE_SETTINGS_ITEM => \__('SQL_CANNOT_SAVE_SETTINGS_ITEM'),
+            InstallCode::SQL_CANNOT_SAVE_SETTING => \__('SQL_CANNOT_SAVE_SETTING'),
+            InstallCode::SQL_CANNOT_FIND_LINK_GROUP => \__('SQL_CANNOT_FIND_LINK_GROUP'),
+            InstallCode::SQL_CANNOT_SAVE_LINK => \__('SQL_CANNOT_SAVE_LINK'),
+            InstallCode::SQL_CANNOT_SAVE_PAYMENT_METHOD => \__('SQL_CANNOT_SAVE_PAYMENT_METHOD'),
+            InstallCode::SQL_CANNOT_SAVE_PAYMENT_METHOD_LOCALIZATION => \__('SQL_CANNOT_SAVE_PAYMENT_METHOD_LOCALIZATION'),
+            InstallCode::SQL_CANNOT_SAVE_PAYMENT_METHOD_LANGUAGE => \__('SQL_CANNOT_SAVE_PAYMENT_METHOD_LANGUAGE'),
+            InstallCode::SQL_CANNOT_SAVE_PAYMENT_METHOD_SETTING => \__('SQL_CANNOT_SAVE_PAYMENT_METHOD_SETTING'),
+            InstallCode::SQL_CANNOT_SAVE_BOX_TEMPLATE => \__('SQL_CANNOT_SAVE_BOX_TEMPLATE'),
+            InstallCode::SQL_CANNOT_SAVE_TEMPLATE => \__('SQL_CANNOT_SAVE_TEMPLATE'),
+            InstallCode::SQL_CANNOT_SAVE_EMAIL_TEMPLATE => \__('SQL_CANNOT_SAVE_EMAIL_TEMPLATE'),
+            InstallCode::SQL_CANNOT_SAVE_LANG_VAR => \__('SQL_CANNOT_SAVE_LANG_VAR'),
+            InstallCode::SQL_CANNOT_SAVE_LANG_VAR_LOCALIZATION => \__('SQL_CANNOT_SAVE_LANG_VAR_LOCALIZATION'),
+            InstallCode::SQL_CANNOT_SAVE_WIDGET => \__('SQL_CANNOT_SAVE_WIDGET'),
+            InstallCode::SQL_CANNOT_SAVE_PORTLET => \__('SQL_CANNOT_SAVE_PORTLET'),
+            InstallCode::SQL_CANNOT_SAVE_BLUEPRINT => \__('SQL_CANNOT_SAVE_BLUEPRINT'),
+            InstallCode::SQL_CANNOT_SAVE_EXPORT => \__('SQL_CANNOT_SAVE_EXPORT'),
+            InstallCode::INVALID_STORE_ID => \__('INVALID_STORE_ID'),
+            InstallCode::SQL_CANNOT_SAVE_VENDOR => \__('SQL_CANNOT_SAVE_VENDOR'),
+            InstallCode::MISSING_CONSENT_VENDOR => \__('MISSING_CONSENT_VENDOR'),
+            InstallCode::INVALID_CONSENT_VENDOR_NAME => \__('INVALID_CONSENT_VENDOR_NAME'),
+            InstallCode::INVALID_CONSENT_VENDOR_PURPOSE => \__('INVALID_CONSENT_VENDOR_PURPOSE'),
+            InstallCode::INVALID_CONSENT_VENDOR_LOCALIZATION => \__('INVALID_CONSENT_VENDOR_LOCALIZATION'),
+            InstallCode::INVALID_CONSENT_VENDOR_LOCALIZATION_ISO => \__('INVALID_CONSENT_VENDOR_LOCALIZATION_ISO'),
+            InstallCode::INVALID_CONSENT_VENDOR_DESCRIPTION => \__('INVALID_CONSENT_VENDOR_DESCRIPTION'),
+            InstallCode::INVALID_CONSENT_VENDOR_PRIV_POL => \__('INVALID_CONSENT_VENDOR_PRIV_POL'),
+            InstallCode::INVALID_CONSENT_VENDOR_ID => \__('INVALID_CONSENT_VENDOR_ID'),
+            InstallCode::INVALID_CONSENT_VENDOR_COMPANY => \__('INVALID_CONSENT_VENDOR_COMPANY'),
+            InstallCode::INVALID_LINK_IDENTIFIER => \__('INVALID_LINK_IDENTIFIER'),
+            InstallCode::INVALID_MIGRATION => \__('INVALID_MIGRATION'),
+            default => \__('unknownError'),
+        };
 
         return \str_replace('%cPluginID%', $pluginID ?? '', $return);
     }

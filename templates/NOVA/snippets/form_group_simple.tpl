@@ -6,9 +6,11 @@
     {$label         = $options[4]}
     {$invalidReason = $options[6]|default:''}
     {$autocomplete  = $options[7]|default:''}
-    {$size          = $options[8]|default:''}
+    {$size          = $options[8]|default:'20'}
     {$isRequired    = !empty($options[5]) && ($options[5] === 'Y' || $options[5] === true)}
     {$inputNameTmp  = $inputName|replace:"register[shipping_address][":""|replace:"]":""}
+    {$maxLength     = $options[9]|default:'255'}
+    {$charsLeftMsg  = "{lang key='charactersLeft'}"}
 
     {if $invalidReason !== ''}
         {$hasError = true}
@@ -89,6 +91,8 @@
                             placeholder="{if isset($placeholder)}{$placeholder}{else}{$label}{/if}"
                             required=$isRequired
                             autocomplete=$autocomplete
+                            maxlength=$maxLength
+                            data=["chars-left-msg"=>$charsLeftMsg]
                         }
                     {inputgroupaddon append=true data=["type"=>"minus", "field"=>"quant[1]"]}
                         +
@@ -104,7 +108,9 @@
                     placeholder="{if isset($placeholder)}{$placeholder}{else} {/if}"
                     required=$isRequired
                     autocomplete=$autocomplete
-                    size=$size
+                    size-class=$size
+                    maxlength=$maxLength
+                    data=["chars-left-msg"=>$charsLeftMsg]
                 }
             {/block}
         {/if}

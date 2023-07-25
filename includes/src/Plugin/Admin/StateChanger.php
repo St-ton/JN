@@ -6,8 +6,6 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Plugin\Admin\Installation\Installer;
 use JTL\Plugin\Admin\Installation\Uninstaller;
-use JTL\Plugin\Admin\Validation\LegacyPluginValidator;
-use JTL\Plugin\Admin\Validation\PluginValidator;
 use JTL\Plugin\Admin\Validation\ValidatorInterface;
 use JTL\Plugin\Helper;
 use JTL\Plugin\InstallCode;
@@ -23,26 +21,6 @@ use JTL\Plugin\State;
 class StateChanger
 {
     /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private $cache;
-
-    /**
-     * @var ValidatorInterface|LegacyPluginValidator
-     */
-    private $legacyValidator;
-
-    /**
-     * @var ValidatorInterface|PluginValidator
-     */
-    protected $pluginValidator;
-
-    /**
      * StateChanger constructor.
      * @param DbInterface             $db
      * @param JTLCacheInterface       $cache
@@ -50,15 +28,11 @@ class StateChanger
      * @param ValidatorInterface|null $pluginValidator
      */
     public function __construct(
-        DbInterface $db,
-        JTLCacheInterface $cache,
-        ValidatorInterface $legacyValidator = null,
-        ValidatorInterface $pluginValidator = null
+        private readonly DbInterface         $db,
+        private readonly JTLCacheInterface   $cache,
+        private readonly ?ValidatorInterface $legacyValidator = null,
+        private readonly ?ValidatorInterface $pluginValidator = null
     ) {
-        $this->db              = $db;
-        $this->cache           = $cache;
-        $this->legacyValidator = $legacyValidator;
-        $this->pluginValidator = $pluginValidator;
     }
 
     /**
@@ -72,7 +46,7 @@ class StateChanger
             return InstallCode::WRONG_PARAM;
         }
         $pluginData = $this->db->select('tplugin', 'kPlugin', $pluginID);
-        if (empty($pluginData->kPlugin)) {
+        if ($pluginData === null || empty($pluginData->kPlugin)) {
             return InstallCode::NO_PLUGIN_FOUND;
         }
         if ((int)$pluginData->bExtension === 1) {
@@ -94,15 +68,19 @@ class StateChanger
             $pluginID,
             (object)['nStatus' => State::ACTIVATED]
         );
-        $this->db->update('tadminwidgets', 'kPlugin', $pluginID, (object)['bActive' => 1]);
-        $this->db->update('tlink', 'kPlugin', $pluginID, (object)['bIsActive' => 1]);
-        $this->db->update('topcportlet', 'kPlugin', $pluginID, (object)['bActive' => 1]);
-        $this->db->update('topcblueprint', 'kPlugin', $pluginID, (object)['bActive' => 1]);
-        $this->cache->flushTags([
+        $cacheTags   = [
             \CACHING_GROUP_CORE,
             \CACHING_GROUP_PLUGIN . '_' . $pluginID,
             \CACHING_GROUP_LICENSES
-        ]);
+        ];
+        $this->db->update('tadminwidgets', 'kPlugin', $pluginID, (object)['bActive' => 1]);
+        $this->db->update('tlink', 'kPlugin', $pluginID, (object)['bIsActive' => 1]);
+        $portlets   = $this->db->update('topcportlet', 'kPlugin', $pluginID, (object)['bActive' => 1]);
+        $blueprints = $this->db->update('topcblueprint', 'kPlugin', $pluginID, (object)['bActive' => 1]);
+        if ($blueprints > 0 || $portlets > 0) {
+            $cacheTags[] = \CACHING_GROUP_OPC;
+        }
+        $this->cache->flushTags($cacheTags);
         if (($p = Helper::bootstrap($pluginID, $loader)) !== null) {
             $p->enabled();
         }
@@ -122,8 +100,13 @@ class StateChanger
             return InstallCode::WRONG_PARAM;
         }
         $pluginData = $this->db->select('tplugin', 'kPlugin', $pluginID);
+        $cacheTags  = [
+            \CACHING_GROUP_CORE,
+            \CACHING_GROUP_PLUGIN . '_' . $pluginID,
+            \CACHING_GROUP_LICENSES,
+        ];
         if (!\SAFE_MODE) {
-            $loader = (int)$pluginData->bExtension === 1
+            $loader = (int)($pluginData->bExtension ?? 0) === 1
                 ? new PluginLoader($this->db, $this->cache)
                 : new LegacyPluginLoader($this->db, $this->cache);
             if (($p = Helper::bootstrap($pluginID, $loader)) !== null) {
@@ -133,17 +116,15 @@ class StateChanger
         $this->db->update('tplugin', 'kPlugin', $pluginID, (object)['nStatus' => $newState]);
         $this->db->update('tlink', 'kPlugin', $pluginID, (object)['bIsActive' => 0]);
         $this->db->update('tadminwidgets', 'kPlugin', $pluginID, (object)['bActive' => 0]);
-        $this->db->update('topcportlet', 'kPlugin', $pluginID, (object)['bActive' => 0]);
-        $this->db->update('topcblueprint', 'kPlugin', $pluginID, (object)['bActive' => 0]);
-        $this->cache->flushTags([
-            \CACHING_GROUP_CORE,
-            \CACHING_GROUP_PLUGIN . '_' . $pluginID,
-            \CACHING_GROUP_LICENSES
-        ]);
+        $blueprints = $this->db->update('topcblueprint', 'kPlugin', $pluginID, (object)['bActive' => 0]);
+        $portlets   = $this->db->update('topcportlet', 'kPlugin', $pluginID, (object)['bActive' => 0]);
+        if ($blueprints > 0 || $portlets > 0) {
+            $cacheTags[] = \CACHING_GROUP_OPC;
+        }
+        $this->cache->flushTags($cacheTags);
 
         return InstallCode::OK;
     }
-
 
     /**
      * @param PluginInterface $plugin

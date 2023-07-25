@@ -21,6 +21,10 @@ class Commerce extends \JTL\Installation\Faker\Commerce
         'TV, Video & Audio', 'Uhren & Schmuck', 'Romane', 'Software', 'Hardware', 'Damenschmuck',
         'Spirituosen', 'Heimkino', 'Kamera & Foto', 'Kopfhörer', 'Drogerieartikel', 'Navigation',
         'Ladegeräte', 'Festnetztelefone', 'Wearables', 'MP3-Player', 'CD-Player', 'Verschiedenes',
+        'Schuhe', 'Zubehör', 'Pullover', 'Smart Home', 'Innenleuchten', 'Außenleuchten', 'Terrasse', 'Camping',
+        'Ventilatoren', 'Kinderzimmer', 'Rucksäcke', 'Sandalen', 'Sneaker', 'Ausrüstung', 'Yoga', 'Körperpflege',
+        'Make-Up', 'Düfte', 'Sonnenschutz', 'Zahnpflege', 'Snowboards', 'Fußball', 'Basketball', 'Handball',
+        'Badminton', 'Gold', 'Sporttaschen', 'Unterwäsche', 'Radsport', 'Nahrungsergänzungsmittel', 'Hundefutter'
     ];
 
     /**
@@ -30,7 +34,8 @@ class Commerce extends \JTL\Installation\Faker\Commerce
         'Klein', 'Ergonomisch', 'Rustikal', 'Intelligent', 'Herrlich', 'Unglaublich', 'Fantastisch',
         'Praktisch', 'Geschmeidig', 'Enorm', 'Mittelmäßig', 'Leicht', 'Aerodynamisch', 'Langlebig',
         'Schick', 'Wertig', 'Toll', 'Günstig', 'Exorbitant', 'Hervorragend', 'Gut', 'Beliebt', 'Weich', 'Hart',
-        'Imposant', 'Gigantisch', 'Schmierig', 'Klebrig', 'Unterhaltsam', 'Besorgniserregend'
+        'Imposant', 'Gigantisch', 'Schmierig', 'Klebrig', 'Unterhaltsam', 'Besorgniserregend', 'Adrett', 'Kühn',
+        'Lebhaft', 'Eigenwillig', 'Luftig', 'Reichhaltig', 'Elegant', 'Überteuert',
     ];
 
     /**
@@ -51,6 +56,7 @@ class Commerce extends \JTL\Installation\Faker\Commerce
         'Lampe', 'Tastatur', 'Tasche', 'Bank', 'Uhr', 'Portemonnaie', 'Zange', 'Kanne', 'Rutsche',
         'Socke', 'Brille', 'Schirm', 'Laptop', 'Telefon', 'Brett', 'Glas', 'Teller', 'Gabel',
         'BH', 'Ring', 'Kissen', 'Decke', 'Schal', 'Mütze', 'Handy', 'Badehose', 'Tanktop',
+        'Lappen', 'Ventilator', 'Luftreiniger', 'Briefkasten', 'Akku', 'Klositz', 'Rasierer', 'Pflaster', 'Mixer'
     ];
 
     /**
@@ -64,6 +70,7 @@ class Commerce extends \JTL\Installation\Faker\Commerce
         1, 1, 1, 1, 1, 2, 1, 1, 1,
         1, 1, 0, 0, 2, 2, 2, 0, 1,
         0, 0, 2, 1, 0, 1, 2, 1, 2,
+        0, 0, 0, 0, 0, 0, 0, 2, 0
     ];
 
     /**
@@ -80,7 +87,7 @@ class Commerce extends \JTL\Installation\Faker\Commerce
         $suffix  = $this->adjectiveSuffix($product) ?: '';
 
         return static::randomElement(static::$adjective)
-. $suffix . ' ' . static::randomElement(static::$material) . '-' . $product;
+        . $suffix . ' ' . static::randomElement(static::$material) . '-' . $product;
     }
 
     /**

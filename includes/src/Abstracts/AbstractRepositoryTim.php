@@ -12,7 +12,7 @@ use stdClass;
  *
  * @package JTL\Abstracts
  */
-abstract class AbstractRepositoryTim implements RepositoryInterfaceTim
+readonly abstract class AbstractRepositoryTim implements RepositoryInterfaceTim
 {
     protected const UPDATE_OR_UPSERT_FAILED = -1;
     protected const DELETE_FAILED           = -1;

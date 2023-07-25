@@ -8,7 +8,7 @@ use JTL\Abstracts\AbstractRepositoryTim;
  * Class RMAReasonRepository
  * @package JTL\RMA
  */
-class RMAPickupAddressRepository extends AbstractRepositoryTim
+readonly class RMAPickupAddressRepository extends AbstractRepositoryTim
 {
 
     /**

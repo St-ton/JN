@@ -11,7 +11,7 @@ use JTL\DB\ReturnType;
  * @package JTL\RMA
  * @since 5.3.0
  */
-class RMARepository extends AbstractRepositoryTim
+readonly class RMARepository extends AbstractRepositoryTim
 {
 
     /**

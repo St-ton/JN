@@ -139,7 +139,7 @@ class PaymentMethods extends AbstractItem
                 'Nur Kunden, die min. soviele Bestellungen bereits durchgeführt haben, ' .
                 'können diese Zahlungsart nutzen.',
                 'Erst ab diesem Bestellwert kann diese Zahlungsart genutzt werden.',
-                'Nur bis zu diesem Bestellwert wird diese Zahlungsart angeboten. (einschliesslich)'
+                'Nur bis zu diesem Bestellwert wird diese Zahlungsart angeboten. (einschließlich)'
             ];
             $sorting      = [100, 101, 102];
             for ($z = 0; $z < 3; $z++) {

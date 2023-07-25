@@ -206,7 +206,7 @@ trait MultiSizeImage
             if (!\file_exists(\PFAD_ROOT . $path)) {
                 $this->generateImage($size, $number, $source);
             }
-            if (!\file_exists(\PFAD_ROOT . $path)) {
+            if ($size !== Image::SIZE_XL && !\file_exists(\PFAD_ROOT . $path)) {
                 $this->imageDimensions[$number][$size] = $settings[$this->getImageType()][$size];
             } else {
                 [$width, $height, $type]               = \getimagesize(\PFAD_ROOT . $path);

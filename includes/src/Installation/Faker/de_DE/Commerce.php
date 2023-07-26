@@ -87,7 +87,7 @@ class Commerce extends \JTL\Installation\Faker\Commerce
         $suffix  = $this->adjectiveSuffix($product) ?: '';
 
         return static::randomElement(static::$adjective)
-        . $suffix . ' ' . static::randomElement(static::$material) . '-' . $product;
+            . $suffix . ' ' . static::randomElement(static::$material) . '-' . $product;
     }
 
     /**

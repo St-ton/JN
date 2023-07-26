@@ -3,6 +3,7 @@
 namespace JTL\Interfaces;
 
 use JTL\DataObjects\DataTableObjectInterface;
+use JTL\DataObjects\DomainObjectInterface;
 
 /**
  * Should be the only place to store SQL Statements and/or to access the database
@@ -29,20 +30,20 @@ interface RepositoryInterface
     public function getList(array $filters): array;
 
     /**
-     * @param DataTableObjectInterface $insertDTO $object
+     * @param DomainObjectInterface $domainObject
      * @return int
      */
-    public function insert(DataTableObjectInterface $insertDTO): int;
+    public function insert(DomainObjectInterface $domainObject): int;
 
     /**
-     * @param DataTableObjectInterface $updateDTO
+     * @param DomainObjectInterface $domainObject
      * @return bool
      */
-    public function update(DataTableObjectInterface $updateDTO): bool;
+    public function update(DomainObjectInterface $domainObject): bool;
 
     /**
-     * @param array $values
+     * @param DomainObjectInterface $domainObject
      * @return int|bool
      */
-    public function delete(array $values): int|bool;
+    public function delete(DomainObjectInterface $domainObject): int|bool;
 }

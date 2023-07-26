@@ -122,9 +122,9 @@ class NewsletterController extends AbstractBackendController
             } elseif (\mb_strlen(Request::verifyGPDataString('cSucheAktiv')) > 0) { // Aktive Abonnentensuche
                 $query = Request::verifyGPDataString('cSucheAktiv');
                 if (\mb_strlen($query) > 0) {
-                    $activeSearchSQL->setWhere(' AND (tnewsletterempfaenger.cVorname LIKE :qry
-                        OR tnewsletterempfaenger.cNachname LIKE :qry
-                        OR tnewsletterempfaenger.cEmail LIKE :qry)');
+                    $activeSearchSQL->setWhere(' AND (nle.cVorname LIKE :qry
+                        OR nle.cNachname LIKE :qry
+                        OR nle.cEmail LIKE :qry)');
                     $activeSearchSQL->addParam('qry', '%' . $query . '%');
                 }
 

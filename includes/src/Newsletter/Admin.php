@@ -775,7 +775,7 @@ final class Admin
     {
         return (int)$this->db->getSingleObject(
             'SELECT COUNT(*) AS cnt
-                FROM tnewsletterempfaenger
+                FROM tnewsletterempfaenger nle
                 WHERE kSprache = :lid' . $searchSQL->getWhere(),
             \array_merge(
                 ['lid' => (int)($_SESSION['editLanguageID'] ?? $_SESSION['kSprache'])],

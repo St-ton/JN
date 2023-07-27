@@ -55,7 +55,7 @@
                                           autocomplete="off"
                                           :state="db.name.length > 0"></b-form-input>
                             <b-input-group-append is-text>
-                                <b-icon icon="clipboard-data"></b-icon>
+                                <b-icon icon="server"></b-icon>
                             </b-input-group-append>
                         </b-input-group>
                     </div>

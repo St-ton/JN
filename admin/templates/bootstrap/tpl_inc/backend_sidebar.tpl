@@ -3,6 +3,7 @@
         <div class="col">
             <a href="{$adminURL}/" title="{__('dashboard')}">
                 <img class="brand-logo" width="101" height="32" src="{$templateBaseURL}gfx/JTL-Shop-Logo-rgb.png" alt="JTL-Shop">
+                <img class="brand-logo brand-logo-white" width="101" height="32" src="{$templateBaseURL}gfx/JTL-Shop-Logo-rgb-white.png" alt="JTL-Shop">
             </a>
         </div>
         <div class="col-auto ml-auto">

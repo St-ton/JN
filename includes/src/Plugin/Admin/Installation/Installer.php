@@ -232,7 +232,8 @@ final class Installer
             \CACHING_GROUP_CORE,
             \CACHING_GROUP_LICENSES,
             \CACHING_GROUP_LANGUAGE,
-            \CACHING_GROUP_PLUGIN
+            \CACHING_GROUP_PLUGIN,
+            \CACHING_GROUP_OPC
         ]);
 
         return $res;

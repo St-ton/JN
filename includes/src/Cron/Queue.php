@@ -19,12 +19,18 @@ class Queue
      * @param DbInterface     $db
      * @param LoggerInterface $logger
      * @param JobFactory      $factory
+     * @param int             $timestampCronHasStartedAt
+     * @since 5.3.0
      */
     public function __construct(
         private readonly DbInterface     $db,
         private readonly LoggerInterface $logger,
-        private readonly JobFactory      $factory
+        private readonly JobFactory      $factory,
+        private int $timestampCronHasStartedAt = 0
     ) {
+        if ($this->timestampCronHasStartedAt === 0) {
+            $this->timestampCronHasStartedAt = \time();
+        }
         Shop::Container()->getGetText()->loadAdminLocale('pages/cron');
     }
 
@@ -34,7 +40,8 @@ class Queue
     public function loadQueueFromDB(): array
     {
         $queueEntries = $this->db->getCollection(
-            'SELECT tjobqueue.*, tcron.nextStart, tcron.startTime AS cronStartTime, tcron.frequency
+            'SELECT tjobqueue.*, tcron.nextStart, tcron.startTime AS cronStartTime, tcron.frequency, ' .
+                    $this->timestampCronHasStartedAt . ' AS cronHasStartedAt
                 FROM tjobqueue
                 JOIN tcron
                     ON tcron.cronID = tjobqueue.cronID
@@ -127,8 +134,10 @@ class Queue
             $now       = new DateTime();
             $nextStart = new DateTime();
             $nextStart->setTime((int)$st->format('H'), (int)$st->format('i'), (int)$st->format('s'));
-            while ($nextStart <= $now) {
-                $nextStart->modify('+' . $job->getFrequency() . ' hours');
+            if ($job->getFrequency() > 0) {
+                while ($nextStart <= $now) {
+                    $nextStart->modify('+' . $job->getFrequency() . ' hours');
+                }
             }
             $this->db->update(
                 'tcron',

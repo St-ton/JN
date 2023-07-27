@@ -68,7 +68,7 @@
                                                             </span>
                                                         </button>
                                                     {*{/if}*}
-                                                    {if $job->getType() !== \JTL\Cron\Type::LICENSE_CHECK}
+                                                    {if ($job->getType() !== \JTL\Cron\Type::LICENSE_CHECK) && ($job->getType() !== \JTL\Cron\Type::MAILQUEUE)}
                                                         <button class="btn btn-link px-2 delete-confirm"
                                                                 type="submit"
                                                                 name="delete"

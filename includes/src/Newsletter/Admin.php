@@ -775,7 +775,7 @@ final class Admin
     {
         return (int)$this->db->getSingleObject(
             'SELECT COUNT(*) AS cnt
-                FROM tnewsletterempfaenger AS nle
+                FROM tnewsletterempfaenger
                 WHERE kSprache = :lid' . $searchSQL->getWhere(),
             \array_merge(
                 ['lid' => (int)($_SESSION['editLanguageID'] ?? $_SESSION['kSprache'])],
@@ -793,35 +793,37 @@ final class Admin
     {
         return $this->db->getCollection(
             "SELECT
-                nle.*,
-                DATE_FORMAT(nle.dEingetragen, '%d.%m.%Y %H:%i') AS dEingetragen_de,
-                DATE_FORMAT(nle.dLetzterNewsletter, '%d.%m.%Y %H:%i') AS dLetzterNewsletter_de,
+                tnewsletterempfaenger.*,
+                DATE_FORMAT(tnewsletterempfaenger.dEingetragen, '%d.%m.%Y %H:%i') AS dEingetragen_de,
+                DATE_FORMAT(tnewsletterempfaenger.dLetzterNewsletter, '%d.%m.%Y %H:%i') AS dLetzterNewsletter_de,
                 k.kKundengruppe,
                 kg.cName,
-                nleh.cOptIp,
-                IF (nleh.dOptCode != '0000-00-00 00:00:00' AND nleh.dOptCode IS NOT NULL,
-                    DATE_FORMAT(nleh.dOptCode, '%d.%m.%Y %H:%i'),
+                tnewsletterempfaengerhistory.cOptIp,
+                IF (tnewsletterempfaengerhistory.dOptCode != '0000-00-00 00:00:00' AND tnewsletterempfaengerhistory.dOptCode IS NOT NULL,
+                    DATE_FORMAT(tnewsletterempfaengerhistory.dOptCode, '%d.%m.%Y %H:%i'),
                     DATE_FORMAT(op.dActivated, '%d.%m.%Y %H:%i')
                 ) AS optInDate
             FROM
-                tnewsletterempfaenger nle
+                tnewsletterempfaenger
                 LEFT JOIN tkunde k
-                    ON k.kKunde = nle.kKunde
+                    ON k.kKunde = tnewsletterempfaenger.kKunde
                 LEFT JOIN tkundengruppe kg
                     ON kg.kKundengruppe = k.kKundengruppe
                 LEFT JOIN toptin op
-                    ON op.cMail = nle.cEmail
+                    ON op.cMail = tnewsletterempfaenger.cEmail
                         AND op.kOptinClass like '%Newsletter'
-                LEFT JOIN tnewsletterempfaengerhistory nleh
-                    ON nleh.cEmail = nle.cEmail
-                        AND nleh.cAktion = 'Eingetragen'
-                        AND nleh.dEingetragen = (
-                            SELECT MAX(dEingetragen) FROM tnewsletterempfaengerhistory WHERE cEmail = nle.cEmail
+                LEFT JOIN tnewsletterempfaengerhistory
+                    ON tnewsletterempfaengerhistory.cEmail = tnewsletterempfaenger.cEmail
+                        AND tnewsletterempfaengerhistory.cAktion = 'Eingetragen'
+                        AND tnewsletterempfaengerhistory.dEingetragen = (
+                            SELECT MAX(dEingetragen)
+                            FROM tnewsletterempfaengerhistory
+                            WHERE cEmail = tnewsletterempfaenger.cEmail
                         )
             WHERE
-                nle.kSprache = :lid " . $searchSQL->getWhere() . '
+                tnewsletterempfaenger.kSprache = :lid " . $searchSQL->getWhere() . '
             ORDER BY
-                 nle.dEingetragen DESC ' . $limitSQL,
+                 tnewsletterempfaenger.dEingetragen DESC ' . $limitSQL,
             \array_merge(
                 ['lid' => (int)($_SESSION['editLanguageID'] ?? $_SESSION['kSprache'])],
                 $searchSQL->getParams()

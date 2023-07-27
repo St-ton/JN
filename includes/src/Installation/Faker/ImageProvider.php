@@ -187,7 +187,6 @@ class ImageProvider extends Base
         'YellowGreen'          => '#9ACD32'
     ];
 
-
     /**
      * Generate a new image to disk and return its location.
      * @param string|null $dir             Path of the generated file, use system temp dir if null

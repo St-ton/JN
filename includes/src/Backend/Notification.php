@@ -267,6 +267,15 @@ class Notification implements IteratorAggregate, Countable
         }
         */
 
+        if ($status->hasMinMySQLVersion() === false) {
+            $this->add(
+                NotificationEntry::TYPE_WARNING,
+                \__('hasInvalidMySQLVersionErrorTitle'),
+                \sprintf(\__('hasInvalidMySQLVersionErrorMessage'), \MYSQL_MIN_VERSION),
+                $adminURL . Route::STATUS
+            );
+        }
+
         if ($status->hasFullTextIndexError()) {
             $this->add(
                 NotificationEntry::TYPE_WARNING,

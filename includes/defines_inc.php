@@ -585,3 +585,4 @@ const CACHING_GROUP_FILTER                = 'fltr';
 const CACHING_GROUP_FILTER_CHARACTERISTIC = 'fltrchr';
 const CACHING_GROUP_STATUS                = 'status';
 const CACHING_GROUP_OPC                   = 'opc';
+const MYSQL_MIN_VERSION                   = '5.7';

@@ -61,3 +61,6 @@ msgstr "Extensions"
 
 msgid "Localizations"
 msgstr "Localizations"
+
+msgid "MinimumMySQLVersion"
+msgstr "MySQL minimum version %s"

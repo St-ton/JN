@@ -425,6 +425,23 @@ class Status
 
     /**
      * @return bool
+     * @since 5.2.4
+     */
+    public function hasMinMySQLVersion(): bool
+    {
+        if (\SAFE_MODE === true) {
+            return false;
+        }
+        $mysqlVersion = DBMigrationHelper::getMySQLVersion();
+        if ($mysqlVersion->innodb->version === '') {
+            return true;
+        }
+
+        return \version_compare($mysqlVersion->innodb->version, \MYSQL_MIN_VERSION, '>=');
+    }
+
+    /**
+     * @return bool
      */
     public function hasFullTextIndexError(): bool
     {

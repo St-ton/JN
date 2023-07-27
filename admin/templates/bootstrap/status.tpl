@@ -66,6 +66,8 @@
                         {render_item title=__('orphanedCategories') val=$status->getOrphanedCategories() more=$adminURL|cat:'/'|cat:JTL\Router\Route::CATEGORYCHECK}
                         {render_item title=__('newPluginVersions') val=!$status->hasNewPluginVersions() more=$adminURL|cat:'/'|cat:JTL\Router\Route::PLUGIN_MANAGER}
                         {render_item title=__('Localizations') val=!$status->getLocalizationProblems() more=$adminURL|cat:'/'|cat:JTL\Router\Route::LOCALIZATION_CHECK}
+                        {render_item title=sprintf(__('MinimumMySQLVersion', \MYSQL_MIN_VERSION))
+                        val=$status->hasMinMySQLVersion()}
                         </tbody>
                     </table>
                 </div>

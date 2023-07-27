@@ -32,7 +32,7 @@
                 <td class="nowrap">{__('mysqlVersion')}</td>
                 <td>{$mySQLVersion}</td>
                 <td class="text-right">
-                    {if $mySQLVersion < 5}
+                    {if !$hasMySQLMinVersion}
                         <a class="label label-warning" href="{$adminURL}/status" title="{__('moreInfo')}">
                             <i class="fa fa-exclamation-triangle" aria-hidden="true"></i><span class="sr-only">{__('warning')}</span>
                         </a>

@@ -64,6 +64,35 @@
                             <b-form-checkbox v-model="installDemoData">{{ $t('installDemoData') }}</b-form-checkbox>
                         </b-input-group>
                     </div>
+                    <b-collapse id="demodata-collapse" v-model="installDemoData">
+                        <div class="form-group mt-4">
+                            <b-input-group size="md" :prepend="$t('products')">
+                                <b-form-input size="35" required v-model="demodata.products" type="number"
+                                    :placeholder="$t('products')"
+                                    autocomplete="off"
+                                    min="0"
+                                    :state="demodata.products > -1"></b-form-input>
+                            </b-input-group>
+                        </div>
+                        <div class="form-group">
+                            <b-input-group size="md" :prepend="$t('categories')">
+                                <b-form-input size="35" required v-model="demodata.categories" type="number"
+                                    :placeholder="$t('categories')"
+                                    autocomplete="off"
+                                    min="0"
+                                    :state="demodata.categories > -1"></b-form-input>
+                            </b-input-group>
+                        </div>
+                        <div class="form-group">
+                            <b-input-group size="md" :prepend="$t('manufacturers')">
+                                <b-form-input size="35" required v-model="demodata.manufacturers" type="number"
+                                    :placeholder="$t('manufacturers')"
+                                    autocomplete="off"
+                                    min="0"
+                                    :state="demodata.manufacturers > -1"></b-form-input>
+                            </b-input-group>
+                        </div>
+                    </b-collapse>
                     <hr>
                     <b-btn
                         :class="{'pulse-button': db.name.length && db.pass.length && db.user.length && db.host.length && error !== false}"
@@ -106,6 +135,9 @@ export default {
                 passwordPlaceholder: 'Datenbank-Passwort',
                 dbNamePrep:          'Datenbank-Name',
                 dbNamePlaceholder:   'Datenbank-Name',
+                products:            'Produkte',
+                categories:          'Kategorien',
+                manufacturers:       'Hersteller',
                 installDemoData:     'Demodaten installieren?',
                 verify:              'Daten prüfen',
                 headerMsg:           'Datenbankparameter',
@@ -137,6 +169,9 @@ export default {
                 passwordPlaceholder: 'database password',
                 dbNamePrep:          'Database name',
                 dbNamePlaceholder:   'Database name',
+                products:            'Products',
+                categories:          'Categories',
+                manufacturers:       'Manufacturers',
                 installDemoData:     'Install demo data?',
                 verify:              'verify',
                 headerMsg:           'Database parameters',
@@ -167,6 +202,11 @@ export default {
                 user:   '',
                 name:   ''
             },
+            demodata:        {
+                products:      50,
+                manufacturers: 10,
+                categories:    10
+            },
             installDemoData: false,
             error:           null,
             msg:             null,
@@ -186,6 +226,9 @@ export default {
                     this.error = response.data.error;
                     this.$store.commit('setDBCredentials', db);
                     this.$store.commit('setDoInstallDemoData', this.installDemoData);
+                    this.$store.commit('setDemoDataProductCount', this.demodata.products);
+                    this.$store.commit('setDemoDataManufacturerCount', this.demodata.manufacturers);
+                    this.$store.commit('setDemoDataCategoryCount', this.demodata.categories);
                 })
                 .catch(error => {
                     this.msg = error.response

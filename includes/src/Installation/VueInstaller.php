@@ -182,7 +182,17 @@ class VueInstaller
     private function installDemoData(): self
     {
         if ($this->initNiceDB($this->post['db'])) {
-            $demoData = new DemoDataInstaller($this->db);
+            $config = [];
+            if (isset($this->post['demoProducts'])) {
+                $config['products'] = $this->post['demoProducts'];
+            }
+            if (isset($this->post['demoCategories'])) {
+                $config['categories'] = $this->post['demoCategories'];
+            }
+            if (isset($this->post['demoManufacturers'])) {
+                $config['manufacturers'] = $this->post['demoManufacturers'];
+            }
+            $demoData = new DemoDataInstaller($this->db, $config);
             $demoData->run();
             $this->responseStatus = true;
         }

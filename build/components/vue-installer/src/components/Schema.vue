@@ -60,9 +60,12 @@ export default {
     },
     mounted() {
         const postData     = qs.stringify({
-            admin: this.$store.state.adminUser,
-            wawi:  this.$store.state.wawiUser,
-            db:    this.$store.state.database
+            admin:             this.$store.state.adminUser,
+            wawi:              this.$store.state.wawiUser,
+            db:                this.$store.state.database,
+            demoProducts:      this.$store.state.demoProducts,
+            demoCategories:    this.$store.state.demoCategories,
+            demoManufacturers: this.$store.state.demoManufacturers,
         });
         axios.post(this.$getApiUrl('doinstall'), postData)
             .then(response => {

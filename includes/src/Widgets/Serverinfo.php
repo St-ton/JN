@@ -3,6 +3,7 @@
 namespace JTL\Widgets;
 
 use JTL\Shop;
+use JTL\Update\DBMigrationHelper;
 
 /**
  * Class Serverinfo
@@ -15,13 +16,19 @@ class Serverinfo extends AbstractWidget
      */
     public function init()
     {
-        $parsed = \parse_url(Shop::getURL());
+        $parsed       = \parse_url(Shop::getURL());
+        $mySQLVersion = DBMigrationHelper::getMySQLVersion()->innodb->version;
         $this->oSmarty->assign('phpOS', \PHP_OS)
             ->assign('phpVersion', \PHP_VERSION)
             ->assign('serverAddress', $_SERVER['SERVER_ADDR'] ?? '?')
             ->assign('serverHTTPHost', $_SERVER['HTTP_HOST'] ?? '?')
             ->assign('mySQLVersion', $this->oDB->getServerInfo())
             ->assign('mySQLStats', $this->oDB->getServerStats())
+            ->assign('hasMySQLMinVersion', ($mySQLVersion === '') ? true : \version_compare(
+                $mySQLVersion,
+                \MYSQL_MIN_VERSION,
+                '>='
+            ))
             ->assign('cShopHost', $parsed['scheme'] . '://' . $parsed['host']);
 
         $this->setPermission('DIAGNOSTIC_VIEW');

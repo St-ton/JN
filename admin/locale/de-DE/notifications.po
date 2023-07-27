@@ -68,6 +68,12 @@ msgstr "Volltextsuche"
 msgid "hasFullTextIndexErrorMessage"
 msgstr "Volltextindex ist nicht vorhanden."
 
+msgid "hasInvalidMySQLVersionErrorTitle"
+msgstr "MySQL Mindestversion"
+
+msgid "hasInvalidMySQLVersionErrorMessage"
+msgstr "Es wird eine Mindestversion von %s für MySQL benötigt."
+
 msgid "hasInvalidPasswordResetMailTemplateTitle"
 msgstr "Defekte E-Mail-Vorlage"
 

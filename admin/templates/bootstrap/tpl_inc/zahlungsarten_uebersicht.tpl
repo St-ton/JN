@@ -33,7 +33,7 @@
                                                       {if $zahlungsart->nLogCount > 0}
                                                             {if $zahlungsart->nErrorLogCount}text-danger{/if}
                                                       {else}
-                                                            text-success disabled
+                                                            disabled
                                                       {/if}"
                                            title="{__('viewLog')}"
                                            data-toggle="tooltip">
@@ -47,8 +47,8 @@
                                                         <span class="fas fa-bars"></span>
                                                     {/if}
                                                 {else}
-                                                    <span class="fal fa-check"></span>
-                                                    <span class="fas fa-check"></span>
+                                                    <span class="fal fa-bars"></span>
+                                                    <span class="fas fa-bars"></span>
                                                 {/if}
                                             </span>
                                         </a>

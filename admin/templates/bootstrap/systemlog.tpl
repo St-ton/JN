@@ -38,7 +38,7 @@
                     {else}
                         <div class="listgroup">
                             {foreach $oLog_arr as $oLog}
-                                <div class="list-group-item border-left-0 border-right-0 {cycle values="bg-light-gray,"}">
+                                <div class="list-group-item border-left-0 border-right-0">
                                     <div class="row">
                                         <div class="col-md-3 col-xs-12">
                                             <label class="custom-control custom-checkbox">

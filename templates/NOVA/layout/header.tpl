@@ -71,7 +71,7 @@
         {block name='layout-header-head-base'}{/block}
 
         {block name='layout-header-head-icons'}
-            <link rel="shortcut icon" href="{$shopFaviconURL}" type="image/x-icon">
+            <link rel="icon" href="{$shopFaviconURL}">
         {/block}
 
         {block name='layout-header-head-resources'}

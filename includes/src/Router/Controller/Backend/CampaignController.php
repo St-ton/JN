@@ -666,6 +666,9 @@ class CampaignController extends AbstractBackendController
                 }
                 foreach ($data as $item) {
                     $customDataParts       = \explode(';', $item->cCustomData ?? '');
+                    $item->kKampagne       = (int)$item->kKampagne;
+                    $item->kKampagneDef    = (int)$item->kKampagneDef;
+                    $item->kKey            = (int)$item->kKey;
                     $item->cEinstiegsseite = Text::filterXSS($customDataParts[0] ?? '');
                     $item->cReferer        = Text::filterXSS($customDataParts[1] ?? '');
                 }
@@ -714,6 +717,9 @@ class CampaignController extends AbstractBackendController
                     break;
                 }
                 foreach ($data as $item) {
+                    $item->kKampagne    = (int)$item->kKampagne;
+                    $item->kKampagneDef = (int)$item->kKampagneDef;
+                    $item->kKey         = (int)$item->kKey;
                     if ($item->cNachname !== 'n.v.') {
                         $item->cNachname = \trim($cryptoService->decryptXTEA($item->cNachname));
                     }
@@ -726,10 +732,10 @@ class CampaignController extends AbstractBackendController
                             : \__('no');
                     }
                     if ($item->fGesamtsumme !== 'n.v.') {
-                        $item->fGesamtsumme = Preise::getLocalizedPriceString($item->fGesamtsumme, $currency);
+                        $item->fGesamtsumme = Preise::getLocalizedPriceString((float)$item->fGesamtsumme, $currency);
                     }
                     if ($item->cStatus !== 'n.v.') {
-                        $item->cStatus = \lang_bestellstatus($item->cStatus);
+                        $item->cStatus = \lang_bestellstatus((int)$item->cStatus);
                     }
                 }
 
@@ -769,6 +775,9 @@ class CampaignController extends AbstractBackendController
                     break;
                 }
                 foreach ($data as $item) {
+                    $item->kKampagne    = (int)$item->kKampagne;
+                    $item->kKampagneDef = (int)$item->kKampagneDef;
+                    $item->kKey         = (int)$item->kKey;
                     if ($item->cNachname !== 'n.v.') {
                         $item->cNachname = \trim($cryptoService->decryptXTEA($item->cNachname));
                     }
@@ -824,6 +833,9 @@ class CampaignController extends AbstractBackendController
                     break;
                 }
                 foreach ($data as $item) {
+                    $item->kKampagne    = (int)$item->kKampagne;
+                    $item->kKampagneDef = (int)$item->kKampagneDef;
+                    $item->kKey         = (int)$item->kKey;
                     if ($item->cNachname !== 'n.v.') {
                         $item->cNachname = \trim($cryptoService->decryptXTEA($item->cNachname));
                     }
@@ -836,10 +848,10 @@ class CampaignController extends AbstractBackendController
                             : \__('no');
                     }
                     if ($item->fGesamtsumme !== 'n.v.') {
-                        $item->fGesamtsumme = Preise::getLocalizedPriceString($item->fGesamtsumme, $currency);
+                        $item->fGesamtsumme = Preise::getLocalizedPriceString((float)$item->fGesamtsumme, $currency);
                     }
                     if ($item->cStatus !== 'n.v.') {
-                        $item->cStatus = \lang_bestellstatus($item->cStatus);
+                        $item->cStatus = \lang_bestellstatus((int)$item->cStatus);
                     }
                 }
 
@@ -1089,7 +1101,7 @@ class CampaignController extends AbstractBackendController
                 Frontend::getCustomerGroup()->setMayViewPrices(1);
                 foreach ($data as $item) {
                     if (isset($item->fVKNetto) && $item->fVKNetto > 0) {
-                        $item->fVKNetto = Preise::getLocalizedPriceString($item->fVKNetto, $currency);
+                        $item->fVKNetto = Preise::getLocalizedPriceString((float)$item->fVKNetto, $currency);
                     }
                     if (isset($item->fMwSt) && $item->fMwSt > 0) {
                         $item->fMwSt = \number_format((float)$item->fMwSt, 2) . '%';

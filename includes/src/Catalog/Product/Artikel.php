@@ -1115,6 +1115,11 @@ class Artikel implements RoutableInterface
     private bool $compressed = false;
 
     /**
+     * @var float[]
+     */
+    private array $categoryDiscounts = [];
+
+    /**
      *
      */
     public function __wakeup()
@@ -3396,6 +3401,7 @@ class Artikel implements RoutableInterface
             $tmpProduct->fNettoPreis       = null;
         }
         $this->holPreise($customerGroupID, $tmpProduct);
+        $this->setCategoryDiscounts($tmpProduct);
         $this->initLanguageID($this->kSprache, LanguageHelper::getIsoFromLangID($this->kSprache)->cISO ?? null);
         if ($this->getOption('nArtikelAttribute', 0) === 1) {
             $this->holArtikelAttribute();
@@ -5386,6 +5392,42 @@ class Artikel implements RoutableInterface
         );
     }
 
+    private function setCategoryDiscounts($tmpProduct): void
+    {
+        $cacheID = 'hasCategoryDiscounts';
+        if (!Shop::has($cacheID)) {
+            Shop::set(
+                $cacheID,
+                $this->getDB()->getSingleInt(
+                    'SELECT COUNT(*) AS cnt
+                        FROM tartikelkategorierabatt',
+                    'cnt',
+                ) > 0
+            );
+        }
+        // Existiert für diese Kundengruppe ein Kategorierabatt?
+        if (Shop::get($cacheID) === false) {
+            return;
+            ;
+        }
+        if ($tmpProduct->kEigenschaftKombi > 0) {
+            $categoryDiscount = $this->getDB()->selectAll(
+                'tartikelkategorierabatt',
+                'kArtikel',
+                $tmpProduct->kVaterArtikel
+            );
+        } else {
+            $categoryDiscount = $this->getDB()->selectAll(
+                'tartikelkategorierabatt',
+                'kArtikel',
+                $tmpProduct->kArtikel
+            );
+        }
+        foreach ($categoryDiscount as $discount) {
+            $this->categoryDiscounts[(int)$discount->kKundengruppe] = (float)$discount->fRabatt;
+        }
+    }
+
     /**
      * Get the maximum discount available for this product respecting current user group + user + category discount
      *
@@ -5395,45 +5437,12 @@ class Artikel implements RoutableInterface
      */
     public function getDiscount(int $customerGroupID = 0, int $productID = 0)
     {
-        $productID       = $productID ?: $this->kArtikel;
-        $customerGroupID = $customerGroupID ?: ($this->kKundengruppe ?? $this->customerGroup->getID());
-        $discounts       = [];
-        $maxDiscount     = 0;
-        $cacheID         = 'checkCategoryDiscount' . $customerGroupID;
-        if (!Shop::has($cacheID)) {
-            Shop::set(
-                $cacheID,
-                $this->getDB()->getSingleInt(
-                    'SELECT COUNT(kArtikel) AS cnt
-                        FROM tartikelkategorierabatt
-                        WHERE kKundengruppe = :cgid',
-                    'cnt',
-                    ['cgid' => $customerGroupID]
-                ) > 0
-            );
-        }
-        // Existiert für diese Kundengruppe ein Kategorierabatt?
-        if (Shop::get($cacheID)) {
-            if ($this->kEigenschaftKombi > 0) {
-                $categoryDiscount = $this->getDB()->select(
-                    'tartikelkategorierabatt',
-                    'kArtikel',
-                    $this->kVaterArtikel,
-                    'kKundengruppe',
-                    $customerGroupID
-                );
-            } else {
-                $categoryDiscount = $this->getDB()->select(
-                    'tartikelkategorierabatt',
-                    'kArtikel',
-                    $productID,
-                    'kKundengruppe',
-                    $customerGroupID
-                );
-            }
-            if ($categoryDiscount !== null && $categoryDiscount->kArtikel > 0) {
-                $discounts[] = $categoryDiscount->fRabatt;
-            }
+        $customerGroupID  = $customerGroupID ?: ($this->kKundengruppe ?? $this->customerGroup->getID());
+        $discounts        = [];
+        $maxDiscount      = 0;
+        $categoryDiscount = $this->categoryDiscounts[$customerGroupID] ?? 0;
+        if ($categoryDiscount > 0) {
+            $discounts[] = $categoryDiscount;
         }
         // Existiert für diese Kundengruppe ein Rabatt?
         $customerGroup = $this->customerGroup->getID() === $customerGroupID

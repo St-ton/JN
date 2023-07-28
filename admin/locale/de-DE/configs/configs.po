@@ -924,7 +924,7 @@ msgid "produktfrage_abfragen_captcha_name"
 msgstr "Spamschutz aktivieren"
 
 msgid "produktfrage_abfragen_captcha_desc"
-msgstr "Hier legen Sie fest, ob für das Formular der Spamschutz aktiviert werden soll. Dazu müssen Sie ggf. zuerst den Spamschutz von JTL-Shop in den globalen Einstellungen konfigurieren."
+msgstr "Hier legen Sie fest, ob für das Formular der Spamschutz aktiviert werden soll. Voraussetzung ist das Plugin 'Google reCaptcha V2' aus dem JTL-Extension Store."
 
 msgid "benachrichtigung_nutzen_name"
 msgstr "Verfügbarkeitsanfragen ermöglichen"
@@ -954,7 +954,7 @@ msgid "benachrichtigung_abfragen_captcha_name"
 msgstr "Spamschutz aktivieren"
 
 msgid "benachrichtigung_abfragen_captcha_desc"
-msgstr "Hier legen Sie fest, ob für Benachrichtigungsanfragen der Spamschutz aktiviert werden soll. Dazu müssen Sie ggf. zuerst den Spamschutz von JTL-Shop in den globalen Einstellungen konfigurieren."
+msgstr "Hier legen Sie fest, ob für Benachrichtigungsanfragen der Spamschutz aktiviert werden soll.  Voraussetzung ist das Plugin 'Google reCaptcha V2' aus dem JTL-Extension Store."
 
 msgid "benachrichtigung_min_lagernd_name"
 msgstr "Benachrichtigung ab prozentualem Mindestlagerbestand"
@@ -1158,7 +1158,7 @@ msgid "registrieren_captcha_name"
 msgstr "Spamschutz aktivieren"
 
 msgid "registrieren_captcha_desc"
-msgstr "Hier legen Sie fest, ob für das Formular der Spamschutz aktiviert werden soll. Dazu müssen Sie ggf. zuerst den Spamschutz von JTL-Shop in den globalen Einstellungen konfigurieren."
+msgstr "Hier legen Sie fest, ob für das Formular der Spamschutz aktiviert werden soll. Voraussetzung ist das Plugin 'Google reCaptcha V2' aus dem JTL-Extension Store."
 
 msgid "kundenlogin_max_loginversuche_name"
 msgstr "CAPTCHA nach X erfolglosen Anmeldeversuchen anzeigen"
@@ -2016,7 +2016,7 @@ msgid "kontakt_abfragen_captcha_name"
 msgstr "Spamschutz aktivieren"
 
 msgid "kontakt_abfragen_captcha_desc"
-msgstr "Hier legen Sie fest, ob für das Formular der Spamschutz aktiviert werden soll. Dazu müssen Sie ggf. zuerst den Spamschutz von JTL-Shop in den globalen Einstellungen konfigurieren."
+msgstr "Hier legen Sie fest, ob für das Formular der Spamschutz aktiviert werden soll. Voraussetzung ist das Plugin 'Google reCaptcha V2' aus dem JTL-Extension Store."
 
 msgid "rss_nutzen_name"
 msgstr "RSS-Feed nutzen"
@@ -2340,7 +2340,7 @@ msgid "newsletter_sicherheitscode_name"
 msgstr "Spamschutz aktivieren"
 
 msgid "newsletter_sicherheitscode_desc"
-msgstr "Hier legen Sie fest, ob für das Formular der Spamschutz aktiviert werden soll. Dazu müssen Sie ggf. zuerst den Spamschutz von JTL-Shop in den globalen Einstellungen konfigurieren."
+msgstr "Hier legen Sie fest, ob für das Formular der Spamschutz aktiviert werden soll. Voraussetzung ist das Plugin 'Google reCaptcha V2' aus dem JTL-Extension Store."
 
 msgid "newsletter_send_delay_name"
 msgstr "Sendeverzögerung (in Stunden)"
@@ -3051,7 +3051,7 @@ msgid "forgot_password_captcha_name"
 msgstr "Spamschutz aktivieren"
 
 msgid "forgot_password_captcha_desc"
-msgstr "Hier legen Sie fest, ob für das Passwort-Vergessen-Formular der Spamschutz aktiviert werden soll. Dazu müssen Sie ggf. zuerst den Spamschutz von JTL-Shop in den globalen Einstellungen konfigurieren."
+msgstr "Hier legen Sie fest, ob für das Passwort-Vergessen-Formular der Spamschutz aktiviert werden soll. Voraussetzung ist das Plugin 'Google reCaptcha V2' aus dem JTL-Extension Store."
 
 msgid "configgroup_1_routing"
 msgstr "Routing <br><span class=\"text-danger\">"

@@ -54,6 +54,11 @@ interface LinkGroupInterface
     public function getLinks(): Collection;
 
     /**
+     * @return Collection - getLinks() without child links in top hierarchy
+     */
+    public function getHierarchy(): Collection;
+
+    /**
      * @param Collection $links
      */
     public function setLinks(Collection $links): void;

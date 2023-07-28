@@ -71,6 +71,9 @@ msgstr "Die E-Mail-Vorlage ist fehlerhaft."
 msgid "successTemplateReset"
 msgstr "Markierte E-Mail-Vorlage wurde erfolgreich zurückgesetzt."
 
+msgid "successTemplatesReset"
+msgstr "Markierte E-Mail-Vorlagen wurde erfolgreich zurückgesetzt."
+
 msgid "errorTemplateMissing"
 msgstr "Es existiert keine E-Mail-Vorlage: "
 
@@ -109,6 +112,12 @@ msgstr "Die E-Mail-Vorlage wird zurückgesetzt."
 
 msgid "sureResetEmailTemplate"
 msgstr "Möchten Sie die E-Mail-Vorlage „<b>%s</b>“ wirklich zurücksetzen?"
+
+msgid "resetEmailTemplates"
+msgstr "Die ausgewählten E-Mail-Vorlagen werden zurückgesetzt."
+
+msgid "sureResetEmailTemplates"
+msgstr "Möchten Sie die ausgewählten E-Mail-Vorlagen wirklich zurücksetzen?"
 
 msgid "pluginTemplates"
 msgstr "Plugin-Vorlagen"

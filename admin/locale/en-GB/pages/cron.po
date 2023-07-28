@@ -55,3 +55,6 @@ msgstr "Anonymisation of customer data"
 
 msgid "exportformat"
 msgstr "Export"
+
+msgid "sendMailQueue"
+msgstr "Send emails with a time delay"

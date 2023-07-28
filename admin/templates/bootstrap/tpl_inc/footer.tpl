@@ -79,6 +79,7 @@
             config.autoParagraph = false;
         };
         CKEDITOR.editorConfig(CKEDITOR.config);
+
         $.each(CKEDITOR.dtd.$removeEmpty, function (i, value) {
             CKEDITOR.dtd.$removeEmpty[i] = false;
         });
@@ -91,7 +92,17 @@
                 }
             });
         });
+
+        CKEDITOR.on( 'instanceCreated', function( evt ){
+            CKEDITOR.addCss('.cke_editable { background-color: '
+                + $('body').css('background-color')
+                + '; color: '
+                + $('body').css('color')
+                + '; }'
+            );
+        });
     }
+
     $('.select2').select2();
     $(function() {
         ioCall('notificationAction', ['update'], undefined, undefined, undefined, true);

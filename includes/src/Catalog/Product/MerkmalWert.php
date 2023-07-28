@@ -204,7 +204,6 @@ class MerkmalWert implements RoutableInterface
                 WHERE tmerkmalwert.kMerkmalWert = :mid',
             ['mid' => $id, 'lid' => $defaultLanguageID]
         );
-        $this->setID($id);
         $this->map($data);
         $this->createBySlug($id);
         $this->setCurrentLanguageID($languageID);

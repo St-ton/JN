@@ -164,6 +164,7 @@ ifndef('STORAGE_CHARACTERISTICS', PFAD_MEDIA_IMAGE_STORAGE . 'characteristics/')
 ifndef('STORAGE_CHARACTERISTIC_VALUES', PFAD_MEDIA_IMAGE_STORAGE . 'characteristicvalues/');
 ifndef('STORAGE_OPC', PFAD_MEDIA_IMAGE_STORAGE . 'opc/');
 ifndef('STORAGE_VIDEO_THUMBS', PFAD_MEDIA_IMAGE_STORAGE . 'videothumbs/');
+ifndef('PATH_MAILATTACHMENTS', PFAD_ROOT . PFAD_COMPILEDIR . 'mailattachments/');
 // Plugins
 ifndef('PFAD_PLUGIN', PFAD_INCLUDES . 'plugins/');
 // dbeS
@@ -301,6 +302,12 @@ ifndef('DELIVERY_TIME_DAYS_TO_WEEKS_LIMIT', 15);
 ifndef('DELIVERY_TIME_DAYS_TO_MONTHS_LIMIT', 61);
 ifndef('DELIVERY_TIME_DAYS_PER_WEEK', 7);
 ifndef('DELIVERY_TIME_DAYS_PER_MONTH', 30);
+
+/**
+ * Mailqueueing
+ */
+ifndef('EMAIL_SEND_IMMEDIATELY', false);
+ifndef('EMAIL_CHUNK_SIZE', 1);
 
 const ADMINGROUP                          = 1;
 const MAX_LOGIN_ATTEMPTS                  = 3;

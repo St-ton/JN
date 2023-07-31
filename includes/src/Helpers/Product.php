@@ -1338,6 +1338,7 @@ class Product
                     ->setProductId(Request::postInt('a'))
                     ->setEmail(Text::filterXSS($dbHandler->escape(\strip_tags($_POST['email']))) ?: '')
                     ->setLanguageID(Shop::getLanguageID())
+                    ->setCustomerGroupID(Frontend::getCustomer()->getGroupID())
                     ->setRealIP(Request::getRealIP());
 
                 $inquiry            = self::getAvailabilityFormDefaults();

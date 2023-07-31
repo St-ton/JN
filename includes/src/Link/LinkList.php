@@ -97,6 +97,7 @@ final class LinkList implements LinkListInterface
             return $l;
         });
         foreach ($links as $link) {
+            /** @var LinkInterface $link */
             $this->links->push($link);
         }
 

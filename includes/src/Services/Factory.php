@@ -125,9 +125,8 @@ class Factory
 
             return $vs;
         });
-        $container->bind(JTLApi::class, static function () {
-            // return new JTLApi($_SESSION, $container->make(Nice::class));
-            return new JTLApi($_SESSION, Nice::getInstance());
+        $container->bind(JTLApi::class, static function (Container $container) {
+            return new JTLApi(Nice::getInstance(), $container->getCache());
         });
         $container->singleton(GcServiceInterface::class, GcService::class);
         $container->singleton(GetText::class);

@@ -5,11 +5,13 @@ namespace JTL\Mail\Mail;
 use InvalidArgumentException;
 use JTL\Language\LanguageHelper;
 use JTL\Language\LanguageModel;
+use JTL\Mail\SendMailObjects\MailDataTableObject;
 use JTL\Mail\Template\TemplateFactory;
 use JTL\Mail\Template\TemplateInterface;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use PHPMailer\PHPMailer\PHPMailer;
+use ReflectionClass;
 
 /**
  * Class Mail
@@ -17,7 +19,12 @@ use PHPMailer\PHPMailer\PHPMailer;
  */
 class Mail implements MailInterface
 {
+    /**
+     * @deprecated since 5.3.0 - this was a typo
+     */
     public const LENTH_LIMIT = 987;
+
+    public const LENGTH_LIMIT = 987;
 
     /**
      * @var int
@@ -40,7 +47,7 @@ class Mail implements MailInterface
     private string $fromName;
 
     /**
-     * @var string|null
+     * @var ?string
      */
     private ?string $toMail = null;
 
@@ -122,10 +129,7 @@ class Mail implements MailInterface
      */
     public function createFromTemplateID(string $id, $data = null, TemplateFactory $factory = null): MailInterface
     {
-        $factory = $factory ?? new TemplateFactory(Shop::Container()->getDB());
-        if (($template = $factory->getTemplate($id)) === null) {
-            throw new InvalidArgumentException('Cannot find template ' . $id);
-        }
+        $template = $this->getTemplateFromID($factory, $id);
 
         return $this->createFromTemplate($template, $data);
     }
@@ -138,7 +142,9 @@ class Mail implements MailInterface
         $this->setData($data);
         $this->setTemplate($template);
         $this->setLanguage($language ?? $this->detectLanguage());
-        $this->setCustomerGroupID(Frontend::getCustomer()->getGroupID());
+        if ($this->customerGroupID === 0) {
+            $this->setCustomerGroupID(Frontend::getCustomer()->getGroupID());
+        }
         $template->load($this->language->getId(), $this->customerGroupID);
         $model = $template->getModel();
         if ($model === null) {
@@ -171,7 +177,7 @@ class Mail implements MailInterface
     {
         $hasLongLines = false;
         foreach (\preg_split('/((\r?\n)|(\r\n?))/', $text) as $line) {
-            if (\mb_strlen($line) > self::LENTH_LIMIT) {
+            if (\mb_strlen($line) > self::LENGTH_LIMIT) {
                 $hasLongLines = true;
                 break;
             }
@@ -222,6 +228,9 @@ class Mail implements MailInterface
      */
     private function detectLanguage(): LanguageModel
     {
+        if ($this->language !== null) {
+            return $this->language;
+        }
         $allLanguages = LanguageHelper::getAllLanguages(1);
         if (isset($this->data->tkunde->kSprache) && $this->data->tkunde->kSprache > 0) {
             return $allLanguages[(int)$this->data->tkunde->kSprache];
@@ -614,5 +623,61 @@ class Mail implements MailInterface
         $this->template = $template;
 
         return $this;
+    }
+
+    /**
+     * @return object
+     */
+    public function toObject(): object
+    {
+        $reflect    = new ReflectionClass($this);
+        $properties = $reflect->getProperties();
+        $toArray    = [];
+        foreach ($properties as $property) {
+            $propertyName           = $property->getName();
+            $toArray[$propertyName] = $property->getValue($this);
+        }
+
+        return (object)$toArray;
+    }
+
+    /**
+     * Will accept data from an object.
+     * @param MailDataTableObject $object
+     * @return $this
+     * @throws \Exception
+     */
+    public function hydrateWithObject(MailDataTableObject $object): self
+    {
+        $attributes = \get_object_vars($this);
+        foreach ($attributes as $attribute => $value) {
+            $setMethod = 'set' . \ucfirst($attribute);
+            $getMethod = 'get' . \ucfirst($attribute);
+            if (\method_exists($this, $setMethod)
+                && \method_exists($object, $getMethod)
+                && $object->{$getMethod}() !== null) {
+                $this->$setMethod($object->{$getMethod}());
+            }
+        }
+        $this->setLanguage(Shop::Lang()->getLanguageByID($object->getLanguageId()));
+        $this->template = $this->getTemplateFromID(null, $object->getTemplateId());
+
+        return $this;
+    }
+
+    /**
+     * @param TemplateFactory|null $factory
+     * @param string               $id
+     * @return TemplateInterface
+     */
+    protected function getTemplateFromID(?TemplateFactory $factory, string $id): TemplateInterface
+    {
+        $factory  = $factory ?? new TemplateFactory(Shop::Container()->getDB());
+        $template = $factory->getTemplate($id);
+        if ($template === null) {
+            throw new InvalidArgumentException('Cannot find template ' . $id);
+        }
+
+        return $template;
     }
 }

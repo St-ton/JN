@@ -15,6 +15,7 @@
                     <p class="text-center mb-4">
                         <a href="{$adminURL}/">
                             <img class="brand-logo" width="120" height="38" src="{$templateBaseURL}gfx/JTL-Shop-Logo-rgb.png" alt="JTL-Shop">
+                            <img class="brand-logo brand-logo-white" width="120" height="38" src="{$templateBaseURL}gfx/JTL-Shop-Logo-rgb-white.png" alt="JTL-Shop">
                         </a>
                     </p>
                     {if $alertError}

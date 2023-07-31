@@ -296,7 +296,7 @@ class Characteristic extends BaseCharacteristic
             ->setOrigin(__CLASS__));
 
         $langID           = $this->getLanguageID();
-        $kStandardSprache = LanguageHelper::getDefaultLanguage()->kSprache;
+        $kStandardSprache = LanguageHelper::getDefaultLanguage(false)->kSprache;
         if ($langID !== $kStandardSprache) {
             $state->setSelect([
                 'COALESCE(tmerkmalsprache.cName, tmerkmal.cName) AS cName',

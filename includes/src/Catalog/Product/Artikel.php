@@ -29,6 +29,7 @@ use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Media\Image;
+use JTL\Media\Image\Overlay;
 use JTL\Media\Image\Variation as VariationImage;
 use JTL\Media\Image\Product;
 use JTL\Media\MediaImageRequest;
@@ -1124,16 +1125,6 @@ class Artikel implements RoutableInterface
         if (Shop::getLanguageID() === 0 && isset($_SESSION['kSprache'], $_SESSION['cISOSprache'])) {
             Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
         }
-        $this->conf    = $this->getConfig();
-        $this->taxData = $this->getShippingAndTaxData();
-        if ($this->compressed === true) {
-            $this->cBeschreibung    = \gzuncompress($this->cBeschreibung);
-            $this->cKurzbezeichnung = \gzuncompress($this->cKurzbezeichnung);
-            $this->compressed       = false;
-        }
-        if ($this->favourableShippingID > 0) {
-            $this->oFavourableShipping = new Versandart($this->favourableShippingID);
-        }
     }
 
     /**
@@ -1142,7 +1133,18 @@ class Artikel implements RoutableInterface
     public function __sleep()
     {
         return select(\array_keys(\get_object_vars($this)), static function ($e): bool {
-            return $e !== 'conf' && $e !== 'db' && $e !== 'oFavourableShipping';
+            return !\in_array(
+                $e,
+                [
+                    'conf',
+                    'db',
+                    'oVariationKombiKinderAssoc_arr',
+                    'oFavourableShipping',
+                    'customerGroup',
+                    'currentImagePath'
+                ],
+                true
+            );
         });
     }
 
@@ -1229,10 +1231,10 @@ class Artikel implements RoutableInterface
         $category = $this->getDB()->getSingleObject(
             'SELECT tkategorieartikel.kKategorie
                 FROM tkategorieartikel
-                LEFT JOIN tkategoriesichtbarkeit 
+                LEFT JOIN tkategoriesichtbarkeit
                     ON tkategoriesichtbarkeit.kKategorie = tkategorieartikel.kKategorie
                     AND tkategoriesichtbarkeit.kKundengruppe = :cgid
-                JOIN tkategorie 
+                JOIN tkategorie
                     ON tkategorie.kKategorie = tkategorieartikel.kKategorie
                 WHERE tkategoriesichtbarkeit.kKategorie IS NULL
                     AND kArtikel = :pid' . $categoryFilter . '
@@ -1469,8 +1471,8 @@ class Artikel implements RoutableInterface
         if (\count($images) === 0) {
             $images = $this->getDB()->getObjects(
                 'SELECT cPfad, nNr
-                    FROM tartikelpict 
-                    WHERE kArtikel = :pid 
+                    FROM tartikelpict
+                    WHERE kArtikel = :pid
                     ORDER BY nNr',
                 ['pid' => (int)$this->kArtikel]
             );
@@ -1707,9 +1709,9 @@ class Artikel implements RoutableInterface
         $characteristics     = $db->getObjects(
             'SELECT tartikelmerkmal.kMerkmal, tartikelmerkmal.kMerkmalWert
                 FROM tartikelmerkmal
-                JOIN tmerkmal 
+                JOIN tmerkmal
                     ON tmerkmal.kMerkmal = tartikelmerkmal.kMerkmal
-                JOIN tmerkmalwert 
+                JOIN tmerkmalwert
                     ON tmerkmalwert.kMerkmalWert = tartikelmerkmal.kMerkmalWert
                 WHERE tartikelmerkmal.kArtikel = :kArtikel
                 ORDER BY tmerkmal.nSort, tmerkmalwert.nSort, tartikelmerkmal.kMerkmal',
@@ -1758,11 +1760,11 @@ class Artikel implements RoutableInterface
         $parts = $this->getDB()->getObjects(
             'SELECT tartikel.kArtikel, tstueckliste.fAnzahl
                   FROM tartikel
-                  JOIN tstueckliste 
-                      ON tstueckliste.kArtikel = tartikel.kArtikel 
+                  JOIN tstueckliste
+                      ON tstueckliste.kArtikel = tartikel.kArtikel
                       AND tstueckliste.kStueckliste = :plid
-                  LEFT JOIN tartikelsichtbarkeit 
-                      ON tstueckliste.kArtikel = tartikelsichtbarkeit.kArtikel 
+                  LEFT JOIN tartikelsichtbarkeit
+                      ON tstueckliste.kArtikel = tartikelsichtbarkeit.kArtikel
                       AND tartikelsichtbarkeit.kKundengruppe = :cgid' . $cond,
             ['plid' => $this->kStueckliste, 'cgid' => $customerGroupID]
         );
@@ -1876,24 +1878,24 @@ class Artikel implements RoutableInterface
         }
         if ($this->kSprache === $kDefaultLanguage) {
             $conditionalFields   = 'lang.cName, lang.cBeschreibung, lang.kSprache';
-            $conditionalLeftJoin = 'LEFT JOIN tmediendateisprache AS lang 
-                                    ON lang.kMedienDatei = tmediendatei.kMedienDatei 
+            $conditionalLeftJoin = 'LEFT JOIN tmediendateisprache AS lang
+                                    ON lang.kMedienDatei = tmediendatei.kMedienDatei
                                     AND lang.kSprache = ' . $this->kSprache;
         } else {
             $conditionalFields   = "IF(TRIM(IFNULL(lang.cName, '')) != '', lang.cName, deflang.cName) cName,
-                                        IF(TRIM(IFNULL(lang.cBeschreibung, '')) != '', 
+                                        IF(TRIM(IFNULL(lang.cBeschreibung, '')) != '',
                                         lang.cBeschreibung, deflang.cBeschreibung) cBeschreibung,
-                                        IF(TRIM(IFNULL(lang.kSprache, '')) != '', 
+                                        IF(TRIM(IFNULL(lang.kSprache, '')) != '',
                                         lang.kSprache, deflang.kSprache) kSprache";
-            $conditionalLeftJoin = 'LEFT JOIN tmediendateisprache AS deflang 
-                                        ON deflang.kMedienDatei = tmediendatei.kMedienDatei 
+            $conditionalLeftJoin = 'LEFT JOIN tmediendateisprache AS deflang
+                                        ON deflang.kMedienDatei = tmediendatei.kMedienDatei
                                     AND deflang.kSprache = ' . $kDefaultLanguage . '
-                                    LEFT JOIN tmediendateisprache AS lang 
-                                        ON deflang.kMedienDatei = lang.kMedienDatei 
+                                    LEFT JOIN tmediendateisprache AS lang
+                                        ON deflang.kMedienDatei = lang.kMedienDatei
                                         AND lang.kSprache = ' . $this->kSprache;
         }
         $this->oMedienDatei_arr = $this->getDB()->getObjects(
-            'SELECT tmediendatei.kMedienDatei, tmediendatei.cPfad, tmediendatei.cURL, tmediendatei.cTyp, 
+            'SELECT tmediendatei.kMedienDatei, tmediendatei.cPfad, tmediendatei.cURL, tmediendatei.cTyp,
             tmediendatei.nSort, ' . $conditionalFields . '
                 FROM tmediendatei
                 ' . $conditionalLeftJoin . '
@@ -2098,13 +2100,13 @@ class Artikel implements RoutableInterface
         $propValueSQL = new SqlObject();
         if ($this->kSprache > 0 && !$isDefaultLang) {
             $propertySQL->setSelect('teigenschaftsprache.cName AS cName_teigenschaftsprache, ');
-            $propertySQL->setJoin(' LEFT JOIN teigenschaftsprache 
+            $propertySQL->setJoin(' LEFT JOIN teigenschaftsprache
                                             ON teigenschaftsprache.kEigenschaft = teigenschaft.kEigenschaft
                                             AND teigenschaftsprache.kSprache = :lid');
             $propertySQL->addParam(':lid', $this->kSprache);
 
             $propValueSQL->setSelect('teigenschaftwertsprache.cName AS localizedName, ');
-            $propValueSQL->setJoin(' LEFT JOIN teigenschaftwertsprache 
+            $propValueSQL->setJoin(' LEFT JOIN teigenschaftwertsprache
                                     ON teigenschaftwertsprache.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
                                     AND teigenschaftwertsprache.kSprache = :lid');
             $propValueSQL->addParam(':lid', $this->kSprache);
@@ -2113,42 +2115,42 @@ class Artikel implements RoutableInterface
         if ($this->nIstVater === 1) {
             $variations = $this->getDB()->getObjects(
                 'SELECT tartikel.kArtikel AS tartikel_kArtikel, tartikel.fLagerbestand AS tartikel_fLagerbestand,
-                    tartikel.cLagerBeachten, tartikel.cLagerKleinerNull, tartikel.cLagerVariation, 
-                    teigenschaftkombiwert.kEigenschaft, tartikel.fVPEWert, teigenschaftkombiwert.kEigenschaftKombi, 
+                    tartikel.cLagerBeachten, tartikel.cLagerKleinerNull, tartikel.cLagerVariation,
+                    teigenschaftkombiwert.kEigenschaft, tartikel.fVPEWert, teigenschaftkombiwert.kEigenschaftKombi,
                     teigenschaft.kArtikel, teigenschaftkombiwert.kEigenschaftWert, teigenschaft.cName,
                     teigenschaft.cWaehlbar, teigenschaft.cTyp, teigenschaft.nSort, '
                     . $propertySQL->getSelect() . ' teigenschaftwert.cName AS cName_teigenschaftwert, '
                     . $propValueSQL->getSelect() . ' teigenschaftwert.fAufpreisNetto, teigenschaftwert.fGewichtDiff,
-                    teigenschaftwert.cArtNr, teigenschaftwert.nSort AS teigenschaftwert_nSort, 
+                    teigenschaftwert.cArtNr, teigenschaftwert.nSort AS teigenschaftwert_nSort,
                     teigenschaftwert.fLagerbestand, teigenschaftwert.fPackeinheit,
                     teigenschaftwertpict.kEigenschaftWertPict, teigenschaftwertpict.cPfad, teigenschaftwertpict.cType,
                     teigenschaftwertaufpreis.fAufpreisNetto AS fAufpreisNetto_teigenschaftwertaufpreis,
                     IF(MIN(tartikel.cLagerBeachten) = MAX(tartikel.cLagerBeachten), MIN(tartikel.cLagerBeachten), \'N\')
                         AS cMergedLagerBeachten,
-                    IF(MIN(tartikel.cLagerKleinerNull) = MAX(tartikel.cLagerKleinerNull), 
+                    IF(MIN(tartikel.cLagerKleinerNull) = MAX(tartikel.cLagerKleinerNull),
                         MIN(tartikel.cLagerKleinerNull), \'Y\') AS cMergedLagerKleinerNull,
-                    IF(MIN(tartikel.cLagerVariation) = MAX(tartikel.cLagerVariation), 
+                    IF(MIN(tartikel.cLagerVariation) = MAX(tartikel.cLagerVariation),
                         MIN(tartikel.cLagerVariation), \'Y\') AS cMergedLagerVariation,
                     SUM(tartikel.fLagerbestand) AS fMergedLagerbestand
                     FROM teigenschaftkombiwert
-                    JOIN tartikel 
+                    JOIN tartikel
                         ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
                         AND tartikel.kVaterArtikel = :pid
-                    LEFT JOIN teigenschaft 
+                    LEFT JOIN teigenschaft
                             ON teigenschaft.kEigenschaft = teigenschaftkombiwert.kEigenschaft
-                    LEFT JOIN teigenschaftwert 
+                    LEFT JOIN teigenschaftwert
                             ON teigenschaftwert.kEigenschaftWert = teigenschaftkombiwert.kEigenschaftWert
                     ' . $propertySQL->getJoin() . '
                     ' . $propValueSQL->getJoin() . '
-                    LEFT JOIN teigenschaftsichtbarkeit 
+                    LEFT JOIN teigenschaftsichtbarkeit
                         ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
                         AND teigenschaftsichtbarkeit.kKundengruppe = :cgid
-                    LEFT JOIN teigenschaftwertsichtbarkeit 
+                    LEFT JOIN teigenschaftwertsichtbarkeit
                         ON teigenschaftwert.kEigenschaftWert = teigenschaftwertsichtbarkeit.kEigenschaftWert
                         AND teigenschaftwertsichtbarkeit.kKundengruppe = :cgid
-                    LEFT JOIN teigenschaftwertpict 
+                    LEFT JOIN teigenschaftwertpict
                         ON teigenschaftwertpict.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
-                    LEFT JOIN teigenschaftwertaufpreis 
+                    LEFT JOIN teigenschaftwertaufpreis
                         ON teigenschaftwertaufpreis.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
                         AND teigenschaftwertaufpreis.kKundengruppe = :cgid
                     WHERE teigenschaftsichtbarkeit.kEigenschaft IS NULL
@@ -2175,7 +2177,7 @@ class Artikel implements RoutableInterface
                     NULL AS fAufpreisNetto_teigenschaftwertaufpreis
                     FROM teigenschaft
                     ' . $propertySQL->getJoin() . '
-                    LEFT JOIN teigenschaftsichtbarkeit 
+                    LEFT JOIN teigenschaftsichtbarkeit
                         ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
                         AND teigenschaftsichtbarkeit.kKundengruppe = :cgid
                     WHERE teigenschaft.kArtikel = :pid
@@ -2209,15 +2211,15 @@ class Artikel implements RoutableInterface
             }
             $baseQuery = new SqlObject();
             $baseQuery->setStatement('SELECT tartikel.kArtikel AS tartikel_kArtikel,
-                        tartikel.fLagerbestand AS tartikel_fLagerbestand, tartikel.cLagerBeachten, 
+                        tartikel.fLagerbestand AS tartikel_fLagerbestand, tartikel.cLagerBeachten,
                         tartikel.cLagerKleinerNull, tartikel.cLagerVariation,
                         teigenschaftkombiwert.kEigenschaft, tartikel.fVPEWert, teigenschaftkombiwert.kEigenschaftKombi,
                         teigenschaft.kArtikel, teigenschaftkombiwert.kEigenschaftWert, teigenschaft.cName,
                         teigenschaft.cWaehlbar, teigenschaft.cTyp, teigenschaft.nSort, '
                         . $propertySQL->getSelect() . ' teigenschaftwert.cName AS cName_teigenschaftwert, '
                         . $propValueSQL->getSelect() . ' teigenschaftwert.fAufpreisNetto,
-                        teigenschaftwert.fGewichtDiff, teigenschaftwert.cArtNr, 
-                        teigenschaftwert.nSort AS teigenschaftwert_nSort, teigenschaftwert.fLagerbestand, 
+                        teigenschaftwert.fGewichtDiff, teigenschaftwert.cArtNr,
+                        teigenschaftwert.nSort AS teigenschaftwert_nSort, teigenschaftwert.fLagerbestand,
                         teigenschaftwert.fPackeinheit, teigenschaftwertpict.cType,
                         teigenschaftwertpict.kEigenschaftWertPict, teigenschaftwertpict.cPfad,
                         teigenschaftwertaufpreis.fAufpreisNetto AS fAufpreisNetto_teigenschaftwertaufpreis'
@@ -2268,13 +2270,13 @@ class Artikel implements RoutableInterface
                             LEFT JOIN teigenschaftkombiwert ek
                                 ON ek.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
                                 AND ek.kEigenschaftWert IN (
-                                    SELECT kEigenschaftWert 
-                                        FROM teigenschaftkombiwert 
+                                    SELECT kEigenschaftWert
+                                        FROM teigenschaftkombiwert
                                         WHERE kEigenschaftKombi = :kek
                                 )
-                            LEFT JOIN tartikel art 
+                            LEFT JOIN tartikel art
                                 ON art.kEigenschaftKombi = ek.kEigenschaftKombi
-                            LEFT JOIN tartikelsichtbarkeit 
+                            LEFT JOIN tartikelsichtbarkeit
                                 ON tartikelsichtbarkeit.kArtikel = art.kArtikel
                                 AND tartikelsichtbarkeit.kKundengruppe = :cid
                             WHERE tartikel.kVaterArtikel = :ppid
@@ -2305,7 +2307,7 @@ class Artikel implements RoutableInterface
                     $baseQuery->getStatement() .
                     ' AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
                         GROUP BY teigenschaftkombiwert.kEigenschaftWert
-                        ORDER BY teigenschaft.nSort, teigenschaft.cName, 
+                        ORDER BY teigenschaft.nSort, teigenschaft.cName,
                         teigenschaftwert.nSort, teigenschaftwert.cName',
                     $baseQuery->getParams()
                 );
@@ -2323,7 +2325,7 @@ class Artikel implements RoutableInterface
                     NULL AS fAufpreisNetto_teigenschaftwertaufpreis
                     FROM teigenschaft
                     ' . $propertySQL->getJoin() . '
-                    LEFT JOIN teigenschaftsichtbarkeit 
+                    LEFT JOIN teigenschaftsichtbarkeit
                         ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
                         AND teigenschaftsichtbarkeit.kKundengruppe = :cgid
                     WHERE (teigenschaft.kArtikel = :ppid
@@ -2342,7 +2344,7 @@ class Artikel implements RoutableInterface
             $this->oVariationKombi_arr = $this->getDB()->getObjects(
                 'SELECT teigenschaftkombiwert.*
                     FROM teigenschaftkombiwert
-                    JOIN tartikel 
+                    JOIN tartikel
                       ON tartikel.kArtikel = :pid
                       AND tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi',
                 ['pid' => $this->kArtikel]
@@ -2367,31 +2369,31 @@ class Artikel implements RoutableInterface
                     teigenschaft.cTyp, teigenschaft.nSort, ' . $propertySQL->getSelect() . '
                     teigenschaftwert.kEigenschaftWert, teigenschaftwert.cName AS cName_teigenschaftwert, ' .
                     $propValueSQL->getSelect() . '
-                    teigenschaftwert.fAufpreisNetto, teigenschaftwert.fGewichtDiff, teigenschaftwert.cArtNr, 
-                    teigenschaftwert.nSort AS teigenschaftwert_nSort, teigenschaftwert.fLagerbestand, 
-                    teigenschaftwert.fPackeinheit, teigenschaftwertpict.kEigenschaftWertPict, 
+                    teigenschaftwert.fAufpreisNetto, teigenschaftwert.fGewichtDiff, teigenschaftwert.cArtNr,
+                    teigenschaftwert.nSort AS teigenschaftwert_nSort, teigenschaftwert.fLagerbestand,
+                    teigenschaftwert.fPackeinheit, teigenschaftwertpict.kEigenschaftWertPict,
                     teigenschaftwertpict.cPfad, teigenschaftwertpict.cType,
                     teigenschaftwertaufpreis.fAufpreisNetto AS fAufpreisNetto_teigenschaftwertaufpreis
                     FROM teigenschaft
-                    LEFT JOIN teigenschaftwert 
+                    LEFT JOIN teigenschaftwert
                         ON teigenschaftwert.kEigenschaft = teigenschaft.kEigenschaft
                     ' . $propertySQL->getJoin() . '
                     ' . $propValueSQL->getJoin() . '
-                    LEFT JOIN teigenschaftsichtbarkeit 
+                    LEFT JOIN teigenschaftsichtbarkeit
                         ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
                         AND teigenschaftsichtbarkeit.kKundengruppe = :cgid
-                    LEFT JOIN teigenschaftwertsichtbarkeit 
+                    LEFT JOIN teigenschaftwertsichtbarkeit
                         ON teigenschaftwert.kEigenschaftWert = teigenschaftwertsichtbarkeit.kEigenschaftWert
                         AND teigenschaftwertsichtbarkeit.kKundengruppe = :cgid
-                    LEFT JOIN teigenschaftwertpict 
+                    LEFT JOIN teigenschaftwertpict
                         ON teigenschaftwertpict.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
-                    LEFT JOIN teigenschaftwertaufpreis 
+                    LEFT JOIN teigenschaftwertaufpreis
                         ON teigenschaftwertaufpreis.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
                         AND teigenschaftwertaufpreis.kKundengruppe = :cgid
                     WHERE teigenschaft.kArtikel = :pid
                         AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
                         AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
-                    ORDER BY teigenschaft.nSort ASC, teigenschaft.cName, 
+                    ORDER BY teigenschaft.nSort ASC, teigenschaft.cName,
                     teigenschaftwert.nSort ASC, teigenschaftwert.cName',
                 \array_merge(
                     ['pid' => $this->kArtikel, 'cgid' => $customerGroupID],
@@ -2453,7 +2455,7 @@ class Artikel implements RoutableInterface
             : (int)$this->getDB()->getSingleObject(
                 'SELECT COUNT(teigenschaft.kEigenschaft) AS cnt
                     FROM teigenschaft
-                    LEFT JOIN teigenschaftsichtbarkeit 
+                    LEFT JOIN teigenschaftsichtbarkeit
                         ON teigenschaftsichtbarkeit.kEigenschaft = teigenschaft.kEigenschaft
                         AND teigenschaftsichtbarkeit.kKundengruppe = :cgid
                     WHERE kArtikel = :pid
@@ -2584,19 +2586,19 @@ class Artikel implements RoutableInterface
                         tartikel.cBarcode, tartikel.kArtikel, teigenschaftkombiwert.kEigenschaft,
                         teigenschaftkombiwert.kEigenschaftWert
                         FROM teigenschaftkombiwert
-                        JOIN tartikel 
+                        JOIN tartikel
                             ON tartikel.kVaterArtikel = :kArtikel
                             AND tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
-                        LEFT JOIN tartikelsichtbarkeit 
+                        LEFT JOIN tartikelsichtbarkeit
                             ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                             AND tartikelsichtbarkeit.kKundengruppe = :kKundengruppe
-                        LEFT JOIN teigenschaftwertsichtbarkeit 
+                        LEFT JOIN teigenschaftwertsichtbarkeit
                             ON teigenschaftkombiwert.kEigenschaftWert = teigenschaftwertsichtbarkeit.kEigenschaftWert
                             AND teigenschaftwertsichtbarkeit.kKundengruppe = :kKundengruppe
-                        JOIN tartikelpict 
+                        JOIN tartikelpict
                             ON tartikelpict.kArtikel = tartikel.kArtikel
                             AND tartikelpict.nNr = 1
-                        WHERE tartikelsichtbarkeit.kArtikel IS NULL 
+                        WHERE tartikelsichtbarkeit.kArtikel IS NULL
                             AND teigenschaftwertsichtbarkeit.kKundengruppe IS NULL',
                     [
                         'kArtikel'      => $this->kArtikel,
@@ -2626,19 +2628,19 @@ class Artikel implements RoutableInterface
                     'SELECT tartikelpict.cPfad, teigenschaftkombiwert.kEigenschaft,
                             teigenschaftkombiwert.kEigenschaftWert
                         FROM teigenschaftkombiwert
-                        JOIN tartikel 
+                        JOIN tartikel
                             ON tartikel.kVaterArtikel = :kArtikel
                             AND tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
-                        LEFT JOIN tartikelsichtbarkeit 
+                        LEFT JOIN tartikelsichtbarkeit
                             ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                             AND tartikelsichtbarkeit.kKundengruppe = :kKundengruppe
-                        LEFT JOIN teigenschaftwertsichtbarkeit 
+                        LEFT JOIN teigenschaftwertsichtbarkeit
                             ON teigenschaftkombiwert.kEigenschaftWert = teigenschaftwertsichtbarkeit.kEigenschaftWert
                             AND teigenschaftwertsichtbarkeit.kKundengruppe = :kKundengruppe
-                        JOIN tartikelpict 
+                        JOIN tartikelpict
                             ON tartikelpict.kArtikel = tartikel.kArtikel
                             AND tartikelpict.nNr = 1
-                        WHERE tartikelsichtbarkeit.kArtikel IS NULL 
+                        WHERE tartikelsichtbarkeit.kArtikel IS NULL
                             AND teigenschaftwertsichtbarkeit.kKundengruppe IS NULL
                         ORDER BY teigenschaftkombiwert.kEigenschaft, teigenschaftkombiwert.kEigenschaftWert',
                     [
@@ -2764,14 +2766,14 @@ class Artikel implements RoutableInterface
                 $variBoxMatrixImages = $this->getDB()->getObjects(
                     'SELECT teigenschaftwertpict.cPfad, teigenschaft.kEigenschaft, teigenschaftwertpict.kEigenschaftWert
                         FROM teigenschaft
-                        JOIN teigenschaftwert 
+                        JOIN teigenschaftwert
                             ON teigenschaftwert.kEigenschaft = teigenschaft.kEigenschaft
-                        JOIN teigenschaftwertpict 
+                        JOIN teigenschaftwertpict
                             ON teigenschaftwertpict.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
-                        LEFT JOIN teigenschaftsichtbarkeit 
+                        LEFT JOIN teigenschaftsichtbarkeit
                             ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
                             AND teigenschaftsichtbarkeit.kKundengruppe = :cgid
-                        LEFT JOIN teigenschaftwertsichtbarkeit 
+                        LEFT JOIN teigenschaftwertsichtbarkeit
                             ON teigenschaftwert.kEigenschaftWert = teigenschaftwertsichtbarkeit.kEigenschaftWert
                             AND teigenschaftwertsichtbarkeit.kKundengruppe = :cgid
                         WHERE teigenschaft.kArtikel = :pid
@@ -2786,20 +2788,20 @@ class Artikel implements RoutableInterface
                 $variBoxMatrixImages = $this->getDB()->getObjects(
                     'SELECT teigenschaftwertpict.cPfad, teigenschaft.kEigenschaft, teigenschaftwertpict.kEigenschaftWert
                         FROM teigenschaft
-                        JOIN teigenschaftwert 
+                        JOIN teigenschaftwert
                             ON teigenschaftwert.kEigenschaft = teigenschaft.kEigenschaft
-                        JOIN teigenschaftwertpict 
+                        JOIN teigenschaftwertpict
                             ON teigenschaftwertpict.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
-                        LEFT JOIN teigenschaftsichtbarkeit 
+                        LEFT JOIN teigenschaftsichtbarkeit
                             ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
                             AND teigenschaftsichtbarkeit.kKundengruppe = :cgid
-                        LEFT JOIN teigenschaftwertsichtbarkeit 
+                        LEFT JOIN teigenschaftwertsichtbarkeit
                             ON teigenschaftwert.kEigenschaftWert = teigenschaftwertsichtbarkeit.kEigenschaftWert
                             AND teigenschaftwertsichtbarkeit.kKundengruppe = :cgid
                         WHERE teigenschaft.kArtikel = :pid
                             AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
                             AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
-                        ORDER BY teigenschaft.nSort, teigenschaft.cName, 
+                        ORDER BY teigenschaft.nSort, teigenschaft.cName,
                                  teigenschaftwert.nSort, teigenschaftwert.cName',
                     ['pid' => $this->kArtikel, 'cgid' => $customerGroupID]
                 );
@@ -2851,18 +2853,18 @@ class Artikel implements RoutableInterface
         $childProperties = $this->getDB()->getObjects(
             'SELECT tartikel.kArtikel, teigenschaft.kEigenschaft, teigenschaftwert.kEigenschaftWert
                 FROM tartikel
-                JOIN teigenschaftkombiwert 
+                JOIN teigenschaftkombiwert
                     ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
-                JOIN teigenschaft 
-                    ON teigenschaft.kEigenschaft = teigenschaftkombiwert.kEigenschaft 
-                JOIN teigenschaftwert 
-                    ON teigenschaftwert.kEigenschaftWert = teigenschaftkombiwert.kEigenschaftWert 
-                LEFT JOIN tartikelsichtbarkeit 
+                JOIN teigenschaft
+                    ON teigenschaft.kEigenschaft = teigenschaftkombiwert.kEigenschaft
+                JOIN teigenschaftwert
+                    ON teigenschaftwert.kEigenschaftWert = teigenschaftkombiwert.kEigenschaftWert
+                LEFT JOIN tartikelsichtbarkeit
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                     AND tartikelsichtbarkeit.kKundengruppe = :cgid
-                WHERE tartikel.kVaterArtikel = :pid 
+                WHERE tartikel.kVaterArtikel = :pid
                 AND tartikelsichtbarkeit.kArtikel IS NULL
-                ORDER BY tartikel.kArtikel ASC, teigenschaft.nSort ASC, 
+                ORDER BY tartikel.kArtikel ASC, teigenschaft.nSort ASC,
                          teigenschaft.cName, teigenschaftwert.nSort ASC, teigenschaftwert.cName',
             ['cgid' => $customerGroupID, 'pid' => $this->kArtikel]
         );
@@ -3040,10 +3042,10 @@ class Artikel implements RoutableInterface
         $varDetailPrices = $this->getDB()->getObjects(
             'SELECT tartikel.kArtikel, teigenschaftkombiwert.kEigenschaft, teigenschaftkombiwert.kEigenschaftWert
                 FROM teigenschaftkombiwert
-                JOIN tartikel 
+                JOIN tartikel
                     ON tartikel.kVaterArtikel = :pid
                     AND tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
-                LEFT JOIN tartikelsichtbarkeit 
+                LEFT JOIN tartikelsichtbarkeit
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                     AND tartikelsichtbarkeit.kKundengruppe = :cgid
                 ' . Preise::getPriceJoinSql($customerGroupID) . '
@@ -3128,11 +3130,11 @@ class Artikel implements RoutableInterface
     private function getLocalizationSQL(int $productID): SqlObject
     {
         $lang = new SqlObject();
-        if ($this->kSprache > 0 && !LanguageHelper::isDefaultLanguageActive()) {
+        if ($this->kSprache > 0 && !LanguageHelper::isDefaultLanguageActive(false, $this->kSprache)) {
             $lang->setSelect('tartikelsprache.cName AS cName_spr, tartikelsprache.cBeschreibung AS cBeschreibung_spr,
                               tartikelsprache.cKurzBeschreibung AS cKurzBeschreibung_spr, ');
             $lang->setJoin(' LEFT JOIN tartikelsprache
-                                   ON tartikelsprache.kArtikel = :pid 
+                                   ON tartikelsprache.kArtikel = :pid
                                    AND tartikelsprache.kSprache = :lid');
             $lang->addParam(':pid', $productID);
             $lang->addParam(':lid', $this->kSprache);
@@ -3394,7 +3396,7 @@ class Artikel implements RoutableInterface
             $tmpProduct->fNettoPreis       = null;
         }
         $this->holPreise($customerGroupID, $tmpProduct);
-        $this->initLanguageID($this->kSprache, LanguageHelper::getIsoFromLangID($this->kSprache)->cISO);
+        $this->initLanguageID($this->kSprache, LanguageHelper::getIsoFromLangID($this->kSprache)->cISO ?? null);
         if ($this->getOption('nArtikelAttribute', 0) === 1) {
             $this->holArtikelAttribute();
         }
@@ -3504,9 +3506,8 @@ class Artikel implements RoutableInterface
         if ($noCache === false) {
             // oVariationKombiKinderAssoc_arr can contain a lot of product objects, prices may depend on customers
             // so do not save to cache
-            $toSave                                 = clone $this;
-            $toSave->oVariationKombiKinderAssoc_arr = null;
-            $toSave->Preise                         = $basePrice;
+            $toSave         = clone $this;
+            $toSave->Preise = $basePrice;
             if (\COMPRESS_DESCRIPTIONS === true) {
                 $toSave->cBeschreibung    = \gzcompress($toSave->cBeschreibung, \COMPRESSION_LEVEL);
                 $toSave->cKurzbezeichnung = \gzcompress($toSave->cKurzbezeichnung, \COMPRESSION_LEVEL);
@@ -3578,9 +3579,19 @@ class Artikel implements RoutableInterface
             return null;
         }
         foreach (\get_object_vars($product) as $k => $v) {
-            if ($k !== 'db') {
+            if ($k !== 'db' && $k !== 'customerGroup') {
                 $this->$k = $v;
             }
+        }
+        $this->conf    = $this->getConfig();
+        $this->taxData = $this->getShippingAndTaxData();
+        if ($this->compressed === true) {
+            $this->cBeschreibung    = \gzuncompress($this->cBeschreibung);
+            $this->cKurzbezeichnung = \gzuncompress($this->cKurzbezeichnung);
+            $this->compressed       = false;
+        }
+        if ($this->favourableShippingID > 0) {
+            $this->oFavourableShipping = new Versandart($this->favourableShippingID);
         }
         $maxDiscount = $this->getDiscount($customerGroupID, $this->kArtikel);
         if ((int)$this->conf['global']['global_sichtbarkeit'] === 2
@@ -4095,6 +4106,36 @@ class Artikel implements RoutableInterface
      */
     private function getSearchSpecialOverlay(): self
     {
+        $customBadge       = new \stdClass();
+        $tmp               = \explode(
+            ';',
+            $this->getFunctionalAttributevalue(\FKT_ATTRIBUT_CUSTOM_ITEM_BADGE) ?? ''
+        );
+        $customBadge->text = $tmp[0] ?? '';
+        if ($customBadge->text !== '') {
+            $customBadge->text  = Shop::Lang()->get($customBadge->text, 'custom');
+            $customBadge->class = '';
+            $customBadge->style = '';
+            $textColor          = $tmp[1] ?? '';
+            $bgColor            = $tmp[2] ?? '';
+
+            if (\str_starts_with($textColor, '#')) {
+                $customBadge->style .= 'color:' . $textColor . ';';
+            } else {
+                $customBadge->class .= ' text-' . $textColor;
+            }
+            if (\str_starts_with($bgColor, '#')) {
+                $customBadge->style .= 'border-right-color: ' . $bgColor . ';background-color:' . $bgColor . ';';
+            } else {
+                $customBadge->class .= ' bg-' . $bgColor;
+            }
+            $overlay = new Overlay(\SEARCHSPECIALS_CUSTOMBADGE, Shop::getLanguageID());
+            $overlay->setPriority(0);
+            $overlay->setCssAndText($customBadge);
+            $this->oSuchspecialBild = $overlay;
+            return $this;
+        }
+
         $searchSpecials = SearchSpecial::getAll($this->kSprache);
         // Suchspecialbildoverlay
         // Kleinste Prio und somit die Wichtigste, steht immer im Element 0 vom Array (nPrio ASC)
@@ -6112,6 +6153,7 @@ class Artikel implements RoutableInterface
 
     /**
      * @return int|null
+     * @noinspection PhpHierarchyChecksInspection
      */
     public function getID()
     {

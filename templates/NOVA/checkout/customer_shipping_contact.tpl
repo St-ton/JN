@@ -39,7 +39,8 @@
                                         options=[
                                             "tel", "{$prefix}-{$name}-mobil", "{$prefix}[{$name}][mobil]",
                                             {$Lieferadresse->cMobil|default:null}, {lang key='mobile' section='account data'},
-                                            $Einstellungen.kunden.lieferadresse_abfragen_mobil, null, "shipping mobile tel"
+                                            $Einstellungen.kunden.lieferadresse_abfragen_mobil, null,
+                                            "shipping mobile tel", null, 30
                                         ]
                                     }
                                 {/block}
@@ -56,7 +57,8 @@
                                         options=[
                                             "tel", "{$prefix}-{$name}-tel", "{$prefix}[{$name}][tel]",
                                             {$Lieferadresse->cTel|default:null}, {lang key='tel' section='account data'},
-                                            $Einstellungen.kunden.lieferadresse_abfragen_tel, null, "shipping home tel"
+                                            $Einstellungen.kunden.lieferadresse_abfragen_tel, null, "shipping home tel",
+                                            null, 45
                                         ]
                                     }
                                 {/block}
@@ -69,7 +71,8 @@
                                         options=[
                                             "tel", "{$prefix}-{$name}-fax", "{$prefix}[{$name}][fax]",
                                             {$Lieferadresse->cFax|default:null}, {lang key='fax' section='account data'},
-                                            $Einstellungen.kunden.lieferadresse_abfragen_fax, null, "shipping fax tel"
+                                            $Einstellungen.kunden.lieferadresse_abfragen_fax, null, "shipping fax tel",
+                                            null, 45
                                         ]
                                     }
                                 {/block}

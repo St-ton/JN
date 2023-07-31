@@ -79,15 +79,15 @@ class OrderCompleteController extends CheckoutController
             } elseif (!isset($_SESSION['kommentar'])) {
                 $_SESSION['kommentar'] = '';
             }
-            if (SimpleMail::checkBlacklist($_SESSION['Kunde']->cMail)) {
-                return new RedirectResponse($linkHelper->getStaticRoute('bestellvorgang.php') . '?mailBlocked=1', 303);
-            }
             if (!$this->isOrderComplete()) {
                 return new RedirectResponse(
                     $linkHelper->getStaticRoute('bestellvorgang.php')
                     . '?fillOut=' . $this->getErorCode(),
                     303
                 );
+            }
+            if (isset($_SESSION['Kunde']->cMail) === true && SimpleMail::checkBlacklist($_SESSION['Kunde']->cMail)) {
+                return new RedirectResponse($linkHelper->getStaticRoute('bestellvorgang.php') . '?mailBlocked=1', 303);
             }
             if ($cart->removeParentItems() > 0) {
                 $this->alertService->addWarning(
@@ -203,17 +203,17 @@ class OrderCompleteController extends CheckoutController
                         && $_POST['inhaber'])
                 ) {
                     $_SESSION['Zahlungsart']->ZahlungsInfo->cBankName =
-                        Text::htmlentities(\stripslashes($_POST['bankname']), \ENT_QUOTES);
+                        Text::htmlentities(\stripslashes($_POST['bankname'] ?? ''), \ENT_QUOTES);
                     $_SESSION['Zahlungsart']->ZahlungsInfo->cKontoNr  =
-                        Text::htmlentities(\stripslashes($_POST['kontonr']), \ENT_QUOTES);
+                        Text::htmlentities(\stripslashes($_POST['kontonr'] ?? ''), \ENT_QUOTES);
                     $_SESSION['Zahlungsart']->ZahlungsInfo->cBLZ      =
-                        Text::htmlentities(\stripslashes($_POST['blz']), \ENT_QUOTES);
+                        Text::htmlentities(\stripslashes($_POST['blz'] ?? ''), \ENT_QUOTES);
                     $_SESSION['Zahlungsart']->ZahlungsInfo->cIBAN     =
-                        Text::htmlentities(\stripslashes($_POST['iban']), \ENT_QUOTES);
+                        Text::htmlentities(\stripslashes($_POST['iban'] ?? ''), \ENT_QUOTES);
                     $_SESSION['Zahlungsart']->ZahlungsInfo->cBIC      =
-                        Text::htmlentities(\stripslashes($_POST['bic']), \ENT_QUOTES);
+                        Text::htmlentities(\stripslashes($_POST['bic'] ?? ''), \ENT_QUOTES);
                     $_SESSION['Zahlungsart']->ZahlungsInfo->cInhaber  =
-                        Text::htmlentities(\stripslashes($_POST['inhaber']), \ENT_QUOTES);
+                        Text::htmlentities(\stripslashes($_POST['inhaber'] ?? ''), \ENT_QUOTES);
                     $hasAdditionalInformation                         = true;
                 }
             }

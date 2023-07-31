@@ -125,7 +125,7 @@ export default {
                 cannotConnect:       'Keine Verbindung möglich',
                 shopExists:          'Es existiert bereits eine Shopinstallation in dieser Datenbank',
                 noCredentials:       'Keine Zugangsdaten übermittelt',
-                minMySQLVersion:     'Bitte aktualisieren Sie ihre MySQL Version auf 5.7 oder höher'
+                minMySQLVersion:     'Bitte aktualisieren Sie Ihre MySQL Version auf 5.7 oder höher'
             },
             en: {
                 hostPrep:            'Host',

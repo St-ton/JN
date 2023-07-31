@@ -118,8 +118,7 @@ final class LinkAdmin
                     \LINKTYP_NEWSLETTERARCHIV,
                     \LINKTYP_GRATISGESCHENK,
                     \LINKTYP_AUSWAHLASSISTENT,
-                    \LINKTYP_BATTERIEGESETZ_HINWEISE,
-                    true
+                    \LINKTYP_BATTERIEGESETZ_HINWEISE
                 ],
                 true
             )) {
@@ -129,11 +128,11 @@ final class LinkAdmin
                 return $val->nLinkart === $specialPage->nLinkart;
             });
             if ($hit === null) {
-                $missingTypes->add($specialPage);
+                $missingTypes->add((object)['nLinkart' => $specialPage->nLinkart, 'cName' => $specialPage->cName]);
             }
         }
 
-        return $missingTypes;
+        return $missingTypes->unique();
     }
 
     /**

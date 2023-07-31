@@ -34,7 +34,7 @@
                     </button>
                 </div>
                 <input type="number"
-                       class="form-control rounded-pill"
+                       class="form-control"
                        id="question-{$question->getID()}"
                        placeholder=""
                        data-setup-summary-id="question-{$question->getID()}"

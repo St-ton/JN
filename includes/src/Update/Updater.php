@@ -329,6 +329,7 @@ class Updater
         Shop::Container()->getCache()->flushAll();
         $ms = new MinifyService();
         $ms->flushCache();
+        $this->db->query('UPDATE tglobals SET dLetzteAenderung = NOW()');
     }
 
     protected function updateTemplateConfig(): void

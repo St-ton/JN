@@ -3,6 +3,7 @@
 namespace JTL\Network;
 
 use Exception;
+use JTL\Cache\JTLCacheInterface;
 use JTL\Helpers\Request;
 use JTL\Nice;
 use JTLShop\SemVer\Version;
@@ -20,19 +21,12 @@ final class JTLApi
     public const URI_VERSION = 'https://api.jtl-shop.de';
 
     /**
-     * @var array
-     */
-    private array $session;
-
-    /**
      * JTLApi constructor.
-     *
-     * @param array $session
-     * @param Nice  $nice
+     * @param Nice              $nice
+     * @param JTLCacheInterface $cache
      */
-    public function __construct(array &$session, private readonly Nice $nice)
+    public function __construct(private readonly Nice $nice, private readonly JTLCacheInterface $cache)
     {
-        $this->session = &$session;
     }
 
     /**
@@ -40,19 +34,25 @@ final class JTLApi
      */
     public function getSubscription(): ?stdClass
     {
-        if (!isset($this->session['rs']['subscription'])) {
-            $uri          = self::URI . '/check/subscription';
-            $subscription = $this->call($uri, [
-                'key'    => $this->nice->getAPIKey(),
-                'domain' => $this->nice->getDomain(),
-            ]);
-
-            $this->session['rs']['subscription'] = (isset($subscription->kShop) && $subscription->kShop > 0)
-                ? $subscription
-                : null;
+        $cacheID = 'rs_subscriptions';
+        $cached  = $this->cache->get($cacheID);
+        if ($cached !== false) {
+            return $cached;
         }
+        $uri          = self::URI . '/check/subscription';
+        $subscription = $this->call($uri, [
+            'key'    => $this->nice->getAPIKey(),
+            'domain' => $this->nice->getDomain(),
+        ]);
+        if (!\is_object($subscription)) {
+            return null;
+        }
+        $data = (isset($subscription->kShop) && $subscription->kShop > 0)
+            ? $subscription
+            : null;
+        $this->cache->set($cacheID, $data, [\CACHING_GROUP_CORE], 60 * 60);
 
-        return $this->session['rs']['subscription'];
+        return $subscription;
     }
 
     /**
@@ -62,17 +62,23 @@ final class JTLApi
      */
     public function getAvailableVersions(bool $includingDev = false): ?array
     {
-        if (!isset($this->session['rs']['versions'])) {
-            $url = self::URI_VERSION . '/versions';
-            if ($includingDev === true) {
-                $url .= '-dev';
-            }
-            $this->session['rs']['versions'] = $this->call($url);
+        $cacheID = 'rs_versions';
+        $cached  = $this->cache->get($cacheID);
+        if ($cached !== false) {
+            return $cached;
         }
+        $url = self::URI_VERSION . '/versions';
+        if ($includingDev === true) {
+            $url .= '-dev';
+        }
+        $versions = $this->call($url);
+        if (!\is_object($versions)) {
+            return null;
+        }
+        $data = (array)$versions;
+        $this->cache->set($cacheID, $data, [\CACHING_GROUP_CORE], 60 * 60);
 
-        return $this->session['rs']['versions'] === null
-            ? null
-            : (array)$this->session['rs']['versions'];
+        return $data;
     }
 
     /**

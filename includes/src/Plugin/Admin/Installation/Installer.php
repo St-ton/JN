@@ -583,7 +583,8 @@ final class Installer
         $srcFileCurrent = $prefix . PluginInterface::FILE_INVENTORY_CURRENT;
         $srcFileOld     = $prefix . PluginInterface::FILE_INVENTORY_OLD;
         $srcFileCustom  = $prefix . PluginInterface::FILE_INVENTORY_OLD_CUSTOM;
-        $resultFile     = $prefix . '.deleted_files_ ' . $this->plugin->getCurrentVersion()->getOriginalVersion() . '.txt';
+        $resultFile     = $prefix . '.deleted_files_' . $this->plugin->getCurrentVersion()->getOriginalVersion()
+            . '.txt';
         if (!$fs->fileExists($srcFileCurrent) || !$fs->fileExists($srcFileOld)) {
             return;
         }

@@ -1,4 +1,4 @@
-<div class="tab-pane fade" id="upload">
+<div class="tab-pane fade{if $cTab === 'upload'} active show{/if}" id="upload">
     <form enctype="multipart/form-data">
         {$jtl_token}
         <div class="form-group">
@@ -33,6 +33,7 @@
                     wasActiveFehlerhaft = $('#fehlerhaft').hasClass('active');
                 $('#verfuegbar').replaceWith(response.html.available);
                 $('#fehlerhaft').replaceWith(response.html.erroneous);
+                $('#aktiviert').replaceWith(response.html.enabled);
                 $('a[href="#fehlerhaft"]').find('.badge').html(response.html.erroneous_count);
                 $('a[href="#verfuegbar"]').find('.badge').html(response.html.available_count);
                 if (wasActiveFehlerhaft) {

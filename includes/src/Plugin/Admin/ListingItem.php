@@ -301,6 +301,37 @@ class ListingItem implements JsonSerializable
     }
 
     /**
+     * @return array
+     */
+    public function getModifiedFiles(): array
+    {
+        if (!$this->supportsHashCheck()) {
+            return [];
+        }
+        $modified = [];
+        $items    = \array_filter(\explode(
+            \PHP_EOL,
+            \file_get_contents($this->getPath() . PluginInterface::FILE_HASHES)
+        ));
+        foreach ($items as $item) {
+            [$file, $hash] = \explode('###', $item);
+            if (\md5_file($this->getPath() . $file) !== $hash) {
+                $modified[] = $file;
+            }
+        }
+
+        return $modified;
+    }
+
+    /**
+     * @return bool
+     */
+    public function supportsHashCheck(): bool
+    {
+        return \file_exists($this->getPath() . PluginInterface::FILE_HASHES);
+    }
+
+    /**
      * @return bool
      */
     public function isShop4Compatible(): bool

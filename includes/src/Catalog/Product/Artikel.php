@@ -4049,12 +4049,20 @@ class Artikel implements RoutableInterface
             && isset($this->Preise->fVKNetto, $this->conf['global']['global_preis0'])
             && $this->getFunctionalAttributevalue(\FKT_ATTRIBUT_VOUCHER_FLEX) === null
         ) {
-            $this->getCustomerPrice(
-                $this->kKundengruppe ?? $this->customerGroup->getID(),
-                Frontend::getCustomer()->getID()
-            );
-            if ($this->Preise->fVKNetto <= 0.0) {
+            $customerID = Frontend::getCustomer()->getID();
+            if (!$this->Preise->customerHasCustomPriceForProduct($customerID, $this->kArtikel)) {
                 $this->inWarenkorbLegbar = \INWKNICHTLEGBAR_PREISAUFANFRAGE;
+            } else {
+                $preise = new Preise(
+                    Frontend::getCustomer()->getGroupID(),
+                    $this->kArtikel,
+                    $customerID,
+                    $this->kSteuerklasse,
+                    $this->getDB()
+                );
+                if ($preise->fVKNetto === 0.0) {
+                    $this->inWarenkorbLegbar = \INWKNICHTLEGBAR_PREISAUFANFRAGE;
+                }
             }
         }
         if (!empty($this->FunktionsAttribute[\FKT_ATTRIBUT_UNVERKAEUFLICH])) {

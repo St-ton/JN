@@ -30,17 +30,11 @@ class CouponStatsController extends AbstractBackendController
         $this->getText->loadAdminLocale('pages/kuponstatistik');
 
         $step    = 'kuponstatistik_uebersicht';
-        $cWhere  = '';
         $coupons = $this->db->getArrays('SELECT kKupon, cName FROM tkupon ORDER BY cName DESC');
         $endDate = DateTime::createFromFormat('Y-m-j', \date('Y-m-j'));
         if (isset($_POST['formFilter']) && $_POST['formFilter'] > 0 && Form::validateToken()) {
             if (Request::postInt('kKupon') > -1) {
                 $couponID = Request::postInt('kKupon');
-                $cWhere   = '(SELECT kKupon 
-                        FROM tkuponbestellung 
-                        WHERE tkuponbestellung.kBestellung = tbestellung.kBestellung 
-                        LIMIT 0, 1
-                    ) = ' . $couponID . ' AND';
                 foreach ($coupons as $key => $value) {
                     if ((int)$value['kKupon'] === $couponID) {
                         $coupons[$key]['aktiv'] = 1;
@@ -144,11 +138,9 @@ class CouponStatsController extends AbstractBackendController
             ? \number_format(100 / $orderCount * $countUsedCoupons, 2)
             : 0;
         $overview                = [
-            'nCountUsedCoupons'        => $countUsedCoupons,
             'nCountUsedCouponsOrder'   => $countUsedCouponsOrder,
             'nCountCustomers'          => $countCustomers,
             'nCountOrder'              => $orderCount,
-            'nPercentCountUsedCoupons' => $percentCountUsedCoupons,
             'nShoppingCartAmountAll'   => Preise::getLocalizedPriceWithoutFactor($shoppingCartAmountAll),
             'nCouponAmountAll'         => Preise::getLocalizedPriceWithoutFactor($couponAmountAll)
         ];

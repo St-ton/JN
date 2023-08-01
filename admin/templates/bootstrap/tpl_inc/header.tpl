@@ -13,6 +13,7 @@
     {$admin_css}
     {$cm = $shopURL|cat:'/'|cat:$smarty.const.PFAD_CODEMIRROR}
     <link type="text/css" rel="stylesheet" href="{$cm}lib/codemirror.css{$urlPostfix}">
+    <link type="text/css" rel="stylesheet" href="{$cm}theme/ayu-dark.css{$urlPostfix}">
     <link type="text/css" rel="stylesheet" href="{$cm}addon/hint/show-hint.css{$urlPostfix}">
     <link type="text/css" rel="stylesheet" href="{$cm}addon/display/fullscreen.css{$urlPostfix}">
     <link type="text/css" rel="stylesheet" href="{$cm}addon/scroll/simplescrollbars.css{$urlPostfix}">

@@ -2912,7 +2912,7 @@ hr,
 .form-counter .btn:hover,
 .form-counter .btn:focus {
   background-color: var(--input-bg);
-  color: var(--link-color);
+  color: var(--body-color);
 }
 .brand-logo {
   display: var(--brand-logo-display);
@@ -2951,7 +2951,7 @@ hr,
   color: var(--body-color);
 }
 .fa-info-circle {
-  color: var(--link-color);
+  color: var(--body-color);
 }
 .alert .fa-info-circle {
   color: var(--icon-color);

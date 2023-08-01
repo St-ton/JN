@@ -924,7 +924,7 @@ msgid "produktfrage_abfragen_captcha_name"
 msgstr "Enable spam protection"
 
 msgid "produktfrage_abfragen_captcha_desc"
-msgstr "Specify whether to enable the spam protection for this form. For this purpose, you may have to configure the spam protection of JTL-Shop in the global settings first."
+msgstr "Specify whether to enable the spam protection for this form. Requirement is the plugin 'Google reCaptcha V2' from the JTL Extension Store."
 
 msgid "benachrichtigung_nutzen_name"
 msgstr "Allow availability requests"
@@ -954,7 +954,7 @@ msgid "benachrichtigung_abfragen_captcha_name"
 msgstr "Enable spam protection"
 
 msgid "benachrichtigung_abfragen_captcha_desc"
-msgstr "Specify whether to enable the spam protection for notification requests. For this purpose, you may have to configure the spam protection of JTL-Shop in the global settings first."
+msgstr "Specify whether to enable the spam protection for notification requests. Requirement is the plugin 'Google reCaptcha V2' from the JTL Extension Store."
 
 msgid "benachrichtigung_min_lagernd_name"
 msgstr "Notification when minimum stock level percentage is reached"
@@ -1158,7 +1158,7 @@ msgid "registrieren_captcha_name"
 msgstr "Enable spam protection"
 
 msgid "registrieren_captcha_desc"
-msgstr "Specify whether to enable the spam protection for this form. For this purpose, you may have to configure the spam protection of JTL-Shop in the global settings first."
+msgstr "Specify whether to enable the spam protection for this form. Requirement is the plugin 'Google reCaptcha V2' from the JTL Extension Store."
 
 msgid "kundenlogin_max_loginversuche_name"
 msgstr "Show CAPTCHA after X unsuccessful login attempts"
@@ -2016,7 +2016,7 @@ msgid "kontakt_abfragen_captcha_name"
 msgstr "Enable spam protection"
 
 msgid "kontakt_abfragen_captcha_desc"
-msgstr "Specify whether to enable the spam protection for this form. For this purpose, you may have to configure the spam protection of JTL-Shop in the global settings first."
+msgstr "Specify whether to enable the spam protection for this form. Requirement is the plugin 'Google reCaptcha V2' from the JTL Extension Store."
 
 msgid "rss_nutzen_name"
 msgstr "Use RSS feed"
@@ -2340,7 +2340,7 @@ msgid "newsletter_sicherheitscode_name"
 msgstr "Enable spam protection"
 
 msgid "newsletter_sicherheitscode_desc"
-msgstr "Specify whether to enable the spam protection for this form. For this purpose, you may have to configure the spam protection of JTL-Shop in the global settings first."
+msgstr "Specify whether to enable the spam protection for this form. Requirement is the plugin 'Google reCaptcha V2' from theJTL Extension Store."
 
 msgid "newsletter_send_delay_name"
 msgstr "Sending interval (hours)"
@@ -3051,7 +3051,7 @@ msgid "forgot_password_captcha_name"
 msgstr "Enable spam protection"
 
 msgid "forgot_password_captcha_desc"
-msgstr "Specify whether to enable the spam protection for the fogot password form. For this purpose, you may have to configure the spam protection of JTL-Shop in the global settings first."
+msgstr "Specify whether to enable the spam protection for the fogot password form. Requirement is the plugin 'Google reCaptcha V2' from the JTL Extension Store."
 
 msgid "configgroup_1_routing"
 msgstr "Routing <br><span class=\"text-danger\">"

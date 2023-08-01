@@ -1,4 +1,41 @@
 
+.overwriteBootstrapClasses(@colors) {
+  each(@colors, {
+    .text-@{key} {
+      color: @value !important;
+    }
+    .badge-@{key} {
+      background-color: @value;
+    }
+    .alert-@{key} {
+      background-color: @value;
+      border-color: @value;
+    }
+    .btn-@{key} {
+      background-color: @value;
+      border-color: @value;
+    }
+  });
+}
+
+:root,
+:root.theme-light {
+  .theme-light();
+  .overwriteBootstrapClasses(.themeColorsLight());
+}
+
+:root.theme-dark {
+  .theme-dark();
+  .overwriteBootstrapClasses(.themeColorsDark());
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    .theme-dark();
+    .overwriteBootstrapClasses(.themeColorsDark());
+  }
+}
+
 body, html {
   background-color: var(--body-bg);
   color: var(--body-color);

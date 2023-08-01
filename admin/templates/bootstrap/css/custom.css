@@ -3350,6 +3350,12 @@ hr,
   background-color: var(--daterangepicker-accent-color);
   color: var(--body-color);
 }
+.daterangepicker td.available:hover,
+.daterangepicker th.available:hover {
+  background-color: var(--daterangepicker-accent-color);
+  border-color: transparent;
+  color: inherit;
+}
 .dropdown-item.active,
 .dropdown-item:active,
 .dropdown-item:hover,

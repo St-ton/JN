@@ -334,6 +334,13 @@ ini_set('display_errors', 0);" . "\n";
                     $res->error = true;
                     $res->msg   = 'shopExists';
                 }
+                $mysqlVersion = $db->getSingleObject(
+                    "SHOW VARIABLES LIKE 'innodb_version'"
+                )->Value ?? '';
+                if ($mysqlVersion !== '' && \version_compare($mysqlVersion, '5.7', '<')) {
+                    $res->error = true;
+                    $res->msg   = 'minMySQLVersion';
+                }
             } catch (Exception $e) {
                 $res->error = true;
                 $res->msg   = $e->getMessage();

@@ -83,6 +83,11 @@ class Cart
     public $favourableShippingString = '';
 
     /**
+     * @var object[]
+     */
+    public array $OrderAttributes = [];
+
+    /**
      * @var array
      */
     public static array $updatedPositions = [];

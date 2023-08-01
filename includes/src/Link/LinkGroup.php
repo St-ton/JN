@@ -197,6 +197,16 @@ final class LinkGroup implements LinkGroupInterface
     /**
      * @inheritdoc
      */
+    public function getHierarchy(): Collection
+    {
+        return $this->links->filter(static function (LinkInterface $link) {
+            return $link->getParent() === 0;
+        });
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function setLinks(Collection $links): void
     {
         $this->links = $links;

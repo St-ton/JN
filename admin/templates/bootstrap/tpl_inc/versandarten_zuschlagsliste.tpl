@@ -35,7 +35,7 @@
                             <td class="zip-badge-row">{include file="snippets/zuschlagliste_plz_badges.tpl"}</td>
                             <td class="text-center">
                                 <div class="btn-group">
-                                    <button class="btn btn-sm surcharge-remove delete-confirm delete-confirm-io"
+                                    <button class="btn btn-link btn-sm surcharge-remove delete-confirm delete-confirm-io"
                                             data-surcharge-id="{$surcharge->getID()}"
                                             data-toggle="tooltip"
                                             data-modal-body="{__('additionalFeeDelete')}: {$surcharge->getTitle()}"

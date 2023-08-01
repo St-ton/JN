@@ -27,7 +27,10 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <img src="{$templateBaseURL}gfx/JTL-Shop-Logo-rgb.png" width="101" height="32" alt="JTL-Shop">
+                    <img src="{$templateBaseURL}gfx/JTL-Shop-Logo-rgb.png" width="101" height="32" alt="JTL-Shop"
+                         class="brand-logo">
+                    <img src="{$templateBaseURL}gfx/JTL-Shop-Logo-rgb-white.png" width="101" height="32" alt="JTL-Shop"
+                         class="brand-logo-white">
                     <span class="h1 mt-3">{__('setupAssistant')}</span>
 
                     <div class="setup-steps steps">

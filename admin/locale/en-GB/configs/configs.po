@@ -2846,6 +2846,9 @@ msgstr "Specify the method that is to be used for the cache. This is partly dete
 msgid "caching_redis_host_name"
 msgstr "Redis host"
 
+msgid "caching_redis_user_name"
+msgstr "Redis user"
+
 msgid "caching_redis_host_desc"
 msgstr "If you have selected the Redis method, define the host/socket here."
 
@@ -2858,8 +2861,11 @@ msgstr "If you have selected the Redis method, specify the port here. If you are
 msgid "caching_redis_db_name"
 msgstr "Redis DB"
 
+msgid "caching_redis_user_desc"
+msgstr "If you have selected the Redis method, specify the user name here. Leave the field empty when not using a user name for authentication."
+
 msgid "caching_redis_db_desc"
-msgstr "If you have selected the Redis method, specify the database number here. Leave the field empty for Default."
+msgstr "If you have selected the Redis method, specify the database number here. Leave the field empty for default."
 
 msgid "caching_redis_pass_name"
 msgstr "Redis password"

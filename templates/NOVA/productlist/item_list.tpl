@@ -24,11 +24,9 @@
                             {else}
                                 {assign var=alt value=$Artikel->cName}
                             {/if}
-                            {if isset($Artikel->oSuchspecialBild)}
-                                {block name='productlist-item-list-include-searchspecials'}
-                                    {include file='snippets/ribbon.tpl'}
-                                {/block}
-                            {/if}
+                            {block name='productlist-item-list-include-searchspecials'}
+                                {include file='snippets/ribbon.tpl'}
+                            {/block}
                             {block name='productlist-item-box-include-productlist-actions'}
                                 <div class="productbox-quick-actions productbox-onhover d-none d-md-flex">
                                     {include file='productlist/productlist_actions.tpl'}

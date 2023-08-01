@@ -13,6 +13,7 @@ use JTL\Helpers\Text;
 use JTL\Mail\Mail\Attachment;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
+use JTL\Services\Container;
 use SmartyException;
 use stdClass;
 use function Functional\first;
@@ -851,9 +852,6 @@ class Statusmail
                 $mail->setAttachments([$data->mail->attachment]);
             }
             $sent = $mailer->send($mail);
-            foreach ($mail->getAttachments() as $attachment) {
-                \unlink($attachment->getFullPath());
-            }
         }
 
         return $sent;

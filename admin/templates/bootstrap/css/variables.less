@@ -1,13 +1,43 @@
 
+@primary:    #5cbcf6;
+@secondary:  #435a6b;
+@dark-gray:  #bdbdbd;
+@success:    #0f9d48;
+@info:       #9cadbc;
+@warning:    #f68b25;
+@danger:     #e10505;
+@light-gray: #f5f7fa;
+
+.themeColorsLight() {
+  primary:    @primary;
+  secondary:  @secondary;
+  dark-gray:  @dark-gray;
+  success:    @success;
+  info:       @info;
+  warning:    @warning;
+  danger:     @danger;
+  light-gray: @light-gray;
+};
+
+.themeColorsDark() {
+  primary:    darken(@primary, 20%, 'relative');
+  secondary:  darken(@secondary, 20%, 'relative');
+  dark-gray:  darken(@dark-gray, 20%, 'relative');
+  success:    darken(@success, 20%, 'relative');
+  info:       darken(@info, 20%, 'relative');
+  warning:    darken(@warning, 20%, 'relative');
+  danger:     darken(@danger, 20%, 'relative');
+  light-gray: darken(@light-gray, 20%, 'relative');
+};
+
+@is-dark-theme: 0;
 @brandbar-color: #fff;
 @sidebar-color: #3098d6;
 @sidebar-highlight-color: #7dcdfe;
 @brand-primary-color: #5cbcf6;
 @sidebar-accent-color: #0b6aa2;
 //Hover: #88cef8;
-
 @sidebar-width: 256px;
-
 
 .theme-light {
   --body-bg: #f5f7fa;
@@ -71,17 +101,39 @@
   --custom-select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' fill='%2385adcc' x='0px' y='0px' style='enable-background:new 0 0 32 32;' xml:space='preserve'%3E%3Cpolygon  points='16,18.2 11.8,14.6 12.4,13.8 16,16.8 19.6,13.8 20.2,14.6 '/%3E%3C/svg%3E") no-repeat right center/auto 100%;
 }
 
+.overwriteBootstrapClasses(@colors) {
+  each(@colors, {
+    .text-@{key} {
+      color: @value !important;
+    }
+    .badge-@{key} {
+      background-color: @value;
+    }
+    .alert-@{key} {
+      background-color: @value;
+      border-color: @value;
+    }
+    .btn-@{key} {
+      background-color: @value;
+      border-color: @value;
+    }
+  });
+}
+
 :root,
   :root.theme-light {
     .theme-light();
+    .overwriteBootstrapClasses(.themeColorsLight());
   }
 
   :root.theme-dark {
     .theme-dark();
+    .overwriteBootstrapClasses(.themeColorsDark());
   }
 
   @media (prefers-color-scheme: dark) {
     :root {
       .theme-dark();
+      .overwriteBootstrapClasses(.themeColorsDark());
     }
   }

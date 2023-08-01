@@ -3346,6 +3346,10 @@ hr,
   color: var(--body-color);
   border-color: var(--body-color);
 }
+.daterangepicker .ranges li:hover {
+  background-color: var(--daterangepicker-accent-color);
+  color: var(--body-color);
+}
 .dropdown-item.active,
 .dropdown-item:active,
 .dropdown-item:hover,

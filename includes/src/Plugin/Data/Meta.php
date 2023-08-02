@@ -93,7 +93,6 @@ class Meta
      */
     public function loadDBMapping(stdClass $data): self
     {
-
         $msgid                = $data->cPluginID . '_desc';
         $desc                 = \__($msgid);
         $this->description    = $desc === $msgid ? \__($data->cBeschreibung) : $desc;

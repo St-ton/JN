@@ -148,7 +148,7 @@ class GUI
         this.restoreUnsavedModal.modal('show');
     }
 
-    showError(msg, heading)
+    showError(msg, heading, canBeClosed= false)
     {
         if(heading) {
             this.errorTitle.html(heading);
@@ -156,6 +156,11 @@ class GUI
 
         this.loaderModal.modal('hide');
         this.errorAlert.html(msg);
+        if (canBeClosed) {
+            this.errorModal.find('.modal-header .opc-header-btn').removeClass('d-none');
+        } else {
+            this.errorModal.find('.modal-header .opc-header-btn').addClass('d-none');
+        }
         this.errorModal.modal('show');
         return Promise.reject(msg);
     }
@@ -524,7 +529,7 @@ class GUI
                         let blueprint = JSON.parse(this.importReader.result);
                         this.io.saveBlueprint(blueprint.name, blueprint.instance)
                             .then(() => this.updateBlueprintList())
-                            .catch(e => this.showError(e.error.message));
+                            .catch(e => this.showError(e.error.message, e.error.heading, true));
                     };
                     this.importReader.readAsText(e.target.files[0]);
                 }

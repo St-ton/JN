@@ -20,7 +20,7 @@
             <File Path="css/bootstrap-colorpicker.min.css"/>
             <File Path="css/tempusdominus-bootstrap-4.min.css"/>
             <File Path="css/app/preload.css"/>
-            <File Path="css/app/app.css"/>
+            <File Path="css/app/app.min.css"/>
             <File Path="css/custom.css"/>
         </CSS>
         <JS Name="admin_js">

@@ -61,7 +61,8 @@
                 <div class="opc-dropdown">
                     <button type="button"
                             data-toggle="dropdown" title="{__('useForOtherLang')}" data-container="#opc">
-                        <img src="{$ShopURL}/admin/opc/gfx/icon-copysprache.svg" width="26" height="17" alt="{__('useForOtherLang')}">
+                        <img src="{$ShopURL}/{$smarty.const.PFAD_ADMIN}opc/gfx/icon-copysprache.svg"
+                             width="26" height="17" alt="{__('useForOtherLang')}">
                     </button>
                     <div class="dropdown-menu opc-dropdown-menu">
                         {foreach $languages as $lang}

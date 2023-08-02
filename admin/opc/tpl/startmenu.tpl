@@ -254,7 +254,8 @@
         {if $opcPageService->isCurPageModifiable() === false}
             <nav id="opc-startmenu">
                 <button type="button" class="opc-btn-primary" onclick="openOpcStartMenu()">
-                    <img src="{$ShopURL}/admin/opc/gfx/icon-opc.svg" alt="OPC Start Icon" id="opc-start-icon">
+                    <img src="{$ShopURL}/{$smarty.const.PFAD_ADMIN}opc/gfx/icon-opc.svg" alt="OPC Start Icon"
+                         id="opc-start-icon">
                     <span id="opc-start-label">{__('onPageComposer')}</span>
                 </button>
             </nav>
@@ -279,7 +280,8 @@
                     <input type="hidden" name="pageId" value="{htmlentities($curPageId)}">
                     <input type="hidden" name="pageUrl" value="{$curPageUrl}">
                     <button type="submit" name="action" value="extend" class="opc-btn-primary">
-                        <img src="{$ShopURL}/admin/opc/gfx/icon-opc.svg" alt="OPC Start Icon" id="opc-start-icon">
+                        <img src="{$ShopURL}/{$smarty.const.PFAD_ADMIN}opc/gfx/icon-opc.svg" alt="OPC Start Icon"
+                             id="opc-start-icon">
                         <span id="opc-start-label">{__('onPageComposer')}</span>
                     </button>
                 </form>
@@ -287,7 +289,8 @@
         {else}
             <nav id="opc-startmenu">
                 <button type="button" class="opc-btn-primary" onclick="openOpcStartMenu()">
-                    <img src="{$ShopURL}/admin/opc/gfx/icon-opc.svg" alt="OPC Start Icon" id="opc-start-icon">
+                    <img src="{$ShopURL}/{$smarty.const.PFAD_ADMIN}opc/gfx/icon-opc.svg" alt="OPC Start Icon"
+                         id="opc-start-icon">
                     <span id="opc-start-label">{__('onPageComposer')}</span>
                 </button>
             </nav>
@@ -296,7 +299,8 @@
                     <h1 id="opcSidebarTitle">
                         {__('editPage')}
                     </h1>
-                    <button onclick="closeOpcStartMenu()" class="opc-float-right opc-header-btn" title="{__('Close OnPage-Composer')}">
+                    <button onclick="closeOpcStartMenu()" class="opc-float-right opc-header-btn"
+                            title="{__('Close OnPage-Composer')}">
                         <i class="fa fas fa-times"></i>
                     </button>
                 </header>

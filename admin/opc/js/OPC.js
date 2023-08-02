@@ -19,10 +19,10 @@ export class OPC extends Emitter
         this.messages     = env.messages;
         this.error        = env.error;
         this.messages     = env.messages;
-        this.io           = new IO(env.jtlToken, env.shopUrl);
+        this.io           = new IO(env.jtlToken, env.shopUrl, env.adminPath);
         this.page         = new Page(this.io, env.shopUrl, env.pageKey);
         this.gui          = new GUI(this.io, this.page, env.messages);
-        this.iframe       = new Iframe(this.io, this.gui, this.page, env.shopUrl, env.templateUrl);
+        this.iframe       = new Iframe(this.io, this.gui, this.page, env.shopUrl, env.adminPath, env.templateUrl);
         this.tutorial     = new Tutorial(this.iframe);
         this.pagetree     = new PageTree(this.page, this.iframe, this.gui);
         this.previewFrame = new PreviewFrame();

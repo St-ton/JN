@@ -1,6 +1,6 @@
 export class Iframe
 {
-    constructor(io, gui, page, shopUrl, templateUrl)
+    constructor(io, gui, page, shopUrl, adminPath, templateUrl)
     {
         bindProtoOnHandlers(this);
 
@@ -8,6 +8,7 @@ export class Iframe
         this.gui         = gui;
         this.page        = page;
         this.shopUrl     = shopUrl;
+        this.adminPath   = adminPath;
         this.templateUrl = templateUrl;
 
         this.draggedElm         = null;
@@ -45,7 +46,7 @@ export class Iframe
             this.loadedStylesheets.push(elm.href);
         });
 
-        this.loadStylesheet(this.shopUrl + '/admin/opc/css/iframe.css');
+        this.loadStylesheet(this.shopUrl + '/' + this.adminPath + 'opc/css/iframe.css');
         this.loadStylesheet(this.shopUrl + '/templates/NOVA/themes/base/fontawesome/css/all.min.css');
 
         this.disableLinks();

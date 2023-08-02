@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="{$templateUrl}css/typeaheadjs.css">
     <link rel="stylesheet" href="{$templateUrl}css/tempusdominus-bootstrap-4.min.css">
     <link rel="stylesheet" href="{$templateUrl}css/fontawesome-iconpicker.min.css">
-    <link rel="stylesheet" href="{$shopUrl}/admin/opc/css/editor.css">
+    <link rel="stylesheet" href="{$shopUrl}/{$smarty.const.PFAD_ADMIN}opc/css/editor.css">
 
     <script src="{$templateUrl}js/jquery-3.5.1.min.js"></script>
     <script src="{$templateUrl}js/jquery-ui.min.js"></script>
@@ -26,14 +26,15 @@
     <script src="{$templateUrl}js/typeahead.bundle.js"></script>
     <script src="{$templateUrl}js/tempusdominus-bootstrap-4.min.js"></script>
     <script src="{$templateUrl}js/fontawesome-iconpicker.min.js"></script>
-    <script src="{$shopUrl}/admin/opc/js/utils.js"></script>
+    <script src="{$shopUrl}/{$smarty.const.PFAD_ADMIN}opc/js/utils.js"></script>
 
     <script type="module">
-        import { OPC } from "{$shopUrl}/admin/opc/js/OPC.js";
+        import { OPC } from "{$shopUrl}/{$smarty.const.PFAD_ADMIN}opc/js/OPC.js";
 
         window.opc = new OPC({
             jtlToken:    '{$smarty.session.jtl_token}',
             shopUrl:     '{$shopUrl}',
+            adminPath:   '{$smarty.const.PFAD_ADMIN}',
             templateUrl: '{$templateUrl}',
             pageKey:     {$pageKey},
             error:       {json_encode($error)},
@@ -99,7 +100,8 @@
 
         <div id="dropTargetBlueprint" class="opc-droptarget" style="display:none">
             <div class="opc-droptarget-hover">
-                <img src="{$shopUrl}/admin/opc/gfx/icon-drop-target.svg" class="opc-droptarget-icon" alt="Drop Target">
+                <img src="{$shopUrl}/{$smarty.const.PFAD_ADMIN}opc/gfx/icon-drop-target.svg"
+                     class="opc-droptarget-icon" alt="Drop Target">
                 <span>{__('dropPortletHere')}</span>
                 <i class="opc-droptarget-info fas fa-info-circle" data-toggle="tooltip" data-placement="left"></i>
             </div>

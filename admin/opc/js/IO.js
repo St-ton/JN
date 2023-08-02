@@ -1,9 +1,9 @@
 export class IO
 {
-    constructor(jtlToken, shopUrl)
+    constructor(jtlToken, shopUrl, adminPath)
     {
         this.jtlToken = jtlToken;
-        this.ioUrl    = shopUrl + '/admin/io';
+        this.ioUrl    = shopUrl + '/' + adminPath + 'io';
     }
 
     async init()

@@ -226,12 +226,15 @@ class Service
     }
 
     /**
-     * @param string $name
+     * @param string|null $name
      * @param array  $data
      * @throws Exception
      */
-    public function saveBlueprint(string $name, array $data): void
+    public function saveBlueprint(?string $name, array $data): void
     {
+        if (!isset($name)) {
+            throw new Exception('The OPC blueprint data to be saved is incomplete or invalid.');
+        }
         $this->db->saveBlueprint((new Blueprint())->deserialize(['name' => $name, 'content' => $data]));
     }
 

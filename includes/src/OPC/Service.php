@@ -235,6 +235,9 @@ class Service
         if (!isset($name)) {
             throw new Exception('The OPC blueprint data to be saved is incomplete or invalid.');
         }
+        if (!isset($data['class'])) {
+            throw new Exception('The OPC blueprint data must contain a class name.');
+        }
         $this->db->saveBlueprint((new Blueprint())->deserialize(['name' => $name, 'content' => $data]));
     }
 

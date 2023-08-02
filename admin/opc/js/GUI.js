@@ -523,7 +523,8 @@ class GUI
                     this.importReader.onload = () => {
                         let blueprint = JSON.parse(this.importReader.result);
                         this.io.saveBlueprint(blueprint.name, blueprint.instance)
-                            .then(() => this.updateBlueprintList());
+                            .then(() => this.updateBlueprintList())
+                            .catch(e => this.showError(e.error.message));
                     };
                     this.importReader.readAsText(e.target.files[0]);
                 }

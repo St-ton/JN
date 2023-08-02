@@ -84,6 +84,8 @@
   --brand-logo-white-display: none;
   --link-color: #0b6aa2;
   --link-hover-color: #324350;
+  --btn-link-color: #435a6b;
+  --btn-link-hover-color: #26323c;
   --daterangepicker-accent-color: #ebf4f8;
   --wizard-bg: #ffffff url("images/setup-assistant-bg.svg") no-repeat left top/auto 43.75rem;
   --sidebar-accent-color: #0b6aa2;
@@ -114,6 +116,8 @@
   --brand-logo-white-display: unset;
   --link-color: #85adcc;
   --link-hover-color: #739ab6;
+  --btn-link-color: #dddddd;
+  --btn-link-hover-color: #ffffff;
   --daterangepicker-accent-color: #1f2327;
   --wizard-bg: #2b3035 url("images/setup-assistant-bg-black.svg") no-repeat left top/auto 43.75rem;
   --sidebar-accent-color: #7dcdfe;
@@ -2744,6 +2748,8 @@ input[type=number] {
   --brand-logo-white-display: none;
   --link-color: #0b6aa2;
   --link-hover-color: #324350;
+  --btn-link-color: #435a6b;
+  --btn-link-hover-color: #26323c;
   --daterangepicker-accent-color: #ebf4f8;
   --wizard-bg: #ffffff url("images/setup-assistant-bg.svg") no-repeat left top/auto 43.75rem;
   --sidebar-accent-color: #0b6aa2;
@@ -2753,6 +2759,14 @@ input[type=number] {
   --invert-color: 0;
   --list-group-color: #5cbcf6;
   --custom-select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' fill='%23435a6b' x='0px' y='0px' style='enable-background:new 0 0 32 32;' xml:space='preserve'%3E%3Cpolygon  points='16,18.2 11.8,14.6 12.4,13.8 16,16.8 19.6,13.8 20.2,14.6 '/%3E%3C/svg%3E") no-repeat right center/auto 100%;
+  --primary: #5cbcf6;
+  --secondary: #435a6b;
+  --dark-gray: #bdbdbd;
+  --success: #0f9d48;
+  --info: #9cadbc;
+  --warning: #f68b25;
+  --danger: #e10505;
+  --light-gray: #f5f7fa;
 }
 :root .text-primary,
 :root.theme-light .text-primary {
@@ -2918,6 +2932,8 @@ input[type=number] {
   --brand-logo-white-display: unset;
   --link-color: #85adcc;
   --link-hover-color: #739ab6;
+  --btn-link-color: #dddddd;
+  --btn-link-hover-color: #ffffff;
   --daterangepicker-accent-color: #1f2327;
   --wizard-bg: #2b3035 url("images/setup-assistant-bg-black.svg") no-repeat left top/auto 43.75rem;
   --sidebar-accent-color: #7dcdfe;
@@ -2927,6 +2943,14 @@ input[type=number] {
   --invert-color: 1;
   --list-group-color: #5cbcf6;
   --custom-select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' fill='%2385adcc' x='0px' y='0px' style='enable-background:new 0 0 32 32;' xml:space='preserve'%3E%3Cpolygon  points='16,18.2 11.8,14.6 12.4,13.8 16,16.8 19.6,13.8 20.2,14.6 '/%3E%3C/svg%3E") no-repeat right center/auto 100%;
+  --primary: #1ca2f2;
+  --secondary: #364856;
+  --dark-gray: #979797;
+  --success: #0c7e3a;
+  --info: #738ba0;
+  --warning: #d96f09;
+  --danger: #b40404;
+  --light-gray: #b3c2d9;
 }
 :root.theme-dark .text-primary {
   color: #1ca2f2 !important;
@@ -3061,6 +3085,8 @@ input[type=number] {
     --brand-logo-white-display: unset;
     --link-color: #85adcc;
     --link-hover-color: #739ab6;
+    --btn-link-color: #dddddd;
+    --btn-link-hover-color: #ffffff;
     --daterangepicker-accent-color: #1f2327;
     --wizard-bg: #2b3035 url("images/setup-assistant-bg-black.svg") no-repeat left top/auto 43.75rem;
     --sidebar-accent-color: #7dcdfe;
@@ -3070,6 +3096,14 @@ input[type=number] {
     --invert-color: 1;
     --list-group-color: #5cbcf6;
     --custom-select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' fill='%2385adcc' x='0px' y='0px' style='enable-background:new 0 0 32 32;' xml:space='preserve'%3E%3Cpolygon  points='16,18.2 11.8,14.6 12.4,13.8 16,16.8 19.6,13.8 20.2,14.6 '/%3E%3C/svg%3E") no-repeat right center/auto 100%;
+    --primary: #1ca2f2;
+    --secondary: #364856;
+    --dark-gray: #979797;
+    --success: #0c7e3a;
+    --info: #738ba0;
+    --warning: #d96f09;
+    --danger: #b40404;
+    --light-gray: #b3c2d9;
   }
   :root .text-primary {
     color: #1ca2f2 !important;
@@ -3238,6 +3272,7 @@ hr,
 }
 .custom-select {
   background: var(--custom-select-arrow);
+  border-color: var(--body-color);
 }
 .form-control,
 .form-control:focus,
@@ -3288,7 +3323,6 @@ hr,
 .brand-logo-white {
   display: var(--brand-logo-white-display);
 }
-.btn-link,
 .dropdown-item-text,
 .nav-tabs .nav-link,
 .page-link,
@@ -3306,8 +3340,11 @@ hr,
   background-color: var(--body-bg);
   border-color: var(--border-color);
 }
+.btn-link {
+  color: var(--btn-link-color);
+}
 .btn-link:hover {
-  color: var(--link-hover-color);
+  color: var(--btn-link-hover-color);
 }
 .dropdown-menu {
   background-color: var(--card-bg);
@@ -3470,5 +3507,8 @@ input.file-caption-name::placeholder {
 }
 pre#debug {
   color: var(--body-color);
+}
+.nav-tabs > li > a > .badge {
+  background-color: var(--primary);
 }
 /*# sourceMappingURL=custom.css.map */

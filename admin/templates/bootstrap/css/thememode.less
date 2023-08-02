@@ -1,6 +1,7 @@
 
 .overwriteBootstrapClasses(@colors) {
   each(@colors, {
+    --@{key}: @value;
     .text-@{key} {
       color: @value !important;
     }
@@ -90,6 +91,7 @@ hr, .table {
 
 .custom-select {
   background: var(--custom-select-arrow);
+  border-color: var(--body-color);
 }
 
 .form-control, .form-control:focus, .form-control:active, .custom-select {
@@ -147,7 +149,7 @@ hr, .table {
   display: var(--brand-logo-white-display);
 }
 
-.btn-link, .dropdown-item-text, .nav-tabs .nav-link, .page-link, .page-text, .page-item.active .page-link,
+.dropdown-item-text, .nav-tabs .nav-link, .page-link, .page-text, .page-item.active .page-link,
 .page-item.active .page-text {
   color: var(--link-color);
 }
@@ -158,8 +160,11 @@ hr, .table {
   border-color: var(--border-color);
 }
 
+.btn-link {
+  color: var(--btn-link-color);
+}
 .btn-link:hover {
-  color: var(--link-hover-color);
+  color: var(--btn-link-hover-color);
 }
 
 .dropdown-menu {
@@ -351,4 +356,8 @@ input.file-caption-name::placeholder {
 
 pre#debug {
   color: var(--body-color);
+}
+
+.nav-tabs > li > a > .badge {
+  background-color: var(--primary);
 }

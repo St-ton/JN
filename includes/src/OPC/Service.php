@@ -227,13 +227,16 @@ class Service
 
     /**
      * @param string|null $name
-     * @param array  $data
+     * @param array|null $data
      * @throws Exception
      */
-    public function saveBlueprint(?string $name, array $data): void
+    public function saveBlueprint(?string $name, ?array $data): void
     {
         if (!isset($name)) {
             throw new Exception('The OPC blueprint data to be saved is incomplete or invalid.');
+        }
+        if (!isset($data)) {
+            throw new Exception('The OPC blueprint data is incomplete or invalid.');
         }
         if (!isset($data['class'])) {
             throw new Exception('The OPC blueprint data must contain a class name.');

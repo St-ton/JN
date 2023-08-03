@@ -274,6 +274,7 @@ const FKT_ATTRIBUT_CANONICALURL_VARKOMBI    = 'varkombi_canonicalurl';
 const FKT_ATTRIBUT_VOUCHER                  = 'jtl_voucher';
 const FKT_ATTRIBUT_VOUCHER_FLEX             = 'jtl_voucher_flex';
 const FKT_ATTRIBUT_NO_GAL_VAR_PREVIEW       = 'no_gall_var_preview';
+const FKT_ATTRIBUT_NO_TOPSELLER             = 'no_topseller';
 const FKT_ATTRIBUT_CUSTOM_ITEM_BADGE        = 'custom_item_badge';
 
 /**

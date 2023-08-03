@@ -3447,7 +3447,12 @@ class Artikel implements RoutableInterface
                 );
             }
         }
+
+        $cacheTags = [\CACHING_GROUP_ARTICLE . '_' . $this->kArtikel, \CACHING_GROUP_ARTICLE];
+        $basePrice = clone $this->Preise;
+        $this->getCustomerPrice($customerGroupID, Frontend::getCustomer()->getID());
         $this->checkCanBePurchased();
+
         $this->getStockDisplay();
         $this->cUVPLocalized = Preise::getLocalizedPriceString($this->fUVP);
         // Lieferzeit abhaengig vom Session-Lieferland aktualisieren
@@ -3479,8 +3484,6 @@ class Artikel implements RoutableInterface
             ? $this->AttributeAssoc[\ART_ATTRIBUT_SHORTNAME]
             : $this->cName;
 
-        $cacheTags = [\CACHING_GROUP_ARTICLE . '_' . $this->kArtikel, \CACHING_GROUP_ARTICLE];
-        $basePrice = clone $this->Preise;
         $this->rabattierePreise($customerGroupID);
         $this->staffelPreis_arr = $this->getTierPrices();
         if ($this->cVPE === 'Y' && $this->fVPEWert > 0 && $this->cVPEEinheit && !empty($this->Preise)) {
@@ -3491,6 +3494,7 @@ class Artikel implements RoutableInterface
         }
         // Versandkostenfrei-Länder aufgrund rabattierter Preise neu setzen
         $this->taxData['shippingFreeCountries'] = $this->gibMwStVersandLaenderString(true, $customerGroupID);
+
         \executeHook(\HOOK_ARTIKEL_CLASS_FUELLEARTIKEL, [
             'oArtikel'  => &$this,
             'cacheTags' => &$cacheTags,
@@ -3503,7 +3507,6 @@ class Artikel implements RoutableInterface
             Shop::Container()->getCache()->set($this->cacheID, $toSave, $cacheTags);
             self::$products[$this->cacheID] = $toSave;
         }
-        $this->getCustomerPrice($customerGroupID, Frontend::getCustomer()->getID());
 
         return $this;
     }
@@ -4049,21 +4052,7 @@ class Artikel implements RoutableInterface
             && isset($this->Preise->fVKNetto, $this->conf['global']['global_preis0'])
             && $this->getFunctionalAttributevalue(\FKT_ATTRIBUT_VOUCHER_FLEX) === null
         ) {
-            $customerID = Frontend::getCustomer()->getID();
-            if (!$this->Preise->customerHasCustomPriceForProduct($customerID, $this->kArtikel)) {
-                $this->inWarenkorbLegbar = \INWKNICHTLEGBAR_PREISAUFANFRAGE;
-            } else {
-                $preise = new Preise(
-                    Frontend::getCustomer()->getGroupID(),
-                    $this->kArtikel,
-                    $customerID,
-                    $this->kSteuerklasse,
-                    $this->getDB()
-                );
-                if ($preise->fVKNetto === 0.0) {
-                    $this->inWarenkorbLegbar = \INWKNICHTLEGBAR_PREISAUFANFRAGE;
-                }
-            }
+            $this->inWarenkorbLegbar = \INWKNICHTLEGBAR_PREISAUFANFRAGE;
         }
         if (!empty($this->FunktionsAttribute[\FKT_ATTRIBUT_UNVERKAEUFLICH])) {
             $this->inWarenkorbLegbar = \INWKNICHTLEGBAR_UNVERKAEUFLICH;

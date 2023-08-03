@@ -581,6 +581,18 @@ $(document).ready(function () {
             );
         }
     });
+
+    $('.collapse')
+        .on('show.bs.collapse', function (e) {
+            htmlCollapse($(e.target), 'show');
+            let btn = $('*[data-toggle="collapse"][data-target="#' + $(e.target).attr("id") + '"][data-label-hide]');
+            btn.html(btn.data('labelHide'));
+        })
+        .on('hidden.bs.collapse', function (e) {
+            htmlCollapse($(e.target), 'hide');
+            let btn = $('*[data-toggle="collapse"][data-target="#' + $(e.target).attr("id") + '"][data-label-show]');
+            btn.html(btn.data('labelShow'));
+        });
 });
 
 function setClickableRow()
@@ -619,19 +631,3 @@ function htmlCollapse(collapse, action)
         }
     }
 }
-
-$(document).ready(function () {
-    $('.collapse')
-        .on('show.bs.collapse', function (e) {
-            htmlCollapse($(e.target), 'show');
-            let btn = $('*[data-toggle="collapse"][data-target="#' + $(e.target).attr("id") + '"][data-label-hide]');
-            btn.html(btn.data('labelHide'));
-            e.stopPropagation();
-        })
-        .on('hidden.bs.collapse', function (e) {
-            htmlCollapse($(e.target), 'hide');
-            let btn = $('*[data-toggle="collapse"][data-target="#' + $(e.target).attr("id") + '"][data-label-show]');
-            btn.html(btn.data('labelShow'));
-            e.stopPropagation();
-        });
-});

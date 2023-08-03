@@ -125,7 +125,8 @@
                                                     {/block}
                                                     {block name='comparelist-index-products-header-image'}
                                                         {link href=$oArtikel->cURLFull}
-                                                            {include file='snippets/image.tpl' item=$oArtikel srcSize='xs' square=false class='comparelist-item-image' sizes='200px'}
+                                                            {include file='snippets/image.tpl' item=$oArtikel
+                                                            square=false class='comparelist-item-image'}
                                                         {/link}
                                                     {/block}
                                                 </div>

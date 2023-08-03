@@ -156,7 +156,8 @@ export default {
                 connectionSuccess:   'Erfolgreich verbunden',
                 cannotConnect:       'Keine Verbindung möglich',
                 shopExists:          'Es existiert bereits eine Shopinstallation in dieser Datenbank',
-                noCredentials:       'Keine Zugangsdaten übermittelt'
+                noCredentials:       'Keine Zugangsdaten übermittelt',
+                minMySQLVersion:     'Bitte aktualisieren Sie Ihre MySQL Version auf 5.7 oder höher'
             },
             en: {
                 hostPrep:            'Host',
@@ -189,7 +190,8 @@ export default {
                 connectionSuccess:   'Successfully connected',
                 cannotConnect:       'Could not connect',
                 shopExists:          'The selected database already contains a shop installation',
-                noCredentials:       'No credentials given'
+                noCredentials:       'No credentials given',
+                minMySQLVersion:     'Please update your MySQL version to 5.7 or higher.'
             }
         };
         this.$i18n.add('en', messages.en);

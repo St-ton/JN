@@ -808,3 +808,12 @@ msgstr "Please note: In safe mode, plug-ins might not be fully deactivated or un
 
 msgid "Plugin probably flawed"
 msgstr "The plug-in might cause failures: "
+
+msgid "Modified files:"
+msgstr "Modified files:"
+
+msgid "No modified files"
+msgstr "No modified files"
+
+msgid "File check unsupported"
+msgstr "File check unsupported"

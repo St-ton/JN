@@ -1,3 +1,42 @@
+
+.overwriteBootstrapClasses(@colors) {
+  each(@colors, {
+    --@{key}: @value;
+    .text-@{key} {
+      color: @value !important;
+    }
+    .badge-@{key} {
+      background-color: @value;
+    }
+    .alert-@{key} {
+      background-color: @value;
+      border-color: @value;
+    }
+    .btn-@{key} {
+      background-color: @value;
+      border-color: @value;
+    }
+  });
+}
+
+:root,
+:root.theme-light {
+  .theme-light();
+  .overwriteBootstrapClasses(.themeColorsLight());
+}
+
+:root.theme-dark {
+  .theme-dark();
+  .overwriteBootstrapClasses(.themeColorsDark());
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    .theme-dark();
+    .overwriteBootstrapClasses(.themeColorsDark());
+  }
+}
+
 body, html {
   background-color: var(--body-bg);
   color: var(--body-color);
@@ -52,6 +91,7 @@ hr, .table {
 
 .custom-select {
   background: var(--custom-select-arrow);
+  border-color: var(--body-color);
 }
 
 .form-control, .form-control:focus, .form-control:active, .custom-select {
@@ -98,7 +138,7 @@ hr, .table {
 
 .form-counter .btn, .form-counter .btn:hover, .form-counter .btn:focus {
   background-color: var(--input-bg);
-  color: var(--link-color);
+  color: var(--body-color);
 }
 
 .brand-logo {
@@ -109,7 +149,7 @@ hr, .table {
   display: var(--brand-logo-white-display);
 }
 
-.btn-link, .dropdown-item-text, .nav-tabs .nav-link, .page-link, .page-text, .page-item.active .page-link,
+.dropdown-item-text, .nav-tabs .nav-link, .page-link, .page-text, .page-item.active .page-link,
 .page-item.active .page-text {
   color: var(--link-color);
 }
@@ -120,8 +160,11 @@ hr, .table {
   border-color: var(--border-color);
 }
 
+.btn-link {
+  color: var(--btn-link-color);
+}
 .btn-link:hover {
-  color: var(--link-hover-color);
+  color: var(--btn-link-hover-color);
 }
 
 .dropdown-menu {
@@ -136,7 +179,7 @@ hr, .table {
 }
 
 .fa-info-circle {
-  color: var(--link-color);
+  color: var(--body-color);
 }
 
 .alert .fa-info-circle {
@@ -162,6 +205,17 @@ hr, .table {
 .daterangepicker .calendar-table .next span, .daterangepicker .calendar-table .prev span {
   color: var(--body-color);
   border-color: var(--body-color);
+}
+
+.daterangepicker .ranges li:hover {
+  background-color: var(--daterangepicker-accent-color);
+  color: var(--body-color);
+}
+
+.daterangepicker td.available:hover, .daterangepicker th.available:hover {
+  background-color: var(--daterangepicker-accent-color);
+  border-color: transparent;
+  color: inherit;
 }
 
 .dropdown-item.active, .dropdown-item:active, .dropdown-item:hover, .dropdown-item:focus {
@@ -279,10 +333,6 @@ input.file-caption-name::placeholder {
   color: var(--body-color);
 }
 
-.btn-primary {
-  box-shadow: 0 0.1875rem 0.375rem var(--button-shadow-color);
-}
-
 .CodeMirror {
   background-color: var(--body-bg) !important;
   color: var(--body-color) !important;
@@ -302,4 +352,12 @@ input.file-caption-name::placeholder {
 
 #area_editor {
   background-color: var(--card-bg) !important;
+}
+
+pre#debug {
+  color: var(--body-color);
+}
+
+.nav-tabs > li > a > .badge {
+  background-color: var(--primary);
 }

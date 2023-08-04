@@ -53,7 +53,7 @@
         "maximebf/debugbar": "^1.16",
         "gettext/gettext": "^5.5.4",
         "mobiledetect/mobiledetectlib": "^2.8",
-        "fzaninotto/faker": "dev-master",
+        "fakerphp/faker": "^1.23",
         "cocur/slugify": "^4.0",
         "league/flysystem": "^3.1",
         "league/flysystem-ftp": "^3.1",

@@ -266,9 +266,12 @@ class PluginManagerController extends AbstractBackendController
      */
     private function actionUpload(InstallationResponse $installationResponse): ResponseInterface
     {
-        $this->smarty->assign('shopVersion', Version::parse(\APPLICATION_VERSION));
+        $this->smarty->assign('shopVersion', Version::parse(\APPLICATION_VERSION))
+            ->assign('cTab', 'upload');
 
         $html                  = new stdClass();
+        $html->enabled         = $this->smarty->fetch('tpl_inc/pluginverwaltung_uebersicht_aktiviert_tab.tpl');
+        $html->enabled_count   = $this->smarty->getTemplateVars('pluginsInstalled')->count();
         $html->available       = $this->smarty->fetch('tpl_inc/pluginverwaltung_uebersicht_verfuegbar.tpl');
         $html->available_count = $this->smarty->getTemplateVars('pluginsAvailable')->count();
         $html->erroneous       = $this->smarty->fetch('tpl_inc/pluginverwaltung_uebersicht_fehlerhaft.tpl');

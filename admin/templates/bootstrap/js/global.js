@@ -504,6 +504,38 @@ $(document).ready(function () {
             }
         }
     });
+
+    $('#theme-toggle a.dropdown-item').on('click', function (e) {
+        e.preventDefault();
+        let btn = $(this),
+            theme = $(this).data('theme');
+        ioCall('setTheme', [theme], function (data) {
+            if (data['theme'] === theme) {
+                $('#theme-toggle a.dropdown-item').removeClass('active');
+                btn.addClass('active');
+
+                $('html')
+                    .removeClass('theme-auto')
+                    .removeClass('theme-light')
+                    .removeClass('theme-dark')
+                    .addClass('theme-' + data['theme']);
+
+                $('#theme-toggle .theme-toggle-auto').addClass('d-none');
+                $('#theme-toggle .theme-toggle-light').addClass('d-none');
+                $('#theme-toggle .theme-toggle-dark').addClass('d-none');
+                $('#theme-toggle .theme-toggle-' + theme).removeClass('d-none');
+
+                if (typeof CKEDITOR !== 'undefined') {
+                    for (let instanceName in CKEDITOR.instances) {
+                        CKEDITOR.instances[instanceName].destroy();
+                    }
+                    CKEDITOR.replaceAll('ckeditor');
+                }
+            } else {
+                showNotify('danger', 'Theme', 'Theme konnte nicht gesetzt werden.');
+            }
+        });
+    });
 });
 
 $(window).on('load', () => {

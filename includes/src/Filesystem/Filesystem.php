@@ -8,6 +8,7 @@ use JTL\Shop;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\Local\LocalFilesystemAdapter;
 use League\Flysystem\MountManager;
+use League\Flysystem\PathTraversalDetected;
 use SplFileInfo;
 use Symfony\Component\Finder\Finder;
 use Throwable;
@@ -176,5 +177,20 @@ class Filesystem extends \League\Flysystem\Filesystem
         }
 
         return true;
+    }
+
+    /**
+     * @param string $path
+     * @param string $basePath
+     * @return string
+     */
+    public function normalizeToBasePath(string $path, string $basePath): string
+    {
+        $normalized = Path::clean($path);
+        if (!\str_starts_with($normalized, $basePath)) {
+            throw new PathTraversalDetected('Path traversal detected at path ' . $path);
+        }
+
+        return $normalized;
     }
 }

@@ -427,7 +427,7 @@ class DemoDataInstaller
         $index = 0;
         for ($i = 1; $i <= $limit; ++$i) {
             try {
-                $name = $this->faker->unique()->company;
+                $name = $this->faker->unique()->company();
                 $res  = $this->db->getObjects(
                     'SELECT kHersteller 
                         FROM thersteller 
@@ -438,14 +438,14 @@ class DemoDataInstaller
                     throw new OverflowException();
                 }
             } catch (OverflowException) {
-                $name = $this->faker->unique(true)->company . '_' . ++$index;
+                $name = $this->faker->unique(true)->company() . '_' . ++$index;
             }
 
             $manufacturer              = new stdClass();
             $manufacturer->kHersteller = $maxPk + $i;
             $manufacturer->cName       = $name;
             $manufacturer->cSeo        = $this->slug($name);
-            $manufacturer->cHomepage   = $this->faker->unique()->url;
+            $manufacturer->cHomepage   = $this->faker->unique()->url();
             $manufacturer->nSortNr     = 0;
             $manufacturer->cBildpfad   = $this->createManufacturerImage($manufacturer->kHersteller, $name);
             $res                       = $this->db->insert('thersteller', $manufacturer);
@@ -485,19 +485,24 @@ class DemoDataInstaller
         $nameIDX = 0;
         for ($i = 1; $i <= $limit; ++$i) {
             try {
-                $name = $this->faker->unique()->department;
-                $res  = $this->db->getObjects(
+                $names = $this->faker->unique()->multiLangCategory();
+                $res   = $this->db->getObjects(
                     'SELECT kKategorie 
                         FROM tkategorie 
-                        WHERE cName = :nm',
-                    ['nm' => $name]
+                        WHERE cName = :nm1 OR cName = :nm2',
+                    ['nm1' => $names[0], 'nm2' => $names[1]]
                 );
                 if (\count($res) > 0) {
                     throw new OverflowException();
                 }
             } catch (OverflowException) {
-                $name = $this->faker->unique(true)->department . '_' . ++$nameIDX;
+                $names = $this->faker->unique(true)->multiLangCategory();
+                foreach ($names as &$_item) {
+                    $_item .= '_' . ++$nameIDX;
+                }
+                unset($_item);
             }
+            $name                            = $names[0];
             $category                        = new stdClass();
             $category->kKategorie            = $maxPk + $i;
             $category->cName                 = $name;
@@ -515,8 +520,20 @@ class DemoDataInstaller
                 $seo->kKey = $category->kKategorie;
                 foreach ($this->languages as $language) {
                     $seo->kSprache = $language->getId();
-                    $seo->cSeo     = $this->getUniqueSlug($category->cSeo);
+                    $seo->cSeo     = $language->isShopDefault()
+                        ? $this->getUniqueSlug($category->cSeo)
+                        : $this->getUniqueSlug($this->slug($names[1]));
                     $this->db->insert('tseo', $seo);
+                    if ($language->isShopDefault()) {
+                        continue;
+                    }
+                    $localization                = new stdClass();
+                    $localization->kKategorie    = $category->kKategorie;
+                    $localization->kSprache      = $language->getId();
+                    $localization->cSeo          = $seo->cSeo;
+                    $localization->cName         = $names[1];
+                    $localization->cBeschreibung = $category->cBeschreibung;
+                    $this->db->insert('tkategoriesprache', $localization);
                 }
                 $this->createCategoryImage($category->kKategorie, $name);
             }
@@ -533,13 +550,27 @@ class DemoDataInstaller
      */
     public function createProducts(?callable $callback = null): self
     {
-        $maxPk         = $this->db->getSingleInt('SELECT MAX(kArtikel) AS cnt FROM tartikel', 'cnt');
-        $manufacturers = $this->db->getSingleInt('SELECT COUNT(kHersteller) AS cnt FROM thersteller', 'cnt');
-        $categories    = $this->db->getSingleInt('SELECT COUNT(kKategorie) AS cnt FROM tkategorie', 'cnt');
+        $maxCategoryProduct = $this->db->getSingleInt(
+            'SELECT MAX(kKategorieArtikel) AS cnt 
+                FROM tkategorieartikel',
+            'cnt'
+        );
+        $maxPk              = $this->db->getSingleInt('SELECT MAX(kArtikel) AS cnt FROM tartikel', 'cnt');
+        $manufacturers      = $this->db->getSingleInt('SELECT COUNT(kHersteller) AS cnt FROM thersteller', 'cnt');
+        $categories         = $this->db->getSingleInt('SELECT COUNT(kKategorie) AS cnt FROM tkategorie', 'cnt');
+        $maxPropertyID      = $this->db->getSingleInt('SELECT MAX(kEigenschaft) AS cnt FROM teigenschaft', 'cnt');
+        $maxPropValueID     = $this->db->getSingleInt(
+            'SELECT MAX(kEigenschaftWert) AS cnt FROM teigenschaftwert',
+            'cnt'
+        );
+        $maxPropCombID      = $this->db->getSingleInt(
+            'SELECT MAX(kEigenschaftKombi) AS cnt FROM teigenschaftkombiwert',
+            'cnt'
+        );
         if ($categories === 0) {
             return $this;
         }
-        $unitCount = $this->db->getSingleInt(
+        $unitCount     = $this->db->getSingleInt(
             'SELECT MAX(groupCount) AS unitCount
                 FROM (
                     SELECT COUNT(*) AS groupCount
@@ -548,27 +579,36 @@ class DemoDataInstaller
                 ) x',
             'unitCount'
         );
-        $limit     = $this->config['products'];
-        $index     = 0;
-        $taxRate   = 19.00;
+        $limit         = $this->config['products'];
+        $index         = 0;
+        $taxRate       = 19.00;
+        $lastProductID = $maxPk;
         for ($i = 1; $i <= $limit; ++$i) {
+            ++$maxCategoryProduct;
+            ++$lastProductID;
+            $isParent    = \random_int(0, 5) === 5;
+            $isVariation = !$isParent && \random_int(0, 3) === 3;
             try {
-                $name = $this->faker->unique()->productName;
-                $res  = $this->db->getObjects(
+                $names = $this->faker->unique()->multiLangProduct();
+                $res   = $this->db->getObjects(
                     'SELECT kArtikel 
-                        FROM tartikel WHERE cName = :nm',
-                    ['nm' => $name]
+                        FROM tartikel WHERE cName = :nm1 OR cName = :nm2',
+                    ['nm1' => $names[0], 'nm2' => $names[1]]
                 );
                 if (\count($res) > 0) {
                     throw new OverflowException();
                 }
             } catch (OverflowException) {
-                $name = $this->faker->unique(true)->productName . '_' . ++$index;
+                $names = $this->faker->unique(true)->multiLangProduct();
+                foreach ($names as &$_item) {
+                    $_item .= '_' . ++$index;
+                }
+                unset($_item);
             }
-
+            $name                              = $names[0];
             $price                             = \random_int(1, 2999);
             $product                           = new stdClass();
-            $product->kArtikel                 = $maxPk + $i;
+            $product->kArtikel                 = $lastProductID;
             $product->kHersteller              = \random_int(0, $manufacturers);
             $product->kLieferstatus            = 0;
             $product->kSteuerklasse            = 1;
@@ -589,16 +629,16 @@ class DemoDataInstaller
             $product->cBeschreibung            = $this->faker->text(300);
             $product->cAnmerkung               = '';
             $product->fLagerbestand            = (float)\random_int(0, 1000);
-            $product->fStandardpreisNetto      = $price / 19.00;
+            $product->fStandardpreisNetto      = $price / $taxRate;
             $product->fMwSt                    = $taxRate;
             $product->fMindestbestellmenge     = (5 < \random_int(0, 10)) ? \random_int(0, 5) : 0;
             $product->fLieferantenlagerbestand = 0;
             $product->fLieferzeit              = 0;
-            $product->cBarcode                 = $this->faker->ean13;
+            $product->cBarcode                 = $this->faker->ean13();
             $product->cTopArtikel              = (\random_int(0, 10) === 10) ? 'Y' : 'N';
             $product->fGewicht                 = (float)\random_int(0, 10);
             $product->fArtikelgewicht          = $product->fGewicht;
-            $product->fMassMenge               = 0; //@todo?
+            $product->fMassMenge               = 0;
             $product->fGrundpreisMenge         = 0;
             $product->fBreite                  = 0;
             $product->fHoehe                   = 0;
@@ -611,7 +651,7 @@ class DemoDataInstaller
             $product->cLagerVariation          = 'N';
             $product->cTeilbar                 = 'N';
             $product->fPackeinheit             = (\random_int(0, 10) === 10) ? \random_int(1, 12) : 1;
-            $product->fAbnahmeintervall        = 0;
+            $product->fAbnahmeintervall        = (\random_int(0, 10) === 10) ? \random_int(2, 10) : 0;
             $product->fZulauf                  = 0;
             $product->cVPE                     = 'N';
             $product->fVPEWert                 = 0;
@@ -619,8 +659,9 @@ class DemoDataInstaller
             $product->dErscheinungsdatum       = 'now()';
             $product->dErstellt                = 'now()';
             $product->dLetzteAktualisierung    = 'now()';
-            $productID                         = $this->db->insert('tartikel', $product);
-            if ($productID > 0) {
+            $product->nIstVater                = $isParent ? 1 : 0;
+            $ok                                = $this->db->insert('tartikel', $product);
+            if ($ok > 0) {
                 $maxImages = $this->faker->numberBetween(1, 3);
                 for ($k = 0; $k < $maxImages; ++$k) {
                     $this->createProductImage($product->kArtikel, $name, $k + 1);
@@ -629,14 +670,8 @@ class DemoDataInstaller
                 for ($j = 0; $j < $numRatings; ++$j) {
                     $this->createRating($product->kArtikel);
                 }
-                $maxCategoryProduct = $this->db->getSingleInt(
-                    'SELECT MAX(kKategorieArtikel) AS cnt 
-                        FROM tkategorieartikel',
-                    'cnt'
-                );
-
                 $productCategory                    = new stdClass();
-                $productCategory->kKategorieArtikel = $maxCategoryProduct + 1;
+                $productCategory->kKategorieArtikel = $maxCategoryProduct;
                 $productCategory->kArtikel          = $product->kArtikel;
                 $productCategory->kKategorie        = \random_int(1, $categories);
                 $this->db->insert('tkategorieartikel', $productCategory);
@@ -645,9 +680,22 @@ class DemoDataInstaller
                 $seoItem->cKey = 'kArtikel';
                 $seoItem->kKey = $product->kArtikel;
                 foreach ($this->languages as $language) {
-                    $seoItem->cSeo     = $this->getUniqueSlug($product->cSeo);
+                    $seoItem->cSeo     = $language->isShopDefault()
+                        ? $this->getUniqueSlug($product->cSeo)
+                        : $this->getUniqueSlug($this->slug($names[1]));
                     $seoItem->kSprache = $language->getId();
                     $this->db->insert('tseo', $seoItem);
+                    if ($language->isShopDefault()) {
+                        continue;
+                    }
+                    $localized                    = new stdClass();
+                    $localized->kArtikel          = $product->kArtikel;
+                    $localized->kSprache          = $language->getId();
+                    $localized->cSeo              = $seoItem->cSeo;
+                    $localized->cName             = $names[1];
+                    $localized->cBeschreibung     = $product->cBeschreibung;
+                    $localized->cKurzBeschreibung = $product->cKurzBeschreibung;
+                    $this->db->insert('tartikelsprache', $localized);
                 }
                 $price2                = new stdClass();
                 $price2->kArtikel      = $product->kArtikel;
@@ -657,7 +705,7 @@ class DemoDataInstaller
                     $price3            = new stdClass();
                     $price3->kPreis    = $idxKg1;
                     $price3->nAnzahlAb = 0;
-                    $price3->fVKNetto  = $price / 19.00;
+                    $price3->fVKNetto  = $price / $taxRate;
                     $this->db->insert('tpreisdetail', $price3);
                 }
 
@@ -667,15 +715,251 @@ class DemoDataInstaller
                     $price3            = new stdClass();
                     $price3->kPreis    = $idxKg2;
                     $price3->nAnzahlAb = 0;
-                    $price3->fVKNetto  = $price / 19.00;
+                    $price3->fVKNetto  = $price / $taxRate;
                     $this->db->insert('tpreisdetail', $price3);
+                }
+                if ($isParent === true || $isVariation === true) {
+                    ++$maxPropertyID;
+                    $added                 = [];
+                    $added[$maxPropertyID] = ['id' => $maxPropertyID, 'name' => 'Color', 'values' => []];
+                    foreach ($this->languages as $language) {
+                        if ($language->isShopDefault()) {
+                            $property               = new stdClass();
+                            $property->kEigenschaft = $maxPropertyID;
+                            $property->kArtikel     = $product->kArtikel;
+                            $property->cName        = $language->getCode() === 'ger' ? 'Farbe' : 'Color';
+                            $property->cWaehlbar    = 'Y';
+                            $property->cTyp         = 'SELECTBOX';
+                            $property->nSort        = 0;
+                            $this->db->insert('teigenschaft', $property);
+                        } else {
+                            $loc               = new stdClass();
+                            $loc->kEigenschaft = $maxPropertyID;
+                            $loc->kSprache     = $language->getId();
+                            $loc->cName        = $language->getCode() === 'ger' ? 'Farbe' : 'Color';
+                            $this->db->insert('teigenschaftsprache', $loc);
+                        }
+                    }
+                    $max = \random_int(1, 6);
+                    for ($j = 0; $j < $max; $j++) {
+                        ++$maxPropValueID;
+                        $name                              = $this->faker->unique($j === 0)->colorName();
+                        $added[$maxPropertyID]['values'][] = [
+                            'id'     => $maxPropValueID,
+                            'propID' => $maxPropertyID,
+                            'name'   => $name,
+                            'type'   => 'Color'
+                        ];
+                        $propertyValue                     = new stdClass();
+                        $propertyValue->kEigenschaftWert   = $maxPropValueID;
+                        $propertyValue->kEigenschaft       = $maxPropertyID;
+                        $propertyValue->cName              = $name;
+                        $propertyValue->fAufpreisNetto     = 0.0000;
+                        $propertyValue->fGewichtDiff       = 0.0000;
+                        $propertyValue->cArtNr             = $product->cArtNr . '-clr' . $j;
+                        $propertyValue->nSort              = $j;
+                        $propertyValue->fLagerbestand      = 0;
+                        $propertyValue->fPackeinheit       = 0.0000;
+                        $this->db->insert('teigenschaftwert', $propertyValue);
+                        foreach ($this->languages as $language) {
+                            if ($language->isShopDefault()) {
+                                continue;
+                            }
+                            $loc                   = new stdClass();
+                            $loc->kSprache         = $language->getId();
+                            $loc->cName            = $propertyValue->cName;
+                            $loc->kEigenschaftWert = $propertyValue->kEigenschaftWert;
+                            $this->db->insert('teigenschaftwertsprache', $loc);
+                        }
+                    }
+
+                    if ($isParent === true) {
+                        ++$maxPropertyID;
+                        $added[$maxPropertyID] = ['id' => $maxPropertyID, 'name' => 'Size', 'values' => []];
+                        foreach ($this->languages as $language) {
+                            if ($language->isShopDefault()) {
+                                $property               = new stdClass();
+                                $property->kEigenschaft = $maxPropertyID;
+                                $property->kArtikel     = $product->kArtikel;
+                                $property->cName        = $language->getCode() === 'ger' ? 'Größe' : 'Size';
+                                $property->cWaehlbar    = 'Y';
+                                $property->cTyp         = 'SELECTBOX';
+                                $property->nSort        = 1;
+                                $this->db->insert('teigenschaft', $property);
+                            } else {
+                                $loc               = new stdClass();
+                                $loc->kEigenschaft = $maxPropertyID;
+                                $loc->kSprache     = $language->getId();
+                                $loc->cName        = $language->getCode() === 'ger' ? 'Größe' : 'Size';
+                                $this->db->insert('teigenschaftsprache', $loc);
+                            }
+                        }
+                        $sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+                        $max   = \random_int(1, \count($sizes));
+                        for ($j = 0; $j < $max; $j++) {
+                            ++$maxPropValueID;
+                            $name                              = $sizes[$j];
+                            $added[$maxPropertyID]['values'][] = [
+                                'type'   => 'Size',
+                                'id'     => $maxPropValueID,
+                                'propID' => $maxPropertyID,
+                                'name'   => $name
+                            ];
+                            $propertyValue                     = new stdClass();
+                            $propertyValue->kEigenschaftWert   = $maxPropValueID;
+                            $propertyValue->kEigenschaft       = $maxPropertyID;
+                            $propertyValue->cName              = $name;
+                            $propertyValue->fAufpreisNetto     = 0.0000;
+                            $propertyValue->fGewichtDiff       = 0.0000;
+                            $propertyValue->cArtNr             = 'size' . $name;
+                            $propertyValue->nSort              = $j;
+                            $propertyValue->fLagerbestand      = 0;
+                            $propertyValue->fPackeinheit       = 0.0000;
+                            $this->db->insert('teigenschaftwert', $propertyValue);
+                            foreach ($this->languages as $language) {
+                                if ($language->isShopDefault()) {
+                                    continue;
+                                }
+                                $loc                   = new stdClass();
+                                $loc->kSprache         = $language->getId();
+                                $loc->cName            = $propertyValue->cName;
+                                $loc->kEigenschaftWert = $propertyValue->kEigenschaftWert;
+                                $this->db->insert('teigenschaftwertsprache', $loc);
+                            }
+                        }
+
+                        $childProduct                = clone $product;
+                        $childProduct->kVaterArtikel = $product->kArtikel;
+                        $childProduct->nIstVater     = 0;
+
+                        $permutations = [];
+                        $pInput       = $this->transformPropertyData($added);
+                        $this->generatePermutations('', \array_values($pInput), 0, $permutations);
+                        foreach ($permutations as $permutation) {
+                            ++$maxPropCombID;
+                            $childName        = '';
+                            $childSeo         = '';
+                            $currentColorName = null;
+                            foreach ($permutation as $propValueID) {
+                                $data                           = $this->getPropertyData($propValueID, $added);
+                                $combination                    = new stdClass();
+                                $combination->kEigenschaftKombi = $maxPropCombID;
+                                $combination->kEigenschaft      = $data['propID'];
+                                $combination->kEigenschaftWert  = $data['id'];
+                                $this->db->insert('teigenschaftkombiwert', $combination);
+                                $childName .= ' ' . $data['name'];
+                                $childSeo  .= '-' . \strtolower($data['name']);
+                                if ($data['type'] === 'Color') {
+                                    $currentColorName = $data['name'];
+                                }
+                            }
+                            $childProduct->cArtNr            = $product->cArtNr . '-' . $maxPropCombID;
+                            $childProduct->kEigenschaftKombi = $maxPropCombID;
+                            $childProduct->cName             = $product->cName . $childName;
+                            $childProduct->cSeo              = $product->cSeo . $childSeo;
+                            ++$lastProductID;
+                            $childProduct->kArtikel = $lastProductID;
+                            $this->db->insert('tartikel', $childProduct);
+                            $seoItem->kKey = $childProduct->kArtikel;
+                            foreach ($this->languages as $language) {
+                                $seoItem->cSeo     = $this->getUniqueSlug($childProduct->cSeo);
+                                $seoItem->kSprache = $language->getId();
+                                $this->db->insert('tseo', $seoItem);
+                            }
+                            ++$maxCategoryProduct;
+                            $productCategory->kKategorieArtikel = $maxCategoryProduct;
+                            $productCategory->kArtikel          = $childProduct->kArtikel;
+                            $this->db->insert('tkategorieartikel', $productCategory);
+                            $price2                = new stdClass();
+                            $price2->kArtikel      = $childProduct->kArtikel;
+                            $price2->kKundengruppe = 1;
+                            $idxKg1                = $this->db->insert('tpreis', $price2);
+                            if ($idxKg1 > 0) {
+                                $price3            = new stdClass();
+                                $price3->kPreis    = $idxKg1;
+                                $price3->nAnzahlAb = 0;
+                                $price3->fVKNetto  = $price / $taxRate;
+                                $this->db->insert('tpreisdetail', $price3);
+                            }
+
+                            $price2->kKundengruppe = 2;
+                            $idxKg2                = $this->db->insert('tpreis', $price2);
+                            if ($idxKg2 > 0) {
+                                $price3            = new stdClass();
+                                $price3->kPreis    = $idxKg2;
+                                $price3->nAnzahlAb = 0;
+                                $price3->fVKNetto  = $price / $taxRate;
+                                $this->db->insert('tpreisdetail', $price3);
+                            }
+                            $this->createProductImage(
+                                $childProduct->kArtikel,
+                                $childProduct->cName,
+                                1,
+                                $currentColorName
+                            );
+                        }
+                    }
                 }
             }
 
-            $this->callback($callback, $i, $limit, $productID > 0, $name);
+            $this->callback($callback, $i, $limit, $ok > 0, $name);
         }
 
         return $this;
+    }
+
+    /**
+     * @param array $input
+     * @return array
+     */
+    private function transformPropertyData(array $input): array
+    {
+        $result = [];
+        foreach ($input as $data) {
+            $ele = [];
+            foreach ($data['values'] as $value) {
+                $ele[] = $value['id'];
+            }
+            $result[] = $ele;
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param int   $propValueID
+     * @param array $added
+     * @return array
+     */
+    private function getPropertyData(int $propValueID, array $added): array
+    {
+        foreach ($added as $data) {
+            foreach ($data['values'] as $item) {
+                if ($item['id'] === $propValueID) {
+                    return $item;
+                }
+            }
+        }
+
+        return [];
+    }
+
+    /**
+     * @param string $s
+     * @param array  $arrs
+     * @param int    $k
+     * @param array  $result
+     * @return void
+     */
+    private function generatePermutations(string $s, array $arrs, int $k, array &$result): void
+    {
+        if ($k === \count($arrs)) {
+            $result[] = \array_map('\intval', \array_filter(\explode(',', $s)));
+        } else {
+            foreach ($arrs[$k] as $o) {
+                $this->generatePermutations($s . ',' . $o, $arrs, $k + 1, $result);
+            }
+        }
     }
 
     /**
@@ -685,28 +969,27 @@ class DemoDataInstaller
     public function createCustomers(?callable $callback = null): self
     {
         $limit = $this->config['customers'];
-        $fake  = $this->faker;
         $pdo   = $this->db;
         $xtea  = new XTEA(\BLOWFISH_KEY);
         for ($i = 1; $i <= $limit; ++$i) {
             if (\random_int(0, 1) === 0) {
-                $firstName = $fake->firstNameMale;
+                $firstName = $this->faker->firstNameMale();
                 $gender    = 'm';
             } else {
-                $firstName = $fake->firstNameFemale;
+                $firstName = $this->faker->firstNameFemale();
                 $gender    = 'w';
             }
-            $lastName      = $fake->lastName;
-            $streetName    = $fake->streetName;
+            $lastName      = $this->faker->lastName();
+            $streetName    = $this->faker->streetName();
             $houseNr       = \random_int(1, 200);
-            $cityName      = $fake->city;
-            $postcode      = $fake->postcode;
-            $email         = $fake->email;
-            $dateofbirth   = $fake->date('Y-m-d', '1998-12-31');
+            $cityName      = $this->faker->city();
+            $postcode      = $this->faker->postcode();
+            $email         = $this->faker->email();
+            $dateofbirth   = $this->faker->date('Y-m-d', '1998-12-31');
             $password      = \password_hash('pass', \PASSWORD_DEFAULT);
             $streetNameEnc = $xtea->encrypt($streetName);
             $lastNameEnc   = $xtea->encrypt($lastName);
-            $lastName      = $fake->lastName;
+            $lastName      = $this->faker->lastName();
 
             $customer = (object)[
                 'kKundengruppe'  => 1,
@@ -762,7 +1045,6 @@ class DemoDataInstaller
         if ($limit < 1) {
             return $this;
         }
-        $fake      = $this->faker;
         $hiddenLg  = $this->db->select('tlinkgruppe', 'cTemplatename', 'hidden');
         $lgID      = (int)($hiddenLg->kLinkgruppe ?? 1);
         $linkadmin = new LinkAdmin($this->db, Shop::Container()->getCache());
@@ -782,13 +1064,13 @@ class DemoDataInstaller
             'cKundengruppen'     => '_DBNULL_',
             'kLinkgruppe'        => $lgID
         ];
-        $content   = $fake->text();
+        $content   = $this->faker->text();
         $codes     = [];
         foreach ($this->languages as $language) {
             $codes[] = $language->getIso();
         }
         for ($i = 1; $i <= $limit; ++$i) {
-            $data['cName'] = $fake->slug;
+            $data['cName'] = $this->faker->slug();
             foreach ($codes as $code) {
                 $data['cName_' . $code]    = $data['cName'] . '_' . $code;
                 $data['cSeo_' . $code]     = $data['cName'] . '_' . $code;
@@ -814,7 +1096,7 @@ class DemoDataInstaller
             return $this;
         }
         for ($i = 0; $i < $limit; $i++) {
-            $name                     = $this->faker->word;
+            $name                     = $this->faker->word();
             $characteristic           = (object)[
                 'kMerkmal'         => 0,
                 'nSort'            => 0,
@@ -874,7 +1156,7 @@ class DemoDataInstaller
             foreach ($this->languages as $language) {
                 $code = $language->getCode();
                 while (true) {
-                    $name   = $this->faker->word;
+                    $name   = $this->faker->word();
                     $exists = $this->db->select('tseo', 'cSeo', $name . $code);
                     if ($exists === null) {
                         break;
@@ -922,14 +1204,31 @@ class DemoDataInstaller
 
     /**
      * @param string      $path
-     * @param null|string $text
+     * @param string|null $text
      * @param int         $width
      * @param int         $height
+     * @param string|null $colorName
      * @return bool
      */
-    private function createImage(string $path, string $text = null, int $width = 500, int $height = 500): bool
-    {
-        $file = $this->faker->imageFile(null, $width, $height, 'jpg', true, $text, null, null, $this->getFontFile());
+    private function createImage(
+        string $path,
+        string $text = null,
+        int $width = 500,
+        int $height = 500,
+        ?string $colorName = null
+    ): bool {
+        $file = $this->faker->imageFile(
+            null,
+            $width,
+            $height,
+            'jpg',
+            true,
+            $text,
+            null,
+            null,
+            $this->getFontFile(),
+            $colorName
+        );
 
         return $file !== null && \rename($file, $path);
     }
@@ -950,18 +1249,21 @@ class DemoDataInstaller
     }
 
     /**
-     * @param int    $productID
-     * @param string $text
-     * @param int    $imageNumber
+     * @param int         $productID
+     * @param string      $text
+     * @param int         $imageNumber
+     * @param string|null $colorName
+     * @return void
      */
-    private function createProductImage(int $productID, string $text, int $imageNumber): void
+    private function createProductImage(int $productID, string $text, int $imageNumber, ?string $colorName = null): void
     {
         $maxPk = (int)$this->db->getSingleObject('SELECT MAX(kArtikelPict) AS maxPk FROM tartikelpict')->maxPk;
         if ($productID <= 0) {
             return;
         }
         $file = '1024_1024_' . \md5($text . $productID . $imageNumber) . '.jpg';
-        if ($this->createImage(\PFAD_ROOT . \PFAD_MEDIA_IMAGE_STORAGE . $file, $text, 1024, 1024) === true) {
+        $ok   = $this->createImage(\PFAD_ROOT . \PFAD_MEDIA_IMAGE_STORAGE . $file, $text, 1024, 1024, $colorName);
+        if ($ok === true) {
             $image                   = new stdClass();
             $image->cPfad            = $file;
             $image->kBild            = $this->db->insert('tbild', $image);
@@ -1001,7 +1303,7 @@ class DemoDataInstaller
         $rating->kArtikel        = $productID;
         $rating->kKunde          = 0;
         $rating->kSprache        = 1;
-        $rating->cName           = $this->faker->name;
+        $rating->cName           = $this->faker->name();
         $rating->cTitel          = \addcslashes($this->faker->realText(75), '\'"');
         $rating->cText           = $this->faker->text(100);
         $rating->nHilfreich      = \random_int(0, 10);
@@ -1015,7 +1317,6 @@ class DemoDataInstaller
 
     /**
      * update lft/rght values for categories in the nested set model.
-     *
      * @param int $parentID
      * @param int $left
      * @param int $level

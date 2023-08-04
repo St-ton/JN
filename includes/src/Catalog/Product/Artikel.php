@@ -1107,12 +1107,12 @@ class Artikel implements RoutableInterface
     /**
      * @var self[]
      */
-    private static $products = [];
+    protected static $products = [];
 
     /**
      * @var bool
      */
-    private bool $compressed = false;
+    protected bool $compressed = false;
 
     /**
      *

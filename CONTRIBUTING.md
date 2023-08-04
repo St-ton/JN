@@ -2,36 +2,34 @@
 
 JTL-Shop is a commercial open source software. Read [LICENSE.md](LICENSE.md) for further information. 
 
-Git Repository: git@gitlab.jtl-software.de:jtlshop/shop4.git
+Git Repository: git@gitlab.com:jtl-software/jtl-shop/core.git
 
 Contribute your changes by adding a new branch and creating a merge request in gitlab. 
 External developers: fork shop project master in your namespace and create the merge request.  
 
 Merging into master branch is only permitted to developers with master permission. 
 
-## Getting Started
+## Getting started
 
 * Make sure your ssh key is stored in your gitlab account
-* Clone the jtl-shop repository: ```git clone git@gitlab.jtl-software.de:jtlshop/shop4.git mydevshop```
-* init + update submodules: 
-  ```
-  git submodule init
-  git submodule update
-  ```
+* Clone the jtl-shop repository: ```git clone git@gitlab.com:jtl-software/jtl-shop/core.git mydevshop```
 * get vendor libs: 
   ```
-  cd includes
-  composer update
+  cd mydevshop/includes
+  composer install
   ```
-* install shop in your browser /install/index.php or get shopcli to perform install/update/migrations: https://gitlab.jtl-software.de/jtlshop/shopcli
-
-## Coding Guidelines
+* install shop in your browser /install/index.php or use shopcli to perform install/update/migrations via
+  ```
+  cd mydevshop
+  php cli shop:install
+  ```
+## Coding guidelines
 
 We basically follow [PSR-2](http://www.php-fig.org/psr/psr-2/) with some extra rules, specified in /.php-cs. 
 
 Grab and install php-cs-fixer to fix php-style in jtl-shop automatically: 
 
-````
+```
 wget http://get.sensiolabs.org/php-cs-fixer.phar -O php-cs-fixer
 sudo chmod a+x php-cs-fixer
 sudo mv php-cs-fixer /usr/local/bin/php-cs-fixer
@@ -47,21 +45,7 @@ Fix 1 File:
 php-cs-fixer fix admin/includes/dashboard_inc.php --config-file .php_cs
 ```
 
-
-
-## How to write good issues
-
-Always explain the conditions which led you to write this issue. 
-Any reader must be able to understand your idea or reproduce a bug without having to ask for examples, use cases or sample-data.  
-
-German language is preferred for issues + changelog because JTL primary addresses the german-speaking market
-
-* Keep your issue titles short and descriptive
-* Format your description with [Gitlab flavoured markdown](https://gitlab.jtl-software.de/help/markdown/markdown): Make use of syntax highlighting, lists, links and images
-
-
-
-## Commit Messages
+## Commit messages
 
 Always provide a short summary of your Codechange in the first line. 
 Long description is optional. If needed, place a new line between summary and long description.  

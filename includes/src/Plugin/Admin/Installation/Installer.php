@@ -8,6 +8,7 @@ use JTL\DB\DbInterface;
 use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\InvalidNamespaceException;
 use JTL\Exceptions\ServiceNotFoundException;
+use JTL\Filesystem\Filesystem;
 use JTL\Helpers\Text;
 use JTL\Plugin\Admin\Validation\ValidatorInterface;
 use JTL\Plugin\BootstrapperInterface;
@@ -20,7 +21,9 @@ use JTL\Plugin\State;
 use JTL\Shop;
 use JTL\XMLParser;
 use JTLShop\SemVer\Version;
+use League\Flysystem\MountManager;
 use stdClass;
+use Throwable;
 use function Functional\map;
 use function Functional\select;
 
@@ -232,7 +235,8 @@ final class Installer
             \CACHING_GROUP_CORE,
             \CACHING_GROUP_LICENSES,
             \CACHING_GROUP_LANGUAGE,
-            \CACHING_GROUP_PLUGIN
+            \CACHING_GROUP_PLUGIN,
+            \CACHING_GROUP_OPC
         ]);
 
         return $res;
@@ -399,9 +403,9 @@ final class Installer
      */
     private function parseSQLFile(string $sqlFile, string $pluginName, int $pluginVersion): array
     {
-        $file = \PFAD_ROOT . \PFAD_PLUGIN . $pluginName . '/' .
-            \PFAD_PLUGIN_VERSION . $pluginVersion . '/' .
-            \PFAD_PLUGIN_SQL . $sqlFile;
+        $file = \PFAD_ROOT . \PFAD_PLUGIN . $pluginName
+            . '/' . \PFAD_PLUGIN_VERSION . $pluginVersion
+            . '/' . \PFAD_PLUGIN_SQL . $sqlFile;
 
         if (!\file_exists($file)) {
             return [];// SQL Datei existiert nicht
@@ -412,14 +416,7 @@ final class Installer
         while (($data = \fgets($handle)) !== false) {
             $data = \trim($data);
             if ($data !== '' && !\str_starts_with($data, '--')) {
-                if (\str_contains($data, 'CREATE TABLE')) {
-                    $line .= \trim($data);
-                } elseif (\str_contains($data, 'INSERT')) {
-                    $line .= \trim($data);
-                } else {
-                    $line .= \trim($data);
-                }
-
+                $line .= \trim($data);
                 if (\mb_substr($data, \mb_strlen($data) - 1, 1) === ';') {
                     $sqlLines[] = $line;
                     $line       = '';
@@ -438,7 +435,7 @@ final class Installer
      * @return array|Version
      * @throws Exception
      */
-    private function updateByMigration(stdClass $plugin, string $pluginPath, Version $targetVersion)
+    private function updateByMigration(stdClass $plugin, string $pluginPath, Version $targetVersion): array|Version
     {
         $path              = $pluginPath . \PFAD_PLUGIN_MIGRATIONS;
         $manager           = new MigrationManager($this->db, $path, $plugin->cPluginID, $targetVersion);
@@ -510,7 +507,7 @@ final class Installer
      * @param string $action
      * @return string|bool
      */
-    private function getTableName(string $sql, string $action = 'create table( if not exists)')
+    private function getTableName(string $sql, string $action = 'create table( if not exists)'): bool|string
     {
         \preg_match('/' . $action . "? ([`']?)([a-z\d_]+)\\2/i", $sql, $matches);
 
@@ -574,8 +571,65 @@ final class Installer
         $this->db->update('tspezialseite', 'kPlugin', $pluginID, $upd);
         $this->updatePaymentMethods($newPluginID, $pluginID);
         $this->updateCronJobs($cronJobs, $newPluginID);
+        $this->deleteOldFiles();
 
         return InstallCode::OK;
+    }
+
+    private function deleteOldFiles(): void
+    {
+        /** @var Filesystem $fs */
+        $fs             = Shop::Container()->get(Filesystem::class);
+        $prefix         = \PLUGIN_DIR . \basename($this->dir) . '/';
+        $srcFileCurrent = $prefix . PluginInterface::FILE_INVENTORY_CURRENT;
+        $srcFileOld     = $prefix . PluginInterface::FILE_INVENTORY_OLD;
+        $srcFileCustom  = $prefix . PluginInterface::FILE_INVENTORY_OLD_CUSTOM;
+        $resultFile     = $prefix . '.deleted_files_' . $this->plugin->getCurrentVersion()->getOriginalVersion()
+            . '.txt';
+        if (!$fs->fileExists($srcFileCurrent) || !$fs->fileExists($srcFileOld)) {
+            return;
+        }
+        $deletedFiles = [];
+        $currentFiles = \array_filter(\explode(\PHP_EOL, $fs->read($srcFileCurrent)));
+        $oldFiles     = \array_filter(\explode(\PHP_EOL, $fs->read($srcFileOld)));
+        if ($fs->fileExists($srcFileCustom)) {
+            $oldFiles = \array_unique(\array_merge(
+                $oldFiles,
+                \array_filter(\explode(\PHP_EOL, $fs->read($srcFileCustom)))
+            ));
+        }
+        $filesToDelete = \array_diff($oldFiles, $currentFiles);
+        foreach ($filesToDelete as $file) {
+            $src = $prefix . $file;
+            try {
+                $src = $fs->normalizeToBasePath($src, $prefix);
+            } catch (Exception $e) {
+                Shop::Container()->getLogService()->warning($e->getMessage());
+                continue;
+            }
+            if (!$fs->fileExists($src) && !$fs->directoryExists($src)) {
+                continue;
+            }
+            $deleted = true;
+            if ($fs->directoryExists($src)) {
+                try {
+                    $fs->deleteDirectory($src);
+                } catch (Throwable) {
+                    $deleted = false;
+                }
+            } else {
+                try {
+                    $fs->delete($src);
+                } catch (Throwable) {
+                    $deleted = false;
+                }
+            }
+            if ($deleted === true) {
+                $deletedFiles[] = \mb_substr($src, \mb_strlen($prefix));
+            }
+        }
+        $fs->write($resultFile, \implode(\PHP_EOL, $deletedFiles));
+        $fs->delete($srcFileOld);
     }
 
     /**
@@ -587,8 +641,7 @@ final class Installer
         foreach ($cronJobs as $cronJob) {
             $match = $this->db->select('texportformat', ['kPlugin', 'cName'], [$pluginID, $cronJob->cName]);
             if ($match !== null && isset($match->kExportformat)) {
-                $update               = new stdClass();
-                $update->foreignKeyID = $match->kExportformat;
+                $update = (object)['foreignKeyID' => (int)$match->kExportformat];
                 $this->db->update('tcron', 'cronID', $cronJob->cronID, $update);
             }
         }
@@ -777,8 +830,8 @@ final class Installer
             $this->db->update(
                 'tpluginemailvorlageeinstellungen',
                 'kEmailvorlage',
-                $oldMailTpl->kEmailvorlage,
-                (object)['kEmailvorlage' => $newMailTpl->kEmailvorlage]
+                (int)$oldMailTpl->kEmailvorlage,
+                (object)['kEmailvorlage' => (int)$newMailTpl->kEmailvorlage]
             );
         }
         foreach ($this->plugin->getMailTemplates()->getTemplatesAssoc() as $moduleID => $oldTpl) {

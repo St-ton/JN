@@ -95,3 +95,4 @@
 bootstrap/*
 node_modules/
 /uploads/*
+phpstorm.meta.php

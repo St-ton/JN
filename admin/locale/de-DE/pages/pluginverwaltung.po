@@ -808,3 +808,12 @@ msgstr "Hinweis: Im abgesicherten Modus werden Plugins gegebenenfalls nicht voll
 
 msgid "Plugin probably flawed"
 msgstr "Das Plugin verursacht mglws. Fehler: "
+
+msgid "Modified files:"
+msgstr "Modifizierte Dateien:"
+
+msgid "No modified files"
+msgstr "Kein modifizierten Dateien"
+
+msgid "File check unsupported"
+msgstr "Dateicheck nicht unterstützt"

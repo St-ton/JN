@@ -140,14 +140,6 @@ build_create_deleted_files_csv()
     echo "  Deleted files schema admin/includes/shopmd5files/deleted_files_${VERSION}.csv";
 }
 
-build_move_class_files()
-{
-}
-
-build_set_classes_path()
-{
-}
-
 build_add_old_files()
 {
     while read line; do

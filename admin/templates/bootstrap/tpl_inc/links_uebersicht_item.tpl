@@ -124,7 +124,7 @@
                     <button type="submit"
                             name="action"
                             value="delete-link"
-                            class="btn btn-link px-2{if $link->getPluginID() > 0} disabled{else} delete-confirm{/if}"
+                            class="btn btn-link px-2{if $link->getPluginID() > 0 && $link->getReference() === 0} disabled{else} delete-confirm{/if}"
                             {if $link->getPluginID() === 0} data-modal-body="{__('sureDeleteLink')}"{/if}
                             title="{if $deleteCount > 1}{sprintf(__('dangerLinkWillGetDeleted'), $deleteCount)}{else}{__('delete')}{/if}"
                             {if $link->isSystem() && $link->getReference() === 0 && !$link->hasDuplicateSpecialLink()} disabled{/if}

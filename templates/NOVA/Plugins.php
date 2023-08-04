@@ -508,13 +508,21 @@ class Plugins
         if ($linkGroup->getTemplate() === 'hidden' || $linkGroup->getName() === 'hidden') {
             return $links;
         }
+        $activeLinkID = Shop::getState()->linkID;
         foreach ($linkGroup->getLinks() as $link) {
             /** @var Link $link */
             if ($link->getParent() !== $parentID) {
                 continue;
             }
-            $link->setChildLinks($this->buildNavigationSubs($linkGroup, $link->getID()));
-            $link->setIsActive($link->getIsActive() || (Shop::$kLink > 0 && Shop::$kLink === $link->getID()));
+            $id  = $link->getID();
+            $ref = $link->getReference();
+            if ($ref > 0) {
+                $id = $ref;
+            }
+            $link->setChildLinks($this->buildNavigationSubs($linkGroup, $id));
+            $active = $link->getIsActive()
+                || ($activeLinkID > 0 && ($activeLinkID === $link->getID() || $activeLinkID === $ref));
+            $link->setIsActive($active);
             $links->push($link);
         }
 

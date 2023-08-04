@@ -54,6 +54,7 @@
 {$finderURL = $adminURL|cat:'/'|cat:JTL\Router\Route::ELFINDER}
 <script>
     if(typeof CKEDITOR !== 'undefined') {
+        codemirrorTheme = wc_hex_is_light($(':root').css('--body-bg')) ? 'default' : 'ayu-dark';
         CKEDITOR.editorConfig = function(config) {
             config.language = '{$language}';
             config.removeDialogTabs = 'link:upload;image:Upload';
@@ -75,10 +76,14 @@
             config.filebrowserImageUploadUrl = '{$finderURL}?ckeditor=1&mediafilesType=image&token={$smarty.session.jtl_token}';
             config.filebrowserFlashUploadUrl = '{$finderURL}?ckeditor=1&mediafilesType=video&token={$smarty.session.jtl_token}';
             config.extraPlugins = 'codemirror';
+            config.codemirror = {
+                theme: codemirrorTheme
+            };
             config.fillEmptyBlocks = false;
             config.autoParagraph = false;
         };
         CKEDITOR.editorConfig(CKEDITOR.config);
+
         $.each(CKEDITOR.dtd.$removeEmpty, function (i, value) {
             CKEDITOR.dtd.$removeEmpty[i] = false;
         });
@@ -91,7 +96,17 @@
                 }
             });
         });
+        CKEDITOR.on( 'instanceCreated', function( evt ){
+            let body = $('body');
+            CKEDITOR.addCss('.cke_editable { background-color: '
+                + body.css('background-color')
+                + '; color: '
+                + body.css('color')
+                + '; }'
+            );
+        });
     }
+
     $('.select2').select2();
     $(function() {
         ioCall('notificationAction', ['update'], undefined, undefined, undefined, true);

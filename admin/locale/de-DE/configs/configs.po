@@ -2846,6 +2846,9 @@ msgstr "Hier legen Sie fest, welche Methode für den Cache verwendet werden soll
 msgid "caching_redis_host_name"
 msgstr "Redis-Host"
 
+msgid "caching_redis_user_name"
+msgstr "Redis-User"
+
 msgid "caching_redis_host_desc"
 msgstr "Falls Sie die Methode Redis eingestellt haben, legen Sie hier den Host / Socket fest."
 
@@ -2857,6 +2860,9 @@ msgstr "Falls Sie die Methode Redis eingestellt haben, legen Sie hier den Port f
 
 msgid "caching_redis_db_name"
 msgstr "Redis-DB"
+
+msgid "caching_redis_user_desc"
+msgstr "Falls Sie die Methode Redis eingestellt haben, legen Sie hier den Usernamen fest. Lassen Sie das Feld leer wenn Sie keinen benötigen."
 
 msgid "caching_redis_db_desc"
 msgstr "Falls Sie die Methode Redis eingestellt haben, legen Sie hier die Datenbank-Nummer fest. Lassen Sie das Feld leer für Standard."

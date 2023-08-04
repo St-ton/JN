@@ -11,8 +11,14 @@ use ReflectionProperty;
  */
 abstract class AbstractDataObject implements DataObjectInterface
 {
+    /**
+     * @inheritdoc
+     */
     abstract public function getMapping(): array;
 
+    /**
+     * @inheritdoc
+     */
     abstract public function getReverseMapping(): array;
 
     /**
@@ -124,8 +130,9 @@ abstract class AbstractDataObject implements DataObjectInterface
      */
     public function hydrateWithObject(object $object): self
     {
-        $attributeMap = $this->getMapping();
-        foreach (\get_object_vars($object) as $name => $attribute) {
+        $attributeMap     = $this->getMapping();
+        $objectAttributes = \get_object_vars($object);
+        foreach ($objectAttributes as $name => $attribute) {
             $propertyName = $name;
             if (\array_key_exists($name, $attributeMap)) {
                 $propertyName = $attributeMap[$name];
@@ -140,13 +147,13 @@ abstract class AbstractDataObject implements DataObjectInterface
     }
 
     /**
-     * Will return an array containing keys and values of protected and public properties
-     * $tableColumns = true will return an array using table column names as array keys
+     * Will ship an array containing Keys and values of protected and public properties
+     * $tableColumns = true will ship an array using table column names as array keys
      *
      * @param bool $tableColumns
      * @return array
      */
-    public function toArray(bool $tableColumns = true): array
+    public function toArray(bool $tableColumns = true, $serialize = true): array
     {
         $columnMap = [];
         if ($tableColumns) {
@@ -165,14 +172,18 @@ abstract class AbstractDataObject implements DataObjectInterface
             if ($tableColumns) {
                 $propertyName = $columnMap[$propertyName];
             }
-            $toArray[$propertyName] = $property->getValue($this);
+            if ($serialize && (is_array($property->getValue($this) || is_object($property->getValue($this))))) {
+                $toArray[$propertyName] = \serialize($property->getValue($this));
+            } else {
+                $toArray[$propertyName] = $property->getValue($this);
+            }
         }
 
         return $toArray;
     }
 
     /**
-     * $tableColumns = true will return an object using table column names as array keys
+     * $tableColumns = true will ship an object using table column names as array keys
      *
      * @param bool $tableColumns
      * @return object
@@ -183,7 +194,7 @@ abstract class AbstractDataObject implements DataObjectInterface
     }
 
     /**
-     * if $useReverseMapping is true the array returned will use mapped class properties
+     * if $useReverseMapping is true the array shipped will use mapped class properties
      * @param bool $useReverseMapping
      * @return array
      */
